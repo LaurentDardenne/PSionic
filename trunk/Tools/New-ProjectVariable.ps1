@@ -54,7 +54,7 @@
           # une variable constante par clé et ce dans le scope de l'appelant.
           # Le nom de la variable est préfixée par le nom du projet 
           # on évite les collisions de noms et facilite la saisie lors de la substitution de chaîne 
-        New-Variable "$($this.ProjectName)$($_.Name)" -Value $Value -Option Constant  -Scope 1
+        New-Variable "$($this.ProjectName)$($_.Name)" -Value $_.Value -Option Constant  -Scope 1
       }
   } 
 } #New-ProjectVariable
