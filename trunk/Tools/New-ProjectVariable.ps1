@@ -45,11 +45,11 @@
        }
       $Properties +=$New 
   }
-
-  New-Object PSObject -Property  $Properties |
+  
+  New-Object PSObject -Property  $Properties|
    Add-Member -Passthru -Member ScriptMethod -Name NewVariables -Value { 
     $this.Psobject.Properties | 
-      Foreach {
+      Foreach-Object {
           # Crée, à partir de la hastable d'un projet, 
           # une variable constante par clé et ce dans le scope de l'appelant.
           # Le nom de la variable est préfixée par le nom du projet 
@@ -74,3 +74,5 @@
 # 
 # $PsIonic=New-ProjectVariable 'PsIonic' 'G:\PS' 'https://psionic.svn.codeplex.com/svn' $Paths
 # $PsIonic
+# $PsIonic.NewVariables()
+# dir variable:psi*
