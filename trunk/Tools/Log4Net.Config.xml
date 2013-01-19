@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="windows-1250"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <log4net>
   <root>
     <level value="Debug"/>
@@ -35,7 +35,7 @@
   </appender>
 
   <appender name="File" type="log4net.Appender.RollingFileAppender">
-    <param name="File" value="C:\\Temps\\Logs\\PsIonic.log"/>
+    <param name="File" value="$PsIonicLogsLg4n"/>
     <param name="AppendToFile" value="true"/>
     <rollingStyle value="Size"/>
     <maxSizeRollBackups value="5"/>
