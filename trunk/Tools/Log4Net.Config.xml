@@ -35,7 +35,7 @@
   </appender>
 
   <appender name="File" type="log4net.Appender.RollingFileAppender">
-    <param name="File" value="$PsIonicLogsLg4n"/>
+    <param name="File" value="$PsIonicLogsLg4n.log"/>
     <param name="AppendToFile" value="true"/>
     <rollingStyle value="Size"/>
     <maxSizeRollBackups value="5"/>
