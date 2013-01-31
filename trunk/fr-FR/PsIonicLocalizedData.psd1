@@ -13,4 +13,5 @@
  ZipArchiveTypeNotSupported="Le type d'objet {0} n'est pas pris en charge pour la lecture d'une archive."
  ZipArchiveReadError="Une erreur s'est produite lors de la lecture de l'archive {0} : {1}."
  ZipArchiveExtractError="Une erreur s'est produite lors de l'extraction de l'archive {0} : {1}."
+ ZipArchiveNotFound="L'archive {0} n'existe pas."
 '@ 
