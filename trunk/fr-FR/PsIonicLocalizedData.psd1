@@ -14,4 +14,5 @@
  ZipArchiveReadError=Une erreur s'est produite lors de la lecture de l'archive {0} : {1}.
  ZipArchiveExtractError=Une erreur s'est produite lors de l'extraction de l'archive {0} : {1}.
  ZipArchiveNotFound=L'archive {0} n'existe pas.
+ ZipArchiveBadPassword=Mot de passe incorrect pour l'extraction de l'archive {0}.
 '@ 
