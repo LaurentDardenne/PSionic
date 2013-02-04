@@ -13,9 +13,9 @@
  InvalidPasswordForDataEncryptionValue=La valeur du paramètre Password ('{0}') est invalide pour la valeur de DataEncryption '{1}'.
  ErrorSettingEncryptionValue=Erreur lors du paramètrage de l'archive {0} : {1}
  AddEntryError=Impossible d'ajouter l'élement {0} : {1}
- ZipArchiveTypeNotSupported=Le type d'objet {0} n'est pas pris en charge pour la lecture d'une archive.
  ZipArchiveReadError=Une erreur s'est produite lors de la lecture de l'archive {0} : {1}.
  ZipArchiveExtractError=Une erreur s'est produite lors de l'extraction de l'archive {0} : {1}.
- ZipArchiveNotFound=L'archive {0} n'existe pas.
+ ZipArchiveNotFound=L'archive {0} n'existe pas ou n'est pas une achive valide.
  ZipArchiveBadPassword=Mot de passe incorrect pour l'extraction de l'archive {0}.
 '@ 
+
