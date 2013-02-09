@@ -18,5 +18,8 @@
  ZipArchiveExtractError=Une erreur s'est produite lors de l'extraction de l'archive {0} : {1}.
  ZipArchiveNotFound=L'archive {0} n'existe pas ou n'est pas une achive valide.
  ZipArchiveBadPassword=Mot de passe incorrect pour l'extraction de l'archive {0}.
+ ZipArchiveCheckPasswordError=Erreur lors du contrôle de mot de passe sur l'archive {0] : {1}.
+ ZipArchiveCheckIntegrityError=Erreur lors du contrôle d'intégrité de l'archive {0] : {1}.
+ TestisArchiveError=Erreur lors du test de l'archive {0] : {1}.
 '@ 
 
