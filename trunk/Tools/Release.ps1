@@ -3,7 +3,9 @@
 
 Task default -Depends Build
 
-Task Build -Depends Init,Clean,Copy {
+Include "$PsIonicTools\Common.ps1"
+
+Task Build -Depends Init,Clean,CompilePsIonicTools,Copy {
    $VerbosePreference='Continue'
 
    Throw "Under construction..." #todo un seul script avec -Debug et/ou -Release 
