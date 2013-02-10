@@ -32,4 +32,18 @@ Task CompilePsionicTools {
   $csharpFileName="$PsIonicBin\PSIonicTools.cs"
    #todo destination /Out
   Add-CScharpType -FileName $csharpFileName -Destination "$PsIonicBin" -PathAssemblyInfo "$PsIonicBin"
-} #Init
+} #CompilePsionicTools
+
+Task BuildLog4netConfig {
+  $Lg4nPath="$PsIonicBin\Debug\log4net\2.0\log4net.dll"
+  if ($PSVersionTable.PSVersion -eq 3.0)
+  { $Lg4nPath="$PsIonicBin\Debug\log4net\4.0\log4net.dll"}
+   
+  #Crée le fichier de config à partir du template Log4Net.Config.xml
+  md $PsIonicLogs -ea SilentlyContinue
+  
+  $Lines=[System.IO.File]::ReadAllText("$PsIonicTools\Log4Net.Config.xml")
+  #bug V3 seul un nom de variable peut être utilisé et pas $var.method()
+  $PsIonicLogsLg4n=$PsIonicLogs.Replace('\','\\') 
+  $ExecutionContext.InvokeCommand.ExpandString($Lines) |Set-Content "$PsIonicLogs\Log4Net.Config.xml" -Encoding UTF8
+} #BuildLog4netConfig
