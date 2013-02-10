@@ -8,7 +8,7 @@
  InvalidPassword=Le type de cryptage demandé ('{0}') ,nécessite que le paramètre password soit renseigné.
  SettingEncryption=Le cryptage de l'archive {0} a provoqué l'exception suivante : {1}.
  InvalidSelectionCriteria=La requête est invalide : {0}
- ConflictingParameter=Les paramètres ou comportements {0} et {0} sont incompatibles.
+ ConflictingParameter=Les paramètres ou comportements {0} et {1} sont incompatibles.
  ConvertingFile=Conversion de l'archive {0} en une archive autoextractible.
  ErrorSFX=Erreur lors de la création de l'archive autoextractible {0} : {1}
  InvalidPasswordForDataEncryptionValue=La valeur du paramètre Password ('{0}') est invalide pour la valeur de DataEncryption '{1}'.
