@@ -2,11 +2,11 @@
  EmptyEnum=L'énumération ne contient aucune entrée.
  PathMustExistNullOrEmpty=Le nom de chemin est null ou vide.
  PathMustExist=Le nom de chemin n'existe pas : {0}
- IsSubClassOf=L'argument {0} n'est pas une instance dérivée de la classe {1}.
+ IsSubClassOf=L'argument {0} n'est pas une instance dérivée de la classe {1}
  InvokeEventNotSupported=La valeur '{0}' n'est pas supportée.
  CommentMaxValue=Le contenu du paramètre 'Comment' ne doit pas excéder 32767 caractères.
  InvalidPassword=Le type de cryptage demandé ('{0}') ,nécessite que le paramètre password soit renseigné.
- SettingEncryption=Le cryptage de l'archive {0} a provoqué l'exception suivante : {1}.
+ SettingEncryption=Le cryptage de l'archive {0} a provoqué l'exception suivante : {1}
  InvalidSelectionCriteria=La requête est invalide : {0}
  ConflictingParameter=Les paramètres ou comportements {0} et {1} sont incompatibles.
  ConvertingFile=Conversion de l'archive {0} en une archive autoextractible.
@@ -14,12 +14,16 @@
  InvalidPasswordForDataEncryptionValue=La valeur du paramètre Password ('{0}') est invalide pour la valeur de DataEncryption '{1}'.
  ErrorSettingEncryptionValue=Erreur lors du paramètrage de l'archive {0} : {1}
  AddEntryError=Impossible d'ajouter l'élement {0} : {1}
- ZipArchiveReadError=Une erreur s'est produite lors de la lecture de l'archive {0} : {1}.
- ZipArchiveExtractError=Une erreur s'est produite lors de l'extraction de l'archive {0} : {1}.
- ZipArchiveNotFound=L'archive {0} n'existe pas ou n'est pas une achive valide.
- ZipArchiveBadPassword=Mot de passe incorrect pour l'extraction de l'archive {0}.
- ZipArchiveCheckPasswordError=Erreur lors du contrôle de mot de passe sur l'archive {0] : {1}.
- ZipArchiveCheckIntegrityError=Erreur lors du contrôle d'intégrité de l'archive {0] : {1}.
- TestisArchiveError=Erreur lors du test de l'archive {0] : {1}.
+ ZipArchiveReadError=Une erreur s'est produite lors de la lecture de l'archive {0} : {1}
+ ZipArchiveExtractError=Une erreur s'est produite lors de l'extraction de l'archive {0} : {1}
+ ZipArchiveNotFound=L'archive {0} n'existe pas ou n'est pas une archive valide.
+ ZipArchiveBadPassword=Mot de passe incorrect pour l'extraction de l'archive {0}
+ ZipArchiveCheckPasswordError=Erreur lors du contrôle de mot de passe sur l'archive {0] : {1}
+ ZipArchiveCheckIntegrityError=Erreur lors du contrôle d'intégrité de l'archive {0] : {1}
+ TestisArchiveError=Erreur lors du test de l'archive {0} : {1}
+ isNotZipArchiveWarning=N'est pas une archive Zip : {0}
+ isBadPasswordWarning=Mauvais mot de passe pour l'archive {0}
+ isCorruptedZipArchiveWarning=Archive corrompue : {0}
+ LoggerDotNotExist=La variable `$Logger n'existe pas ou est `$null
 '@ 
 
