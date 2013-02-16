@@ -1,13 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Configuration>
 	<ViewDefinitions>
 		<View>
 			<Name>ZipEntry</Name>
 			<ViewSelectedBy>
-				<TypeName>Ionic.Zip.ZipEntry</TypeName>
+			   <TypeName>Ionic.Zip.ZipEntry</TypeName>
 			</ViewSelectedBy>
 			<TableControl>
-				<TableHeaders>
+	    	<TableHeaders>
           <TableColumnHeader>
           	<Label>LastModified</Label>	
             <Alignment>Left</Alignment>
@@ -39,40 +39,41 @@
             <Alignment>Left</Alignment>
             <Width>30</Width>           				
           </TableColumnHeader>                  
-				</TableHeaders>
-				<TableRowEntries>
-					<TableRowEntry>
+         </TableHeaders>
+		     <TableRowEntries>
+          <TableRowEntry>
             <TableColumnItems>
               <TableColumnItem>
-               <PropertyName>LastModified</PropertyName>
-               <FormatString>{0}:yyyy-{0:MM}-{0:dd} {0:HH}:{0:mm}:{0:ss)</FormatString>
+                 <PropertyName>LastModified</PropertyName>
+                 <FormatString>{0}:yyyy-{0:MM}-{0:dd} {0:HH}:{0:mm}:{0:ss)</FormatString>
               </TableColumnItem> 
               <TableColumnItem>
-                <PropertyName>UncompressedSize</PropertyName>
-              	<FormatString>{0,9}</FormatString>
+                 <PropertyName>UncompressedSize</PropertyName>
+              	 <FormatString>{0,9}</FormatString>
               </TableColumnItem>
               <TableColumnItem>
- 	              <PropertyName>CompressedSize</PropertyName>
-              	<FormatString>{0,9}</FormatString>
+ 	             <PropertyName>CompressedSize</PropertyName>
+              	 <FormatString>{0,9}</FormatString>
               </TableColumnItem>               
               <TableColumnItem>
-                <PropertyName>CompressionRatio</PropertyName>
-              	<FormatString>{0,5:F0}%</FormatString>
+                 <PropertyName>CompressionRatio</PropertyName>
+              	 <FormatString>{0,5:F0}%</FormatString>
               </TableColumnItem> 
               <TableColumnItem>
-              	<PropertyName>UsesEncryption</PropertyName>
+              	 <PropertyName>UsesEncryption</PropertyName>
               </TableColumnItem>
               <TableColumnItem>
-	              <PropertyName>Crc</PropertyName>
-              	<FormatString>{0:X8}</FormatString>
+	             <PropertyName>Crc</PropertyName>
+              	 <FormatString>{0:X8}</FormatString>
               </TableColumnItem>
               <TableColumnItem>
-								<PropertyName>Filename</PropertyName>
+                 <PropertyName>Filename</PropertyName>
               </TableColumnItem>
-						</TableColumnItems>
-					</TableRowEntry>
-				</TableRowEntries>
-			</TableControl>
+            </TableColumnItems>
+         </TableRowEntry>
+       </TableRowEntries>
+      </TableControl>
 		</View>		
 	</ViewDefinitions>
 </Configuration>
+
