@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("http://psionic.codeplex.com/")]
 [assembly: AssemblyProduct("PSIonicTools. http://psionic.codeplex.com/")]
-[assembly: AssemblyCopyright("Libre de droits pour tout usages non commercial. 2013")]
+[assembly: AssemblyCopyright("This module is free for non-commercial purposes. Ce module est libre de droits pour tout usages non commercial. 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
