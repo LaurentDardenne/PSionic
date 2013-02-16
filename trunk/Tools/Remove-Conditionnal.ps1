@@ -1,27 +1,27 @@
-#Remove-Conditionnal.ps1
+ï»¿#Remove-Conditionnal.ps1
 Function Remove-Conditionnal {
 <#
 .SYNOPSIS
-    Supprime dans un fichier source toutes les lignes placées entre deux 
+    Supprime dans un fichier source toutes les lignes placÃ©es entre deux 
     directives de 'parsing conditionnal', tels que #<DEFINE %DEBUG%> et 
     #<UNDEF %DEBUG%>.
  
 .DESCRIPTION
     La fonction Remove-Conditionnal filtre dans un fichier source toutes les 
-    lignes placées entre deux directives de 'parsing conditionnal'.
+    lignes placÃ©es entre deux directives de 'parsing conditionnal'.
 .
-    PowerShell ne propose pas de mécanisme similaire a ceux de la compilation 
-    conditionnelle, qui permet à l'aide de directives d'ignorer certaines
+    PowerShell ne propose pas de mÃ©canisme similaire a ceux de la compilation 
+    conditionnelle, qui permet Ã  l'aide de directives d'ignorer certaines
      parties du texte source.      
     Cette fonction utilise les constructions suivantes :
-       . pour déclarer une directive : #<DEFINE %Nom_De_Directive_A%> 
+       . pour dÃ©clarer une directive : #<DEFINE %Nom_De_Directive_A%> 
        . pour annuler un directive :   #<UNDEF %Nom_De_Directive_A%>.
 .
-    Chacune de ces directives doit être placée en début de ligne et peut être 
-    précédées d'un ou plusieurs caractères espaces ou tabulation.  
+    Chacune de ces directives doit Ãªtre placÃ©e en dÃ©but de ligne et peut Ãªtre 
+    prÃ©cÃ©dÃ©es d'un ou plusieurs caractÃ¨res espaces ou tabulation.  
     Le nom de directive ne doit pas contenir d'espace ou de tabulation.
 .
-    Ces directives peuvent êtres imbriquées:
+    Ces directives peuvent Ãªtres imbriquÃ©es:
      #<DEFINE %Nom_De_Directive_A%> 
      
       #<DEFINE %Nom_De_Directive_B%> 
@@ -29,45 +29,45 @@ Function Remove-Conditionnal {
      
      #<UNDEF %Nom_De_Directive_A%>
 .
-    Par principe la construction suivante n'est pas autorisée :
+    Par principe la construction suivante n'est pas autorisÃ©e :
      #<DEFINE %Nom_De_Directive_A%> 
      
       #<DEFINE %Nom_De_Directive_B%> 
-      #<UNDEF %Nom_De_Directive_A%>  #fin de directive erronée
+      #<UNDEF %Nom_De_Directive_A%>  #fin de directive erronÃ©e
      
      #<UNDEF %Nom_De_Directive_B%>        
 
 .
-    La directive #<%REMOVE%%> peut être placée à la fin de chaque ligne  :
+    La directive #<%REMOVE%%> peut Ãªtre placÃ©e Ã  la fin de chaque ligne  :
          Write-Host 'Test' #<%REMOVE%> 
          #commentaire de Test #<%REMOVE%>
 .
-    Elle indique que l'intégralité de la ligne sera toujours filtrée lors de 
-    l'exécution de la fonction Remove-Conditionnal. 
-    Si vous utilisez le paramétre -Clean alors chaque occurence de cette 
-    directive sera supprimée, mais pas l'intégralité de la ligne de texte.
+    Elle indique que l'intÃ©gralitÃ© de la ligne sera toujours filtrÃ©e lors de 
+    l'exÃ©cution de la fonction Remove-Conditionnal. 
+    Si vous utilisez le paramÃ©tre -Clean alors chaque occurence de cette 
+    directive sera supprimÃ©e, mais pas l'intÃ©gralitÃ© de la ligne de texte.
     Ainsi la ligne suivante :
     
      Write-Host 'Test' #<%REMOVE%> 
     
-    sera tranformée en 
+    sera tranformÃ©e en 
     
      Write-Host 'Test' 
 .
-    Ne placez donc pas de texte à la suite de cette directive. 
+    Ne placez donc pas de texte Ã  la suite de cette directive. 
 
 .PARAMETER  InputObject
-    Spécifie le texte du code source à transformer. 
-    L'objet texte doit être de type tableau afin de traiter chaque ligne du 
-    code source. Si le texte est contenu dans une seule chaîne de caractères l'
-    analyse des directives échouera, dans ce cas le texte du fichier source ne 
-    sera pas transformé.
+    SpÃ©cifie le texte du code source Ã  transformer. 
+    L'objet texte doit Ãªtre de type tableau afin de traiter chaque ligne du 
+    code source. Si le texte est contenu dans une seule chaÃ®ne de caractÃ¨res l'
+    analyse des directives Ã©chouera, dans ce cas le texte du fichier source ne 
+    sera pas transformÃ©.
 
 .PARAMETER ConditionnalsKeyWord
-    Tableau de chaînes de caractères contenant les directives à rechercher.
+    Tableau de chaÃ®nes de caractÃ¨res contenant les directives Ã  rechercher.
     
 .PARAMETER  Clean
-    Filtre toutes les lignes contenant une directive. Cette opération 
+    Filtre toutes les lignes contenant une directive. Cette opÃ©ration 
     supprime seulement les lignes contenant une directive et pas le texte
     entre deux directives.    
 
@@ -85,20 +85,20 @@ Function Remove-Conditionnal {
 .        
     Description
     -----------
-    Ces instructions créent une variable contenant du code, dans lequel on 
-    déclare une directive DEBUG. Cette variable étant du type chaîne de 
-    caractères, on doit la transformer en un tableau de chaîne, à l'aide de 
-    l'opérateur -Split, avant de l'affecter au paramétre -Input. 
+    Ces instructions crÃ©ent une variable contenant du code, dans lequel on 
+    dÃ©clare une directive DEBUG. Cette variable Ã©tant du type chaÃ®ne de 
+    caractÃ¨res, on doit la transformer en un tableau de chaÃ®ne, Ã  l'aide de 
+    l'opÃ©rateur -Split, avant de l'affecter au paramÃ©tre -Input. 
 .    
-    Le paramétre ConditionnalsKeyWord déclare une seule directive nommée 
-    'DEBUG', ainsi configuré le code transformé correspondra à ceci :
+    Le paramÃ©tre ConditionnalsKeyWord dÃ©clare une seule directive nommÃ©e 
+    'DEBUG', ainsi configurÃ© le code transformÃ© correspondra Ã  ceci :
     
        Function Test-Directive {
         Write-Host "Test"
        } 
        
     Les lignes comprisent entre la directive #<DEFINE %DEBUG%> et la directive
-    #<UNDEF %DEBUG%> sont filtrées, les lignes des directives également.   
+    #<UNDEF %DEBUG%> sont filtrÃ©es, les lignes des directives Ã©galement.   
 
 .EXAMPLE
     $Code=@'
@@ -115,19 +115,19 @@ Function Remove-Conditionnal {
     Description
     -----------
     Cet exemple provoquera l'erreur suivante :
-     Remove-Conditionnal : Parsing annulé. Les directives suivantes n'ont pas 
-     de mot clé de fin : DEBUG:1
+     Remove-Conditionnal : Parsing annulÃ©. Les directives suivantes n'ont pas 
+     de mot clÃ© de fin : DEBUG:1
     
-    Le message d'erreur contient le nom de la directive suivi du numéro de 
-    ligne du code source où elle est déclarée.
+    Le message d'erreur contient le nom de la directive suivi du numÃ©ro de 
+    ligne du code source oÃ¹ elle est dÃ©clarÃ©e.
     
     La cause de l'erreur est due au type d'objet transmit dans le pipeline, 
-    cette syntaxe transmet les objets contenus dans le tableau les uns à la 
-    suite des autres, l'analyse ne peut donc se faire sur l'intégralité du code 
-    source, car la fonction opére sur une seule ligne et autant de fois qu'elle
-    reçoit de ligne.
+    cette syntaxe transmet les objets contenus dans le tableau les uns Ã  la 
+    suite des autres, l'analyse ne peut donc se faire sur l'intÃ©gralitÃ© du code 
+    source, car la fonction opÃ©re sur une seule ligne et autant de fois qu'elle
+    reÃ§oit de ligne.
 .    
-    Pour éviter ce problème on doit forcer l'émission du tableau en spécifiant 
+    Pour Ã©viter ce problÃ¨me on doit forcer l'Ã©mission du tableau en spÃ©cifiant 
     une virgule AVANT la variable de type tableau :
     
     ,($code -split "`n")|Remove-Conditionnal -ConditionnalsKeyWord  "DEBUG"
@@ -147,12 +147,12 @@ Function Remove-Conditionnal {
 .        
     Description
     -----------
-    La première instruction crée un fichier contenant du code, dans lequel on 
-    déclare une directive DEBUG. La seconde instruction lit le fichier en 
-    une seule étape, car on indique à l'aide du paramétre -ReadCount de 
-    récupèrer un tableau de chaînes. Le paramétre Clean filtrera toutes les 
-    lignes contenant une directive, ainsi configuré le code transformé 
-    correspondra à ceci :
+    La premiÃ¨re instruction crÃ©e un fichier contenant du code, dans lequel on 
+    dÃ©clare une directive DEBUG. La seconde instruction lit le fichier en 
+    une seule Ã©tape, car on indique Ã  l'aide du paramÃ©tre -ReadCount de 
+    rÃ©cupÃ¨rer un tableau de chaÃ®nes. Le paramÃ©tre Clean filtrera toutes les 
+    lignes contenant une directive, ainsi configurÃ© le code transformÃ© 
+    correspondra Ã  ceci :
     
       Function Test-Directive {
         Write-Host "Test"
@@ -160,8 +160,8 @@ Function Remove-Conditionnal {
       } 
       
     Les lignes comprisent entre la directive #<DEFINE %DEBUG%> et la directive
-    #<UNDEF %DEBUG%> ne sont pas filtrées, par contre les lignes contenant 
-    une déclaration de directive le sont. 
+    #<UNDEF %DEBUG%> ne sont pas filtrÃ©es, par contre les lignes contenant 
+    une dÃ©claration de directive le sont. 
 
 .EXAMPLE
     $Code=@'
@@ -188,12 +188,12 @@ Function Remove-Conditionnal {
 .        
     Description
     -----------
-    Ces instructions déclarent une variable contenant du code, dans lequel on 
-    déclare deux directives, DEBUG et TEST. 
+    Ces instructions dÃ©clarent une variable contenant du code, dans lequel on 
+    dÃ©clare deux directives, DEBUG et TEST. 
     On applique le filtre de la directive 'DEBUG' puis on filtre les 
-    déclarations des directives restantes, ici 'TEST'. 
+    dÃ©clarations des directives restantes, ici 'TEST'. 
 .    
-    Le code transformé correspondra à ceci :
+    Le code transformÃ© correspondra Ã  ceci :
     
       Function Test-Directive {
         param (
@@ -241,21 +241,21 @@ Function Remove-Conditionnal {
 .        
     Description
     -----------
-    Ces instructions génèrent, selon le paramétrage, un code dédié à une 
-    version spécifique de Powershell. 
+    Ces instructions gÃ©nÃ¨rent, selon le paramÃ©trage, un code dÃ©diÃ© Ã  une 
+    version spÃ©cifique de Powershell. 
 .    
-    En précisant la directive 'V3', on supprime le code spécifique à la version 
-    3. On génère donc du code compatible avec la version 2 de Powershell. 
-    Le code transformé correspondra à ceci :
+    En prÃ©cisant la directive 'V3', on supprime le code spÃ©cifique Ã  la version 
+    3. On gÃ©nÃ¨re donc du code compatible avec la version 2 de Powershell. 
+    Le code transformÃ© correspondra Ã  ceci :
     
       #Requires -Version 2.0
       Filter Test {
        dir | % { $_.FullName } #v2
       } 
 .    
-    En précisant la directive V2 on supprime le code spécifique à la version 2 
-    on génère donc du code compatible avec la version 3 de Powershell.
-    Le code transformé correspondra à ceci :
+    En prÃ©cisant la directive V2 on supprime le code spÃ©cifique Ã  la version 2 
+    on gÃ©nÃ¨re donc du code compatible avec la version 3 de Powershell.
+    Le code transformÃ© correspondra Ã  ceci :
     
       #Requires -Version 3.0
       Filter Test {
@@ -296,15 +296,15 @@ Function Remove-Conditionnal {
 .        
     Description
     -----------
-    Ces instructions génèrent, selon le paramétrage, un code dédié à une 
-    version spécifique de Windows. On lit le fichier script prenant en compte 
-    plusieurs versions de Windows, on le transforme, puis on le réécrit dans 
-    un répertoire de livraison.
+    Ces instructions gÃ©nÃ¨rent, selon le paramÃ©trage, un code dÃ©diÃ© Ã  une 
+    version spÃ©cifique de Windows. On lit le fichier script prenant en compte 
+    plusieurs versions de Windows, on le transforme, puis on le rÃ©Ã©crit dans 
+    un rÃ©pertoire de livraison.
 .    
-    Dans cette exemple on génère un script contenant du code 
-    dédié à Windows 2008R2.
+    Dans cette exemple on gÃ©nÃ¨re un script contenant du code 
+    dÃ©diÃ© Ã  Windows 2008R2.
 .    
-    En précisant la directive '2008R2' on génèrerait du code dédié à Windows 
+    En prÃ©cisant la directive '2008R2' on gÃ©nÃ¨rerait du code dÃ©diÃ© Ã  Windows 
     SEVEN.
 
 .INPUTS
@@ -348,7 +348,7 @@ param (
          [Parameter(Mandatory=$true,position=1)]
         $Line
     )
-      #Les paramétres liés définissent aussi les propriétés de l'objet
+      #Les paramÃ©tres liÃ©s dÃ©finissent aussi les propriÃ©tÃ©s de l'objet
      $O=New-Object PSObject -Property $PSBoundParameters 
      $O.PsObject.TypeNames[0] = "ParsingDirective"
      $O|Add-Member ScriptMethod ToString {'{0}:{1}' -F $this.Name,$this.Line} -force -pass
@@ -372,7 +372,7 @@ param (
    $LineNumber=0; 
    $isDirectiveBloc=$False
 
-    #renvoi toutes les lignes sauf celles du bloc délimitées par une 'directive' 
+    #renvoi toutes les lignes sauf celles du bloc dÃ©limitÃ©es par une 'directive' 
    if ($Clean)
    {$CurrentDirective='.*[^%\s]'}
    else 
@@ -386,7 +386,7 @@ param (
        Write-Debug "`t Traite $Line `t  isDirectiveBloc=$isDirectiveBloc"
        switch -regex ($_)  
        {
-          #Recherche le mot clé de début d'une directive, puis l'empile 
+          #Recherche le mot clÃ© de dÃ©but d'une directive, puis l'empile 
          $RegexDefine {   Write-Debug "Match DEFINE"
                           if (-not $Clean)
                           {
@@ -399,7 +399,7 @@ param (
                           continue
                        }
                     
-          #Recherche le mot clé de fin de la directive courante, puis dépile
+          #Recherche le mot clÃ© de fin de la directive courante, puis dÃ©pile
          "^\s*#<\s*UNDEF %${CurrentDirective}%>"   {    
                                                      Write-Debug "Match UNDEF"
                                                      if (-not $Clean)
@@ -436,7 +436,7 @@ param (
    if ($Directives.Count -gt 0) 
    { 
      $oldofs,$ofs=$ofs,','
-     Write-Error "Parsing annulé. Les directives suivantes n'ont pas de mot clé de fin : $Directives" 
+     Write-Error "Parsing annulÃ©. Les directives suivantes n'ont pas de mot clÃ© de fin : $Directives" 
      $ofs=$oldofs
   }
    else 
