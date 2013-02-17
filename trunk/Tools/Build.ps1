@@ -2,18 +2,17 @@
 #Construit la version de PsIonic selon la version de Powershell en cours. 
 
 # Le profile utilisateur (Profile_DevCodePlex.Ps1) doit être chargé
-$PS=@{
-  64="$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe";
-  32="$env:SystemRoot\syswow64\WindowsPowerShell\v1.0\powershell.exe"
-  #  32.20="$env:SystemRoot\syswow64\WindowsPowerShell\v1.0\powershell.exe -version 2.0"
-}
 
-Set-Location $PsIonic.Tools
+Set-Location $PsIonicTools
 
 try {
- IMport-Module Psake -EA stop
- Invoke-Psake .\Release.ps1
- $psake
+ Import-Module Psake -EA stop
+ Invoke-Psake .\Release.ps1 -parameters @{"Config"="Debug"} -nologo
+ if ($PSVersion -eq "3.0")
+ {
+   Powershell -version 2.0 -noprofile -Command {."$env:PsIonic\Tools\Profile_DevCodePlex.Ps1";IPMO Psake; Set-Location $PsIonicTools; Invoke-Psake .\Common.ps1 -parameters @{"Config"="Debug"} -nologo}
+ }
+ Invoke-Psake .\BuildZipAndSFX.ps1 -parameters @{"Config"="Debug"} -nologo
 } catch {
  Throw "Module Psake is unavailable."
 }

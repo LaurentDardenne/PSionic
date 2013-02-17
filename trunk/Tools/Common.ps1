@@ -1,49 +1,32 @@
 ﻿#Common.ps1
-#Compile la DLL PSIonicTools
-#todo Debug/Release 
+#l'instruction suivante doit être la première dans le script de la tâche principale : 
+# Include "$PsIonicTools\Common.ps1" 
 
+Properties {
+   $Configuration=$Config
+   $PSVersion=$PSVersionTable.PSVersion.ToString()
+}
 
-Function Add-CScharpType {
- #Génére une DLL dotnet
- param (
-      #Fichier .cs à compiler dans un assembly .dll
-     $FileName,
-     $Destination,
-      #Chemin d'accès du compilateur CSharp csc.exe
-     $cscPath=$([System.Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()),
-      #Chemin d'accés du fichier Assembly.cs versionnant $FileName
-     $PathAssemblyInfo 
- )
- if ((Test-Path $cscPath) -eq $false)
-  {Throw "Le répertoire du runtime .NET est introuvable."}
- if ((Test-Path "$PathAssemblyInfo\AssemblyInfo.cs") -eq $false)
-  {Throw "Le fichier $PathAssemblyInfo\AssemblyInfo.cs est introuvable."}
-
- $PathAssemblyInfo="$PathAssemblyInfo\AssemblyInfo.cs"
+if (-not $currentContext.tasks.default)
+{Task default -Depends CompilePsionicTools}
  
-  #Compile un assembly à partir de la classe C
- if ([String]::IsNullOrEmpty($PathAssemblyInfo))
-  { &"$($cscPath)csc.exe" /target:library "$FileName" /out:"$Destination" }
- else 
-  { &"$($cscPath)csc.exe" /target:library "$FileName","$PathAssemblyInfo" /out:"$Destination" }
-} #Add-CScharpType
-
 Task CompilePsionicTools {
-  $csharpFileName="$PsIonicBin\PSIonicTools.cs"
-   #todo destination /Out
-  Add-CScharpType -FileName $csharpFileName -Destination "$PsIonicBin" -PathAssemblyInfo "$PsIonicBin"
-} #CompilePsionicTools
-
-Task BuildLog4netConfig {
-  $Lg4nPath="$PsIonicBin\Debug\log4net\2.0\log4net.dll"
-  if ($PSVersionTable.PSVersion -eq 3.0)
-  { $Lg4nPath="$PsIonicBin\Debug\log4net\4.0\log4net.dll"}
-   
-  #Crée le fichier de config à partir du template Log4Net.Config.xml
-  md $PsIonicLogs -ea SilentlyContinue
+#Compile la dll psionic
+ 
+  $Files=@(
+    "$PsIonicBin\PSIonicTools.cs",
+    "$PsIonicBin\AssemblyInfo.cs"
+  )
   
-  $Lines=[System.IO.File]::ReadAllText("$PsIonicTools\Log4Net.Config.xml")
-  #bug V3 seul un nom de variable peut être utilisé et pas $var.method()
-  $PsIonicLogsLg4n=$PsIonicLogs.Replace('\','\\') 
-  $ExecutionContext.InvokeCommand.ExpandString($Lines) |Set-Content "$PsIonicLogs\Log4Net.Config.xml" -Encoding UTF8
-} #BuildLog4netConfig
+  $cp = New-Object System.CodeDom.Compiler.CompilerParameters
+  $cp.IncludeDebugInformation = $Configuration -eq "Debug"
+  $cp.GenerateInMemory=$false
+
+  $cp.ReferencedAssemblies.Add("$PsIonicBin\${Configuration}\Ionic.Zip.dll") > $null
+   #Pointe sur la version adéquate de System.Management.Automation.dll
+  $cp.ReferencedAssemblies.Add([PSObject].Assembly.Location) >$null
+  $cp.OutputAssembly="$PsIonicLivraison\$PSVersion\PSIonicTools.dll"
+     #see to http://msdn.microsoft.com/en-us/library/6ds95cz0(v=vs.80).aspx
+  Add-Type -Path $Files -CompilerParameters $cp
+  Write-Host "Compilation réussie de $($cp.OutputAssembly) version $PSVersion"
+} #CompilePsionicTools
