@@ -1,4 +1,4 @@
-﻿if (-not $currentContext.tasks.default)
+if (-not $currentContext.tasks.default)
 { Task default -Depends BuildZipAndSFX }
 
 Task BuildZipAndSFX {
@@ -28,10 +28,10 @@ Task BuildZipAndSFX {
 	}
    $SaveOptions=New-ZipSfxOptions @Save
 
+   Write-host "Crée l'archive $ZipFileName"
    dir $Files|
-     #Crée une archive .zip
      Compress-ZipFile $ZipFileName
-   #Puis crée une archive autoextractible
+   Write-host "Puis crée une archive autoextractible"
    ConvertTo-Sfx $ZipFileName -Save $SaveOptions -Read $ReadOptions  
 
   Push-Location
