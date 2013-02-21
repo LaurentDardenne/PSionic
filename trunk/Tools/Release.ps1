@@ -1,4 +1,4 @@
-﻿#Release.ps1
+#Release.ps1
 #Construit la version Release via Psake
 
 Include "$PsIonicTools\Common.ps1"
@@ -49,7 +49,7 @@ Task Delivery -Depends Clean,RemoveConditionnal {
    #Copy "$PsIonicTrunk\Revisions.txt" "$PsIonicLivraison"
 } #Delivery
 
-Task RemoveConditionnal { return $Config -ne "Debug" } {
+Task RemoveConditionnal { $go=$Config -ne "Debug"; if (-not $go) {Write-Host "Mode Debug, on passe la tâche en cours"} ; $go} {
 #Supprime les lignes de code de Debug et de test
      
    $VerbosePreference='Continue'
@@ -58,7 +58,10 @@ Task RemoveConditionnal { return $Config -ne "Debug" } {
 
    $Directives=@('DEBUG','Remove')
    Dir "$PsIonicTrunk\PsIonic.psm1"|
-    Foreach {Write-Verbose "Parse :$($_.FullName)"; $CurrentFileName=$_.Name;$_}|
+    Foreach {
+      Write-Verbose "Parse :$($_.FullName)"
+      $CurrentFileName=$_.Name
+      $_}|
     Get-Content -ReadCount 0|
     Remove-Conditionnal -ConditionnalsKeyWord  $Directives|
     Remove-Conditionnal -Clean|
