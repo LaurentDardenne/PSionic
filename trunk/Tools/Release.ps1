@@ -1,4 +1,4 @@
-#Release.ps1
+﻿#Release.ps1
 #Construit la version Release via Psake
 
 Include "$PsIonicTools\Common.ps1"
@@ -11,18 +11,18 @@ Task Delivery -Depends Clean,RemoveConditionnal {
    $VerbosePreference='Continue'
 #DLL
    Copy "$PsIonicTrunk\Log4Net.Config.xml" "$PsIonicLivraison"
-   Copy "$PsIonicBin\${Configuration}\log4net\2.0\log4net.dll" "$PsIonicLivraison\2.0"  
-   Copy "$PsIonicBin\${Configuration}\log4net\4.0\log4net.dll" "$PsIonicLivraison\3.0" 
+   Copy "$PsIonicBin\Debug\log4net\2.0\log4net.dll" "$PsIonicLivraison\2.0"  
+   Copy "$PsIonicBin\Debug\log4net\4.0\log4net.dll" "$PsIonicLivraison\3.0"
+ 
 #lg4N config
 # on copie la config de dev nécessaire au build. 
-#todo Le setup doit la reconfigurer le chemin des logs.
+#todo Le setup doit reconfigurer le chemin des logs.
    Copy "$PsIonicTrunk\Log4Net.Config.xml" "$PsIonicLivraison"
 
    Copy "$PsIonicBin\${Configuration}\Ionic.Zip.dll" "$PsIonicLivraison"
 # PSIonicTools.dll est compilé d'aprés la version PS courante
    
-   if  ($Configuration -eq "Debug")
-   { Copy "$PsIonicBin\${Configuration}\Ionic.Zip.pdb" "$PsIonicLivraison" }
+   Copy "$PsIonicBin\Debug\Ionic.Zip.pdb" "$PsIonicLivraison"
 
 #Doc xml localisée
    Copy "$PsIonicTrunk\en-US" "$PsIonicLivraison\en-US" -Recurse
@@ -38,22 +38,21 @@ Task Delivery -Depends Clean,RemoveConditionnal {
 
 #Module
    Copy "$PsIonicTrunk\PsIonic.psd1" "$PsIonicLivraison"
-   if ($Config -eq "Debug")
+   if ( $Configuration -eq "Debug")
    { Copy "$PsIonicTrunk\PsIonic.psm1" "$PsIonicLivraison" }
    #else  PsIonic.psm1 est créé par la tâche RemoveConditionnal 
    
 #Setup
    Copy "$PsIonicTrunk\Setup\PsIonicSetup.ps1" "$PsIonicLivraison"
 
-#Other todo
-   #Copy "$PsIonicTrunk\Revisions.txt" "$PsIonicLivraison"
+#Other 
+   Copy "$PsIonicTrunk\Revisions.txt" "$PsIonicLivraison"
 } #Delivery
 
-Task RemoveConditionnal { $go=$Config -ne "Debug"; if (-not $go) {Write-Host "Mode Debug, on passe la tâche en cours"} ; $go} {
+Task RemoveConditionnal { $go=$Configuration -ne "Debug"; if (-not $go) {Write-Host "Mode Debug, on passe la tâche en cours"} ; $go} {
 #Supprime les lignes de code de Debug et de test
      
    $VerbosePreference='Continue'
-   Write-Verbose "Load Remove-Conditionnal"
    ."$PsIonicTools\Remove-Conditionnal.ps1"
 
    $Directives=@('DEBUG','Remove')
@@ -65,7 +64,7 @@ Task RemoveConditionnal { $go=$Config -ne "Debug"; if (-not $go) {Write-Host "Mo
     Get-Content -ReadCount 0|
     Remove-Conditionnal -ConditionnalsKeyWord  $Directives|
     Remove-Conditionnal -Clean|
-    Foreach { $_|Set-Content -Path "$PsIonicLivraison\$CurrentFileName" -Force } #todo pas terrible !! revoir l'exemple sur le site, bug ?  
+    Set-Content -Path { "$PsIonicLivraison\$CurrentFileName"} -Force  
 } #RemoveConditionnal
 
 Task BuildXmlHelp {
@@ -86,4 +85,5 @@ Task Init {
      
  if (-not (Test-Path Variable:Psionic))
   {Throw "La variable Psionic n'est pas déclarée."}
+ Write-host "Mode $Configuration"
 } #Init
