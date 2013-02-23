@@ -13,7 +13,7 @@ Task BuildZipAndSFX {
   Pop-Location
    Set-location $PsIonicLivraison
    Write-Verbose "Import module in $PsIonicLivraison"
-    #todo dans un job de build ? 
+
    Import-Module .\PsIonic.psd1 -Force
    if ($Configuration -eq "Debug") 
    { 
