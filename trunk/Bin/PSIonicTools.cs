@@ -39,7 +39,7 @@ namespace PSIonicTools
         {
             if (Context.Host.Name == "ServerRemoteHost")
             {
-              throw new InvalidOperationException(String.Format("This class need a ConsoleHost context. Job or remoting context is not allowed.",Context.Host.Name)); 
+              throw new InvalidOperationException(String.Format("This class need a ConsoleHost context. Job or remoting context is not permitted.",Context.Host.Name)); 
             }
             //L'instance peut accéder à la session Powershell
             ExecutionContext = Context;
