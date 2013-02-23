@@ -16,7 +16,6 @@ Task Delivery -Depends Clean,RemoveConditionnal {
  
 #lg4N config
 # on copie la config de dev nécessaire au build. 
-#todo Le setup doit reconfigurer le chemin des logs.
    Copy "$PsIonicTrunk\Log4Net.Config.xml" "$PsIonicLivraison"
 
    Copy "$PsIonicBin\${Configuration}\Ionic.Zip.dll" "$PsIonicLivraison"
