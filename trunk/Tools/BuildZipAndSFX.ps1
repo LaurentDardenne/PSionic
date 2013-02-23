@@ -1,5 +1,11 @@
-if (-not $currentContext.tasks.default)
-{ Task default -Depends BuildZipAndSFX }
+﻿if (-not $currentContext.tasks.default)
+{ 
+  Properties {
+   $Configuration=$Config
+   $PSVersion=$PSVersionTable.PSVersion.ToString()
+  }
+  Task default -Depends BuildZipAndSFX 
+}
 
 Task BuildZipAndSFX {
 #Construit une archive autoextractible
@@ -8,8 +14,12 @@ Task BuildZipAndSFX {
    Set-location $PsIonicLivraison
    Write-Verbose "Import module in $PsIonicLivraison"
     #todo dans un job de build ? 
-   Import-Module .\PsIonic.psd1 -Force  
-   Set-Log4NETDebugLevel -Off
+   Import-Module .\PsIonic.psd1 -Force
+   if ($Configuration -eq "Debug") 
+   { 
+     Write-host "Mode $Configuration : no log"
+     Set-Log4NETDebugLevel -Off 
+   }
    
    $ZipFileName="$PsIonicLivraison\PsIonicSetup.zip"
    
