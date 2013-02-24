@@ -17,7 +17,7 @@ Task BuildZipAndSFX {
    Import-Module .\PsIonic.psd1 -Force
    if ($Configuration -eq "Debug") 
    { 
-     Write-host "Mode $Configuration : no log"
+     Write-host "Mode $Configuration : disable log4net"
      Set-Log4NETDebugLevel -Off 
    }
    
