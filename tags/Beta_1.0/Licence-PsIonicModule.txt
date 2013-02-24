@@ -1,0 +1,2 @@
+﻿Psionic.psm1
+Libre de droits pour tous usages non commercial.
