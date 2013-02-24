@@ -10,14 +10,15 @@ Task Delivery -Depends Clean,RemoveConditionnal {
   
    $VerbosePreference='Continue'
 #DLL
-   Copy "$PsIonicTrunk\Log4Net.Config.xml" "$PsIonicLivraison"
    Copy "$PsIonicBin\Debug\log4net\2.0\log4net.dll" "$PsIonicLivraison\2.0"  
    Copy "$PsIonicBin\Debug\log4net\4.0\log4net.dll" "$PsIonicLivraison\3.0"
  
 #lg4N config
 # on copie la config de dev nécessaire au build. 
    Copy "$PsIonicTrunk\Log4Net.Config.xml" "$PsIonicLivraison"
-
+      #crée le template pour le setup
+   Copy "$PsIonicTools\Log4Net.Config.xml" "$PsIonicLivraison\Log4Net.Config.xml.Template"
+   
    Copy "$PsIonicBin\${Configuration}\Ionic.Zip.dll" "$PsIonicLivraison"
 # PSIonicTools.dll est compilé d'aprés la version PS courante
    
