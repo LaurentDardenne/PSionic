@@ -761,8 +761,8 @@ Function Add-ZipEntry {
  process {
   try {
     $Logger.Debug("Add $Object")  #<%REMOVE%>
-    $isCollection=isCollection $Value
-    if ($isCollection -and ($Value -is [byte[]]))
+    $isCollection=isCollection $Object
+    if ($isCollection -and ($Object -is [byte[]]))
     { 
       $Logger.Debug("Add Byte[]")  #<%REMOVE%>
       if ([string]::IsNullOrEmpty($EntryName))
@@ -774,7 +774,7 @@ Function Add-ZipEntry {
         # http://stackoverflow.com/questions/13084176/powershell-method-overload-resolution-bug  
         #  public ZipEntry AddEntry(string entryName, string content)  
         # public ZipEntry AddEntry(string entryName, byte[] byteContent)
-      $params = @($EntryName, ($Value -as [byte[]]) )
+      $params = @($EntryName, ($Object -as [byte[]]) )
       $ZipEntry=$private:AddEntryMethod.Invoke($ZipFile, $params)
     }
     elseif ($isCollection)
@@ -792,7 +792,7 @@ Function Add-ZipEntry {
          Write-Error ($MessageTable.ParameterStringEmpty -F 'EntryName')
          return  
        }
-       $ZipEntry=$ZipFile.AddEntry($EntryName, $Value -as [string]) 
+       $ZipEntry=$ZipFile.AddEntry($EntryName, $Object -as [string]) 
     }
     elseif ($Object -is [System.IO.DirectoryInfo])
     { 
@@ -839,10 +839,10 @@ Function GetArchivePath {
     $Logger.Debug("GetArchivePath : récupération de l'objet ") #<%REMOVE%> 
     $Logger.Debug("Object type = $($Object.GetType())") #<%REMOVE%>
 	if($Object -is [System.IO.FileInfo])  
-	{ $ArchivePath = $Object.FullName  }
+	{ return $Object.FullName  }
     elseif( $Object -is [System.IO.DirectoryInfo])
     { 
-      $Logger.Debug("Directories object arent excluded.") #<%REMOVE%> 
+      $Logger.Debug("Directory objects arent excluded.") #<%REMOVE%> 
       return $null 
     }
 	elseif($Object -is [String])
@@ -858,6 +858,7 @@ Function GetArchivePath {
       return $null }
     
     $Logger.Debug("The file name is '$ArchivePath'") #<%REMOVE%>
+    $Logger.Debug("Resolve-Path=$(Resolve-Path $ArchivePath)")  #<%REMOVE%>
 
 	if(Test-Path ($ArchivePath) -PathType Leaf)
 	{ 
@@ -1173,7 +1174,7 @@ Function Test-ZipFile{
             else {
               Foreach($ZipFile in $ZipPath){
                $Logger.Debug("Full path name : $zipFile ") #<%REMOVE%>
-               Write-Output TestZipArchive -Archive $zipFile -isValid:$isValid -Check:$Check -Repair:$Repair -Password:$Password -Passthru:$Passthru
+               Write-Output (TestZipArchive -Archive $zipFile -isValid:$isValid -Check:$Check -Repair:$Repair -Password:$Password -Passthru:$Passthru)
               }
             }  
         }
