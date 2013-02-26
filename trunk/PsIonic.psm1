@@ -51,7 +51,17 @@ Function Set-Log4NETDebugLevel {
  }
  else
  { Write-Warning $MessageTable.LoggerDotNotExist }
-}
+}#Set-Log4NETDebugLevel
+
+Function Stop-ConsoleAppender {
+ If ($script:Logger -ne $null)
+ { 
+    $Console=$logger.Logger.Parent.Appenders|Where {$_.Name -eq 'Console'}
+    $Console.Threshold=[log4net.Core.Level]::Off
+ }
+ else
+ { Write-Warning $MessageTable.LoggerDotNotExist }
+}#Stop-ConsoleAppender
 
 Start-Log4Net
 $Script:Logger=Get-Loggger
@@ -522,7 +532,7 @@ Function Get-ZipFile {
     $FileName = GetArchivePath $Name
 	if($FileName -eq $null)
 	{ 
-        $Msg=$MessageTable.ZipArchiveNotFound -F $Name
+        $Msg=$MessageTable.FileMustExist -F $Name
         $Logger.Fatal($Msg) #<%REMOVE%>
         Write-Error $Msg 
         return $null
@@ -832,6 +842,7 @@ Function GetArchivePath {
 # L'objet passé en paramètre peut être un type FileInfo ou un String ou Object et 
 # dans ce cas il sera transformé en String sous réserve qu'il ne soit ni vide ni $null.
 # dans tous les autres cas on renvoie $null. 
+  [CmdletBinding()] 
   param (
     $Object
   )
@@ -842,7 +853,8 @@ Function GetArchivePath {
 	{ return $Object.FullName  }
     elseif( $Object -is [System.IO.DirectoryInfo])
     { 
-      $Logger.Debug("Directory objects arent excluded.") #<%REMOVE%> 
+      $Logger.Debug("The objects of the type directory are excluded : $Object") #<%REMOVE%> 
+      Write-Verbose "The objects of the type directory are excluded : $Object"  
       return $null 
     }
 	elseif($Object -is [String])
@@ -854,23 +866,25 @@ Function GetArchivePath {
     }
     if ([string]::IsNullOrEmpty($ArchivePath) )
     {
-      $Logger.Debug("The file name is empty or ToString() return an empty string.") #<%REMOVE%> 
-      return $null }
+      $Logger.Debug("The file name is empty or ToString() return an empty string.") #<%REMOVE%>
+      Write-Verbose "The file name is empty or ToString() return an empty string." 
+      return $null 
+    }
     
     $Logger.Debug("The file name is '$ArchivePath'") #<%REMOVE%>
-    $Logger.Debug("Resolve-Path=$(Resolve-Path $ArchivePath)")  #<%REMOVE%>
-
-	if(Test-Path ($ArchivePath) -PathType Leaf)
-	{ 
-       $Logger.Debug("The file exist.") #<%REMOVE%> 
-        # Si chemin relatif, renvoie le chemin complet
-       return Resolve-Path $ArchivePath|
-               Foreach { $_.Path }
-	}
-	else{ 
-      $Logger.Debug("The file name dont exist.") #<%REMOVE%> 
-      return $null
-    }
+    $List=Resolve-Path $ArchivePath -ea Stop
+    foreach ($Item in $List|Get-Item) {
+     if ($Item -is [System.IO.FileInfo])
+	 { 
+        $Logger.Debug("return $($Item.FullName)") #<%REMOVE%> 
+        Write-Output $Item.FullName 
+     }
+     else
+     {
+       $Logger.Debug("Is not an instance of System.IO.FileInfo : $Item") #<%REMOVE%>
+       Write-Verbose "Is not an instance of System.IO.FileInfo : $Item"
+     } 
+    }#foreach
 } #GetArchivePath
 
 Function Expand-ZipFile { 
@@ -945,12 +959,11 @@ Function Expand-ZipFile {
  Process{
   Foreach($Archive in $File){
     $zipPath = GetArchivePath $Archive
-	if($zipPath -eq $null)
-	{ 
-       $Msg=$MessageTable.ZipArchiveNotFound -F $Archive
-       $Logger.Fatal($Msg) #<%REMOVE%>
-       Write-Error $Msg 
-       return $null
+	if ( $zipPath -eq $null )  
+    { 
+      $Msg=$MessageTable.FileMustExist -F $Archive #<%REMOVE%> 
+      $Logger.Debug($Msg) #<%REMOVE%> 
+      continue 
     }
     try{
         $Logger.Debug("Read the file $zipPath") #<%REMOVE%> 
@@ -1161,22 +1174,33 @@ Function Test-ZipFile{
         [Parameter(Mandatory=$false, ParameterSetName="File")]
       [switch] $Passthru
     )
-
+   begin {
+    [Switch] $isVerbose= $null
+    [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
+   }
     Process{
         Foreach($Archive in $File){  
-            $zipPath = GetArchivePath $Archive
-        	if((-not $isValid) -and ($zipPath -eq $null))
-        	{ 
-               $Msg=$MessageTable.ZipArchiveNotFound -F $Archive
-               $Logger.Fatal($Msg) #<%REMOVE%>
-               Write-Error $Msg
-            }
-            else {
+          try {  
+            $zipPath = GetArchivePath $Archive -Verbose:$isVerbose
+         	if((-not $isValid) -and ($zipPath -eq $null))
+         	{ 
+                $Msg=$MessageTable.InvalidValue -F $Archive
+                $Logger.Error($Msg) #<%REMOVE%>
+                Write-Error $Msg
+             }
+             else {
               Foreach($ZipFile in $ZipPath){
                $Logger.Debug("Full path name : $zipFile ") #<%REMOVE%>
                Write-Output (TestZipArchive -Archive $zipFile -isValid:$isValid -Check:$Check -Repair:$Repair -Password:$Password -Passthru:$Passthru)
               }
-            }  
+            }
+          }
+        catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
+        {
+          $Logger.Fatal($_.Exception.Message) #<%REMOVE%>
+          if (-not $isValid) 
+           {Write-Error $_.Exception.Message}
+        }   
         }
     }#process
 }#Test-ZipFile
@@ -1519,11 +1543,13 @@ Set-Alias -name fz          -value Format-ZipFile
 #<DEFINE %DEBUG%>
 Set-Alias -name Set-DebugLevel -value Set-Log4NETDebugLevel
 Set-Alias -name dbglvl         -value Set-Log4NETDebugLevel
+Set-Alias -name sca            -value Stop-ConsoleAppender
 #<UNDEF %DEBUG%> 
 
 Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         #<DEFINE %DEBUG%>
-                                                         Set-Log4NETDebugLevel,                                                          
+                                                         Set-Log4NETDebugLevel,
+                                                         Stop-ConsoleAppender,                                                          
                                                         #<UNDEF %DEBUG%> 
                                                         ConvertTo-Sfx,
                                                         Add-ZipEntry,

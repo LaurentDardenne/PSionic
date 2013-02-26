@@ -5,7 +5,7 @@
  FileMustExist=Le fichier n'existe pas : {0}
  ValueNotSupported=La valeur '{0}' n'est pas supportée.
  TypeNotSupported={0}: le type '{1}' n'est pas supporté.
- CommentMaxValue=Le contenu du paramètre 'Comment' ne doit pas excéder 32767 caractères.
+ CommentMaxValue=Le contenu du paramètre 'Comment' ne doit pas excéder 32767 caractères.   
  
  InvalidPassword=Le type de cryptage demandé ('{0}'), nécessite que le paramètre password soit renseigné.
  isBadPasswordWarning=Mauvais mot de passe pour l'archive {0}
@@ -27,5 +27,6 @@
  
  TestisArchiveError=Erreur lors du test de l'archive {0} : {1}
  isNotZipArchiveWarning=N'est pas une archive Zip : {0}
+ InvalidValue=Impossible de valider le paramètre '{0}'
 '@ 
 
