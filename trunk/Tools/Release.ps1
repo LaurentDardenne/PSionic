@@ -25,10 +25,15 @@ Task Delivery -Depends Clean,RemoveConditionnal {
    Copy "$PsIonicBin\Debug\Ionic.Zip.pdb" "$PsIonicLivraison"
 
 #Doc xml localisée
-   Copy "$PsIonicTrunk\en-US" "$PsIonicLivraison\en-US" -Recurse
-   Copy "$PsIonicTrunk\fr-FR" "$PsIonicLivraison\fr-FR" -Recurse
+   Copy "$PsIonicTrunk\en-US\PsIonicLocalizedData.psd1" "$PsIonicLivraison\en-US" 
+   Copy "$PsIonicTrunk\fr-FR\PsIonicLocalizedData.psd1" "$PsIonicLivraison\fr-FR" 
+#Demo
    Copy "$PsIonicTrunk\Demo" "$PsIonicLivraison\Demo" -Recurse
-   Copy "$PsIonicTrunk\FormatData" "$PsIonicLivraison\FormatData" -Recurse
+
+#PS1mxl   
+   Copy "$PsIonicTrunk\FormatData\PsIonic.ReadOptions.Format.ps1xml" "$PsIonicLivraison\FormatData"
+   Copy "$PsIonicTrunk\FormatData\PsIonic.ZipEntry.Format.ps1xml" "$PsIonicLivraison\FormatData"
+
    Copy "$PsIonicTrunk\TypeData" "$PsIonicLivraison\TypeData" -Recurse
 
 #Licence
@@ -49,7 +54,7 @@ Task Delivery -Depends Clean,RemoveConditionnal {
    Copy "$PsIonicTrunk\Revisions.txt" "$PsIonicLivraison"
 } #Delivery
 
-Task RemoveConditionnal { $go=$Configuration -ne "Debug"; if (-not $go) {Write-Host "Mode Debug, on passe la tâche en cours"} ; $go} {
+Task RemoveConditionnal -Depend TestLocalizedData { $go=$Configuration -ne "Debug"; if (-not $go) {Write-Host "Mode Debug, on passe la tâche en cours"} ; $go} {
 #Supprime les lignes de code de Debug et de test
      
    $VerbosePreference='Continue'
@@ -67,9 +72,20 @@ Task RemoveConditionnal { $go=$Configuration -ne "Debug"; if (-not $go) {Write-H
     Set-Content -Path { "$PsIonicLivraison\$CurrentFileName"} -Force  
 } #RemoveConditionnal
 
+Task TestLocalizedData {
+ Write-Host " *** under construction !!!" #todo
+ ."$PsIonicTools\Test-LocalizedData.ps1"
+
+ "fr-FR",
+ "en-US" |
+   Test-LocalizedData $PsionicTrunk 'PsIonicLocalizedData.psd1' 'Psionic.Psm1' 'Messagetable\.' -verbose
+ }
+
 Task BuildXmlHelp {
  Write-Host " *** under construction !!!" #todo
 }
+
+
 
 Task Clean -Depends Init {
 # Supprime, puis recrée le dossier de livraison   
