@@ -339,6 +339,7 @@ Function GetObjectByType {
   [boolean] $Recurse
   )
   
+ begin {  
   function GetObject {  
    param ( $Object )
      $Logger.Debug("GetObject : $($Object.FullName)") #<%REMOVE%> 
@@ -376,13 +377,16 @@ Function GetObjectByType {
        Resolve-Path $Object|Get-ChildItem  -Recurse:$Recurse
      }   
   } #GetObject
+ }#begin 
   
+ Process {
   $Logger.Debug("GetObjectByType $($Object.GetType().FullName) `t $Object") #<%REMOVE%>   
   if ($Object -ne $null)   
   { 
     $Object|
      Foreach { GetObject $_ }
   } 
+ }#process
 } #GetObjectByType
 
 function SaveSFXFile {
@@ -400,7 +404,7 @@ function SaveSFXFile {
   }
   catch{
      $Msg=$MessageTable.ErrorSFX -F $TargetName,$_
-     $Logger.Fatal($Msg,$_)  #<%REMOVE%>
+     $Logger.Fatal($Msg,$_.Exception)  #<%REMOVE%>
      Throw $Msg
   }
 } #SaveSFXFile
@@ -529,32 +533,39 @@ Function Get-ZipFile {
   }
  
   process {  
-    $FileName = GetArchivePath $Name
-	if($FileName -eq $null)
-	{ 
-        $Msg=$MessageTable.FileMustExist -F $Name
-        $Logger.Fatal($Msg) #<%REMOVE%>
-        Write-Error $Msg 
-        return $null
+    try {
+      $FileName = GetArchivePath $Name
+      if($FileName -eq $null)
+      { 
+          $Msg=$MessageTable.InvalidValue -F $Name
+          $Logger.Fatal($Msg) #<%REMOVE%>
+          Write-Error $Msg 
+          return $null
+      }
+         
+      $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
+     
+      $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
+      $ZipFile.ZipErrorAction=$ZipErrorAction
+  
+      SetZipErrorHandler $ZipFile
+      AddMethodPSDispose $ZipFile
+  
+      $ZipFile.SortEntriesBeforeSaving=$SortEntries
+      $ZipFile.TempFileFolder=$TempLocation 
+      $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
+      $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat
+      
+      if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
+      { SetZipFileEncryption $ZipFile $Encryption $Password }
+       #Les autres options sont renseignées avec les valeurs par défaut
+      ,$ZipFile
     }
-       
-    $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
-   
-    $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
-    $ZipFile.ZipErrorAction=$ZipErrorAction
-
-    SetZipErrorHandler $ZipFile
-    AddMethodPSDispose $ZipFile
-
-    $ZipFile.SortEntriesBeforeSaving=$SortEntries
-    $ZipFile.TempFileFolder=$TempLocation 
-    $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
-    $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat
-    
-    if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
-    { SetZipFileEncryption $ZipFile $Encryption $Password }
-     #Les autres options sont renseignées avec les valeurs par défaut
-    ,$ZipFile
+    catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
+    {
+      $Logger.Fatal($_.Exception.Message) #<%REMOVE%>
+      Write-Error $_.Exception.Message
+    }     
   } #Process
 } #Get-ZipFile
 
@@ -731,7 +742,7 @@ Function Compress-ZipFile {
       } 
       catch [System.IO.IOException] 
       {
-        $Logger.Fatal("Save",$_) #<%REMOVE%>
+        $Logger.Fatal("Save",$_.Exception) #<%REMOVE%>
         DisposeZip
         throw $_
       }
@@ -756,6 +767,7 @@ Function Add-ZipEntry {
   param (
      [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
     $Object,
+       [ValidateNotNull()]
       [Parameter(Position=0,Mandatory=$true)]
     [Ionic.Zip.ZipFile] $ZipFile,
      [Parameter(Position=1,Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
@@ -872,7 +884,16 @@ Function GetArchivePath {
     }
     
     $Logger.Debug("The file name is '$ArchivePath'") #<%REMOVE%>
-    $List=Resolve-Path $ArchivePath -ea Stop
+    try {
+      $List=@(Resolve-Path $ArchivePath -ea Stop)
+    } 
+    catch [System.Management.Automation.ActionPreferenceStopException] 
+    { 
+      throw $_.Exception 
+    }
+
+    if ($List.Count -eq 0) { return $null }
+     
     foreach ($Item in $List|Get-Item) {
      if ($Item -is [System.IO.FileInfo])
 	 { 
@@ -954,93 +975,125 @@ Function Expand-ZipFile {
     #dotNet reflection
     [type[]] $private:ParameterTypesOfExtractSelectedEntriesMethod=[string],[string],[string],[Ionic.Zip.ExtractExistingFileAction]
     $private:ExtractSelectedEntriesMethod=[Ionic.Zip.ZipFile].GetMethod("ExtractSelectedEntries",$private:ParameterTypesOfExtractSelectedEntriesMethod)
+    
+    Function ZipFileRead {
+      try{
+        $Logger.Debug("Read the file $zipPath") #<%REMOVE%> 
+        $ZipFile = [ZipFile]::Read($FileName,$ReadOptions)
+        $ZipFile.FlattenFoldersOnExtract = $Flatten  
+        
+        AddMethodPSDispose $ZipFile
+        return ,$zipFile
+      }
+      catch {
+        DisposeZip
+        $Msg=$MessageTable.ZipArchiveReadError -F $FileName.ToString(), $_.Exception.Message
+        $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
+        throw $Msg
+      }              
+    }#ZipFileRead
+    
+    function ExtractEntries {
+      try{
+        $isDispose=$true 
+        if($List){
+            $ZipFile.Entries.GetEnumerator()|
+             Foreach {Write-Output $_}
+        } 
+        else{
+          if(-not [String]::IsNullOrEmpty($Password))
+          {  
+              $Logger.Debug("Set Password") #<%REMOVE%> 
+              $ZipFile.password = $Password  
+          }
+          
+          if (-not [String]::IsNullOrEmpty($Query)) 
+          {  
+              $Logger.Debug("Extraction using a query : $Query") #<%REMOVE%> 
+              if( [String]::IsNullOrEmpty($From)){
+                  $Logger.Debug("From = null") #<%REMOVE%>
+                   #bug null to string, use reflection
+                  $params = @($Query,$Null,$Destination,$ExtractAction)
+                  $ZipEntry=$private:ExtractSelectedEntriesMethod.Invoke($ZipFile, $params)                        
+              }
+              else{
+                  $ZipFile.ExtractSelectedEntries($Query,$From,$Destination,$ExtractAction)  
+              }
+          }
+          else{ 
+              $Logger.Debug("Extraction without query.") #<%REMOVE%>
+              $ZipFile.ExtractAll($Destination,$ExtractAction)
+              if ($Passthru){
+                $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
+                $isDispose=$false 
+                return $ZipFile.PSbase
+              }              
+          }#else isnotnul $Query
+       }#else
+      }#try
+      catch [Ionic.Zip.BadPasswordException]{
+         throw ($MessageTable.ZipArchiveBadPassword -F $zipPath)
+      }
+      catch{
+         $Msg=$MessageTable.ZipArchiveExtractError -F $zipPath, $_.Exception.Message
+         $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
+         if ($_.Exception -is [Ionic.Zip.ZipException]) 
+         {throw $Msg}
+         else 
+         {
+           $Logger.Error($Msg) #<%REMOVE%>
+           Write-Error
+      }
+      finally{
+        if ($isDispose)
+        { DisposeZip }
+      }             
+    }#ExtractEntries
  }#begin
 
  Process{
   Foreach($Archive in $File){
-    $zipPath = GetArchivePath $Archive
-	if ( $zipPath -eq $null )  
-    { 
-      $Msg=$MessageTable.FileMustExist -F $Archive #<%REMOVE%> 
-      $Logger.Debug($Msg) #<%REMOVE%> 
-      continue 
-    }
-    try{
-        $Logger.Debug("Read the file $zipPath") #<%REMOVE%> 
-        $ZipFile = [ZipFile]::Read($zipPath,$ReadOptions)
-        $ZipFile.FlattenFoldersOnExtract = $Flatten  
-        
-        AddMethodPSDispose $ZipFile
-        
-        if ($ZipFile.Count -eq 0)
-        {
-          $Logger.Debug("No entries in the archive") #<%REMOVE%> 
-          if ($Passthru)
-          { return $ZipFile.PSbase }
-          else 
-          { 
-            DisposeZip 
-            return $null            
-          } 
-        }
-    }
-    catch{
-       DisposeZip
-       $Msg=$MessageTable.ZipArchiveReadError -F $zipPath, $_.Exception.Message
-       $Logger.Fatal($Msg,$_) #<%REMOVE%>
-       throw $Msg
-    } 
-    try{
-      if($List){
-          $ZipFile.Entries.GetEnumerator()|
-           Foreach {Write-Output $_}
-      } 
-      else{
-     	if(-not [String]::IsNullOrEmpty($Password))
-      {  
-            $Logger.Debug("Set Password") #<%REMOVE%> 
-            $ZipFile.password = $Password  
+   try {
+      $zipPath = GetArchivePath $Archive
+      if ( $zipPath -eq $null )  
+      { 
+         # usage de ToString() pour éviter un bug v2
+        $Msg=$MessageTable.InvalidValue -F $Archive.ToString()
+        $Logger.Error($Msg) #<%REMOVE%>
+        Write-Error $Msg 
       }
-      
-      if (-not [String]::IsNullOrEmpty($Query)) 
-      {  
-          $Logger.Debug("Extraction using a query : $Query") #<%REMOVE%> 
-          if( [String]::IsNullOrEmpty($From)){
-              $Logger.Debug("From = null") #<%REMOVE%>
-               #bug null to string, use reflection
-              $params = @($Query,$Null,$Destination,$ExtractAction)
-              $ZipEntry=$private:ExtractSelectedEntriesMethod.Invoke($ZipFile, $params)                        
+      else 
+      {
+        Foreach($FileName in $ZipPath){
+          $Logger.Debug("Full path name : $FileName") #<%REMOVE%>
+          $zipFile= ZipFileRead
+          if ($ZipFile.Count -eq 0)
+          {
+            $Logger.Debug("No entries in the archive") #<%REMOVE%> 
+            if ($Passthru)
+            { return $ZipFile.PSbase }
+            else 
+            { 
+              DisposeZip 
+              return $null            
+            } 
           }
-          else{
-              $ZipFile.ExtractSelectedEntries($Query,$From,$Destination,$ExtractAction)  
-          }
-      }
-      else{ 
-          $Logger.Debug("Extraction without query.") #<%REMOVE%>
-          $ZipFile.ExtractAll($Destination,$ExtractAction)
-          if ($Passthru){
-            $Logger.Debug("Send ZipFile instance") #<%REMOVE%> 
-            return $ZipFile.PSbase
-          }              
-      }#else isnotnul
-     }#else
-    }#try
-    catch [Ionic.Zip.BadPasswordException]{
-       throw ($MessageTable.ZipArchiveBadPassword -F $zipPath)
+          ExtractEntries
+        }#foreach zipFile
+      }#else zipath null
     }
-    catch{
-       $Msg=$MessageTable.ZipArchiveExtractError -F $zipPath, $_.Exception.Message
-       $Logger.Fatal($Msg,$_) #<%REMOVE%>
-       throw $Msg
-    }
-    finally{
-       DisposeZip
-    }
-  } #foreach
+    catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
+    {
+      $Logger.Error($_.Exception.Message) #<%REMOVE%>
+      if (-not $isValid) 
+      {Write-Error $_.Exception.Message}
+   }   
+  }#Foreach  
  } #process
  
  end {
-    $ReadOptions.Dispose()
+   if ($ReadOptions -ne $null)
+   { $ReadOptions.Dispose() }
  }   
 }#Expand-ZipFile
 
@@ -1184,7 +1237,8 @@ Function Test-ZipFile{
             $zipPath = GetArchivePath $Archive -Verbose:$isVerbose
          	if((-not $isValid) -and ($zipPath -eq $null))
          	{ 
-                $Msg=$MessageTable.InvalidValue -F $Archive
+                 # usage de ToString() pour éviter un bug v2
+                $Msg=$MessageTable.InvalidValue -F $Archive.ToString()
                 $Logger.Error($Msg) #<%REMOVE%>
                 Write-Error $Msg
              }
@@ -1195,13 +1249,13 @@ Function Test-ZipFile{
               }
             }
           }
-        catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
-        {
-          $Logger.Fatal($_.Exception.Message) #<%REMOVE%>
-          if (-not $isValid) 
-           {Write-Error $_.Exception.Message}
-        }   
-        }
+          catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
+          {
+            $Logger.Fatal($_.Exception.Message) #<%REMOVE%>
+            if (-not $isValid) 
+            {Write-Error $_.Exception.Message}
+         }   
+        }#Foreach
     }#process
 }#Test-ZipFile
 
