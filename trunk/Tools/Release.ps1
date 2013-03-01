@@ -25,14 +25,14 @@ Task Delivery -Depends Clean,RemoveConditionnal {
    Copy "$PsIonicBin\Debug\Ionic.Zip.pdb" "$PsIonicLivraison"
 
 #Doc xml localisée
-   Copy "$PsIonicTrunk\en-US\PsIonicLocalizedData.psd1" "$PsIonicLivraison\en-US" 
-   Copy "$PsIonicTrunk\fr-FR\PsIonicLocalizedData.psd1" "$PsIonicLivraison\fr-FR" 
+   Copy "$PsIonicTrunk\en-US\PsIonicLocalizedData.psd1" "$PsIonicLivraison\en-US\PsIonicLocalizedData.psd1" 
+   Copy "$PsIonicTrunk\fr-FR\PsIonicLocalizedData.psd1" "$PsIonicLivraison\fr-FR\PsIonicLocalizedData.psd1" 
 #Demo
    Copy "$PsIonicTrunk\Demo" "$PsIonicLivraison\Demo" -Recurse
 
 #PS1mxl   
-   Copy "$PsIonicTrunk\FormatData\PsIonic.ReadOptions.Format.ps1xml" "$PsIonicLivraison\FormatData"
-   Copy "$PsIonicTrunk\FormatData\PsIonic.ZipEntry.Format.ps1xml" "$PsIonicLivraison\FormatData"
+   Copy "$PsIonicTrunk\FormatData\PsIonic.ReadOptions.Format.ps1xml" "$PsIonicLivraison\FormatData\PsIonic.ReadOptions.Format.ps1xml"
+   Copy "$PsIonicTrunk\FormatData\PsIonic.ZipEntry.Format.ps1xml" "$PsIonicLivraison\FormatData\PsIonic.ZipEntry.Format.ps1xml"
 
    Copy "$PsIonicTrunk\TypeData" "$PsIonicLivraison\TypeData" -Recurse
 
@@ -92,8 +92,15 @@ Task Clean -Depends Init {
   
    $VerbosePreference='Continue'
    Remove-Item $PsIonicLivraison -Recurse -Force -ea SilentlyContinue
-   md "$PsIonicLivraison\2.0" -Verbose -ea SilentlyContinue > $null 
-   md "$PsIonicLivraison\3.0" -Verbose -ea SilentlyContinue > $null
+   "$PsIonicLivraison\2.0", 
+   "$PsIonicLivraison\3.0",
+   "$PsIonicLivraison\en-US", 
+   "$PsIonicLivraison\fr-FR", 
+   "$PsIonicLivraison\FormatData",
+   "$PsIonicLivraison\TypeData"|
+   Foreach {
+    md $_ -Verbose -ea SilentlyContinue > $null
+   } 
 } #Clean
 
 Task Init {
