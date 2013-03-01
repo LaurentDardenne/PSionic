@@ -1036,13 +1036,16 @@ Function Expand-ZipFile {
       }
       catch{
          $Msg=$MessageTable.ZipArchiveExtractError -F $zipPath, $_.Exception.Message
-         $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
-         if ($_.Exception -is [Ionic.Zip.ZipException]) 
-         {throw $Msg}
+         if (($_.Exception -is [Ionic.Zip.ZipException]) -and ($ZipFile.ExtractExistingFile -ne "Throw") ) 
+         {
+           $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
+           throw $Msg
+         }
          else 
          {
            $Logger.Error($Msg) #<%REMOVE%>
-           Write-Error
+           Write-Error $Msg
+         }
       }
       finally{
         if ($isDispose)
