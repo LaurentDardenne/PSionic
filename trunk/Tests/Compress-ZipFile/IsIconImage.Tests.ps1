@@ -7,18 +7,14 @@ $global:sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.",
   Describe "IsIconImage" {
 
     It "Test .BMP file return false" {
-        $result= &$PSionicModule {IsIconImage "$Global:here\background.bmp"}
-        $result.should.be($false)
+        &$PSionicModule {IsIconImage "$Global:here\background.bmp"} | should be ($false)
     }
 
     It "Test .PS1 file return false" {
-        $result= &$PSionicModule {IsIconImage "$global:sut"} 
-        $result.should.be($false)
+        &$PSionicModule {IsIconImage "$global:sut"} | should be ($false)
     }
   
     It "Test .ICO file return true" {
-
-        $result= &$PSionicModule {IsIconImage "$Global:here\PerfCenterCpl.ico"} 
-        $result.should.be($true)
+        &$PSionicModule {IsIconImage "$Global:here\PerfCenterCpl.ico"} | should be ($true)
     }
   }
