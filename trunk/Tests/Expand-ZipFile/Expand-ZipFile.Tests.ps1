@@ -8,7 +8,7 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
 
   Describe "Expand-ZipFile" {
 
-    It "Expand C:\temp\unknown.zip file return true" {
+    It "Expand C:\temp\unknown.zip file return true (exception)" {
         try{
            &$PSionicModule {Expand-ZipFile -File C:\temp\unknown.zip -Destination C:\temp\testExpandZipFile -ErrorAction Stop}
         }catch{
@@ -17,7 +17,7 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
         $result | should be ($true)
     }
 
-    It "Expand existing zip file in not existing destination return true" {
+    It "Expand existing zip file in not existing destination return true (exception)" {
         try{
            &$PSionicModule {Expand-ZipFile -File $global:here\Archive.zip -Destination $global:here\Archive -ErrorAction Stop}
         }catch{
@@ -26,7 +26,7 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
         $result | should be ($true)
     }
 
-    It "Expand a file that is not a zip file return true" {
+    It "Expand a file that is not a zip file return true (exception)" {
         try{
            &$PSionicModule {Expand-ZipFile -File $global:here\PerfCenterCpl.ico -Destination $global:here\Archive -Create -ErrorAction Stop}
         }catch{
@@ -44,6 +44,7 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
            rm $global:here\Archive -Recurse -Force
            $result=$true
         }catch{
+            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor DarkRed
             $result=$false
         }
         $result | should be ($true)
@@ -60,6 +61,7 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
            rm $global:here\Archive -Recurse -Force
            $result=$true
         }catch{
+            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor DarkRed
             $result=$false
         }
         $result | should be ($true)
@@ -76,6 +78,7 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
            rm $global:here\Archive -Recurse -Force
            $result=$true
         }catch{
+            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor DarkRed
             $result=$false
         }
         $result | should be ($true)
@@ -92,6 +95,7 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
            rm $global:here\Archive -Recurse -Force
            $result=$true
         }catch{
+            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor DarkRed
             $result=$false
         }
         $result | should be ($true)
@@ -111,6 +115,7 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
             $result = $null
             $result = &$PSionicModule {Expand-ZipFile -File $global:here\Archive.zip -List -ErrorAction Stop}
         }catch{
+            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor DarkRed
             $result= $false
         }
         $result | should be ($true)
@@ -125,6 +130,7 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
             }
             rm $global:here\Archive -Recurse -Force
         }catch{
+            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor DarkRed
             $result=$false
         }
         $result | should be ($true)
@@ -132,7 +138,7 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
 
  # Tests for encrypted archive
 
-     It "Expand encrypted zip file with BAD password return true" {
+     It "Expand encrypted zip file with BAD password return true (exception)" {
         try{
            &$PSionicModule {Expand-ZipFile -File $global:here\CryptedArchive.zip -Destination $global:here\CryptedArchive -create -Password BADpassword -ErrorAction Stop}
         }catch{
@@ -153,6 +159,7 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
            rm $global:here\CryptedArchive -Recurse -Force
            $result=$true
         }catch{
+            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor DarkRed
             $result=$false
         }
         $result | should be ($true)
@@ -172,9 +179,10 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
            rm $global:here\CryptedArchive -Recurse -Force
            $result=$true
         }catch{
-            $result=$_.Exception.Message
+            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor DarkRed
+            $result=$false
         }
-        $result | should be ($false)
+        $result | should be ($true)
     }
 
     # TODO : Follow, Interactive
