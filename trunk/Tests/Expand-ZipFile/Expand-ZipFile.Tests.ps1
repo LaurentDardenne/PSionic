@@ -43,7 +43,7 @@ $PSionicModule=Get-Module PsIonic
            # rm $global:WorkDir\Archive -Recurse -Force : Pas de suppression, pour le test suivant
            $result=$true
         }catch{
-            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
         }
         $result | should be ($true)
@@ -67,7 +67,7 @@ $PSionicModule=Get-Module PsIonic
            rm $global:WorkDir\Archive -Recurse -Force
            $result=$true
         }catch{
-            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
         }
         $result | should be ($true)
@@ -102,7 +102,7 @@ $PSionicModule=Get-Module PsIonic
            rm $global:WorkDir\Archive -Recurse -Force
            $result=$true
         }catch{
-            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
         }
         $result | should be ($true)
@@ -119,7 +119,7 @@ $PSionicModule=Get-Module PsIonic
            rm $global:WorkDir\Archive -Recurse -Force
            $result=$true
         }catch{
-            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
         }
         $result | should be ($true)
@@ -136,7 +136,7 @@ $PSionicModule=Get-Module PsIonic
            rm $global:WorkDir\Archive -Recurse -Force
            $result=$true
         }catch{
-            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
         }
         $result | should be ($true)
@@ -156,7 +156,7 @@ $PSionicModule=Get-Module PsIonic
             $result = $null
             $result = &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -List -ErrorAction Stop}
         }catch{
-            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result= $false
         }
         $result | should be ($true)
@@ -171,7 +171,7 @@ $PSionicModule=Get-Module PsIonic
             }
             rm $global:WorkDir\Archive -Recurse -Force
         }catch{
-            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
         }
         $result | should be ($true)
@@ -200,7 +200,7 @@ $PSionicModule=Get-Module PsIonic
            rm $global:WorkDir\CryptedArchive -Recurse -Force
            $result=$true
         }catch{
-            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
         }
         $result | should be ($true)
@@ -220,7 +220,7 @@ $PSionicModule=Get-Module PsIonic
            rm $global:WorkDir\CryptedArchive -Recurse -Force
            $result=$true
         }catch{
-            Write-host "Une erreur s'est produite : $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
         }
         $result | should be ($true)
