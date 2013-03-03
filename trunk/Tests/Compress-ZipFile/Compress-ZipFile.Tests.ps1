@@ -41,7 +41,7 @@ Describe "Compress-ZipFile" {
         $result | should be ($true)
     }
 
-    It "Compress data to zip file with password and then expand it return true" {
+    It "Compress data to zip file with password (default encryption) and then expand it return true" {
         try{
             &$PSionicModule {Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -Name $global:here\CryptedArchive.zip -Password password -ErrorAction Stop  }
             if(-not (Test-Path $global:here\CryptedArchive.zip)){
@@ -57,5 +57,25 @@ Describe "Compress-ZipFile" {
         }
         $result | should be ($true)
     }
+
+    It "Compress data to zip file with bad password (WinZipAes256 encryption) and then expand it return true (exception)" {
+        try{
+            &$PSionicModule {Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -Name $global:here\CryptedArchive.zip -Password password -Encryption WinZipAes256 -ErrorAction Stop  }
+        }catch{
+            $result=$_.Exception.Message -match "La valeur du paramètre Password \('password'\) est invalide pour la valeur de DataEncryption 'WinZipAes256'."
+
+        }
+        $result | should be ($true)
+    }
+
+    It "Compress data to zip file with password (Bad encryption) return true (exception)" {
+        try{
+            &$PSionicModule {Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -Name $global:here\CryptedArchive.zip -Password password -Encryption BadEncryption -ErrorAction Stop  }
+        }catch{
+            $result=$_.Exception.Message -match 'Impossible de traiter la transformation d''argument sur le paramètre « Encryption »'
+        }
+        $result | should be ($true)
+    }
+
 
 }
