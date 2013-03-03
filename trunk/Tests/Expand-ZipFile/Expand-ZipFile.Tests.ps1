@@ -55,7 +55,7 @@ if(Test-Path $global:here\CryptedArchive){ rm $global:here\CryptedArchive -Recur
            &$PSionicModule {Expand-ZipFile -File $global:here\Archive.zip -Destination $global:here\Archive -create -Query '*.dll' -ErrorAction Stop}
            $Dllfiles = Get-ChildItem $global:here\Archive -filter *.dll -recurse
            $Files =  Get-ChildItem $global:here\Archive -recurse
-           if($Dllfiles.count -ne 2 -or $Files.count -ne 2){
+           if($Dllfiles.count -ne 2 -or $Files.count -ne 6){
              throw "Les 2 fichiers .dll n'ont pas été extraits"
            }
            rm $global:here\Archive -Recurse -Force
