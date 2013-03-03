@@ -299,7 +299,7 @@ Function SetZipFileEncryption {
       If ($isPwdValid -and -not $isEncryptionValid)
       {
          $Logger.Debug("Encryption Weak")  #<%REMOVE%>
-         $ZipFile.Encryption = "Weak"
+         $ZipFile.Encryption = "PkzipWeak"
          $ZipFile.Password = $Password
       }
       elseif (-not $isPwdValid -and -not $isEncryptionValid)
