@@ -218,15 +218,13 @@ function GetSFXname {
 
 Function IsValueSupported {
 #Utilisée dans un attribut ValidateScript
-  [CmdletBinding(DefaultParameterSetName = "Compress")]
+  [CmdletBinding(DefaultParameterSetName = "Extract")]
   param(
      [ValidateNotNullOrEmpty()] 
      [Parameter(Position=0, Mandatory=$true)]
     $Value,
      [Parameter(ParameterSetName="Extract")]
-    [switch] $Extract,
-     [Parameter(ParameterSetName="Compress")]
-    [switch] $Compress
+    [switch] $Extract
   )
 
  $Logger.Debug("Call= $($PsCmdlet.ParameterSetName)") #<%REMOVE%>
@@ -972,10 +970,6 @@ Function Expand-ZipFile {
                       Foreach { $_.Path } 
     }
   
-    #dotNet reflection
-    [type[]] $private:ParameterTypesOfExtractSelectedEntriesMethod=[string],[string],[string],[Ionic.Zip.ExtractExistingFileAction]
-    $private:ExtractSelectedEntriesMethod=[Ionic.Zip.ZipFile].GetMethod("ExtractSelectedEntries",$private:ParameterTypesOfExtractSelectedEntriesMethod)
-    
     Function ZipFileRead {
       try{
         $Logger.Debug("Read the file $zipPath") #<%REMOVE%> 
@@ -1012,9 +1006,14 @@ Function Expand-ZipFile {
               $Logger.Debug("Extraction using a query : $Query") #<%REMOVE%> 
               if( [String]::IsNullOrEmpty($From)){
                   $Logger.Debug("From = null") #<%REMOVE%>
+                  $Logger.Debug("Destination=$Destination") #<%REMOVE%>
+                  $Logger.Debug("ExtractAction=$ExtractAction") #<%REMOVE%>
+                  
                    #bug null to string, use reflection
+                  [type[]] $private:ParameterTypesOfExtractSelectedEntriesMethod=[string],[string],[string],[Ionic.Zip.ExtractExistingFileAction]
+                  $ExtractSelectedEntriesMethod=[Ionic.Zip.ZipFile].GetMethod("ExtractSelectedEntries",$private:ParameterTypesOfExtractSelectedEntriesMethod)
                   $params = @($Query,$Null,$Destination,$ExtractAction)
-                  $ZipEntry=$private:ExtractSelectedEntriesMethod.Invoke($ZipFile, $params)                        
+                  $ZipEntry=$ExtractSelectedEntriesMethod.Invoke($ZipFile, $params)                        
               }
               else{
                   $ZipFile.ExtractSelectedEntries($Query,$From,$Destination,$ExtractAction)  
@@ -1026,7 +1025,7 @@ Function Expand-ZipFile {
               if ($Passthru){
                 $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
                 $isDispose=$false 
-                return $ZipFile.PSbase
+                return ,$ZipFile
               }              
           }#else isnotnul $Query
        }#else
@@ -1074,7 +1073,7 @@ Function Expand-ZipFile {
           {
             $Logger.Debug("No entries in the archive") #<%REMOVE%> 
             if ($Passthru)
-            { return $ZipFile.PSbase }
+            { return ,$ZipFile }
             else 
             { 
               DisposeZip 
