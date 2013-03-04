@@ -11,25 +11,29 @@ $PSionicModule=Get-Module PsIonic
         try{
            &$PSionicModule {Expand-ZipFile -File C:\temp\unknown.zip -Destination $global:WorkDir -ErrorAction Stop}
         }catch{
-            $result=$_.Exception.Message -eq "Impossible de trouver le chemin d'accès « C:\temp\unknown.zip », car il n'existe pas."
+            $result=$_.Exception.Message -match [regex]::Escape("Impossible de trouver le chemin d'accès « C:\temp\unknown.zip », car il n'existe pas.")
         }
         $result | should be ($true)
     }
 
     It "Expand existing zip file in not existing destination return true (exception)" {
         try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -ErrorAction Stop}
+			$global:path = $global:WorkDir+"\Archive"
+           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $path -ErrorAction Stop}
         }catch{
-            $result=$_.Exception.Message -match "Le nom de chemin n'existe pas"
+			$Exception = (&$PSionicModule {$MessageTable.PathMustExist -f $global:path})
+            $result=$_.Exception.Message -match ("^"+[regex]::Escape($Exception))
         }
         $result | should be ($true)
     }
 
     It "Expand a file that is not a zip file return true (exception)" {
         try{
-           &$PSionicModule {Expand-ZipFile -File $global:here\PerfCenterCpl.ico -Destination $global:WorkDir\Archive -Create -ErrorAction Stop}
+           $global:notZipFile = $global:here+"\PerfCenterCpl.ico"
+		   &$PSionicModule {Expand-ZipFile -File $notZipFile -Destination $global:WorkDir\Archive -Create -ErrorAction Stop}
         }catch{
-            $result=$_.Exception.Message -match "Une erreur s'est produite lors de la lecture de l'archive"
+			$Exception = (&$PSionicModule {$MessageTable.ZipArchiveReadError -f $global:notZipFile,"AnException"}) -replace " : AnException", ""
+            $result=$_.Exception.Message -match ("^"+[regex]::Escape($Exception))
         }
         $result | should be ($true)
     }
@@ -53,7 +57,8 @@ $PSionicModule=Get-Module PsIonic
         try{
            &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -ErrorAction Stop}
         }catch{
-			$result=$_.Exception.Message -match '« The file C:\\Users\\Matthew\\AppData\\Local\\Temp\\Archive\\directory\\Ionic.Zip.dll already exists. »'
+			$Exception = "« The file $($global:WorkDir)\Archive\directory\Ionic.Zip.dll already exists. »"
+			$result=$_.Exception.Message -match ([regex]::Escape($Exception))
         }
         $result | should be ($true)
     }
@@ -166,6 +171,7 @@ $PSionicModule=Get-Module PsIonic
         try{
             $result = $null
             $result = &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Passthru -ErrorAction Stop}
+			$result.dispose()
             if(-not (test-path $global:WorkDir\Archive\test\test1\test2\Log4Net.Config.xml)){
                 throw "Fichier provenant de l'archive non trouvé après extraction"
             }
@@ -183,7 +189,8 @@ $PSionicModule=Get-Module PsIonic
         try{
            &$PSionicModule {Expand-ZipFile -File $global:WorkDir\CryptedArchive.zip -Destination $global:WorkDir\CryptedArchive -create -Password BADpassword -ErrorAction Stop}
         }catch{
-            $result= $_.Exception.Message -match 'Mot de passe incorrect'
+			$Exception = (&$PSionicModule {$MessageTable.ZipArchiveBadPassword -f ($global:WorkDir+"\CryptedArchive.zip")})
+            $result= $_.Exception.Message -match ([regex]::Escape($Exception))
         }
         $result | should be ($true)
     }
