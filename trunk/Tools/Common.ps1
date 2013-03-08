@@ -5,6 +5,7 @@
 Properties {
    $Configuration=$Config
    $PSVersion=$PSVersionTable.PSVersion.ToString()
+   $Cultures= "fr-FR","en-US"
 }
 
 if (-not $currentContext.tasks.default)
