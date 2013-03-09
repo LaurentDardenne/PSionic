@@ -63,16 +63,9 @@
 	examples = @(
 		@{
 			code = {
-              dir*.txt|Compress-File c:\temp\test.zip
+Get-ChildItem *.txt|Compress-File C:\Temp\Test.zip
 			}
 			remarks = $Datas.CompressZipFileExamplesRemarks1
-			test = { . $args[0] }
-		}
-		@{
-			code = {
-              dir*.txt|Compress-File c:\temp\test.zip
-			}
-			remarks = $Datas.CompressZipFileExamplesRemarks2
 			test = { . $args[0] }
 		}
 	)

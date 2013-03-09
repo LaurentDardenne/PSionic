@@ -1,13 +1,13 @@
-# Set-PsIonicSfxOptions command data
+﻿# Set-PsIonicSfxOptions command data
 $Datas = @{
-	SetPsIonicSfxOptionsSynopsis = ''
-	SetPsIonicSfxOptionsDescription = ''
+	SetPsIonicSfxOptionsSynopsis = 'Affecte de nouvelles valeurs à la configuration par défaut.'
+	SetPsIonicSfxOptionsDescription = 'Affecte de nouvelles valeurs à la configuration par défaut en recopiant les valeurs de la configuration indiquée dans la configuration par défaut.'
 	SetPsIonicSfxOptionsSets__AllParameterSets = ''
-	SetPsIonicSfxOptionsParametersOptions = ''
-	SetPsIonicSfxOptionsInputsDescription1 = ''
-	SetPsIonicSfxOptionsOutputsDescription1 = ''
+	SetPsIonicSfxOptionsParametersOptions = 'Contient les nouvelles valeurs à affecter à la configuration par défaut.'
+	SetPsIonicSfxOptionsInputsDescription1 = 'Ionic.Zip.SelfExtractorSaveOptions'
+	SetPsIonicSfxOptionsOutputsDescription1 = 'Aucune.'
 	SetPsIonicSfxOptionsNotes = ''
-	SetPsIonicSfxOptionsExamplesRemarks1 = ''
+	SetPsIonicSfxOptionsExamplesRemarks1 = 'Ces instructions créent une configuration SFX avec les valeurs par défaut sauf pour le champ Copyright. Puis affecte ces nouvelles valeurs à la configuration par défaut.'
 }
 
 

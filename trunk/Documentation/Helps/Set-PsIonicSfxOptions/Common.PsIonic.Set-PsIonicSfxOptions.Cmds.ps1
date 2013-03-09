@@ -1,4 +1,4 @@
-# Set-PsIonicSfxOptions command help
+﻿# Set-PsIonicSfxOptions command help
 @{
 	command = 'Set-PsIonicSfxOptions'
 	synopsis = $Datas.SetPsIonicSfxOptionsSynopsis
@@ -21,9 +21,9 @@
 	notes = $Datas.SetPsIonicSfxOptionsNotes
 	examples = @(
 		@{
-			#title = ''
-			#introduction = ''
 			code = {
+$MyConfiguration=New-ZipSfxOptions -Copyright "This module is free for non-commercial purposes." 
+Set-PsIonicSfxOptions $MyConfiguration         
 			}
 			remarks = $Datas.SetPsIonicSfxOptionsExamplesRemarks1
 			test = { . $args[0] }

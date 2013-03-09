@@ -1,4 +1,4 @@
-# New-ZipSfxOptions command help
+﻿# New-ZipSfxOptions command help
 @{
 	command = 'New-ZipSfxOptions'
 	synopsis = $Datas.NewZipSfxOptionsSynopsis
@@ -39,16 +39,15 @@
 	notes = $Datas.NewZipSfxOptionsNotes
 	examples = @(
 		@{
-			#title = ''
-			#introduction = ''
 			code = {
+$MyConfiguration=New-ZipSfxOptions -Copyright "This module is free for non-commercial purposes." 
 			}
 			remarks = $Datas.NewZipSfxOptionsExamplesRemarks1
 			test = { . $args[0] }
 		}
 	)
 	links = @(
-		@{ text = ''; URI = '' }
+		@{ text = 'AdditionalCompilerSwitches'; URI = 'http://msdn.microsoft.com/en-us/library/system.codedom.compiler.compilerparameters(v=vs.80).aspx' }
 	)
 }
 

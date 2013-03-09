@@ -1,4 +1,4 @@
-# Reset-PsIonicSfxOptions command help
+﻿# Reset-PsIonicSfxOptions command help
 @{
 	command = 'Reset-PsIonicSfxOptions'
 	synopsis = $Datas.ResetPsIonicSfxOptionsSynopsis
@@ -18,9 +18,8 @@
 	notes = $Datas.ResetPsIonicSfxOptionsNotes
 	examples = @(
 		@{
-			#title = ''
-			#introduction = ''
 			code = {
+Reset-PsIonicSfxOptions         
 			}
 			remarks = $Datas.ResetPsIonicSfxOptionsExamplesRemarks1
 			test = { . $args[0] }

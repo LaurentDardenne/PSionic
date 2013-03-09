@@ -1,4 +1,4 @@
-# Get-ZipFile command help
+﻿# Get-ZipFile command help
 @{
 	command = 'Get-ZipFile'
 	synopsis = $Datas.GetZipFileSynopsis
@@ -43,11 +43,50 @@
 	notes = $Datas.GetZipFileNotes
 	examples = @(
 		@{
-			#title = ''
-			#introduction = ''
+
 			code = {
+$File=Dir C:\Temp\Test.ps1 
+$ZipFile=Get-Zipfile -Name Test.zip
+Add-ZipEntry -Object $File -ZipFile $ZipFile
+$ZipFile.Save()
+$ZipFile.PSDispose()
 			}
 			remarks = $Datas.GetZipFileExamplesRemarks1
+			test = { . $args[0] }
+		}
+		@{
+
+			code = {
+$File=Dir C:\Temp\Test.ps1 
+$ZipFile=Get-Zipfile -Name Test.zip
+$ZipFile.Save()
+$ZipFile.PSDispose()
+			}
+			remarks = $Datas.GetZipFileExamplesRemarks2
+			test = { . $args[0] }
+		}
+		@{
+
+			code = {
+$Zip=Get-Zipfile -Name Test.zip
+ $ofs="`r`n"
+ [string]$Text=Get-Content C:\Temp\Test.ps1
+Add-ZipEntry -Object $Text -EntryName MyText -ZipFile $ZipFile
+$ZipFile.Save()
+$ZipFile.PSDispose()
+         
+			}
+			remarks = $Datas.GetZipFileExamplesRemarks3
+			test = { . $args[0] }
+		}
+		@{
+
+			code = {
+$Zip=Get-Zipfile -Name Test.zip
+Dir *.txt|Add-ZipEntry -ZipFile $Zip
+         
+			}
+			remarks = $Datas.GetZipFileExamplesRemarks4
 			test = { . $args[0] }
 		}
 	)

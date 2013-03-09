@@ -2,7 +2,9 @@
 $Datas = @{
 	TestZipFileSynopsis = 'Test si un fichier est une archive au format PkZip.'
 	TestZipFileDescription = @'
-Test si un fichier est une archive au format PkZip. Il est également possible lors de ce test de verifier si l'archive est valide et de tenter de la réparer le cas contraire.'
+Test si un fichier est une archive au format PkZip. 
+Il est également possible lors de ce test de verifier si l'archive est valide et de tenter de la réparer le cas contraire.
+'@
 	TestZipFileSetsDefault = ''
 	TestZipFileSetsFile = ''
 	TestZipFileParametersCheck = 'Vérifie si l''archive est correcte.'
@@ -11,7 +13,7 @@ Test si un fichier est une archive au format PkZip. Il est également possible l
 	TestZipFileParametersPassthru = @'
  Emet le nom du fichier de l'archive dans le pipeline. 
  Si le paramètre -isValid est également précisé alors les fichiers considérés comme invalide ne seront pas émis dans le pipeline et aucune erreur ne sera émise.
- Ce comportement est similaire à un filtre, où seul les fichier valide seront émit dans le pipe.  
+ Ce comportement est similaire à un filtre, où seul les fichiers valide seront émit dans le pipeline.  
 '@
 	TestZipFileParametersPassword = 'Mot de passe, nécessaire si l''archive est protégée par un mot de passe.'
 	TestZipFileParametersRepair = 'Tente une réparation si l''archive est corrompue.'

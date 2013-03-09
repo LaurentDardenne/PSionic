@@ -1,4 +1,4 @@
-# New-ReadOptions command help
+﻿# New-ReadOptions command help
 @{
 	command = 'New-ReadOptions'
 	synopsis = $Datas.NewReadOptionsSynopsis
@@ -22,9 +22,22 @@
 	notes = $Datas.NewReadOptionsNotes
 	examples = @(
 		@{
-			#title = ''
-			#introduction = ''
 			code = {
+$ReadOptions=New-ReadOptions          
+			}
+			remarks = $Datas.NewReadOptionsExamplesRemarks1
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+$ReadOptions=New-ReadOptions -Verbose         
+			}
+			remarks = $Datas.NewReadOptionsExamplesRemarks1
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+$ReadOptions=New-ReadOptions $Encoding -Follow         
 			}
 			remarks = $Datas.NewReadOptionsExamplesRemarks1
 			test = { . $args[0] }

@@ -1,4 +1,4 @@
-# Format-ZipFile command help
+﻿# Format-ZipFile command help
 @{
 	command = 'Format-ZipFile'
 	synopsis = $Datas.FormatZipFileSynopsis
@@ -22,9 +22,9 @@
 	notes = $Datas.FormatZipFileNotes
 	examples = @(
 		@{
-			#title = ''
-			#introduction = ''
 			code = {
+($ZipFile=Get-Zipfile -Name Test.zip)|Format-ZipFile
+$ZipFile.PSDispose()
 			}
 			remarks = $Datas.FormatZipFileExamplesRemarks1
 			test = { . $args[0] }

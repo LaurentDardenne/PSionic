@@ -1,4 +1,4 @@
-# Add-ZipEntry command help
+﻿# Add-ZipEntry command help
 @{
 	command = 'Add-ZipEntry'
 	synopsis = $Datas.AddZipEntrySynopsis
@@ -25,11 +25,53 @@
 	notes = $Datas.AddZipEntryNotes
 	examples = @(
 		@{
-			#title = ''
-			#introduction = ''
+
 			code = {
+$ZipFile=Get-Zipfile -Name C:\Temp\Test.zip
+$File=Get-ChildItem C:\Temp\Test.ps1 
+
+Add-ZipEntry -Object $File -ZipFile $ZipFile
+
+$ZipFile.Save()
+$ZipFile.PSDispose()
 			}
-			remarks = $Datas.AddZipEntryExamplesRemarks1
+			remarks = $Datas.GetZipFileExamplesRemarks1
+			test = { . $args[0] }
+		}
+		@{
+
+			code = {
+$ZipFile=Get-Zipfile -Name Test.zip
+
+Get-ChildItem *.txt|Add-ZipEntry -ZipFile $Zip
+
+$ZipFile.Save()
+$ZipFile.PSDispose()
+			}
+			remarks = $Datas.GetZipFileExamplesRemarks2
+			test = { . $args[0] }
+		}
+		@{
+
+			code = {
+$Zip=Get-Zipfile -Name Test.zip
+ $ofs="`r`n"
+ [string]$Text=Get-Content C:\Temp\Test.ps1
+Add-ZipEntry -Object $Text -EntryName MyText -ZipFile $ZipFile
+$ZipFile.Save()
+$ZipFile.PSDispose()
+			}
+			remarks = $Datas.GetZipFileExamplesRemarks3
+			test = { . $args[0] }
+		}
+		@{
+
+			code = {
+
+#Todo Byte[]
+         
+			}
+			remarks = $Datas.GetZipFileExamplesRemarks4
 			test = { . $args[0] }
 		}
 	)
