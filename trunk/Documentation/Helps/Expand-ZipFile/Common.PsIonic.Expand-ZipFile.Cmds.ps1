@@ -50,7 +50,7 @@
     examples = @(
 		@{
 			code = {
-              Expand-ZipFile -File C:\Archive.zip -Destination c:\temp\
+              Expand-ZipFile -File C:\Archive.zip -Destination C:\Temp\
 			}
 			remarks = $Datas.CompressZipFileExamplesRemarks1
 			test = { . $args[0] }
@@ -58,21 +58,21 @@
 		@{
 			code = {
               Get-ChildItem D:\*.zip -recurse | 
-               Expand-ZipFile c:\temp\
+               Expand-ZipFile C:\Temp\
 			}
 			remarks = $Datas.CompressZipFileExamplesRemarks2
 			test = { . $args[0] }
 		}
 		@{
 			code = {
-              Expand-ZipFile -File C:\Archive.zip -Destination c:\temp\ -Query 'name = *.jpg'
+              Expand-ZipFile -File C:\Archive.zip -Destination C:\Temp\ -Query 'name = *.jpg'
 			}
 			remarks = $Datas.CompressZipFileExamplesRemarks3
 			test = { . $args[0] }
 		}
 		@{
 			code = {
-              Expand-ZipFile -File C:\Archive.zip -Destination c:\temp\ -Query 'type = D'
+              Expand-ZipFile -File C:\Archive.zip -Destination C:\Temp\ -Query 'type = D'
 			}
 			remarks = $Datas.CompressZipFileExamplesRemarks4
 			test = { . $args[0] }

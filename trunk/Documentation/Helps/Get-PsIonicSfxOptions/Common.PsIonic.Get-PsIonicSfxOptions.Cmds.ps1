@@ -1,4 +1,4 @@
-# Get-PsIonicSfxOptions command help
+﻿# Get-PsIonicSfxOptions command help
 @{
 	command = 'Get-PsIonicSfxOptions'
 	synopsis = $Datas.GetPsIonicSfxOptionsSynopsis
@@ -18,9 +18,8 @@
 	notes = $Datas.GetPsIonicSfxOptionsNotes
 	examples = @(
 		@{
-			#title = ''
-			#introduction = ''
 			code = {
+$MyConfiguration=Get-PsIonicSfxOptions         
 			}
 			remarks = $Datas.GetPsIonicSfxOptionsExamplesRemarks1
 			test = { . $args[0] }
