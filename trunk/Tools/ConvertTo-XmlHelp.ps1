@@ -1,6 +1,6 @@
 ﻿Function ConvertTo-XmlHelp {
  param (
-   [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
+   [Parameter(Mandatory=$true,ValueFromPipeline = $true,ValueFromPipelineByPropertyName = $true)]
    [ValidateNotNullOrEmpty()]
    [Alias('Key')]
   [string]$CommandName,
