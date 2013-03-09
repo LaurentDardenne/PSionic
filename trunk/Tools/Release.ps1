@@ -81,35 +81,39 @@ Task TestLocalizedData {
 } #TestLocalizedData
 
 Task BuildXmlHelp {
-  Write-Host " *** under construction !!!" #todo
-  
   $Module=Import-Module "$PSionicLivraison\PsIonic.psd1" -PassThru
  
   [string] $TempLocation ="$([System.IO.Path]::GetTempPath())PsIonic"
   If ( (Test-Path $TempLocation) )
-  { Remove-Item $TempLocation -Force }
+  { Remove-Item $TempLocation -Recurse -Force }
   md $TempLocation >$null
  
-  $VerbosePreference='Continue' 
+  $VerbosePreference='SilentlyContinue' 
 
    #https://github.com/nightroman/Helps
   ."$PSScripts\Helps\Helps.ps1"
   ."$PsIonicTools\ConvertTo-XmlHelp"
   ."$PsIonicTools\Join-XmlHelp"
-
- $Cultures | 
-  Foreach {
-    $Module.ExportedFunctions.GetEnumerator()|
-     ConvertTo-XmlHelp $Module.Name -Source $PsIonicHelp -Target $TempLocation  -Culture $_
-  }
+  
+  $Excludes='Set-Log4NETDebugLevel','Stop-ConsoleAppender','ConvertFrom-CliXml','ConvertTo-CliXml'
  
- $Cultures | 
-  Foreach {
-    $Module.ExportedFunctions.GetEnumerator()|
-     Join-XmlHelp $Module.Name -Source $TempLocation "$PsIonicLivraison\$_" -Culture $_
-  } 
- 
- Remove-Module PsIonic
+  #$Cultures | todo
+  "fr-Fr" | 
+    Foreach {
+      $Module.ExportedFunctions.GetEnumerator()|
+      Where {$Excludes -notContains $_.Key} |
+       ConvertTo-XmlHelp $Module.Name -Source $PsIonicHelp -Target $TempLocation  -Culture $_
+    }
+   
+  #$Cultures |
+  "fr-Fr" | 
+    Foreach {
+      $Module.ExportedFunctions.GetEnumerator()|
+       Where {$Excludes -notContains $_.Key} |
+       Join-XmlHelp $Module.Name -Source $TempLocation "$PsIonicLivraison\$_" -Culture $_
+    } 
+   
+  Remove-Module PsIonic
 } #BuildXmlHelp 
 
 Task Clean -Depends Init {
