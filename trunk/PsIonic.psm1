@@ -103,7 +103,9 @@ $ZipFrmRO=New-ArrayReadOnly ([ref]$ZipFrm)
 function Format-ZipFile {
 # .ExternalHelp PsIonic-Help.xml   
   param(
+     [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
     [Ionic.Zip.ZipFile] $Zip,
+      [Parameter(Position=0,Mandatory=$false)]
     $Properties=$ZipFrmRO
   )
   $Zip.PSbase|Format-List $Properties
@@ -161,7 +163,7 @@ Function Set-PsIonicSfxOptions {
   param (
    [Ionic.Zip.SelfExtractorSaveOptions] $Options
   )
-  [void](CloneSfxOptions $Options $Script:DefaultSfxConfiguration) 
+  [void](CloneSfxOptions $Options $Script:DefaultSfxConfiguration)
 } #Set-PsIonicSfxOptions 
 
 Function Get-PsIonicSfxOptions { 
@@ -207,6 +209,82 @@ function isCollection {
  param($Object)
    $Object -is [System.Collections.IEnumerable] -and $Object -isnot [String]
 }#isCollection
+
+function ConvertFrom-CliXml {
+# http://poshcode.org/2302
+# by Joel Bennett, modification David Sjstrand
+
+#On récupère une string XML afin de désérialiser un objet Powershell.
+
+    param(
+        [Parameter(Position=0, Mandatory=$true, ValueFromPipeline=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String[]]$InputObject
+    )
+    begin
+    {
+		$OFS = "`n"
+        [String]$xmlString = ""
+    }
+    process
+    {
+        $xmlString += $InputObject
+    }
+    end
+    {
+        $type = [type]::gettype("System.Management.Automation.Deserializer")
+        $ctor = $type.getconstructor("instance,nonpublic", $null, @([xml.xmlreader]), $null)
+        $sr = new-object System.IO.StringReader $xmlString
+        $xr = new-object System.Xml.XmlTextReader $sr
+        $deserializer = $ctor.invoke($xr)
+        $method = @($type.getmethods("nonpublic,instance") | where-object {$_.name -like "Deserialize"})[1]
+        $done = $type.getmethod("Done", [System.Reflection.BindingFlags]"nonpublic,instance")
+        while (!$done.invoke($deserializer, @()))
+        {
+            try {
+                $method.invoke($deserializer, "")
+            } catch {
+                write-warning "Could not deserialize ${string}: $_"
+            }
+        }
+		$xr.Close()
+		$sr.Dispose()
+    }
+}
+
+function ConvertTo-CliXml {
+#from http://poshcode.org/2301
+#by Joel Bennett
+
+#Permet de sérialiser un objet PowerShell, on récupère une string XML
+    param(
+        [Parameter(Position=0, Mandatory=$true, ValueFromPipeline=$true)]
+        [ValidateNotNullOrEmpty()]
+        [PSObject[]]$InputObject
+    )
+    begin {
+        $type = [type]::gettype("System.Management.Automation.Serializer")
+        $ctor = $type.getconstructor("instance,nonpublic", $null, @([System.Xml.XmlWriter]), $null)
+        $sw = new-object System.IO.StringWriter
+        $xw = new-object System.Xml.XmlTextWriter $sw
+        $serializer = $ctor.invoke($xw)
+        $method = $type.getmethod("Serialize", "nonpublic,instance", $null, [type[]]@([object]), $null)
+        $done = $type.getmethod("Done", [System.Reflection.BindingFlags]"nonpublic,instance")
+    }
+    process {
+        try {
+            [void]$method.invoke($serializer, $InputObject)
+        } catch {
+            write-warning "Could not serialize $($InputObject.gettype()): $_"
+        }
+    }
+    end {    
+        [void]$done.invoke($serializer, @())
+        $sw.ToString()
+		$xw.Close()
+		$sw.Dispose()
+    }
+}
 
 #   Fonctions spécifiques à PsIonic
 function GetSFXname {
@@ -484,7 +562,7 @@ Function Get-ZipFile {
 	param( 
         [ValidateNotNullOrEmpty()]
         [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
-      [string]$Name, #todo array
+      [string[]]$Name, 
         
         [Parameter(Position=0, Mandatory=$false, ParameterSetName="ReadOption")]
   	  [Ionic.Zip.ReadOptions] $ReadOptions=$null,
@@ -496,7 +574,7 @@ Function Get-ZipFile {
       
       [Ionic.Zip.ZipErrorAction] $ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw,  
       
-      [Ionic.Zip.EncryptionAlgorithm] $Encryption="None",
+      [Ionic.Zip.EncryptionAlgorithm] $Encryption="None",    #todo utile ? l'info existe déjà dans l'archive ? 
       
       [String] $Password,
       
@@ -531,39 +609,41 @@ Function Get-ZipFile {
   }
  
   process {  
-    try {
-      $FileName = GetArchivePath $Name
-      if($FileName -eq $null)
-      { 
-          $Msg=$MessageTable.InvalidValue -F $Name
-          $Logger.Fatal($Msg) #<%REMOVE%>
-          Write-Error $Msg 
-          return $null
-      }
-         
-      $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
-     
-      $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
-      $ZipFile.ZipErrorAction=$ZipErrorAction
-  
-      SetZipErrorHandler $ZipFile
-      AddMethodPSDispose $ZipFile
-  
-      $ZipFile.SortEntriesBeforeSaving=$SortEntries
-      $ZipFile.TempFileFolder=$TempLocation 
-      $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
-      $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat
-      
-      if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
-      { SetZipFileEncryption $ZipFile $Encryption $Password }
-       #Les autres options sont renseignées avec les valeurs par défaut
-      ,$ZipFile
-    }
-    catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
-    {
-      $Logger.Fatal($_.Exception.Message) #<%REMOVE%>
-      Write-Error $_.Exception.Message
-    }     
+    Foreach($Current in $Name){
+     try {
+        $FileName = GetArchivePath $Current
+        if($FileName -eq $null)
+        { 
+            $Msg=$MessageTable.InvalidValue -F $Name.ToString()
+            $Logger.Fatal($Msg) #<%REMOVE%>
+            Write-Error $Msg 
+            return $null
+        }
+           
+        $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
+       
+        $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
+        $ZipFile.ZipErrorAction=$ZipErrorAction
+    
+        SetZipErrorHandler $ZipFile
+        AddMethodPSDispose $ZipFile
+    
+        $ZipFile.SortEntriesBeforeSaving=$SortEntries
+        $ZipFile.TempFileFolder=$TempLocation 
+        $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
+        $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat
+        
+        if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
+        { SetZipFileEncryption $ZipFile $Encryption $Password }
+         #Les autres options sont renseignées avec les valeurs par défaut
+        ,$ZipFile
+     }
+     catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
+     {
+        $Logger.Fatal($_.Exception.Message) #<%REMOVE%>
+        Write-Error $_.Exception.Message
+     } 
+   }#Foreach          
   } #Process
 } #Get-ZipFile
 
@@ -1591,10 +1671,18 @@ $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { OnRemovePsIonicZip }
 
 Reset-PsIonicSfxOptions 
  
-Set-Alias -name cmpzf       -value Compress-ZiFile
-Set-Alias -name expzf       -value Expand-ZiFile
-Set-Alias -name cnvsfx      -value ConvertTo-Sfx
-Set-Alias -name fz          -value Format-ZipFile
+Set-Alias -name cmpzf   -value Compress-ZiFile
+Set-Alias -name expzf   -value Expand-ZiFile
+Set-Alias -name cnvsfx  -value ConvertTo-Sfx
+Set-Alias -name fz      -value Format-ZipFile
+Set-Alias -name tstzf   -value Test-ZipFile
+Set-Alias -name gzf     -value Get-ZipFile
+Set-Alias -name adze    -value Add-ZipEntry
+
+Set-Alias -name nzfo    -value New-ZipSfxOptions
+Set-Alias -name rzfo    -value Reset-PsIonicSfxOptions
+Set-Alias -name szfo    -value Set-PsIonicSfxOptions
+Set-Alias -name gzfo    -value Get-PsIonicSfxOptions
 
 #<DEFINE %DEBUG%>
 Set-Alias -name Set-DebugLevel -value Set-Log4NETDebugLevel
@@ -1617,7 +1705,9 @@ Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         Get-PsIonicSfxOptions,
                                                         Test-ZipFile,
                                                         Get-ZipFile,
-                                                        Format-ZipFile
+                                                        Format-ZipFile,
+                                                        ConvertFrom-CliXml,
+                                                        ConvertTo-CliXml
                                                         #Update-ZipFile,
                                                         #Sync-ZipFile,
                                                         #Split-ZipFile,
