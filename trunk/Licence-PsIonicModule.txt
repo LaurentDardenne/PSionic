@@ -1,2 +1,3 @@
-﻿Psionic.psm1
-Libre de droits pour tous usages non commercial.
+﻿Psionic.psm1 2013
+This module is free for non-commercial purposes. 
+Ce module est libre de droits pour tous usages non commercial.
