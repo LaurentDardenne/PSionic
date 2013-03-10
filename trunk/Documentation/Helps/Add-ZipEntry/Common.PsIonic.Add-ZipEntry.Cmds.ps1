@@ -25,49 +25,46 @@
 	notes = $Datas.AddZipEntryNotes
 	examples = @(
 		@{
-
 			code = {
 $ZipFile=Get-Zipfile -Name C:\Temp\Test.zip
-$File=Get-ChildItem C:\Temp\Test.ps1 
-
+$File=Get-Item C:\Temp\Test.ps1 
 Add-ZipEntry -Object $File -ZipFile $ZipFile
-
-$ZipFile.Save()
-$ZipFile.PSDispose()
+$ZipFile.Close()
 			}
 			remarks = $Datas.GetZipFileExamplesRemarks1
 			test = { . $args[0] }
 		}
 		@{
-
 			code = {
-$ZipFile=Get-Zipfile -Name Test.zip
-
-Get-ChildItem *.txt|Add-ZipEntry -ZipFile $Zip
-
-$ZipFile.Save()
-$ZipFile.PSDispose()
+$ZipFile=Get-Zipfile -Name C:\Temp\Test.zip
+Get-ChildItem *.txt|Add-ZipEntry -ZipFile $ZipFile
+$ZipFile.Close()
 			}
 			remarks = $Datas.GetZipFileExamplesRemarks2
 			test = { . $args[0] }
 		}
 		@{
-
 			code = {
-$Zip=Get-Zipfile -Name Test.zip
- $ofs="`r`n"
- [string]$Text=Get-Content C:\Temp\Test.ps1
+$ZipFile=Get-Zipfile -Name C:\Temp\Test.zip
+[string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
 Add-ZipEntry -Object $Text -EntryName MyText -ZipFile $ZipFile
-$ZipFile.Save()
-$ZipFile.PSDispose()
+$ZipFile.Close()
 			}
 			remarks = $Datas.GetZipFileExamplesRemarks3
 			test = { . $args[0] }
 		}
 		@{
-
 			code = {
-
+$ZipFile=Get-Zipfile -Name C:\Temp\Test.zip         
+ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -EntryName PSVersiontable -ZipFile $ZipFile
+$ZipFile.Close()
+         
+			}
+			remarks = $Datas.GetZipFileExamplesRemarks4
+			test = { . $args[0] }
+		}
+		@{
+			code = {
 #Todo Byte[]
          
 			}
