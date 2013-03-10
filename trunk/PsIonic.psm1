@@ -126,7 +126,7 @@ $PsIonicShortCut=@{
   Encoding=[System.Text.Encoding];
 }
 
-$AcceleratorsType= [PSObject].Assembly.GetType("System.Management.Automation.TypeAccelerators")
+$AcceleratorsType= [PSObject].Assembly.GetType("System.Management.Automation.TypeAccelerators") #v2 & v3
 Try {
   $PsIonicShortCut.GetEnumerator() |
   Foreach {
@@ -232,7 +232,7 @@ function ConvertFrom-CliXml {
     }
     end
     {
-        $type = [type]::gettype("System.Management.Automation.Deserializer")
+        $type = [PSObject].Assembly.GetType("System.Management.Automation.Serializer")  #v2 & v3
         $ctor = $type.getconstructor("instance,nonpublic", $null, @([xml.xmlreader]), $null)
         $sr = new-object System.IO.StringReader $xmlString
         $xr = new-object System.Xml.XmlTextReader $sr
@@ -263,7 +263,7 @@ function ConvertTo-CliXml {
         [PSObject[]]$InputObject
     )
     begin {
-        $type = [type]::gettype("System.Management.Automation.Serializer")
+        $type = [PSObject].Assembly.GetType("System.Management.Automation.Serializer") #v2 & v3
         $ctor = $type.getconstructor("instance,nonpublic", $null, @([System.Xml.XmlWriter]), $null)
         $sw = new-object System.IO.StringWriter
         $xw = new-object System.Xml.XmlTextWriter $sw
@@ -359,50 +359,41 @@ Function SetZipFileEncryption {
   
   function ResetPassword {
        $Logger.Debug("Reset password")  #<%REMOVE%>
-       [PSIonicTools.ZipPassword]::Reset($ZipFile) 
+       [PSIonicTools.ZipPassword]::Reset($ZipFile) # -> Encryption = None   
   }#ResetPassword                
   
   $Logger.Debug("Encryption configuration of the archive $($ZipFile.Name)") #<%REMOVE%>
    
-  try {
-    if ($Reset)
-    {  ResetPassword }  # -> Encryption = None  
-    else 
-    {    
-      $isPwdValid= [string]::IsNullOrEmpty($Password) -eq $false
-      $isEncryptionValid=$DataEncryption -ne "None"
-      
-      If ($isPwdValid -and -not $isEncryptionValid)
-      {
-         $Logger.Debug("Encryption Weak")  #<%REMOVE%>
-         $ZipFile.Encryption = "PkzipWeak"
-         $ZipFile.Password = $Password
-      }
-      elseif (-not $isPwdValid -and -not $isEncryptionValid)
-      { 
-         ResetPassword #Encryption = None -> Reset
-      }
-      elseif ($DataEncryption -ne "None")
-      {
-         if ($isPwdValid)
-         { 
-           $Msg=$MessageTable.InvalidPasswordForDataEncryptionValue -F $Password,$DataEncryption
-           $Logger.Fatal($Msg) #<%REMOVE%>
-           Throw $Msg 
-         }
-         $Logger.Debug("Encryption $DataEncryption") #<%REMOVE%>
-         $ZipFile.Encryption = $DataEncryption
-         $ZipFile.Password = $Password
-      }
-      else
-      { ResetPassword  }#Encryption = None -> Reset  
+  if ($Reset)
+  {  ResetPassword }  
+  else 
+  {    
+    $isPwdValid= [string]::IsNullOrEmpty($Password) -eq $false
+    $isEncryptionValid=$DataEncryption -ne "None"
+    
+    If ($isPwdValid -and -not $isEncryptionValid)
+    {
+       $Logger.Debug("Encryption Weak")  #<%REMOVE%>
+       $ZipFile.Encryption = "PkzipWeak"
+       $ZipFile.Password = $Password
     }
-   } 
-   catch{
-     $Msg=$MessageTable.ErrorSettingEncryptionValue -F $ZipFile.Name,$_.Exception.Message
-     $Logger.Fatal($Msg) #<%REMOVE%>
-     Throw $Msg
-   }
+    elseif (-not $isPwdValid -and -not $isEncryptionValid)
+    { ResetPassword }
+    elseif ($isEncryptionValid)
+    {
+       if (-not $isPwdValid)
+       { 
+         $Msg=$MessageTable.InvalidPasswordForDataEncryptionValue -F $Password,$DataEncryption
+         $Logger.Fatal($Msg) #<%REMOVE%>
+         Throw $Msg 
+       }
+       $Logger.Debug("Encryption $DataEncryption") #<%REMOVE%>
+       $ZipFile.Encryption = $DataEncryption
+       $ZipFile.Password = $Password
+    }
+    else
+    { ResetPassword  }  
+  }
  #Return $ZipFile
 }#SetZipFileEncryption
 
@@ -534,10 +525,40 @@ function AddMethodPSDispose{
           $Event.RemoveEventHandler($this,$_)
         }
       }
-       #On appelle la méthode Dispose() de l'instance en cours               
+       #On appelle la méthode Dispose() de l'instance en cours
+      Write-Debug("Dispose $($this.Name)") #<%REMOVE%               
       $this.Dispose()
   }            
 } #AddMethodPSDispose
+
+function AddMethodClose{
+#Membre synthétique dédié à la libération des ressources
+#Si on utilise Passthru, on doit pouvoir libèrer les ressources en dehors de la fonction
+#Evite l'appel sucessif de Save() puis PSDispose()
+
+ param ($ZipInstance)
+  
+  $Logger.Debug("Add close method on $($ZipInstance.Name)")  #<%REMOVE%>
+  Add-Member -Inputobject $ZipInstance -Force ScriptMethod Close {
+      try {
+        Write-Debug("Close : save $($this.Name)") #<%REMOVE%
+        $this.Save()
+      }
+      finally {
+       #On appelle la méthode Dispose() de l'instance en cours  
+       Write-Debug("Close : PSDispose $($this.Name)") #<%REMOVE%             
+      $this.PSDispose()
+     }
+  }            
+} #AddMethodClose
+
+
+function AddMethods{
+ param ($ZipInstance)
+
+  AddMethodPSDispose $ZipInstance
+  AddMethodClose $ZipInstance
+} #AddMethods
          
 function DisposeZip{
 #Code commun de libération d'une instance ZipFile
@@ -574,7 +595,7 @@ Function Get-ZipFile {
       
       [Ionic.Zip.ZipErrorAction] $ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw,  
       
-      [Ionic.Zip.EncryptionAlgorithm] $Encryption="None",    #todo utile ? l'info existe déjà dans l'archive ? 
+      [Ionic.Zip.EncryptionAlgorithm] $Encryption="None", 
       
       [String] $Password,
       
@@ -626,7 +647,7 @@ Function Get-ZipFile {
         $ZipFile.ZipErrorAction=$ZipErrorAction
     
         SetZipErrorHandler $ZipFile
-        AddMethodPSDispose $ZipFile
+        AddMethods $ZipFile
     
         $ZipFile.SortEntriesBeforeSaving=$SortEntries
         $ZipFile.TempFileFolder=$TempLocation 
@@ -770,8 +791,8 @@ Function Compress-ZipFile {
       $ZipFile.ZipErrorAction=$ZipErrorAction
 
       SetZipErrorHandler $ZipFile
-      AddMethodPSDispose $ZipFile
-
+      AddMethods $ZipFile
+      
       $ZipFile.Name=$Name
       $ZipFile.Comment=$Comment
       $ZipFile.SortEntriesBeforeSaving=$SortEntries
@@ -986,6 +1007,77 @@ Function GetArchivePath {
     }#foreach
 } #GetArchivePath
 
+Function Expand-Entry { 
+# .ExternalHelp PsIonic-Help.xml         
+    [CmdletBinding()] 
+    [OutputType([Ionic.Zip.ZipEntry])]
+	param(
+		[parameter(Mandatory=$True,ValueFromPipeline=$True)]
+	  $ZipFile,        
+      	[Parameter(Position=1,Mandatory=$True,ValueFromPipeline=$True)]
+	  [String[]] $Name,      
+        [Parameter(Mandatory=$false, ParameterSetName="Default")] 
+		[ValidateScript( { IsValueSupported $_ -Extract } )] 
+	  [Ionic.Zip.ExtractExistingFileAction] $ExtractAction=[Ionic.Zip.ExtractExistingFileAction]::Throw,
+	
+	  [String] $Password,
+
+      [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
+      [Switch] $XML,
+      [Switch] $Strict
+	) 
+ process {
+ try {
+    $Stream = New-Object System.IO.MemoryStream
+    $Logger.Debug("ReadEntry $Name in $($ZipFile.Name)") #<%REMOVE%>
+    $Entry=$ZipFile[$Name]
+    if ($Entry -ne $null)
+    { $Entry.Extract($Stream)}
+    else 
+    { 
+      $msg=$MessageTable.ExpandEntryError -F $Name,$ZipFile.Name
+      $Exception=New-Object System.ArgumentException($Msg,'Name')
+      $Logger.Error($Msg) #<%REMOVE%>
+      if ($Strict) 
+      { throw $Exception }
+      else 
+      { 
+         $PSCmdlet.WriteError(
+            (New-Object System.Management.Automation.ErrorRecord(
+              $Exception, 
+              "EntryNotFound", 
+              "ObjectNotFound",
+              ("[{0}]" -f $Name)
+             )  
+            ) 
+         )
+      } 
+    }
+    $Stream.Position = 0;
+    $Reader = New-Object System.IO.StreamReader($Stream)
+    $Logger.Debug("Read data from the MemoryStream") #<%REMOVE%>
+    $Result= $Reader.ReadToEnd()
+    if ($XML)
+     { return [XML]$Result }
+    else 
+    { return [string]$Result }
+ }
+ finally 
+ {
+   if ($Reader  -ne $Null)
+   { 
+     $Logger.Debug("Dispose Reader") #<%REMOVE%>
+     $Reader.Dispose() 
+   }
+   if ($Stream -ne $Null)
+   { 
+     $Stream.Dispose() 
+     $Logger.Debug("Dispose MemoryStream") #<%REMOVE%>     
+   }
+ }
+ }#process
+} #Expand-Entry
+
 Function Expand-ZipFile { 
 # .ExternalHelp PsIonic-Help.xml         
     [CmdletBinding(DefaultParameterSetName="Default")] 
@@ -1056,7 +1148,7 @@ Function Expand-ZipFile {
         $ZipFile = [ZipFile]::Read($FileName,$ReadOptions)
         $ZipFile.FlattenFoldersOnExtract = $Flatten  
         
-        AddMethodPSDispose $ZipFile
+        AddMethods $ZipFile
         return ,$zipFile
       }
       catch {
@@ -1707,7 +1799,8 @@ Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         Get-ZipFile,
                                                         Format-ZipFile,
                                                         ConvertFrom-CliXml,
-                                                        ConvertTo-CliXml
+                                                        ConvertTo-CliXml,
+                                                        Expand-Entry
                                                         #Update-ZipFile,
                                                         #Sync-ZipFile,
                                                         #Split-ZipFile,
