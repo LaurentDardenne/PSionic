@@ -19,6 +19,8 @@
  ErrorSettingEncryptionValue=Error occured while setting encryption on the archive {0} : {1}
 
  AddEntryError=Can not add the entry {0} : {1}
+ ExpandEntryError=The entry named {0} do not exist in the archive '{1}'
+ 
 
  ZipArchiveReadError=Error occured while reading the archive {0} : {1}.
  ZipArchiveExtractError=Error occured while extracting the archive {0} : {1}.

@@ -19,6 +19,7 @@
  ErrorSettingEncryptionValue=Erreur lors du paramètrage de l'archive {0} : {1}
  
  AddEntryError=Impossible d'ajouter l'élement {0} dans l'archive '{1}' : {2}
+ ExpandEntryError=L'entrée nommée {0} n'existe pas dans l'archive '{1}'
  
  ZipArchiveReadError=Une erreur s'est produite lors de la lecture de l'archive {0} : {1}
  ZipArchiveExtractError=Une erreur s'est produite lors de l'extraction de l'archive {0} : {1}
