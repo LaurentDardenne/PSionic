@@ -1,3 +1,4 @@
+﻿
 # ConvertTo-CliXml command help
 @{
 	command = 'ConvertTo-CliXml'

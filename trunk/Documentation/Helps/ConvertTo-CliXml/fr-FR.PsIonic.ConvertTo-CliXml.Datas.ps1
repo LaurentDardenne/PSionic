@@ -1,4 +1,4 @@
-# ConvertTo-CliXml command data
+﻿# ConvertTo-CliXml command data
 $Datas = @{
 	ConvertToCliXmlSynopsis = ''
 	ConvertToCliXmlDescription = ''

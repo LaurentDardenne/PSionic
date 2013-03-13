@@ -1,4 +1,4 @@
-# ConvertFrom-CliXml command help
+﻿# ConvertFrom-CliXml command help
 @{
 	command = 'ConvertFrom-CliXml'
 	synopsis = $Datas.ConvertFromCliXmlSynopsis
