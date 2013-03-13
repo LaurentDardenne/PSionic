@@ -1,4 +1,4 @@
-# Expand-Entry command help
+﻿# Expand-Entry command help
 @{
 	command = 'Expand-Entry'
 	synopsis = $Datas.ExpandEntrySynopsis
