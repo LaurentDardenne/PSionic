@@ -25,20 +25,6 @@ $PSionicModule=Get-Module PsIonic
       } 
       $result | should be ($true)
    }
-
-   It "Test [Ionic.Zip.ZipErrorAction]::Unknown return true" {
-      try {
-        &$PSionicModule {isValueSupported Unknown }
-      }catch {
-        $result=$_.Exception.Message -match "Impossible de convertir la valeur « Unknown » en type"
-      } 
-      $result | should be ($false)   
-   }
-   
-   It "Test [Ionic.Zip.ZipErrorAction]::Throw return true" {
-      $result= &$PSionicModule {isValueSupported Throw}
-      $result | should be ($true)
-   }
    
    It "Test [Ionic.Zip.ZipErrorAction]::InvokeErrorEvent return exception" {
       try {
