@@ -1,4 +1,4 @@
-
+﻿
 The managed BZIP2 code included in Ionic.BZip2.dll and Ionic.Zip.dll is
 modified code, based on the bzip2 code in the Apache commons compress
 library.
