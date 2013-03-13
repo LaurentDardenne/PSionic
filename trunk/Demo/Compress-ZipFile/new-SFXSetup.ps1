@@ -1,4 +1,4 @@
-#Create a setup into a self-extracting archive 
+﻿#Create a setup into a self-extracting archive 
  
 $PathModule=[System.IO.Path]::GetTempPath()  -replace '\\$',''
 Write-Host "Temp path : $PathModule"
