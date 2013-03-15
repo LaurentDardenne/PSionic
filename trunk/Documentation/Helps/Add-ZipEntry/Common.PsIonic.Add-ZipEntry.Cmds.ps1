@@ -5,7 +5,7 @@
 	description = $Datas.AddZipEntryDescription
 	parameters = @{
 		DirectoryPath = $Datas.AddZipEntryParametersDirectoryPath
-		EntryName = $Datas.AddZipEntryParametersEntryName
+		Name = $Datas.AddZipEntryParametersName
 		Object = $Datas.AddZipEntryParametersObject
 		Passthru = $Datas.AddZipEntryParametersPassthru
 		ZipFile = $Datas.AddZipEntryParametersZipFile
@@ -47,7 +47,7 @@ $ZipFile.Close()
 			code = {
 $ZipFile=Get-Zipfile -Name C:\Temp\Test.zip
 [string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
-Add-ZipEntry -Object $Text -EntryName MyText -ZipFile $ZipFile
+Add-ZipEntry -Object $Text -Name MyText -ZipFile $ZipFile
 $ZipFile.Close()
 			}
 			remarks = $Datas.GetZipFileExamplesRemarks3
@@ -56,7 +56,7 @@ $ZipFile.Close()
 		@{
 			code = {
 $ZipFile=Get-Zipfile -Name C:\Temp\Test.zip         
-ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -EntryName PSVersiontable -ZipFile $ZipFile
+ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Name PSVersiontable -ZipFile $ZipFile
 $ZipFile.Close()
          
 			}

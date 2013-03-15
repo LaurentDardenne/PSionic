@@ -1,10 +1,10 @@
-# Add-ZipEntry command data
+﻿# Add-ZipEntry command data
 $Datas = @{
 	AddZipEntrySynopsis = ''
 	AddZipEntryDescription = ''
 	AddZipEntrySets__AllParameterSets = ''
 	AddZipEntryParametersDirectoryPath = ''
-	AddZipEntryParametersEntryName = ''
+	AddZipEntryParametersName = ''
 	AddZipEntryParametersObject = ''
 	AddZipEntryParametersPassthru = ''
 	AddZipEntryParametersZipFile = ''

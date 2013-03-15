@@ -1,11 +1,11 @@
-# Add-ZipEntry command help
+﻿# Add-ZipEntry command help
 @{
 	command = 'Add-ZipEntry'
 	synopsis = $Datas.AddZipEntrySynopsis
 	description = $Datas.AddZipEntryDescription
 	parameters = @{
 		DirectoryPath = $Datas.AddZipEntryParametersDirectoryPath
-		EntryName = $Datas.AddZipEntryParametersEntryName
+		Name = $Datas.AddZipEntryParametersName
 		Object = $Datas.AddZipEntryParametersObject
 		Passthru = $Datas.AddZipEntryParametersPassthru
 		ZipFile = $Datas.AddZipEntryParametersZipFile
