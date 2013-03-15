@@ -134,8 +134,21 @@ Task Clean -Depends Init {
 
 Task Init {
 #validation à minima des prérequis
-     
- if (-not (Test-Path Variable:Psionic))
-  {Throw "La variable Psionic n'est pas déclarée."}
+
  Write-host "Mode $Configuration"
+  if (-not (Test-Path Variable:Psionic))
+  {Throw "La variable Psionic n'est pas déclarée."}
+  "$PSScripts\Helps\Helps.ps1"| 
+    Foreach {
+     if (-Not (Test-Path $_))
+     {Throw "Fichier nécessaire introuvable :$_"}
+    
+     Import-Module DTW.PS.FileSystem
+     $InvalidFiles=@(&"$PsIonicTools\Test-BOMFile")
+     if ($InvalidFiles.Count -ne 0)
+     { 
+       $ofs="`r`n"
+       Throw "Des fichiers ne sont pas encodés en UTF8 ou sont codés BigEndian:`r`n $InvalidFiles"
+     }  
+    }#foreach  
 } #Init
