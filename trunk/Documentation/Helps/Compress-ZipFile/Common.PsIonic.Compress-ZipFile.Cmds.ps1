@@ -70,7 +70,7 @@ Get-ChildItem *.txt|Compress-File C:\Temp\Test.zip
 		}
 	)
 	links = @(
-		@{ text = ''; URI = '' }
+		@{ text = 'Test online'; URI = 'http://psionic.codeplex.com/wikipage?title=Compress-ZipFile_FR' }
 	)
 }
 
