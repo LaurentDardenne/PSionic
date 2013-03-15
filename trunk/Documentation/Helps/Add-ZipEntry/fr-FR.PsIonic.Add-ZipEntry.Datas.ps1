@@ -4,7 +4,7 @@ $Datas = @{
 	AddZipEntryDescription = 'Ajoute une entrée dans le catalogue d''une archive Zip existante, cette entrée peut être un nom de fichier ou de répertoire, une chaîne de caractères ou un tableau d''octets.'
 	AddZipEntrySets__AllParameterSets = ''
 	AddZipEntryParametersDirectoryPath = 'La nouvelle entrée sera ajoutée dans un répertoire spécifique. Par défaut elle est ajoutée à la racine de l''arborescence contenue dans l''archive.'
-	AddZipEntryParametersEntryName = @"
+	AddZipEntryParametersName = @"
  Chaque entrée d'archive est associèe à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme nom d'entrée dans l'archive.
  Pour les chaînes de caractères ou les tableaux d'octets, vous devez préciser un nom d'entrée.
 "@	
