@@ -44,6 +44,6 @@ Task BuildZipAndSFX {
    Write-host "Puis crée une archive autoextractible"
    ConvertTo-Sfx $ZipFileName -Save $SaveOptions -Read $ReadOptions  
 
-  Push-Location
-  Remove-Module PsIonic -Force   
+  #Remove-Module PsIonic
+  Push-Location   
 } #BuildZipAndSFX
