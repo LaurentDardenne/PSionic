@@ -17,16 +17,23 @@
   [System.Collections.IDictionary] $ProjectParameters,
 
      [Parameter(Mandatory=$false)]
-   [int]$Scope=1
+   [int]$Scope=1,
+   [Switch]$TrunkDirectory
  )
   
+   # 'Classic' repository
+  if ($TrunkDirectory)
+  {$Trunk="$SvnPath\$ProjectName\trunk"}
+  else
+  {$Trunk="$SvnPath\$ProjectName"}
+
   # Hashtable 'primaire'
   # Ces clés peuvent être référencées dans le code de l'appelant
   $Properties=@{
      ProjectName=$ProjectName;
      Url=$URlSvnServer;
      Svn="$SvnPath\$ProjectName";
-     Trunk="$SvnPath\$ProjectName\trunk";
+     Trunk=$Trunk;
   }
   
   # Ajoute la hashtable additionnelle si besoin
