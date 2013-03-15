@@ -2,7 +2,6 @@
  LoggerDotNotExist=La variable `$Logger n'existe pas ou est `$null
  ParameterStringEmpty=Le paramètre '{0}' ne peut être une chaîne vide.
  PathMustExist=Le nom de chemin n'existe pas : {0}
- FileMustExist=Le fichier n'existe pas : {0}
  ValueNotSupported=La valeur '{0}' n'est pas supportée.
  TypeNotSupported={0}: le type '{1}' n'est pas supporté.
  CommentMaxValue=Le contenu du paramètre 'Comment' ne doit pas excéder 32767 caractères.   
@@ -16,9 +15,8 @@
  ConvertingFile=Conversion de l'archive {0} en une archive autoextractible.
  ErrorSFX=Erreur lors de la création de l'archive autoextractible {0} : {1}
   
- ErrorSettingEncryptionValue=Erreur lors du paramètrage de l'archive {0} : {1}
- 
  AddEntryError=Impossible d'ajouter l'élement {0} dans l'archive '{1}' : {2}
+ EntryIsNull=L'entrée '{0}' est `$null.
  ExpandEntryError=L'entrée nommée {0} n'existe pas dans l'archive '{1}'
  
  ZipArchiveReadError=Une erreur s'est produite lors de la lecture de l'archive {0} : {1}
