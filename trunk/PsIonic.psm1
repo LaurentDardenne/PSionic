@@ -12,7 +12,7 @@ Add-Type -Path "$psScriptRoot\$($PSVersionTable.PSVersion)\log4net.dll"
 Function Start-Log4Net {
 #Paramètrage du log4net via un fichier XML spécifique au module         
   $ConfigFile=New-Object System.IO.fileInfo "$psScriptRoot\Log4Net.Config.xml"
-  Write-debug("load '$psScriptRoot\Log4Net.Config.xml'") 
+  Write-debug "load '$psScriptRoot\Log4Net.Config.xml'" 
   [Log4net.Config.XmlConfigurator]::Configure($ConfigFile)
 }#Start-Log4Net
 
@@ -858,7 +858,100 @@ Function Compress-ZipFile {
     }#End
 } #Compress-ZipFile
 
-
+Function AddEntry {
+   param (
+       [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
+     $InputObject,
+       [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
+       [Alias('Key')]
+       [Alias('Name')]
+     [string] $KeyName, #Le nom d'entrée n'est pas obligatoire et peut provenir de la clé d'une entrée de hashtable
+     [switch] $Passthru
+    )
+ begin {
+   [type[]] $private:ParameterTypesOfAddEntryMethod=[string],[byte[]]
+   $private:AddEntryMethod=[Ionic.Zip.ZipFile].GetMethod("AddEntry",$private:ParameterTypesOfAddEntryMethod) 
+ }
+ process {
+  try {
+    if ($InputObject.GetType().Fullname -match "^System.Collections.Generic.KeyValuePair|^System.Collections.DictionaryEntry")
+    {
+      if ($_.Value -eq $null)
+      {
+        Write-Error ($MessageTable.EntryIsNull -F $KeyName)
+        return 
+      }
+      else 
+      {$InputObject=$_.Value}
+    }
+    $Logger.Debug("Add $InputObject")  #<%REMOVE%>
+    $Logger.Debug("Add $KeyName")  #<%REMOVE%>
+    
+    $isCollection=isCollection $InputObject
+    if ($isCollection -and ($InputObject -is [byte[]]))
+    { 
+      $Logger.Debug("Add Byte[]")  #<%REMOVE%>
+      if ([string]::IsNullOrEmpty($KeyName))
+      { 
+        Write-Error ($MessageTable.ParameterStringEmpty -F 'KeyName')
+        return
+      }
+        #Problem with 'distance algorithm' ?
+        # http://stackoverflow.com/questions/13084176/powershell-method-overload-resolution-bug  
+        #  public ZipEntry AddEntry(string entryName, string content)  
+        # public ZipEntry AddEntry(string entryName, byte[] byteContent)
+      $params = @($KeyName, ($InputObject -as [byte[]]) )
+      $ZipEntry=$private:AddEntryMethod.Invoke($ZipFile, $params)
+    }
+    elseif ($isCollection)
+    {
+       $Logger.Debug("Recurse Add-Entry")  #<%REMOVE%>
+       $InputObject.GetEnumerator()|
+        GetObjectByType $File|
+        Add-ZipEntry $ZipFile -Passthru:$Passthru      
+    }
+    elseif ($InputObject -is [System.String])
+    { 
+       $Logger.Debug("Add String")  #<%REMOVE%>
+       if ([string]::IsNullOrEmpty($KeyName))
+       { 
+         Write-Error ($MessageTable.ParameterStringEmpty -F 'KeyName')
+         return  
+       }
+       $ZipEntry=$ZipFile.AddEntry($KeyName, $InputObject -as [string]) 
+    }
+    elseif ($InputObject -is [System.IO.DirectoryInfo])
+    { 
+      $Logger.Debug("Add Directory ")  #<%REMOVE%>
+      $ZipEntry=$ZipFile.AddDirectory($InputObject.FullName, $InputObject.Name)
+    }
+    elseif ($InputObject -is [System.IO.FileInfo])
+    { 
+      $Logger.Debug("Add Fileinfo")  #<%REMOVE%>
+       #($DirectoryPath -eq [string]::Empty) add on the root
+       # IOnic doit connaitre le chemin complet sinon il est considéré comme relatif
+     $ZipEntry=$ZipFile.AddFile($InputObject.FullName,$DirectoryPath)  
+    }
+    elseif ($InputObject -is [Ionic.Zip.ZipEntry])
+    {
+      $Logger.Debug("Add ZipEntry")  #<%REMOVE%>
+      Write-Error "Under construction"
+    }
+    else
+    {
+      $Msg=$MessageTable.TypeNotSupported -F $MyInvocation.MyCommand.Name,$InputObject.GetType().FullName
+      $Logger.Debug($Msg)  #<%REMOVE%>
+      Write-Warning $Msg   
+    }
+    if ($Passthru)
+    {$ZipEntry} 
+   }
+   catch { #ArgumentNullException or ArgumentException
+    Write-Error ($MessageTable.AddEntryError -F $InputObject,$ZipFile.Name,$_.Exception.Message)
+   }
+  }#process
+}#AddEntry
+   
 Function Add-ZipEntry { 
 # .ExternalHelp PsIonic-Help.xml 
  [CmdletBinding()] 
@@ -870,82 +963,21 @@ Function Add-ZipEntry {
       [Parameter(Position=0,Mandatory=$true)]
     [Ionic.Zip.ZipFile] $ZipFile,
      [Parameter(Position=1,Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
-    [string] $EntryName, 
+    [string] $Name, 
     [string] $DirectoryPath=[string]::Empty,
     [switch] $Passthru
   )
-   begin {
-   [type[]] $private:ParameterTypesOfAddEntryMethod=[string],[byte[]]
-   $private:AddEntryMethod=[Ionic.Zip.ZipFile].GetMethod("AddEntry",$private:ParameterTypesOfAddEntryMethod) 
- }#begin
- 
- process {
-  try {
-    $Logger.Debug("Add $Object")  #<%REMOVE%>
-    $isCollection=isCollection $Object
-    if ($isCollection -and ($Object -is [byte[]]))
-    { 
-      $Logger.Debug("Add Byte[]")  #<%REMOVE%>
-      if ([string]::IsNullOrEmpty($EntryName))
-      { 
-        Write-Error ($MessageTable.ParameterStringEmpty -F 'EntryName')
-        return
+   process {
+      $isCollection=isCollection $Object
+      if ($isCollection -and ($Object -is [System.Collections.IDictionary]))
+      {
+        $Logger.Debug("Add entries from a hashtable.")  #<%REMOVE%>
+        $Object.GetEnumerator()|
+         AddEntry  -Passthru:$Passthru
       }
-        #Problem with 'distance algorithm' ?
-        # http://stackoverflow.com/questions/13084176/powershell-method-overload-resolution-bug  
-        #  public ZipEntry AddEntry(string entryName, string content)  
-        # public ZipEntry AddEntry(string entryName, byte[] byteContent)
-      $params = @($EntryName, ($Object -as [byte[]]) )
-      $ZipEntry=$private:AddEntryMethod.Invoke($ZipFile, $params)
-    }
-    elseif ($isCollection)
-    {
-       $Logger.Debug("Recurse Add-Entry")  #<%REMOVE%>
-       $Object.GetEnumerator()|
-        GetObjectByType $File|
-        Add-ZipEntry $ZipFile -Passthru:$Passthru      
-    }
-    elseif ($Object -is [System.String])
-    { 
-       $Logger.Debug("Add String")  #<%REMOVE%>
-       if ([string]::IsNullOrEmpty($EntryName))
-       { 
-         Write-Error ($MessageTable.ParameterStringEmpty -F 'EntryName')
-         return  
-       }
-       $ZipEntry=$ZipFile.AddEntry($EntryName, $Object -as [string]) 
-    }
-    elseif ($Object -is [System.IO.DirectoryInfo])
-    { 
-      $Logger.Debug("Add Directory ")  #<%REMOVE%>
-      $ZipEntry=$ZipFile.AddDirectory($Object.FullName, $Object.Name)
-    }
-    elseif ($Object -is [System.IO.FileInfo])
-    { 
-      $Logger.Debug("Add Fileinfo")  #<%REMOVE%>
-       #($DirectoryPath -eq [string]::Empty) add on the root
-       # IOnic doit connaitre le chemin complet sinon il est considéré comme relatif
-     $ZipEntry=$ZipFile.AddFile($Object.FullName,$DirectoryPath)  
-    }
-    elseif ($Object -is [Ionic.Zip.ZipEntry])
-    {
-      $Logger.Debug("Add ZipEntry")  #<%REMOVE%>
-      Write-Error "Under construction"
-    }
-    else
-    {
-      $Msg=$MessageTable.TypeNotSupported -F $MyInvocation.MyCommand.Name,$Object.GetType().FullName
-      $Logger.Debug($Msg)  #<%REMOVE%>
-      Write-Warning $Msg   
-    }
-    if ($Passthru)
-    {$ZipEntry} 
-   }
-   catch { #ArgumentNullException or ArgumentException
-    Write-Error ($MessageTable.AddEntryError -F $Object,$ZipFile.Name,$_.Exception.Message)
-   }
-
- }#process
+      else
+      { AddEntry $Object $Name }
+  }#process
 } #Add-ZipEntry
 
 Function GetArchivePath {
@@ -1010,10 +1042,11 @@ Function GetArchivePath {
 Function Expand-Entry { 
 # .ExternalHelp PsIonic-Help.xml         
     [CmdletBinding()] 
-    [OutputType([Ionic.Zip.ZipEntry])]
+    [OutputType([System.String])]
 	param(
-		[parameter(Mandatory=$True,ValueFromPipeline=$True)]
-	  $ZipFile,        
+		[ValidateNotNull()] 
+        [parameter(Mandatory=$True,ValueFromPipeline=$True)]
+      [Ionic.Zip.ZipFile] $ZipFile,        
       	[Parameter(Position=1,Mandatory=$True,ValueFromPipeline=$True)]
 	  [String[]] $Name,      
         [Parameter(Mandatory=$false, ParameterSetName="Default")] 
@@ -1067,12 +1100,14 @@ Function Expand-Entry {
    if ($Reader  -ne $Null)
    { 
      $Logger.Debug("Dispose Reader") #<%REMOVE%>
-     $Reader.Dispose() 
+     $Reader.Dispose()
+     $Reader=$null 
    }
    if ($Stream -ne $Null)
    { 
-     $Stream.Dispose() 
      $Logger.Debug("Dispose MemoryStream") #<%REMOVE%>     
+     $Stream.Dispose()
+     $Stream=$null 
    }
  }
  }#process
