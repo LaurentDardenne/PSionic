@@ -32,6 +32,7 @@
         <foreColor value="Red" />
         <backColor value="Red, HighIntensity" />
     </mapping>  
+    <threshold value="OFF"/>    
   </appender>
 
   <appender name="File" type="log4net.Appender.RollingFileAppender">
