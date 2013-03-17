@@ -13,7 +13,13 @@ Function Start-Log4Net {
 #Paramètrage du log4net via un fichier XML spécifique au module         
   $ConfigFile=New-Object System.IO.fileInfo "$psScriptRoot\Log4Net.Config.xml"
   Write-debug "load '$psScriptRoot\Log4Net.Config.xml'" 
-  [Log4net.Config.XmlConfigurator]::Configure($ConfigFile)
+  $Result=[Log4net.Config.XmlConfigurator]::Configure($ConfigFile)
+  if ($Result.Count -ne 0 )
+  { 
+    $ofs="`r`n"
+    [string]$Message=$Result|Out-String
+    throw ( New-Object System.Xml.XmlException $Message) 
+  }
 }#Start-Log4Net
 
 Function Get-Loggger {
@@ -62,6 +68,16 @@ Function Stop-ConsoleAppender {
  else
  { Write-Warning $MessageTable.LoggerDotNotExist }
 }#Stop-ConsoleAppender
+
+Function Start-ConsoleAppender {
+ If ($script:Logger -ne $null)
+ { 
+    $Console=$logger.Logger.Parent.Appenders|Where {$_.Name -eq 'Console'}
+    $Console.Threshold=[log4net.Core.Level]::Debug
+ }
+ else
+ { Write-Warning $MessageTable.LoggerDotNotExist }
+}#Start-ConsoleAppender
 
 Start-Log4Net
 $Script:Logger=Get-Loggger
@@ -211,6 +227,7 @@ function isCollection {
 }#isCollection
 
 function ConvertFrom-CliXml {
+# .ExternalHelp PsIonic-Help.xml 
 # http://poshcode.org/2302
 # by Joel Bennett, modification David Sjstrand
 
@@ -253,6 +270,7 @@ function ConvertFrom-CliXml {
 }
 
 function ConvertTo-CliXml {
+# .ExternalHelp PsIonic-Help.xml  
 #from http://poshcode.org/2301
 #by Joel Bennett
 
@@ -640,24 +658,26 @@ Function Get-ZipFile {
             Write-Error $Msg 
             return $null
         }
-           
-        $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
-       
-        $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
-        $ZipFile.ZipErrorAction=$ZipErrorAction
-    
-        SetZipErrorHandler $ZipFile
-        AddMethods $ZipFile
-    
-        $ZipFile.SortEntriesBeforeSaving=$SortEntries
-        $ZipFile.TempFileFolder=$TempLocation 
-        $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
-        $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat
-        
-        if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
-        { SetZipFileEncryption $ZipFile $Encryption $Password }
-         #Les autres options sont renseignées avec les valeurs par défaut
-        ,$ZipFile
+        if ((TestZipArchive -Archive $FileName  -Password $Password -Passthru ) -ne $null)
+        {   
+          $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
+         
+          $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
+          $ZipFile.ZipErrorAction=$ZipErrorAction
+      
+          SetZipErrorHandler $ZipFile
+          AddMethods $ZipFile
+      
+          $ZipFile.SortEntriesBeforeSaving=$SortEntries
+          $ZipFile.TempFileFolder=$TempLocation 
+          $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
+          $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat
+          
+          if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
+          { SetZipFileEncryption $ZipFile $Encryption $Password }
+           #Les autres options sont renseignées avec les valeurs par défaut
+          ,$ZipFile
+        }
      }
      catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
      {
@@ -1454,7 +1474,7 @@ Function Test-ZipFile{
              else {
               Foreach($ZipFile in $ZipPath){
                $Logger.Debug("Full path name : $zipFile ") #<%REMOVE%>
-               Write-Output (TestZipArchive -Archive $zipFile -isValid:$isValid -Check:$Check -Repair:$Repair -Password:$Password -Passthru:$Passthru)
+               Write-Output (TestZipArchive -Archive $zipFile -isValid:$isValid -Check:$Check -Repair:$Repair -Password $Password -Passthru:$Passthru)
               }
             }
           }
@@ -1820,7 +1840,8 @@ Set-Alias -name sca            -value Stop-ConsoleAppender
 Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         #<DEFINE %DEBUG%>
                                                          Set-Log4NETDebugLevel,
-                                                         Stop-ConsoleAppender,                                                          
+                                                         Stop-ConsoleAppender,
+                                                         Start-ConsoleAppender,                                                          
                                                         #<UNDEF %DEBUG%> 
                                                         ConvertTo-Sfx,
                                                         Add-ZipEntry,
