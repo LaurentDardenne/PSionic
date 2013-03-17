@@ -26,7 +26,7 @@
  isCorruptedZipArchiveWarning=Corrupted archive : {0}
 
  TestisArchiveError=Error occured while testing the archive {0] : {1}.
- isNotZipArchiveWarning=Is not a zip archive : {0}
+ isNotZipArchiveWarning=The file is not a zip archive : {0}
  InvalidValue=Can not validate parameter '{0}'
 '@ 
 
