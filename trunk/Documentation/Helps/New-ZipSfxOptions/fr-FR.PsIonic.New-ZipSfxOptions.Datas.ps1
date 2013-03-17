@@ -9,7 +9,10 @@ $Datas = @{
 	NewZipSfxOptionsParametersCopyright = 'Notice de copyright ou de copyleft.'
 	NewZipSfxOptionsParametersDescription = 'Décrit l''usage de l''archive autoextratible.'
 	NewZipSfxOptionsParametersExeOnUnpack = 'Précise le programme, et ces paramètres, à exécuter une fois que de tous les fichiers contenus dans l''archive on été décompressés.'
-	NewZipSfxOptionsParametersExtractDirectory = 'Indique le répertoire de décompression par défaut.'
+	NewZipSfxOptionsParametersExtractDirectory = @"
+Indique le répertoire de décompression par défaut. Il peut contenir des références de variable système, par exemple %UserProfile%. 
+Celles-ci seront substituées lors de l'exécution de l’archive autoextractible.
+"@
 	NewZipSfxOptionsParametersExtractExistingFile = 'Indication de comportement en cas d''existence des fichiers dans le répertoire ciblé.'
 	NewZipSfxOptionsParametersFileVersion = 'Numéro de version du fichier autoextractible.'
 	NewZipSfxOptionsParametersGUI = 'Précise que l''archive autoextractible est basée sur un programme Winform (GUI).'

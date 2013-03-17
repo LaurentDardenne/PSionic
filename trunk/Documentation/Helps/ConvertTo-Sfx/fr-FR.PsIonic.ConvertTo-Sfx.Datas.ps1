@@ -22,6 +22,12 @@ Aucun ou System.IO.FileInfo
  
 Lorsque vous utilisez le paramètre PassThru, ConvertTo-Sfx renvoi l'objet fichier de l'archive autoextractible. Sinon cette fonction ne génére aucune sortie.
 "@ 
-	ConvertToSfxNotes = ''
+	ConvertToSfxNotes = @"
+La présence du framework dotnet 2.0 est nécessaire pour exécuter le fichier .exe de l’archive autoextractible.
+Le répertoire précisé par la paramètre 'ExtractDirectory' (cf. New-ZipSfxOptions) peut contenir des références de variable système.
+Par exemple %UserProfile%, celles-ci seront substituées lors de l'exécution de l’archive autoextractible.
+
+Attention, il n'est pas possible d'enregistrer une archive splittée dans une archive autoextractible.
+"@
 	ConvertToSfxExamplesRemarks1 = ''
 }
