@@ -4,7 +4,8 @@
 	synopsis = $Datas.ExpandEntrySynopsis
 	description = $Datas.ExpandEntryDescription
 	parameters = @{
-		Encoding = $Datas.ExpandEntryParametersEncoding
+		AsHashTable = $Datas.ExpandEntryParametersAsHashTable
+        Encoding = $Datas.ExpandEntryParametersEncoding
 		ExtractAction = $Datas.ExpandEntryParametersExtractAction
 		Name = $Datas.ExpandEntryParametersName
 		Password = $Datas.ExpandEntryParametersPassword
@@ -27,8 +28,6 @@
 	notes = $Datas.ExpandEntryNotes
 	examples = @(
 		@{
-			#title = ''
-			#introduction = ''
 			code = {
 			}
 			remarks = $Datas.ExpandEntryExamplesRemarks1
