@@ -9,7 +9,10 @@ Il est également possible lors de ce test de verifier si l'archive est valide e
 	TestZipFileSetsFile = ''
 	TestZipFileParametersCheck = 'Vérifie si l''archive est correcte.'
 	TestZipFileParametersFile = 'Nom du fichier de l''archive à tester.'
-	TestZipFileParametersisValid = 'Valide l''archive. Si un nom de fichier est invalide et isValid est précisé, une erreur non bloquante sera émise.'
+	TestZipFileParametersisValid = @"
+Valide si le nom d'archivbe indiqué est une archive Zip. 
+Si un fichier n'est pas une archive et que le paramètre 'isValid' est précisé alors une erreur non bloquante sera émise.
+"@
 	TestZipFileParametersPassthru = @'
  Emet le nom du fichier de l'archive dans le pipeline. 
  Si le paramètre -isValid est également précisé alors les fichiers considérés comme invalide ne seront pas émis dans le pipeline et aucune erreur ne sera émise.

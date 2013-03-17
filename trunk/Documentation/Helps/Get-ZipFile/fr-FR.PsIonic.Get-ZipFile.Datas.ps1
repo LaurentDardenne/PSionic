@@ -25,7 +25,11 @@ Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'affich
 	GetZipFileInputsDescription1 = 'String'
 	GetZipFileOutputsDescriptionFile = 'Ionic.Zip.ZipFile'
 	GetZipFileOutputsDescriptionIonicZipZipFile = 'Ionic.Zip.ZipFile'
-	GetZipFileNotes = ''
+	GetZipFileNotes = @"
+Cette fonction renvoyant seulement un objet archive Zip à partir de son nom complet, la plupart des paramètres servent à configurer les propriètes de l'archive si vous souhaitez la modifier.
+Par exemple, le paramètre 'Encryption' n’influe pas sur la lecture du Zip, seul le paramètre Password est nécessaire, car ceux sont les entrées de l'archive Zip qui portent l’information de cryptage, et pas l'objet de type [ZipFile].
+Une archive Zip peut donc en théorie contenir plusieurs entrées dont chacune a un mode de compression différente des autres.
+"@
 	GetZipFileExamplesRemarks1 = 'exmple 1 todo'
     GetZipFileExamplesRemarks2 = 'exmple 2 todo'
     GetZipFileExamplesRemarks3 = 'exmple 3 todo'
