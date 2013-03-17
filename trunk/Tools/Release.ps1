@@ -73,7 +73,6 @@ Task RemoveConditionnal -Depend TestLocalizedData { $go=$Configuration -ne "Debu
 } #RemoveConditionnal
 
 Task TestLocalizedData {
- Write-Host " *** under construction !!!" #todo
  ."$PsIonicTools\Test-LocalizedData.ps1"
 
  $Cultures |
@@ -95,7 +94,7 @@ Task BuildXmlHelp {
   ."$PsIonicTools\ConvertTo-XmlHelp"
   ."$PsIonicTools\Join-XmlHelp"
   
-  $Excludes='Set-Log4NETDebugLevel','Stop-ConsoleAppender','ConvertFrom-CliXml','ConvertTo-CliXml'
+  $Excludes='Set-Log4NETDebugLevel','Stop-ConsoleAppender','Start-ConsoleAppender','ConvertFrom-CliXml','ConvertTo-CliXml'
  
   #$Cultures | todo
   "fr-Fr" | 
@@ -147,8 +146,8 @@ Task Init {
      $InvalidFiles=@(&"$PsIonicTools\Test-BOMFile")
      if ($InvalidFiles.Count -ne 0)
      { 
-       $ofs="`r`n"
-       Throw "Des fichiers ne sont pas encodés en UTF8 ou sont codés BigEndian:`r`n $InvalidFiles"
+       $InvalidFiles
+       Throw "Des fichiers ne sont pas encodés en UTF8 ou sont codés BigEndian."
      }  
     }#foreach  
 } #Init
