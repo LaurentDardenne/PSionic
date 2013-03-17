@@ -249,7 +249,7 @@ function ConvertFrom-CliXml {
     }
     end
     {
-        $type = [PSObject].Assembly.GetType("System.Management.Automation.Serializer")  #v2 & v3
+        $type = [PSObject].Assembly.GetType("System.Management.Automation.Deserializer")  #v2 & v3
         $ctor = $type.getconstructor("instance,nonpublic", $null, @([xml.xmlreader]), $null)
         $sr = new-object System.IO.StringReader $xmlString
         $xr = new-object System.Xml.XmlTextReader $sr
@@ -1076,61 +1076,84 @@ Function Expand-Entry {
 	  [String] $Password,
 
       [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
+      [Switch] $AsHashTable,
       [Switch] $XML,
       [Switch] $Strict
-	) 
+	)
+ begin {
+  if ($AsHashTable) {$HTable=@{}}     
+ }     
  process {
- try {
-    $Stream = New-Object System.IO.MemoryStream
-    $Logger.Debug("ReadEntry $Name in $($ZipFile.Name)") #<%REMOVE%>
-    $Entry=$ZipFile[$Name]
-    if ($Entry -ne $null)
-    { $Entry.Extract($Stream)}
-    else 
-    { 
-      $msg=$MessageTable.ExpandEntryError -F $Name,$ZipFile.Name
-      $Exception=New-Object System.ArgumentException($Msg,'Name')
-      $Logger.Error($Msg) #<%REMOVE%>
-      if ($Strict) 
-      { throw $Exception }
-      else 
-      { 
-         $PSCmdlet.WriteError(
-            (New-Object System.Management.Automation.ErrorRecord(
-              $Exception, 
-              "EntryNotFound", 
-              "ObjectNotFound",
-              ("[{0}]" -f $Name)
-             )  
-            ) 
-         )
-      } 
-    }
-    $Stream.Position = 0;
-    $Reader = New-Object System.IO.StreamReader($Stream)
-    $Logger.Debug("Read data from the MemoryStream") #<%REMOVE%>
-    $Result= $Reader.ReadToEnd()
-    if ($XML)
-     { return [XML]$Result }
-    else 
-    { return [string]$Result }
- }
- finally 
- {
-   if ($Reader  -ne $Null)
-   { 
-     $Logger.Debug("Dispose Reader") #<%REMOVE%>
-     $Reader.Dispose()
-     $Reader=$null 
-   }
-   if ($Stream -ne $Null)
-   { 
-     $Logger.Debug("Dispose MemoryStream") #<%REMOVE%>     
-     $Stream.Dispose()
-     $Stream=$null 
-   }
- }
+   foreach ($EntryName in $Name)
+   {         
+     try {
+        $Stream = New-Object System.IO.MemoryStream
+        $Logger.Debug("ReadEntry $EntryName in $($ZipFile.Name)") #<%REMOVE%>
+        $Entry=$ZipFile[$EntryName]
+        if ($Entry -ne $null)
+        { $Entry.Extract($Stream)}
+        else 
+        { 
+          $msg=$MessageTable.ExpandEntryError -F $EntryName,$ZipFile.Name
+          $Exception=New-Object System.ArgumentException($Msg,'Name')
+          $Logger.Error($Msg) #<%REMOVE%>
+          if ($Strict) 
+          { throw $Exception }
+          else 
+          { 
+             $PSCmdlet.WriteError(
+                (New-Object System.Management.Automation.ErrorRecord(
+                  $Exception, 
+                  "EntryNotFound", 
+                  "ObjectNotFound",
+                  ("[{0}]" -f $EntryName)
+                 )  
+                ) 
+             )
+          }
+          Continue 
+        }
+        $Stream.Position = 0;
+        $Reader = New-Object System.IO.StreamReader($Stream)
+        $Logger.Debug("Read data from the MemoryStream") #<%REMOVE%>
+        $Result= $Reader.ReadToEnd()
+        if ($XML)
+        { $Data=$Result -as [XML] }
+        else 
+        { $Data=$Result -as [String] }
+        if ($AsHashTable) 
+        { 
+          $Logger.Debug("Add Hashtable") #<%REMOVE%>
+          $HTable.Add($EntryName,$Data) 
+        }
+        else
+        { 
+           $Logger.Debug("Send Datas") #<%REMOVE%>
+           Write-output $Data
+        }
+     }
+     finally 
+     {
+       if ($Reader  -ne $Null)
+       { 
+         $Logger.Debug("Dispose Reader") #<%REMOVE%>
+         $Reader.Dispose()
+         $Reader=$null 
+       }
+       if ($Stream -ne $Null)
+       { 
+         $Logger.Debug("Dispose MemoryStream") #<%REMOVE%>     
+         $Stream.Dispose()
+         $Stream=$null 
+       }
+     }#finally
+    }#foreach
  }#process
+
+ end {
+   if ($AsHashTable) 
+   { Write-Output $HTable}      
+ }#end
 } #Expand-Entry
 
 Function Expand-ZipFile { 
