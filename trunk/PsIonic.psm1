@@ -562,6 +562,11 @@ function AddMethodClose{
         Write-Debug("Close : save $($this.Name)") #<%REMOVE%
         $this.Save()
       }
+      catch [Ionic.Zip.BadStateException]
+      {
+        if  ($this.name.EndsWith(".exe"))
+        { Write-Error $Messagetable.SaveIsNotPermitted } 
+      } 
       finally {
        #On appelle la méthode Dispose() de l'instance en cours  
        Write-Debug("Close : PSDispose $($this.Name)") #<%REMOVE%             
