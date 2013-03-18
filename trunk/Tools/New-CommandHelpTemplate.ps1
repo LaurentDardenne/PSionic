@@ -32,7 +32,7 @@
      # ne déclarent pas de fichier 'cmds' spécifique
     $FileCmdBlocCommon="$WorkingDirectory\Common.{0}.{1}.Cmds.ps1" -F $ModuleName,$CommandName
     
-     #Les déclaration émisent le sont dans deux 'blocs' distincts
+     #Les déclarations émisent le sont dans deux 'blocs' distincts
     New-Helps -Command $CommandName -LocalizedData Datas |
      Foreach-Object { 
         $Line=$_
