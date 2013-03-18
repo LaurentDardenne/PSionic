@@ -8,7 +8,7 @@
 
  InvalidPassword=The desired encryption ('{0}') needs a password is provided.
  isBadPasswordWarning=Bad password for the archive {0}
- ZipArchiveBadPassword=A bad password was given to extract archive {0}.
+ ZipArchiveBadPassword=An invalid password was given to extract archive {0}.
  InvalidPasswordForDataEncryptionValue=The value provided for Password parameter ('{0}') is invalid for the given value of DataEncryption '{1}'.
  ZipArchiveCheckPasswordError=Error occured while checking password on the archive {0] : {1}.
 
@@ -28,5 +28,7 @@
  TestisArchiveError=Error occured while testing the archive {0] : {1}.
  isNotZipArchiveWarning=The file is not a zip archive : {0}
  InvalidValue=Can not validate parameter '{0}'
+ 
+ SaveIsNotPermitted=You specified an EXE for a plain zip file.
 '@ 
 
