@@ -7,7 +7,7 @@
  CommentMaxValue=Le contenu du paramètre 'Comment' ne doit pas excéder 32767 caractères.   
  
  InvalidPassword=Le type de cryptage demandé ('{0}'), nécessite que le paramètre password soit renseigné.
- isBadPasswordWarning=Mauvais mot de passe pour l'archive {0}
+ isBadPasswordWarning=Mot de passe invalide pour l'archive {0}
  ZipArchiveBadPassword=Mot de passe incorrect pour l'extraction de l'archive {0}
  InvalidPasswordForDataEncryptionValue=La valeur du paramètre Password ('{0}') est invalide pour la valeur de DataEncryption '{1}'.
  ZipArchiveCheckPasswordError=Erreur lors du contrôle de mot de passe sur l'archive {0] : {1}
@@ -27,5 +27,7 @@
  TestisArchiveError=Erreur lors du test de l'archive {0} : {1}
  isNotZipArchiveWarning=Le fichier n'est pas une archive Zip : {0}
  InvalidValue=Impossible de valider le paramètre '{0}'
+ 
+ SaveIsNotPermitted=Vous ne pouvez pas enregistrer une archive autoexectratible via la méthode Save().
 '@ 
 
