@@ -21,7 +21,7 @@
  
  ZipArchiveReadError=Une erreur s'est produite lors de la lecture de l'archive {0} : {1}
  ZipArchiveExtractError=Une erreur s'est produite lors de l'extraction de l'archive {0} : {1}
- ZipArchiveCheckIntegrityError=Erreur lors du contrôle d'intégrité de l'archive {0] : {1}
+ ZipArchiveCheckIntegrityError=Erreur lors du contrôle d'intégrité de l'archive {0} : {1}
  isCorruptedZipArchiveWarning=Archive corrompue : {0}
  
  TestisArchiveError=Erreur lors du test de l'archive {0} : {1}
