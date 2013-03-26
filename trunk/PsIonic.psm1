@@ -1355,6 +1355,7 @@ Function Expand-ZipFile {
 }#Expand-ZipFile
 
 Function TestZipArchive {
+ [CmdletBinding()]         
     param(
 	  [String] $Archive,
 	  [String] $Password,
@@ -1368,14 +1369,22 @@ Function TestZipArchive {
     $goodPassword = $checkZip = $true
     $PSVW=$Null
 
-    $Logger.Debug("Est-ce une archive et peut-on l'extraire ?") #<%REMOVE%>
+    # Isvalid=$true vérifie le contenu, mais Check=$true ne vérifie que le catalogue
+    # On peut donc renvoyer true si on précise seulement -Check sur une archive invalide
+    #todo doc
+    $Logger.Debug("Est-ce une archive ?") #<%REMOVE%>
     try{
         $isZipFile = [ZipFile]::isZipFile($Archive, $isValid)
     }
     catch{
         throw ($MessageTable.TestisArchiveError -F $Archive,$_)
     }
+#<DEFINE %DEBUG%>
+    if ($isValid)
+    {$Logger.Debug("Is that the archive is valid ? $isZipFile") } #<%REMOVE%>
+#<UNDEF %DEBUG%>   
 
+    
     if($isZipFile -and ($Check -or $Repair)){
       try{
         if($Check -and -not $Repair){
@@ -1417,8 +1426,8 @@ Function TestZipArchive {
     if($Passthru)
     {
         if($GlobalCheck){
-            $Logger.Debug("Send the archive name into the pipeline : $Archive")  #  %REMOVE%
-            write-output $Archive
+            $Logger.Debug("Send the name of the archive into the pipeline : $Archive")  #  %REMOVE%
+            Write-Output $Archive
         } 
         else{             
             if(-not $isZipFile -And -not $isValid){
@@ -1457,7 +1466,8 @@ Function TestZipArchive {
         }
     }
     else{ 
-      write-output $GlobalCheck 
+     $Logger.Debug("Send the result of the tests into the pipeline : $GlobalCheck ")  #  %REMOVE%
+     write-output $GlobalCheck 
     }
  } finally {
     if ($PSVW -ne $null) 
@@ -1487,6 +1497,7 @@ Function Test-ZipFile{
    begin {
     [Switch] $isVerbose= $null
     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
+    $Logger.Debug("-Verbose: $isVerbose") #<%REMOVE%>  
    }
     Process{
         Foreach($Archive in $File){  
@@ -1502,16 +1513,21 @@ Function Test-ZipFile{
              else {
               Foreach($ZipFile in $ZipPath){
                $Logger.Debug("Full path name : $zipFile ") #<%REMOVE%>
-               Write-Output (TestZipArchive -Archive $zipFile -isValid:$isValid -Check:$Check -Repair:$Repair -Password $Password -Passthru:$Passthru)
+               if ($PsCmdlet.ParameterSetName -eq "File")
+               {TestZipArchive -Archive $zipFile -isValid:$isValid -Check:$Check -Repair:$Repair -Password $Password -Passthru:$Passthru -verbose:$isVerbose}
+               else
+               {TestZipArchive -Archive $zipFile -isValid:$isValid -Check:$Check -Repair:$Repair -Password $Password -verbose:$isVerbose}
               }
             }
           }
           catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
           {
             $Logger.Fatal($_.Exception.Message) #<%REMOVE%>
-            if (-not $isValid) 
-            {Write-Error $_.Exception.Message}
-         }   
+             # On émet dans le pipe que les nom des fichiers existant (-passthru) ou les nom des archives valides (-isValid -passthru) 
+             # Tous les fichiers inexistant et toutes les archives existantes invalides ne sont donc pas émises.
+            if (($PsCmdlet.ParameterSetName -ne "File") -or ($Passthru -eq $false))
+            { write-output $false }
+          }#catch
         }#Foreach
     }#process
 }#Test-ZipFile
