@@ -22,7 +22,7 @@
 
  ZipArchiveReadError=Error occured while reading the archive {0} : {1}.
  ZipArchiveExtractError=Error occured while extracting the archive {0} : {1}.
- ZipArchiveCheckIntegrityError=Error occured while checking the archive integrity {0] : {1}.
+ ZipArchiveCheckIntegrityError=Error occured while checking the archive integrity {0} : {1}.
  isCorruptedZipArchiveWarning=Corrupted archive : {0}
 
  TestisArchiveError=Error occured while testing the archive {0] : {1}.
