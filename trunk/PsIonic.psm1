@@ -232,7 +232,6 @@ function ConvertFrom-CliXml {
 # by Joel Bennett, modification David Sjstrand
 
 #On récupère une string XML afin de désérialiser un objet Powershell.
-
     param(
         [Parameter(Position=0, Mandatory=$true, ValueFromPipeline=$true)]
         [ValidateNotNullOrEmpty()]
@@ -490,7 +489,7 @@ function SaveSFXFile {
   catch{
      $Msg=$MessageTable.ErrorSFX -F $TargetName,$_
      $Logger.Fatal($Msg,$_.Exception)  #<%REMOVE%>
-     Throw $Msg
+     Throw (New-Object System.Exception($Msg,$_.Exception))
   }
 } #SaveSFXFile
 
@@ -552,7 +551,7 @@ function AddMethodPSDispose{
 function AddMethodClose{
 #Membre synthétique dédié à la libération des ressources
 #Si on utilise Passthru, on doit pouvoir libèrer les ressources en dehors de la fonction
-#Evite l'appel sucessif de Save() puis PSDispose()
+#Evite l'appel successif de Save() puis PSDispose()
 
  param ($ZipInstance)
   
@@ -868,7 +867,7 @@ Function Compress-ZipFile {
       {
         $Logger.Fatal("Save",$_.Exception) #<%REMOVE%>
         DisposeZip
-        throw $_
+        Throw (New-Object System.Exception($_,$_.Exception))
       }
       
       if ($Passthru)
@@ -1212,7 +1211,7 @@ Function Expand-ZipFile {
       $isDestinationExist=Test-Path $Destination
       if (-not $isDestinationExist -and $Create ) 
       { 
-         $Logger.Debug("Create `$Destination directory $DestinationExist") #<%REMOVE%>
+         $Logger.Debug("Create `$Destination directory $isDestinationExist") #<%REMOVE%>
          Md $Destination > $Null
       }
       elseif(-not $isDestinationExist)
@@ -1238,7 +1237,7 @@ Function Expand-ZipFile {
         DisposeZip
         $Msg=$MessageTable.ZipArchiveReadError -F $FileName.ToString(), $_.Exception.Message
         $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
-        throw $Msg
+        throw (New-Object System.Exception($Msg,$_.Exception))
       }              
     }#ZipFileRead
     
@@ -1286,14 +1285,15 @@ Function Expand-ZipFile {
        }#else
       }#try
       catch [Ionic.Zip.BadPasswordException]{
-         throw ($MessageTable.ZipArchiveBadPassword -F $zipPath)
+         throw (New-Object System.Exception(($MessageTable.ZipArchiveBadPassword -F $zipPath),$_.Exception))
+         
       }
       catch{
          $Msg=$MessageTable.ZipArchiveExtractError -F $zipPath, $_.Exception.Message
          if (($_.Exception -is [Ionic.Zip.ZipException]) -and ($ZipFile.ExtractExistingFile -ne "Throw") ) 
          {
            $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
-           throw $Msg
+           throw (New-Object System.Exception($Msg,$_.Exception))
          }
          else 
          {
@@ -1377,7 +1377,8 @@ Function TestZipArchive {
         $isZipFile = [ZipFile]::isZipFile($Archive, $isValid)
     }
     catch{
-        throw ($MessageTable.TestisArchiveError -F $Archive,$_)
+        throw (New-Object System.Exception(($MessageTable.TestisArchiveError -F $Archive,$_),$_.Exception)) 
+        
     }
 #<DEFINE %DEBUG%>
     if ($isValid)
@@ -1407,7 +1408,7 @@ Function TestZipArchive {
         }
       }
       catch{
-          throw ($MessageTable.ZipArchiveCheckIntegrityError -F $Archive,$_)
+         throw (New-Object System.Exception(($MessageTable.ZipArchiveCheckIntegrityError -F $Archive,$_),$_.Exception))
       }
     }
 
@@ -1417,7 +1418,7 @@ Function TestZipArchive {
             $goodPassword = [ZipFile]::CheckZipPassword($Archive, $Password)
         }
         catch{
-            throw ($MessageTable.ZipArchiveCheckPasswordError -F $Archive,$_)
+            throw (New-Object System.Exception(($MessageTable.ZipArchiveCheckPasswordError -F $Archive,$_),$_.Exception))
         }
     }
 
