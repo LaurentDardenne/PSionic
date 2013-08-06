@@ -30,7 +30,7 @@
   )
   
 #  TypesToProcess     = @(
-#      'TypeData\Piosnic.xxx.Type.ps1xml'
+#      'TypeData\Psionic.xxx.Type.ps1xml'
 #  )
   
   # Assemblies qui doivent être chargés préalablement à l'importation de ce module
