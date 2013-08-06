@@ -10,8 +10,8 @@
   [System.Management.Automation.CommandInfo] $CommandName,
     
     [ValidateNotNullOrEmpty()]
-    [Parameter(Position=0,Mandatory=$True,ParameterSetName="Nammed")]
-  [string[]] $ParameterSetNames,
+    [Parameter(Position=0,Mandatory=$false,ParameterSetName="Nammed")]
+  [string[]] $ParameterSetNames='__AllParameterSets',
     
     [ValidateNotNullOrEmpty()]
     [Parameter(Position=0,Mandatory=$false,ParameterSetName="All")]
@@ -137,7 +137,7 @@ $Path=@(
   'Wsman:\*.*',
   'hklm:\SYSTEM\CurrentControlSet\services\Winmgmt'
 )
-#Le paramètre 'PathType' est une néumérationde type booléen
+#Le paramètre 'PathType' est une énumération de type booléen
 $PathType=@("'Container'", "'Leaf'")
 #Génére les combinaisons du jeu de paramètre nommée 'Path'
 #Les paramètres qui ne sont pas associé à une variable, génére un warning.
