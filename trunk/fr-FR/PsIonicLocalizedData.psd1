@@ -2,6 +2,7 @@
  LoggerDotNotExist=La variable `$Logger n'existe pas ou est `$null
  ParameterStringEmpty=Le paramètre '{0}' ne peut être une chaîne vide.
  PathMustExist=Le nom de chemin n'existe pas : {0}
+ PathIsNotAFileSystemPath=Chemin invalide pour le provider FileSystem : {0} 
  ValueNotSupported=La valeur '{0}' n'est pas supportée.
  TypeNotSupported={0}: le type '{1}' n'est pas supporté.
  CommentMaxValue=Le contenu du paramètre 'Comment' ne doit pas excéder 32767 caractères.   
@@ -28,6 +29,6 @@
  isNotZipArchiveWarning=Le fichier n'est pas une archive Zip : {0}
  InvalidValue=Impossible de valider le paramètre '{0}'
  
- SaveIsNotPermitted=Vous ne pouvez pas enregistrer une archive autoexectratible via la méthode Save().
+ SaveIsNotPermitted=Vous ne pouvez pas enregistrer une archive autoextratible via la méthode Save().
 '@ 
 
