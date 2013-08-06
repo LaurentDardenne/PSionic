@@ -9,7 +9,7 @@
   }#Test-ExecutionPolicy
   
   function Install-Psionic {
-  #Adapted from (new-object Net.WebClient).DownloadString("http://psget.net/GetPsGet.ps1")         
+  #Extract from (new-object Net.WebClient).DownloadString("http://psget.net/GetPsGet.ps1")         
       $ModulePaths = @($Env:PSModulePath -split ';')
       $ExpectedUserModulePath = Join-Path -Path ([Environment]::GetFolderPath('MyDocuments')) -ChildPath WindowsPowerShell\Modules
       $Destination = $ModulePaths | Where-Object { $_ -eq $ExpectedUserModulePath}
