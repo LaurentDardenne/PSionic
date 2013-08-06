@@ -84,6 +84,7 @@ $Script:Logger=Get-Loggger
 #<UNDEF %DEBUG%>   
 
 Import-LocalizedData -BindingVariable MessageTable -Filename PsIonicLocalizedData.psd1 -EA Stop
+#todo Import-LocalizedData -BindingVariable ExchangeInventoryMsgs -Filename ExchangeInventoryLocalizedData.psd1 -EA Stop
 
 #------------Pseudo Formatage, la présence d'un indexer sur la classe ZipFile 
 #            empêche l'usage d'un fichier de formatage .ps1xml ( v2 et v3).
@@ -114,7 +115,7 @@ Function New-ArrayReadOnly {
   ,$TableauRO
 }
 
-$ZipFrmRO=New-ArrayReadOnly ([ref]$ZipFrm) 
+$ZipFrmRO=New-ArrayReadOnly ([ref]$ZipFrm) #todo inutile sous PS
 
 function Format-ZipFile {
 # .ExternalHelp PsIonic-Help.xml   
@@ -1170,8 +1171,8 @@ Function Expand-ZipFile {
 	  $File,        
  
         [ValidateNotNullOrEmpty()] 
-        [parameter(Position=0,Mandatory=$True, ParameterSetName="Default")]
-	  $Destination,
+        [parameter(Position=0,Mandatory=$True, ValueFromPipelineByPropertyName=$True, ParameterSetName="Default")]
+	  [PSObject]$Destination,
 	    
       	[Parameter(Position=1,Mandatory=$false, ParameterSetName="Default")]
 	  [String] $Query,      
@@ -1203,27 +1204,10 @@ Function Expand-ZipFile {
     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
     
     $isFollow=$PSBoundParameters.ContainsKey('Follow')
+    $isDefaultParameterSetName= $PsCmdlet.ParameterSetName -eq 'Default'
     
     $ReadOptions=New-ReadOptions $Encoding -Verbose:$isVerbose -Follow:$isFollow
     
-    if ($PsCmdlet.ParameterSetName -eq 'Default') 
-    {
-      $isDestinationExist=Test-Path $Destination
-      if (-not $isDestinationExist -and $Create ) 
-      { 
-         $Logger.Debug("Create `$Destination directory $isDestinationExist") #<%REMOVE%>
-         Md $Destination > $Null
-      }
-      elseif(-not $isDestinationExist)
-      { throw ($MessageTable.PathMustExist -F $Destination) } 
-    }
-     # Au cas où la destination est un chemin relatif, on récupère le chemin complet 
-    if(-not $List)
-    {
-      $Destination = Resolve-Path $Destination|
-                      Foreach { $_.Path } 
-    }
-  
     Function ZipFileRead {
       try{
         $Logger.Debug("Read the file $zipPath") #<%REMOVE%> 
@@ -1321,6 +1305,44 @@ Function Expand-ZipFile {
       }
       else 
       {
+        if ($isDefaultParameterSetName) 
+        {
+           #Le chemin de destination doit être valide  
+          $isDestinationValid=Test-Path $Destination -PathType Container -IsValid
+          
+           #Seconde passe le chemin valide doit exister
+          $isDestinationExist=Test-Path $Destination -PathType Container
+          
+           #Le chemin doit référencer le FileSystem
+          $isFSItem=(Get-Item $Destination).PSProvider.Name -eq 'FileSystem'
+         
+           #Le chemin de destination doit exister et référencer le FileSystem
+          $isExistFSItem=$isDestinationExist -and $isFSItem
+          
+          $MustBeCreated=$Create -and $isDestinationValid -and $isExistFSItem
+          
+          if ($isDestinationValid -and $isFSItem)
+          {
+             $MessageTable.PathIsNotAFileSystemPath -F $Destination
+             $Logger.Error($Msg) #<%REMOVE%>
+             Write-Error $Msg 
+          }
+
+          if ($Create -and -not $isDestinationExist ) 
+          { 
+             $Logger.Debug("Create `$Destination directory $isDestinationExist") #<%REMOVE%>
+             Md $Destination > $Null
+          }
+          elseif(-not $isDestinationExist)
+          { throw ($MessageTable.PathMustExist -F $Destination) } 
+        }
+         # Au cas où la destination est un chemin relatif, on récupère le chemin complet 
+        if(-not $List)
+        {
+          $Destination = Resolve-Path $Destination|
+                          Foreach { $_.Path } 
+        } 
+              
         Foreach($FileName in $ZipPath){
           $Logger.Debug("Full path name : $FileName") #<%REMOVE%>
           $zipFile= ZipFileRead
