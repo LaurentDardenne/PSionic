@@ -3,13 +3,14 @@ $global:WorkDir = $env:TEMP
 
 $PSionicModule=Get-Module PsIonic
 
+write-warning $global:here 
 &$global:here\init.ps1 | out-null
 
   Describe "Expand-ZipFile" {
 
     It "Expand C:\temp\unknown.zip file return true (exception)" {
         try{
-           &$PSionicModule {Expand-ZipFile -File C:\temp\unknown.zip -Destination $global:WorkDir -ErrorAction Stop}
+           Expand-ZipFile -File C:\temp\unknown.zip -Destination $global:WorkDir -ErrorAction Stop
         }catch{
             $result=$_.Exception.Message -match [regex]::Escape("Impossible de trouver le chemin d'accès « C:\temp\unknown.zip », car il n'existe pas.")
         }
@@ -18,29 +19,28 @@ $PSionicModule=Get-Module PsIonic
 
     It "Expand existing zip file in not existing destination return true (exception)" {
         try{
-			$global:path = $global:WorkDir+"\Archive"
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $path -ErrorAction Stop}
-        }catch{
-			$Exception = (&$PSionicModule {$MessageTable.PathMustExist -f $global:path})
-            $result=$_.Exception.Message -match ("^"+[regex]::Escape($Exception))
+           $global:path = $global:WorkDir+"\Archive"
+           Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $path -ErrorAction Stop
+        }catch {
+            $result=$_.exception -is [System.Management.Automation.ItemNotFoundException]
         }
-        $result | should be ($true)
+        $result| should be ($true)
     }
 
     It "Expand a file that is not a zip file return true (exception)" {
         try{
            $global:notZipFile = $global:here+"\PerfCenterCpl.ico"
-		   &$PSionicModule {Expand-ZipFile -File $notZipFile -Destination $global:WorkDir\Archive -Create -ErrorAction Stop}
+		   Expand-ZipFile -File $notZipFile -Destination $global:WorkDir -Create 
         }catch{
-			$Exception = (&$PSionicModule {$MessageTable.ZipArchiveReadError -f $global:notZipFile,"AnException"}) -replace " : AnException", ""
-            $result=$_.Exception.Message -match ("^"+[regex]::Escape($Exception))
+            $result=$_.Exception.InnerException.InnerException.InnerException -is [Ionic.Zip.BadReadException]
         }
         $result | should be ($true)
     }
   
     It "Expand Archive.zip file return true" {
         try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -ErrorAction Stop}
+           md $global:WorkDir\Archive >$null
+           Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -ErrorAction Stop
            if(-not (test-path $global:WorkDir\Archive\test\test1\test2\Log4Net.Config.xml)){
              throw "Fichier provenant de l'archive non trouvé après extraction"
            }
@@ -55,7 +55,7 @@ $PSionicModule=Get-Module PsIonic
 	
 	It "Expand zip file to already existing destination (throw) return true (exception)" {
         try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -ErrorAction Stop}
+           Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -ErrorAction Stop
         }catch{
 			$Exception = "« The file $($global:WorkDir)\Archive\directory\Ionic.Zip.dll already exists. »"
 			$result=$_.Exception.Message -match ([regex]::Escape($Exception))
@@ -65,11 +65,11 @@ $PSionicModule=Get-Module PsIonic
 	
 	It "Expand zip file to already existing destination (OverwriteSilently) return true" {
         try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -ExtractAction OverwriteSilently -ErrorAction Stop}
+           Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -ExtractAction OverwriteSilently -ErrorAction Stop
            if(-not (test-path $global:WorkDir\Archive\test\test1\test2\Log4Net.Config.xml)){
              throw "Fichier provenant de l'archive non trouvé après extraction"
            }
-           rm $global:WorkDir\Archive -Recurse -Force
+          # rm $global:WorkDir\Archive -Recurse -Force
            $result=$true
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
@@ -80,27 +80,29 @@ $PSionicModule=Get-Module PsIonic
 	
 	It "Expand zip file to registry provider return true (exception)" {
         try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination hklm:\software -create -ErrorAction Stop}
+           Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination hklm:\software -create -ErrorAction Stop
         }catch{
-            $result=$_.Exception.Message -match 'Le format du chemin d''accès donné n''est pas pris en charge.'
+           $result=$_.Exception.Message -match '^Chemin invalide pour le provider FileSystem'
         }
         $result | should be ($true)
     }
-
+ 
 	It "Expand zip file to wsman provider return true (exception)" {
         try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination wsman:\localhost -create -ErrorAction Stop}
+           Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination wsman:\localhost -create -ErrorAction Stop
         }catch{
-            $result=$_.Exception.Message -match 'Le client ne peut pas se connecter à la destination spécifiée dans la demande'
+            $result=$_.Exception.Message -match '^Chemin invalide pour le provider FileSystem'
         }
         $result | should be ($true)
     }
-
+ 
     It "Expand dll files from Archive.zip file return true" {
         try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Query '*.dll' -ErrorAction Stop}
-           $Dllfiles = Get-ChildItem $global:WorkDir\Archive -filter *.dll -recurse
-           $Files =  Get-ChildItem $global:WorkDir\Archive -recurse
+           remove-item  $global:WorkDir\Archive\directory\*.dll -ea SilentlyContinue
+           remove-item  $global:WorkDir\Archive\test\test1\*.dll -ea SilentlyContinue
+           Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Query '*.dll' -ErrorAction Stop
+           $Dllfiles = @(Get-ChildItem $global:WorkDir\Archive -filter *.dll -recurse|Where  { !$_.PSIsContainer})
+           $Files =  @(Get-ChildItem $global:WorkDir\Archive -recurse -exclude *.dll|Where  { !$_.PSIsContainer})
            if($Dllfiles.count -ne 2 -or $Files.count -ne 5){
              throw "Les 2 fichiers .dll n'ont pas été extraits"
            }
@@ -112,13 +114,13 @@ $PSionicModule=Get-Module PsIonic
         }
         $result | should be ($true)
     }
-
+ 
     It "Expand one dll file from a subdirectory in zip file return true" {
         try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Query '*.dll' -From 'directory' -ErrorAction Stop}
-           $Dllfiles = Get-ChildItem $global:WorkDir\Archive -filter *.dll -recurse
-           $Files =  Get-ChildItem $global:WorkDir\Archive -recurse
-           if($Dllfiles.count -ne 1 -or $Files.count -ne 2){
+           md $global:WorkDir\Archive >$null
+           Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Query '*.dll' -From 'directory' -ErrorAction Stop
+           $Dllfiles = @(Get-ChildItem $global:WorkDir\Archive -filter *.dll -recurse|Where  { !$_.PSIsContainer})
+           if($Dllfiles.count -ne 1){
              throw "Le fichier .dll n'a pas été extrait"
            }
            rm $global:WorkDir\Archive -Recurse -Force
@@ -132,10 +134,10 @@ $PSionicModule=Get-Module PsIonic
     
     It "Expand one dll file from a subdirectory in zip file with flatten return true" {
         try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Query '*.dll' -From 'directory' -Flatten -ErrorAction Stop}
-           $Dllfiles = Get-ChildItem $global:WorkDir\Archive -filter *.dll -recurse
-           $Files =  Get-ChildItem $global:WorkDir\Archive -recurse
-           if($Dllfiles.count -ne 1 -or $Files.count -ne 1){
+           md $global:WorkDir\Archive >$null
+           Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Query '*.dll' -From 'directory' -Flatten -ErrorAction Stop
+           $Dllfiles = @(Get-ChildItem $global:WorkDir\Archive -filter *.dll -recurse|Where  { !$_.PSIsContainer})
+           if($Dllfiles.count -ne 1){
              throw "Le fichier .dll n'a pas été extrait"
            }
            rm $global:WorkDir\Archive -Recurse -Force
@@ -146,36 +148,37 @@ $PSionicModule=Get-Module PsIonic
         }
         $result | should be ($true)
     }
-
+ 
     It "Expand zip file with many parameters from different parameter sets return true (exception)" {
         try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Query '*.dll' -From 'Archive\directory' -Flatten -List -ErrorAction Stop}
+           md $global:WorkDir\Archive >$null
+           Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Query '*.dll' -From 'Archive\directory' -Flatten -List -ErrorAction Stop
         }catch{
             $result= $_.Exception.Message -match 'Le jeu de paramètres ne peut pas être résolu à l''aide des paramètres nommés spécifiés.'
         }
         $result | should be ($true)
     }
-
+ 
     It "Expand zip file with list parameter return true" {
         try{
             $result = $null
-            $result = &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -List -ErrorAction Stop}
+            $result = Expand-ZipFile -File $global:WorkDir\Archive.zip -List -ErrorAction Stop
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result= $false
         }
         $result | should be ($true)
     }
-
+ 
     It "Expand Archive.zip file with passthru parameter return true" {
         try{
             $result = $null
-            $result = &$PSionicModule {Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Passthru -ErrorAction Stop}
+            $result = Expand-ZipFile -File $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Passthru -ErrorAction Stop
 			$result.dispose()
             if(-not (test-path $global:WorkDir\Archive\test\test1\test2\Log4Net.Config.xml)){
                 throw "Fichier provenant de l'archive non trouvé après extraction"
             }
-            rm $global:WorkDir\Archive -Recurse -Force
+            #rm $global:WorkDir\Archive -Recurse -Force
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
@@ -187,53 +190,53 @@ $PSionicModule=Get-Module PsIonic
 
      It "Expand encrypted zip file with BAD password return true (exception)" {
         try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\CryptedArchive.zip -Destination $global:WorkDir\CryptedArchive -create -Password BADpassword -ErrorAction Stop}
+           Expand-ZipFile -File $global:WorkDir\CryptedArchive.zip -Destination $global:WorkDir\CryptedArchive -create -Password BADpassword -ErrorAction Stop
         }catch{
-			$Exception = (&$PSionicModule {$MessageTable.ZipArchiveBadPassword -f ($global:WorkDir+"\CryptedArchive.zip")})
+			$Exception = (&$PSionicModule {$PsIonicMsgs.ZipArchiveBadPassword -f ($global:WorkDir+"\CryptedArchive.zip")})
             $result= $_.Exception.Message -match ([regex]::Escape($Exception))
         }
         $result | should be ($true)
     }
-
-     It "Expand encrypted zip file with good password return true" {
-        try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\CryptedArchive.zip -Destination $global:WorkDir\CryptedArchive -create -Password password -ErrorAction Stop}
-           if(-not (test-path $global:WorkDir\CryptedArchive\Archive\PerfCenterCpl.ico)){
-             throw "Fichier provenant de l'archive non trouvé après extraction"
-           }
-           if(-not (test-path $global:WorkDir\CryptedArchive\about_Pester.help.txt)){
-             throw "Fichier provenant de l'archive non trouvé après extraction"
-           }
-           rm $global:WorkDir\CryptedArchive -Recurse -Force
-           $result=$true
-        }catch{
-            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
-            $result=$false
-        }
-        $result | should be ($true)
-    }
-
-    It "Expand .ico file from encrypted zip file with good password return true" {
-        try{
-           &$PSionicModule {Expand-ZipFile -File $global:WorkDir\CryptedArchive.zip -Destination $global:WorkDir\CryptedArchive -create -Query '*.ico' -Password password -ErrorAction Stop}
-           $icoFile = Get-ChildItem $global:WorkDir\CryptedArchive -filter *.ico -recurse
-           $Files =  Get-ChildItem $global:WorkDir\CryptedArchive -recurse
-           if($icoFile.count -ne 1 -or $Files.count -ne 2){
-             throw "Les fichiers n'ont pas été extraits"
-           }
-           if(-not (test-path $global:WorkDir\CryptedArchive\Archive\PerfCenterCpl.ico)){
-             throw "Le fichier .ico n'a pas été extrait"
-           }
-           rm $global:WorkDir\CryptedArchive -Recurse -Force
-           $result=$true
-        }catch{
-            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
-            $result=$false
-        }
-        $result | should be ($true)
-    }
-
-    # TODO : Follow, Interactive
-
+ 
+#      It "Expand encrypted zip file with good password return true" {
+#         try{
+#            Expand-ZipFile -File $global:WorkDir\CryptedArchive.zip -Destination $global:WorkDir\CryptedArchive -create -Password password -ErrorAction Stop
+#            if(-not (test-path $global:WorkDir\CryptedArchive\Archive\PerfCenterCpl.ico)){
+#              throw "Fichier provenant de l'archive inexistant après extraction"
+#            }
+#            if(-not (test-path $global:WorkDir\CryptedArchive\about_Pester.help.txt)){
+#              throw "Fichier provenant de l'archive inexistant après extraction"
+#            }
+#            rm $global:WorkDir\CryptedArchive -Recurse -Force
+#            $result=$true
+#         }catch{
+#             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
+#             $result=$false
+#         }
+#         $result | should be ($true)
+#     }
+# 
+#     It "Expand .ico file from encrypted zip file with good password return true" {
+#         try{
+#            Expand-ZipFile -File $global:WorkDir\CryptedArchive.zip -Destination $global:WorkDir\CryptedArchive -create -Query '*.ico' -Password password -ErrorAction Stop
+#            $icoFile = Get-ChildItem $global:WorkDir\CryptedArchive -filter *.ico -recurse
+#            $Files =  Get-ChildItem $global:WorkDir\CryptedArchive -recurse
+#            if($icoFile.count -ne 1 -or $Files.count -ne 2){
+#              throw "Les fichiers n'ont pas été extraits"
+#            }
+#            if(-not (test-path $global:WorkDir\CryptedArchive\Archive\PerfCenterCpl.ico)){
+#              throw "Le fichier .ico n'a pas été extrait"
+#            }
+#            rm $global:WorkDir\CryptedArchive -Recurse -Force
+#            $result=$true
+#         }catch{
+#             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
+#             $result=$false
+#         }
+#         $result | should be ($true)
+#     }
+# 
+#     # TODO : Follow, Interactive
+# 
   }
 
