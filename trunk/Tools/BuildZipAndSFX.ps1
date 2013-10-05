@@ -11,8 +11,8 @@ Task BuildZipAndSFX {
 #Construit une archive autoextractible
  
   Pop-Location
-   Set-location $PsIonicLivraison
-   Write-Verbose "Import module in $PsIonicLivraison"
+   Set-location "$PsIonicLivraison\PsIonic"
+   Write-Verbose "Import module in $PsIonicLivraison\PsIonic"
 
    Import-Module .\PsIonic.psd1 -Force
    if ($Configuration -eq "Debug") 
@@ -25,7 +25,7 @@ Task BuildZipAndSFX {
    
    $Files="$PsIonicLivraison\*"
    $ReadOptions = New-Object Ionic.Zip.ReadOptions -Property @{ 
-                    StatusMessageWriter = [System.Console]::Out;
+                    StatusMessageWriter = [System.Console]::Out
                   } 
 
    $Save=@{
