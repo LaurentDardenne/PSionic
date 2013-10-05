@@ -26,7 +26,7 @@ Task CompilePsionicTools {
   $cp.ReferencedAssemblies.Add("$PsIonicBin\${Configuration}\Ionic.Zip.dll") > $null
    #Pointe sur la version adéquate de System.Management.Automation.dll
   $cp.ReferencedAssemblies.Add([PSObject].Assembly.Location) >$null
-  $cp.OutputAssembly="$PsIonicLivraison\$PSVersion\PSIonicTools.dll"
+  $cp.OutputAssembly="$PsIonicLivraison\PsIonic\$PSVersion\PSIonicTools.dll"
      #see to http://msdn.microsoft.com/en-us/library/6ds95cz0(v=vs.80).aspx
   Add-Type -Path $Files -CompilerParameters $cp
   Write-Host "Compilation réussie de $($cp.OutputAssembly) version $PSVersion"
