@@ -82,7 +82,7 @@ Describe "Test-ZipFile -IsValid" {
 
     It "Test an invalid archive file (.psm1)" {
         try{
-            $result = Test-ZipFile -File "$PSionicLivraison\Psionic.psm1" -isvalid -ea Stop 
+            $result = Test-ZipFile -File "$PSionicLivraison\PsIonic\Psionic.psm1" -isvalid -ea Stop 
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$true
