@@ -72,11 +72,31 @@ Task RemoveConditionnal -Depend TestLocalizedData { $go=$Configuration -ne "Debu
     Set-Content -Path { "$PsIonicLivraison\$CurrentFileName"} -Force  
 } #RemoveConditionnal
 
-Task TestLocalizedData {
- ."$PsIonicTools\Test-LocalizedData.ps1"
+Task TestLocalizedData -ContinueOnError {
+ ."$PsIonicTools\Test-LocalizedData.ps1""
 
- $Cultures |
-   Test-LocalizedData $PsionicTrunk 'PsIonicLocalizedData.psd1' 'Psionic.Psm1' 'Messagetable\.' -verbose
+ $SearchDir="$PsionicTrunk"
+ Foreach ($Culture in $Cultures)
+ {
+   Dir "$SearchDir\Psionic.psm1"|          
+    Foreach-Object {
+       #Construit un objet contenant des membres identiques au nombre de 
+       #paramètres de la fonction Test-LocalizedData 
+      New-Object PsCustomObject -Property @{
+                                     Culture=$Culture;
+                                     Path="$SearchDir\$($_.BaseName)";
+                                       #convention de nommage de fichier d'aide
+                                     LocalizedFilename="$($_.BaseName)LocalizedData.psd1";
+                                     FileName=$_.Name;
+                                       #convention de nommage de variable
+                                     PrefixPattern="$($_.BaseName)Msgs\."
+                                  }
+    }|   
+    Test-LocalizedData -verbose
+ }
+} #TestLocalizedData   
+   
+   
 } #TestLocalizedData
 
 Task BuildXmlHelp {
@@ -91,8 +111,7 @@ Task BuildXmlHelp {
 
    #https://github.com/nightroman/Helps
   ."$PSScripts\Helps\Helps.ps1"
-  ."$PsIonicTools\ConvertTo-XmlHelp"
-  ."$PsIonicTools\Join-XmlHelp"
+  ."$PsIonicTools\HelpsAddon.ps1"
   
   $Excludes='Set-Log4NETDebugLevel','Stop-ConsoleAppender','Start-ConsoleAppender','ConvertFrom-CliXml','ConvertTo-CliXml'
  
