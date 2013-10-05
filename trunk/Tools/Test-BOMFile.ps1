@@ -12,7 +12,7 @@ Get-ChildItem -Path $PsionicTrunk -Recurse @Params |
   # create storage object
   $EncodingInfo = 1 | Select FileName,Encoding,BomFound,Endian
   # store file base name (remove extension so easier to read)
-  $EncodingInfo.FileName = $_.BaseName
+  $EncodingInfo.FileName = $_.FullName
   # get full encoding object
   $Encoding = Get-DTWFileEncoding $_.FullName
   # store encoding type name
