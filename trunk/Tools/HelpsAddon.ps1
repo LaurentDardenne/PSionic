@@ -223,7 +223,16 @@ Function New-CommandHelp {
     
   [Switch] $All
  )
-
+ 
+ Begin {
+  function Touch{
+   param ($File)
+    Dir $File | 
+     Foreach-Object {$_.LastWriteTime =[DateTime]::Now}
+   
+  }#touch      
+ }
+ 
  Process {
     Write-Verbose "[$Culture] create files help for the command : $CommandName"
     $WorkingDirectory="$TargetDirectory\$CommandName" 
@@ -232,9 +241,7 @@ Function New-CommandHelp {
     $NewFileDataBloc="$WorkingDirectory\{0}.{1}.{2}.Datas.ps1" -F $Culture,$ModuleName,$CommandName
     Write-verbose "Write $NewFileDataBloc"
     Copy $FileDataBlocTemplate $NewFileDataBloc 
-    #Touch
-    Dir $NewFileDataBloc | 
-     Foreach-Object {$_.LastWriteTime =[DateTime]::Now}
+    Touch $NewFileDataBloc 
     
      #Si demandé, on crée le fichier 'cmds' spécifique à une culture 
     if ($All) 
@@ -243,6 +250,7 @@ Function New-CommandHelp {
       $NewFileCmdBloc="$WorkingDirectory\{0}.{1}.{2}.Cmds.ps1" -F $Culture,$ModuleName,$CommandName
       Write-verbose "Write $NewFileCmdBloc"
       Copy $FileCmdBlocTemplate $NewFileCmdBloc
+      Touch $NewFileCmdBloc
     } 
  }#process
 } #New-CommandHelp
