@@ -168,3 +168,17 @@ Task Init {
      }  
     }#foreach  
 } #Init
+
+Task FindTodo {
+
+ Write-host "Recherche des occurences des TODO"
+
+  $Params=@{
+   Include=$(ql *.ps1,*.psm1,*.psd1,*.ps1xml,*.xml,*.txt,*.cs);
+   Exclude=$(ql *.bak,*.exe,*.dll)
+  }
+            
+  Get-ChildItem -Path $PsionicTrunk -Recurse @Params |
+   Where { (-not $_.PSisContainer) -and ($_.Length -gt 0)} |
+   Select-String -pattern 'TODO' 
+} #FindTodo
