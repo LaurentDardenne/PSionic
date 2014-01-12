@@ -6,85 +6,11 @@
 
 Add-Type -Path "$psScriptRoot\$($PSVersionTable.PSVersion)\PSIonicTools.dll"
  
-#<DEFINE %DEBUG%>
-Add-Type -Path "$psScriptRoot\$($PSVersionTable.PSVersion)\log4net.dll" 
+Start-Log4Net "$psScriptRoot\Log4Net.Config.xml"
 
-Function Start-Log4Net {
-#Paramètrage du log4net via un fichier XML spécifique au module         
-  $ConfigFile=New-Object System.IO.fileInfo "$psScriptRoot\Log4Net.Config.xml"
-  Write-debug "load '$psScriptRoot\Log4Net.Config.xml'" 
-  $Result=[Log4net.Config.XmlConfigurator]::Configure($ConfigFile)
-  if ($Result.Count -ne 0 )
-  { 
-    $ofs="`r`n"
-    [string]$Message=$Result|Out-String
-    throw ( New-Object System.Xml.XmlException $Message) 
-  }
-}#Start-Log4Net
+$Script:Logger=Get-Log4NetLogger 'File'
 
-Function Get-Loggger {
-#Renvoi le logger principal
-  [log4net.LogManager]::GetLogger('File')
-} #Get-Loggger
-
-Function Stop-Log4Net {
-#Vide les buffers puis stop le framework log4net  
-  $script:Logger.Debug("Shutdown log4Net") 
-  
- [log4net.LogManager]::GetRepository().GetAppenders()|
-  Where {$_ -is  [log4net.Appender.BufferingAppenderSkeleton]}|
-  Foreach {
-   $script:Logger.Debug("Flush appender $($_.Name)")           
-    $_.Flush() 
-  }
-
-  [log4net.LogManager]::Shutdown() 
-}#Stop-Log4Net
-
-Function Set-Log4NETDebugLevel {
-#Bascule le niveau global de log
- param (
-   [log4net.Core.Level] $DefaultLevel=[log4net.Core.Level]::Info,
-   [switch] $OFF 
- ) 
- 
- If ($script:Logger -ne $null)
- { 
-    If ($Off) 
-     { $script:Logger.logger.Hierarchy.Root.Level=$DefaultLevel }
-    else
-     { $script:Logger.logger.Hierarchy.Root.Level==[log4net.Core.Level]::Debug } 
- }
- else
- { Write-Warning $MessageTable.LoggerDotNotExist }
-}#Set-Log4NETDebugLevel
-
-Function Stop-ConsoleAppender {
- If ($script:Logger -ne $null)
- { 
-    $Console=$logger.Logger.Parent.Appenders|Where {$_.Name -eq 'Console'}
-    $Console.Threshold=[log4net.Core.Level]::Off
- }
- else
- { Write-Warning $MessageTable.LoggerDotNotExist }
-}#Stop-ConsoleAppender
-
-Function Start-ConsoleAppender {
- If ($script:Logger -ne $null)
- { 
-    $Console=$logger.Logger.Parent.Appenders|Where {$_.Name -eq 'Console'}
-    $Console.Threshold=[log4net.Core.Level]::Debug
- }
- else
- { Write-Warning $MessageTable.LoggerDotNotExist }
-}#Start-ConsoleAppender
-
-Start-Log4Net
-$Script:Logger=Get-Loggger
-#<UNDEF %DEBUG%>   
-
-Import-LocalizedData -BindingVariable MessageTable -Filename PsIonicLocalizedData.psd1 -EA Stop
-#todo Import-LocalizedData -BindingVariable ExchangeInventoryMsgs -Filename ExchangeInventoryLocalizedData.psd1 -EA Stop
+Import-LocalizedData -BindingVariable PsIonicMsgs -Filename PsIonicLocalizedData.psd1 -EA Stop
 
 #------------Pseudo Formatage, la présence d'un indexer sur la classe ZipFile 
 #            empêche l'usage d'un fichier de formatage .ps1xml ( v2 et v3).
@@ -115,7 +41,7 @@ Function New-ArrayReadOnly {
   ,$TableauRO
 }
 
-$ZipFrmRO=New-ArrayReadOnly ([ref]$ZipFrm) #todo inutile sous PS
+$ZipFrmRO=New-ArrayReadOnly ([ref]$ZipFrm)
 
 function Format-ZipFile {
 # .ExternalHelp PsIonic-Help.xml   
@@ -327,7 +253,7 @@ Function IsValueSupported {
  
  if (&$IsValueSupported[$PsCmdlet.ParameterSetName] $Value)
  { 
-   $Msg=$MessageTable.ValueNotSupported -F $value
+   $Msg=$PsIonicMsgs.ValueNotSupported -F $value
    $Logger.Fatal($Msg)  #<%REMOVE%>
    Throw $Msg 
  } 
@@ -401,7 +327,7 @@ Function SetZipFileEncryption {
     {
        if (-not $isPwdValid)
        { 
-         $Msg=$MessageTable.InvalidPasswordForDataEncryptionValue -F $Password,$DataEncryption
+         $Msg=$PsIonicMsgs.InvalidPasswordForDataEncryptionValue -F $Password,$DataEncryption
          $Logger.Fatal($Msg) #<%REMOVE%>
          Throw $Msg 
        }
@@ -431,7 +357,7 @@ Function GetObjectByType {
      if ($Object.GetType().IsSubclassOf([System.IO.FileSystemInfo]) -or ($Object -is [Ionic.Zip.ZipEntry]))
      { 
        $Logger.Debug("Object is FileSystemInfo or Zipentry") #<%REMOVE%>
-       #Ici pas récursion sur les sous-répertoires
+       #Ici pas de récursion sur les sous-répertoires
        # si dir * -rec|compress -rec, alors on dupliquerait les fichiers
        Return $Object 
      }
@@ -482,13 +408,13 @@ function SaveSFXFile {
  )
   $Logger.Debug("Save sfx")  #<%REMOVE%>
   $TargetName = GetSFXname $Zip.Name
-  $Logger.DebugFormat($MessageTable.ConvertingFile, $TargetName)  #<%REMOVE%>
-  Write-Verbose ($MessageTable.ConvertingFile -F $TargetName)
+  $Logger.DebugFormat($PsIonicMsgs.ConvertingFile, $TargetName)  #<%REMOVE%>
+  Write-Verbose ($PsIonicMsgs.ConvertingFile -F $TargetName)
   try{
       $Zip.SaveSelfExtractor($TargetName, $Options)  
   }
   catch{
-     $Msg=$MessageTable.ErrorSFX -F $TargetName,$_
+     $Msg=$PsIonicMsgs.ErrorSFX -F $TargetName,$_
      $Logger.Fatal($Msg,$_.Exception)  #<%REMOVE%>
      Throw (New-Object System.Exception($Msg,$_.Exception))
   }
@@ -565,7 +491,7 @@ function AddMethodClose{
       catch [Ionic.Zip.BadStateException]
       {
         if  ($this.name.EndsWith(".exe"))
-        { Write-Error $Messagetable.SaveIsNotPermitted } 
+        { Write-Error $PsIonicMsgs.SaveIsNotPermitted } 
       } 
       finally {
        #On appelle la méthode Dispose() de l'instance en cours  
@@ -658,7 +584,7 @@ Function Get-ZipFile {
         $FileName = GetArchivePath $Current
         if($FileName -eq $null)
         { 
-            $Msg=$MessageTable.InvalidValue -F $Name.ToString()
+            $Msg=$PsIonicMsgs.InvalidValue -F $Name.ToString()
             $Logger.Fatal($Msg) #<%REMOVE%>
             Write-Error $Msg 
             return $null
@@ -786,7 +712,7 @@ Function Compress-ZipFile {
       $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>          
           
       if ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
-      { Throw $MessageTable.CommentMaxValue }
+      { Throw $PsIonicMsgs.CommentMaxValue }
       
       $fixedTimestamp=$null
       If ($PSBoundParameters.ContainsKey('UTnow'))
@@ -903,7 +829,7 @@ Function AddEntry {
     {
       if ($_.Value -eq $null)
       {
-        Write-Error ($MessageTable.EntryIsNull -F $KeyName)
+        Write-Error ($PsIonicMsgs.EntryIsNull -F $KeyName)
         return 
       }
       else 
@@ -918,7 +844,7 @@ Function AddEntry {
       $Logger.Debug("Add Byte[]")  #<%REMOVE%>
       if ([string]::IsNullOrEmpty($KeyName))
       { 
-        Write-Error ($MessageTable.ParameterStringEmpty -F 'KeyName')
+        Write-Error ($PsIonicMsgs.ParameterStringEmpty -F 'KeyName')
         return
       }
         #Problem with 'distance algorithm' ?
@@ -940,7 +866,7 @@ Function AddEntry {
        $Logger.Debug("Add String")  #<%REMOVE%>
        if ([string]::IsNullOrEmpty($KeyName))
        { 
-         Write-Error ($MessageTable.ParameterStringEmpty -F 'KeyName')
+         Write-Error ($PsIonicMsgs.ParameterStringEmpty -F 'KeyName')
          return  
        }
        $ZipEntry=$ZipFile.AddEntry($KeyName, $InputObject -as [string]) 
@@ -964,7 +890,7 @@ Function AddEntry {
     }
     else
     {
-      $Msg=$MessageTable.TypeNotSupported -F $MyInvocation.MyCommand.Name,$InputObject.GetType().FullName
+      $Msg=$PsIonicMsgs.TypeNotSupported -F $MyInvocation.MyCommand.Name,$InputObject.GetType().FullName
       $Logger.Debug($Msg)  #<%REMOVE%>
       Write-Warning $Msg   
     }
@@ -972,7 +898,7 @@ Function AddEntry {
     {$ZipEntry} 
    }
    catch { #ArgumentNullException or ArgumentException
-    Write-Error ($MessageTable.AddEntryError -F $InputObject,$ZipFile.Name,$_.Exception.Message)
+    Write-Error ($PsIonicMsgs.AddEntryError -F $InputObject,$ZipFile.Name,$_.Exception.Message)
    }
   }#process
 }#AddEntry
@@ -1099,7 +1025,7 @@ Function Expand-Entry {
         { $Entry.Extract($Stream)}
         else 
         { 
-          $msg=$MessageTable.ExpandEntryError -F $EntryName,$ZipFile.Name
+          $msg=$PsIonicMsgs.ExpandEntryError -F $EntryName,$ZipFile.Name
           $Exception=New-Object System.ArgumentException($Msg,'Name')
           $Logger.Error($Msg) #<%REMOVE%>
           if ($Strict) 
@@ -1193,9 +1119,10 @@ Function Expand-ZipFile {
        
        [Parameter(Mandatory=$false, ParameterSetName="List")]
       [switch] $List,
-      [switch] $Flatten,
+      [switch] $Flatten, 
       [switch] $Follow,
       [switch] $Passthru,
+       [Parameter(Mandatory=$false, ParameterSetName="Default")]
       [switch] $Create
 	)
 
@@ -1219,9 +1146,9 @@ Function Expand-ZipFile {
       }
       catch {
         DisposeZip
-        $Msg=$MessageTable.ZipArchiveReadError -F $FileName.ToString(), $_.Exception.Message
+        $Msg=$PsIonicMsgs.ZipArchiveReadError -F $FileName.ToString(), $_.Exception.Message
         $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
-        throw (New-Object System.Exception($Msg,$_.Exception))
+        throw (New-Object System.Exception($Msg,$_.exception))
       }              
     }#ZipFileRead
     
@@ -1250,7 +1177,7 @@ Function Expand-ZipFile {
                    #bug null to string, use reflection
                   [type[]] $private:ParameterTypesOfExtractSelectedEntriesMethod=[string],[string],[string],[Ionic.Zip.ExtractExistingFileAction]
                   $ExtractSelectedEntriesMethod=[Ionic.Zip.ZipFile].GetMethod("ExtractSelectedEntries",$private:ParameterTypesOfExtractSelectedEntriesMethod)
-                  $params = @($Query,$Null,$Destination,$ExtractAction)
+                  $params = @($Query,$Null,($Destination.ToString()),$ExtractAction)
                   $ZipEntry=$ExtractSelectedEntriesMethod.Invoke($ZipFile, $params)                        
               }
               else{
@@ -1269,11 +1196,11 @@ Function Expand-ZipFile {
        }#else
       }#try
       catch [Ionic.Zip.BadPasswordException]{
-         throw (New-Object System.Exception(($MessageTable.ZipArchiveBadPassword -F $zipPath),$_.Exception))
+         throw (New-Object System.Exception(($PsIonicMsgs.ZipArchiveBadPassword -F $zipPath),$_.Exception))
          
       }
       catch{
-         $Msg=$MessageTable.ZipArchiveExtractError -F $zipPath, $_.Exception.Message
+         $Msg=$PsIonicMsgs.ZipArchiveExtractError -F $zipPath, $_.Exception.Message
          if (($_.Exception -is [Ionic.Zip.ZipException]) -and ($ZipFile.ExtractExistingFile -ne "Throw") ) 
          {
            $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
@@ -1299,49 +1226,41 @@ Function Expand-ZipFile {
       if ( $zipPath -eq $null )  
       { 
          # usage de ToString() pour éviter un bug v2
-        $Msg=$MessageTable.InvalidValue -F $Archive.ToString()
+        $Msg=$PsIonicMsgs.InvalidValue -F $Archive.ToString()
         $Logger.Error($Msg) #<%REMOVE%>
         Write-Error $Msg 
       }
       else 
       {
+                                
         if ($isDefaultParameterSetName) 
         {
            #Le chemin de destination doit être valide  
-          $isDestinationValid=Test-Path $Destination -PathType Container -IsValid
-          
-           #Seconde passe le chemin valide doit exister
-          $isDestinationExist=Test-Path $Destination -PathType Container
-          
+           #le chemin valide doit exister
            #Le chemin doit référencer le FileSystem
-          $isFSItem=(Get-Item $Destination).PSProvider.Name -eq 'FileSystem'
-         
-           #Le chemin de destination doit exister et référencer le FileSystem
-          $isExistFSItem=$isDestinationExist -and $isFSItem
+          $PSPathInfo=Resolve-PSPath $zipPath
+          $Destination=$PSPathInfo.ResolvedPath
           
-          $MustBeCreated=$Create -and $isDestinationValid -and $isExistFSItem
-          
-          if ($isDestinationValid -and $isFSItem)
+          if (-not $PSPathInfo.IsCandidate()) 
           {
-             $MessageTable.PathIsNotAFileSystemPath -F $Destination
+             $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F $Destination
              $Logger.Error($Msg) #<%REMOVE%>
-             Write-Error $Msg 
+             Write-Error $Msg
+             continue 
           }
-
-          if ($Create -and -not $isDestinationExist ) 
-          { 
-             $Logger.Debug("Create `$Destination directory $isDestinationExist") #<%REMOVE%>
-             Md $Destination > $Null
+          if ($Create)
+          {
+              #On le cré si possible
+              if ($PSPathInfo.IsValidForCreation())
+              {              
+                $Logger.Debug("Create `$Destination directory $isDestinationExist") #<%REMOVE%>
+                Md $Destination > $Null
+              }
           }
-          elseif(-not $isDestinationExist)
-          { throw ($MessageTable.PathMustExist -F $Destination) } 
-        }
-         # Au cas où la destination est un chemin relatif, on récupère le chemin complet 
-        if(-not $List)
-        {
-          $Destination = Resolve-Path $Destination|
-                          Foreach { $_.Path } 
-        } 
+          elseif (-not $PSPathInfo.IsValidForExtraction())
+          { throw ($PsIonicMsgs.PathMustExist -F $Destination) }            
+         }
+       }  
               
         Foreach($FileName in $ZipPath){
           $Logger.Debug("Full path name : $FileName") #<%REMOVE%>
@@ -1399,7 +1318,7 @@ Function TestZipArchive {
         $isZipFile = [ZipFile]::isZipFile($Archive, $isValid)
     }
     catch{
-        throw (New-Object System.Exception(($MessageTable.TestisArchiveError -F $Archive,$_),$_.Exception)) 
+        throw (New-Object System.Exception(($PsIonicMsgs.TestisArchiveError -F $Archive,$_),$_.Exception)) 
         
     }
 #<DEFINE %DEBUG%>
@@ -1430,7 +1349,7 @@ Function TestZipArchive {
         }
       }
       catch{
-         throw (New-Object System.Exception(($MessageTable.ZipArchiveCheckIntegrityError -F $Archive,$_),$_.Exception))
+         throw (New-Object System.Exception(($PsIonicMsgs.ZipArchiveCheckIntegrityError -F $Archive,$_),$_.Exception))
       }
     }
 
@@ -1440,7 +1359,7 @@ Function TestZipArchive {
             $goodPassword = [ZipFile]::CheckZipPassword($Archive, $Password)
         }
         catch{
-            throw (New-Object System.Exception(($MessageTable.ZipArchiveCheckPasswordError -F $Archive,$_),$_.Exception))
+            throw (New-Object System.Exception(($PsIonicMsgs.ZipArchiveCheckPasswordError -F $Archive,$_),$_.Exception))
         }
     }
 
@@ -1456,7 +1375,7 @@ Function TestZipArchive {
             if(-not $isZipFile -And -not $isValid){
                 $PSCmdlet.WriteError(
                   (New-Object System.Management.Automation.ErrorRecord(
-                    (New-Object Ionic.Zip.BadReadException($MessageTable.isNotZipArchiveWarning -F $Archive)), 
+                    (New-Object Ionic.Zip.BadReadException($PsIonicMsgs.isNotZipArchiveWarning -F $Archive)), 
                     "InvalidFormat", 
                     "InvalidData",
                     ("[{0}]" -f $Archive)
@@ -1467,7 +1386,7 @@ Function TestZipArchive {
             if(-not $goodPassword){
                 $PSCmdlet.WriteError(
                   (New-Object System.Management.Automation.ErrorRecord(
-                    (New-Object Ionic.Zip.BadPasswordException($MessageTable.isBadPasswordWarning -F $Archive)), 
+                    (New-Object Ionic.Zip.BadPasswordException($PsIonicMsgs.isBadPasswordWarning -F $Archive)), 
                     "InvalidPassword", 
                     "AuthenticationError",
                     ("[{0}]" -f 'Password')
@@ -1478,7 +1397,7 @@ Function TestZipArchive {
             if(-not $checkZip){
                 $PSCmdlet.WriteError(
                   (New-Object System.Management.Automation.ErrorRecord(
-                    (New-Object Ionic.Zip.BadCrcException($MessageTable.isCorruptedZipArchiveWarning -F $Archive)), 
+                    (New-Object Ionic.Zip.BadCrcException($PsIonicMsgs.isCorruptedZipArchiveWarning -F $Archive)), 
                     "InvalidArchive", 
                     "ReadError",
                     ("[{0}]" -f $Archive)
@@ -1529,7 +1448,7 @@ Function Test-ZipFile{
          	if((-not $isValid) -and ($zipPath -eq $null))
          	{ 
                  # usage de ToString() pour éviter un bug v2
-                $Msg=$MessageTable.InvalidValue -F $Archive.ToString()
+                $Msg=$PsIonicMsgs.InvalidValue -F $Archive.ToString()
                 $Logger.Error($Msg) #<%REMOVE%>
                 Write-Error $Msg
              }
@@ -1863,6 +1782,404 @@ function New-ReadOptions {
 #     } #end
 # }#Rename-ZipEntry 
 
+
+function Test-UNCPath {
+#Valide si un chemin est au format UNC (IPv4 uniquement).
+#On ne valide pas l'existence du chemin
+
+ param(  
+  [string] $Path
+  )
+ try {
+  $Uri=[uri]$Path.Replace('/','\')
+    #Le nom de chemin doit comporter au moins deux segments :  : \\server\share\file_path
+   #et il doit débuter par '\\' ou '//' et ne pas être suivi de '\' ou de'/'
+   $isValid=($Uri -ne $Null) -and ($Uri.Segments -ne $null) -and ($Uri.Segments.Count -ge 2) -and ($Path -match '^(\\{2}|/{2})(?!(\\|/))')
+   
+   Write-Debug "[Test-UNCPath] isValid=$isValid isUNnc=$($Uri.IsUnc) $Path $($Uri.LocalPath)"
+ }
+ catch [System.Management.Automation.RuntimeException] { #[System.ArgumentNullException],[System.UriFormatException]{
+   Write-Debug "$_"
+   $isValid=$false
+ }
+ $isValid
+} #Test-UNCPath
+(Get-Item function:Test-UNCPath).Description='Test un chemin UNC'
+
+Function Resolve-PSPath{
+#Version 1.0
+ [CmdletBinding(DefaultParameterSetName = "Path")]          
+ param(
+    [Parameter(Mandatory=$true,ValueFromPipeline=$true,ParameterSetName="Path")]
+   [string]$Path,
+    [Parameter(Mandatory=$true,ValueFromPipeline=$true, ParameterSetName="LitteralPath")]
+   [String]$LitteralPath
+ )
+
+ begin { 
+    Function New-PSPathInfoError{
+     #construit une string affectée à la propriété LastError
+      param ($ErrorRecord)
+     Return "[{0}] {1}" -F $ErrorRecord.Exception.GetType().FullName,$ErrorRecord.Exception.Message
+    }#New-PSPathInfoError
+
+    Function New-PSPathInfo{
+     #construit un objet portant les informations d'analyse d'un PSPath
+     param(
+        [Parameter(position=1)]
+      $Name,
+      [switch] $asLitteral
+    )
+      Write-debug "name=$name"
+      $Helper = $ExecutionContext.SessionState.Path
+      $O=New-Object PSObject -Property @{
+         # !! Certaines propriétés boolean sont affectées par défaut à $false
+         #Leurs interprétation dépendent de la propriété LastError.
+         #Par exemple pour un nom de chemin référençant un provider inexistant, 
+         #Bien que dans ce cas IsAbsolute=$false, on ne peut en conclure que le nom de chemin est relatif.
+          
+                #Nom du chemin à analyser
+              Name=$Name;
+              
+               #Mémorise le type d'interprétation du path
+              asLitteral=$asLitteral
+              
+               #Indique si le chemin résolu est valide
+              isValid=$false
+              
+               #Nombre de fichier si le globbing est détecté
+               #Le globbing peut être détecté sans pour autant que le chemin renvoit de fichier
+              Count=0;
+               
+               #Texte de la dernière exception rencontrée (exceptions gérées uniquement)
+              LastError=$Null;
+               
+               #Contient le nom réel du chemin. 
+               #Par exemple avec 'New-PSDrive -name TestsWinform -root G:\PS\Add-Lib\Add-Lib\trunk\Tests\Convert-Form -psp FileSystem'
+               #Pour 'TestsWinform:\1Form1.Designer.cs' on renvoi 'G:\PS\Add-Lib\Add-Lib\trunk\Tests\Convert-Form\1Form1.Designer.cs'
+               #
+               #Peut être vide selon le provider pointé et la syntaxe utilisée: 
+               #'Alias:','FeedStore:','Function:','PscxSettings:\'
+               #ex: cd function: ; $pathHelper.GetUnresolvedProviderPathFromPSPath('.') -> renvoi une chaîne vide. cf. Capacités du provider.
+              ResolvedPath=$Null;
+               
+               #Indique si le drive existe ou pas
+              isDriveExist=$false;
+               
+               #Indique si l'élément existe ou pas.
+              isItemExist=$False;
+               
+               #Précise si le provider indiqué par le nom de chemin $Name est celui du FileSystem
+              isFileSystemProvider=$False;
+               
+               #Référence le provider du nom de chemin contenu dans $Name
+              isProviderExist=$False;
+               
+               #Nom du provider associé au chemin $Name, soit il est précisé dans le nom, soit c'est le lecteur qui, s'il existe, porte l'info.
+               #Pour les chemins relatif c'est le nom du provider du drive courant. Le résultat dépend donc de la localisation.
+              Provider=$Null;
+               
+               #Le nom de chemin ne contient pas de nom de drive, ce qui est le cas d'un chemin ralatif, de '~' et d'un chemin de type UNC
+              isAbsolute=$False;
+               
+               #contient $True si le nom de chemin commence par 'NomDeProvider::'
+              isProviderQualified=$False;
+               
+               #Indique si le nom de chemin contient des caractères joker Powershell. 
+               # PS globbing comprend les caractères suivants :  *,?,[]
+               #Si le paramètre -Litteral est utilisé cette propriété vaut $false  
+              isWildcard=$False;
+               
+               #Indique si le nom du provider de la localisation courante est le provider FileSystem
+              isCurrentLocationFileSystem =$Helper.CurrentFileSystemLocation.Path -eq $Helper.CurrentLocation.Path
+              
+              #ATTENTION le nom du drive peut contenir des jokers ( 'C*' ) ou des espaces, exemple : ' C:\Temp\foo.txt'
+                #dans ce cas le caractére espace est recopié dans Drivename. Il est possible de nommer un drive avec des espaces :
+                # New-PSDrive -Name ' Toto' -PSProvider FileSystem -Root C:\Temp
+                # Dir ' Toto:' 
+                #
+                #Pour un chemin UNC le nom du drive pointé est inconnu.             
+               DriveName=$Null;
+               
+               #Nom du drive en cours lors de l'appel.
+               #contient le nom du drive courant ou le nom du provider si le chemin est ProviderQualified.
+               CurrentDriveName=$null;
+               
+               #Indique si le chemin est au format UNC
+               #Si UNC égale $true et que absolute est $false
+               #alors Provider et isFileSystemProvider référence le provider courant, 
+               # ce qui ne réfléte pas celui porté par ResolvedPath
+               isUNC=$false
+             }          
+      $O.PsObject.TypeNames.Insert(0,"PSPathInfo")
+      $O
+      #$O|Add-Member ScriptMethod ToString {$this.Name} -Force -Passthru
+    }# New-PSPathInfo
+ 
+   $pathHelper = $ExecutionContext.SessionState.Path
+   
+   # $PSBoundParameters.ContainsKey("ErrorAction") -and $PSBoundParameters["ErrorAction"]
+   $_EA= $null
+   [void]$PSBoundParameters.TryGetValue('ErrorAction',[REF]$_EA)
+   if ($_EA -ne $null) 
+   { $ErrorActionPreference=$_EA}
+   
+   Write-Debug "Resolve-PSPath.Begin `$ErrorActionPreference=$ErrorActionPreference" 
+ }#begin
+  
+ process {
+   try {
+     $isLitteral = $PsCmdlet.ParameterSetName -eq 'LitteralPath'
+     if ( $isLitteral )
+     { $CurrentPath=$LitteralPath }
+     else
+     { $CurrentPath=$Path }
+
+     Write-Debug  "CurrentPath=$CurrentPath"
+     $Infos=New-PSPathInfo $CurrentPath -asLitteral:$isLitteral
+
+     $Infos.IsProviderQualified=$pathHelper.IsProviderQualified($CurrentPath)
+     $ProviderInfo=$DriveInfo=$CurrentDriveName=$null
+    
+      #Récupère le nom du drive
+      #Ne déclenche pas d'exception pour les chemins erronés, sauf si $PsPath=$null
+      #
+      #Si le path est relatif alors Absolute est faux, dans ce cas le drive renvoyé est le drive courant
+      #Si le path est Provider-Qualified alors Absolute est tjrs vrai. 
+      #Si le provider ou le drive n'existe pas l'information IsAbsolute reste valide.
+      #'~' renvoi $false
+      #un chemin UNC renvoi $false
+     $infos.IsAbsolute=$pathHelper.IsPSAbsolute($CurrentPath,[ref]$CurrentDriveName)
+     
+     #!! Attention : 
+     #Pour les noms de chemin tel que 'FileSystem::\Temp\*' ou 'FileSystem::\Temp', 
+     #PS renvoi le path pointé par [Environment]::CurrentDirectory
+     # voir http://www.beefycode.com/post/The-Difference-between-your-Current-Directory-and-your-Current-Location.aspx
+     
+     try {
+       #Si le path est ProviderQualified alors DriveInfo est à $null
+       #Si la localisation est 'HKLM:\', alors pour le nom de chemin '..', l'appel renvoie HKEY_LOCAL_MACHINE\ qui est la racine courante, 
+       #mais la racine courante du provider registry n'est pas un nom de drive PS, c'est ici le nom de la ruche.
+       #Si la localisation est 'C:\', alors pour le nom de chemin '..', l'appel renvoie C:\qui est la racine courante, pour le filesystem elle contient le nom du drive PS, 
+       #car celui-ci existe en dehors de Powershell.
+       #Le nom de path '...' est pris en compte. Bug ?
+      $ursvPath=$pathHelper.GetUnresolvedProviderPathFromPSPath($CurrentPath,[ref]$ProviderInfo,[ref]$DriveInfo)
+
+      $Infos.isProviderExist=$True     
+      $Infos.Provider=$ProviderInfo.Name
+      $Infos.isFileSystemProvider=$ProviderInfo.Name -eq 'FileSystem'
+
+      Write-Debug "Provider : $ProviderInfo"
+      Write-debug "IsProviderQualified = $($Infos.IsProviderQualified)"
+      Write-debug "IsAbsolute = $($infos.IsAbsolute)"
+      
+      if ($Infos.IsProviderQualified -eq $false)
+      {
+        if ($Infos.IsAbsolute -eq $false) 
+        {
+          Write-debug "On change le path RELATIF : $ursvPath"
+          $CurrentPath=$ursvPath
+        }
+        else 
+        { Write-debug "On ne change pas le path ABSOLU : $CurrentPath" } 
+        $Infos.IsUnC=Test-UNCPath $CurrentPath       
+      }
+      else 
+      { 
+        Write-debug "On ne change pas le path PROVIDER-QUALIFIED : $CurrentPath"
+        #'Registry::\\localhost\c$\temp' ne doit pas être reconnu comme UNC 
+        if ($Infos.isFileSystemProvider)  
+        { 
+          $lpath=$CurrentPath -replace '(.*?)::(.*)','$2'
+          $Infos.IsUnc=Test-UNCPath $lpath
+           #pour 'filesystem::z\' isValid renvoie true
+           #'z:\' isValid  déclenche une exception DriveNotFound
+           try {
+             #Pour valider le path, on doit se placer sur le provider FS    
+            Push-Location $env:windir
+            [void]$PathHelper.IsValid($lpath)
+           }finally {
+             Pop-Location
+           }
+        } 
+      }
+
+      Write-debug "isUNC=$($Infos.IsUnc)"
+      
+       #Ici on ne traite que des drives connus sur des providers existant
+      Write-debug "CurrentDrivename=$CurrentDrivename"
+      $Infos.CurrentDrivename=$CurrentDrivename
+      if ($DriveInfo -ne $null)
+      {
+        $Infos.DriveName=$DriveInfo.Name
+        $infos.isDriveExist=$True
+        Write-Debug "Drive name: $($DriveInfo.Name)"
+      }
+     
+      #Pour 'c:\temp\MyTest[a' iswildcard vaut $true, mais le globbing est invalide, à priori la seule présence du [ renvoi $true  
+      #Pour 'c:\temp\MyTest`[a' iswildcard vaut $false
+      #Si c'est un chemin littéral les caractères génériques ne peuvent être interprétés, car il générerait une exception
+      if ($isLitteral)
+      {  $infos.isWildCard=[Management.Automation.WildcardPattern]::ContainsWildcardCharacters(([Management.Automation.WildcardPattern]::Escape($CurrentPath)))}
+      else
+      {  $infos.isWildCard=[Management.Automation.WildcardPattern]::ContainsWildcardCharacters($CurrentPath)}
+       
+      Write-Debug "Path résolu : $CurrentPath" 
+     } catch [System.Management.Automation.ProviderInvocationException],
+              # sur la registry les noms de chemin '\..' et '\..' déclenche :  
+              #  Le chemin d'accès 'HKEY_LOCAL_MACHINE\..' fait référence à un élément situé hors du chemin d'accès de base 'HKEY_LOCAL_MACHINE'.  
+             [System.Management.Automation.PSInvalidOperationException] {
+       #Sur la registry, '~' déclenche cette exception, car la propriété Home n'est pas renseigné.
+       Write-Debug  "$_"
+       Write-Debug "Path n'est pas résolu : $CurrentPath"
+       $Infos.LastError=New-PSPathInfoError $_
+       #On quitte, car les informations nécessaires sont inconnues. 
+       return
+     } 
+     
+     if (($Infos.IsProviderQualified -eq $false) -and ($Infos.IsAbsolute -eq $false) -and ($Infos.isFileSystemProvider -eq $false) ) 
+     {
+       Write-debug "Ajoute le nom du provider : $CurrentPath"
+       if ($Infos.IsUnc)
+       {$Infos.ResolvedPath='FileSystem::'+$CurrentPath }
+       else
+       {$Infos.ResolvedPath=$Infos.Provider+'::'+$CurrentPath }
+       Write-debug "Resultat après l'ajout : $($Infos.ResolvedPath)" 
+     }
+     else
+     {$Infos.ResolvedPath=$CurrentPath}
+
+     #Implémente Path et LitteralPath
+     try {
+       #Le globbing est pris en compte
+       if ($isLitteral)
+       { $Infos.isItemExist= $ExecutionContext.InvokeProvider.Item.Exists(([Management.Automation.WildcardPattern]::Escape($Infos.ResolvedPath)),$false,$false) } 
+       else 
+       { $Infos.isItemExist= $ExecutionContext.InvokeProvider.Item.Exists($Infos.ResolvedPath,$false,$false) }
+       Write-Debug "L'item existe-til ? $($Infos.isItemExist)"
+       if ($Infos.isItemExist)
+       {
+         try {
+           Write-Debug "Analyse le globbing."
+           $provider=$null
+            #renvoi le nom du provider et le fichier ou les fichiers en cas de globbing
+           if ($isLitteral)
+           { $result=@($pathHelper.GetResolvedProviderPathFromPSPath(([Management.Automation.WildcardPattern]::Escape($Infos.ResolvedPath)),[ref]$provider)) }
+           else 
+           { $result=@($pathHelper.GetResolvedProviderPathFromPSPath($Infos.ResolvedPath,[ref]$provider)) }
+           $Infos.Count=$Result.Count
+           Write-Debug ("Count={0} Result[0]={1} " -F $Infos.Count,$Result[0]) 
+         } catch [System.Management.Automation.PSInvalidOperationException] {
+             Write-Debug  "Exception GetResolvedProviderPathFromPSPath : $($_.Exception.GetType().Name)"
+             #Sur la registry, '~' déclenche cette exception, car la propriété Home n'est pas renseigné.
+            $Infos.Count=0
+         }
+       }
+     }  
+     catch [System.Management.Automation.MethodInvocationException]  {
+           #Path Invalide. 'C:\temp\t>\t.txt' -> "Caractères non conformes dans le chemin d'accès."
+       Write-Debug  "$_"
+       Write-Debug  "Exception Exists: $($_.Exception.GetType().Name)"
+       $Infos.LastError=New-PSPathInfoError $_        
+     }
+
+    }#try
+    catch [System.Management.Automation.ProviderNotFoundException],
+
+              #Le lecteur physique peut ne pas exister, exemple A:\
+          [System.Management.Automation.DriveNotFoundException],
+
+              #Le lecteur physique existe, mais est amovible exemple A:\ ou un lecteur de CD-Rom
+              #Avec : New-PSDrive -name ' Space' -root C:\Temp -psp FileSystem
+              #l'appel de    : ' Space:\Test'|Resolve-PSpath
+              # le message d'erreur contiendra la référence à 'C:\Temp\Test' et pas ' Space:\Test' 
+              #pour 'Registry::HKLM:\System' le message d'erreur référencera « HKLM:\System » 
+          [System.Management.Automation.ItemNotFoundException],
+
+           #Path Invalide.
+          [System.Management.Automation.PSArgumentException],
+
+           # Caractères génériques invalides.
+          [System.Management.Automation.WildcardPatternException], 
+
+           #Pour les items du filesystem contenant des caractères interdits :  < > | : ? * etc
+           #Pour le 'etc' voir : [System.IO.Path]::GetInvalidFileNameChars()
+           #Les noms de chemin contenant un nom de périphérique Win32 tels que 
+           # PRN, AUX, CLOCK,NUL,CON,COM1,LPT2...
+           #sont testé en interne par le provider FileSystem. 
+           #Ces noms ne peuvent exister et seront considéré comme inconnus.
+           #Pour d'autres provider ces caractères et noms peuvent être autorisés.
+          [System.NotSupportedException] {
+      Write-Debug  "Exception : $($_.Exception.GetType().Name)"
+      $Infos.LastError=New-PSPathInfoError $_
+    }
+    finally {
+
+      #Répond à la question : Le chemin est-il valide ?
+      $Infos| 
+        Add-Member -Membertype Scriptmethod -Name IsCandidate {
+           $result= $this.isValid  -and
+                   ($this.LastError -eq $null)  -and 
+                   (($this.isFileSystemProvider -eq $true) -or ($this.isUNC -eq $true)) -and 
+                   ($this.isWildcard -eq $false)  
+          if (-not $result)
+          { Write-Debug "Invalide pour une utilisation sur le FileSystem : $($this.ResolvedPath)" } 
+          $result                    
+        }  
+
+      #Répond à la question : Le chemin est-il un répertoire valide ?
+      $Infos| 
+        Add-Member -Membertype Scriptmethod -Name IsValidForExtraction {
+            #Pour utiliser un répertoire d'extraction on doit savoir s'il :
+            #  est valide (ne pas contenir de joker,ni de caractères interdits),
+            #  existe,
+            #  pointe sur le file systeme (s'il est relatif, la location courante doit être le FS)
+           $result= $false
+           if ($this.IsCandidate() -and $this.isItemExist)
+           { 
+             if ($this.asLitteral)
+             { $lpath=[Management.Automation.WildcardPattern]::Escape($this.ResolvedPath) }
+             else 
+             { $lpath=$this.ResolvedPath }
+             $result=$ExecutionContext.InvokeProvider.Item.IsContainer($lpath)
+           }
+           If ($result)
+           { Write-Debug "Valide en tant que répertoire d'extraction : $($this.ResolvedPath)"}
+           $result     
+        }  
+
+      #Répond à la question : Le chemin peut-il être crée ?
+      $Infos| 
+        Add-Member -Membertype Scriptmethod -Name IsValidForCreation {
+            # Pour créer un répertoire d'extraction on doit savoir s'il :
+            #  est valide (ne pas contenir de joker, ni de caractères interdits),
+            #  S'il n'existe pas déjà,
+            #  pointe sur le file système (s'il est relatif, la location courante doit être le FS)
+            #
+            # $this.ResolvedPath est un nom d'entrée du FileSystem, pas un Fichier ou un Répertoire, 
+            # c'est lors de la création de cette entrée que l'on détermine son type.
+           $result= ( $this.IsCandidate() -and ($this.isItemExist -eq $false) ) 
+           If ($result)
+           { Write-Debug "Valide pour une création de répertoire d'extraction : $($this.ResolvedPath)"}
+           $result
+        }  
+        #Un chemin tel que 'registry::hklm:\' est considéré comme candidate
+        #on s'assure que sa construction est valide pour le provider   
+       if ($Infos.ResolvedPath -ne $null)
+       { 
+         try {
+             $Infos.isValid=$ExecutionContext.SessionState.Path.isValid($Infos.ResolvedPath) 
+         } catch [System.Management.Automation.ProviderInvocationException]  {
+             #Par exemple pour 'Registry::\\localhost\c$\temp' ou 'Registry::..\temp'
+             Write-Debug  "isValid : $($_.Exception.GetType().Name)"
+            $Infos.LastError=New-PSPathInfoError $_
+         }
+      }
+       $Infos
+    }
+ } #process
+} #Resolve-PSPath
+
 # Suppression des objets du module 
 Function OnRemovePsIonicZip {
   $PsIonicShortCut.GetEnumerator()|
@@ -1875,14 +2192,14 @@ Function OnRemovePsIonicZip {
      }
    }
 #<DEFINE %DEBUG%>
-  Stop-Log4Net
+#todo  Stop-Log4Net vérifier si + module utilise une config différente ou une ddll de version différente !!!
 #<UNDEF %DEBUG%>   
   
 }#OnRemovePsIonicZip
  
 # Section  Initialization
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { OnRemovePsIonicZip }
-
+                                                        
 Reset-PsIonicSfxOptions 
  
 Set-Alias -name cmpzf   -value Compress-ZiFile
@@ -1905,11 +2222,6 @@ Set-Alias -name sca            -value Stop-ConsoleAppender
 #<UNDEF %DEBUG%> 
 
 Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
-                                                        #<DEFINE %DEBUG%>
-                                                         Set-Log4NETDebugLevel,
-                                                         Stop-ConsoleAppender,
-                                                         Start-ConsoleAppender,                                                          
-                                                        #<UNDEF %DEBUG%> 
                                                         ConvertTo-Sfx,
                                                         Add-ZipEntry,
                                                         Expand-ZipFile, 
