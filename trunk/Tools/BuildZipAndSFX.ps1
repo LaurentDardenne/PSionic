@@ -18,6 +18,8 @@ Task BuildZipAndSFX {
    if ($Configuration -eq "Debug") 
    { 
      Write-host "Mode $Configuration : disable log4net"
+      #Utile si log4net est déjà configuré sinon on obtient 
+      #un warning sans gravité sur le logger 
      Set-Log4NETDebugLevel -Off 
    }
    
