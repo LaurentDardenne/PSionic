@@ -11,7 +11,7 @@ Properties {
 if (-not $currentContext.tasks.default)
 {Task default -Depends CompilePsionicTools}
  
-Task CompilePsionicTools {
+Task CompilePsionicTools -Depends TestPSSyntax {
 #Compile la dll psionic
  
   $Files=@(
@@ -31,3 +31,17 @@ Task CompilePsionicTools {
   Add-Type -Path $Files -CompilerParameters $cp
   Write-Host "Compilation réussie de $($cp.OutputAssembly) version $PSVersion"
 } #CompilePsionicTools
+
+Task TestPSSyntax {
+ ."$PsIonicTools\Test-PSScript.ps1"
+ 
+ $Result=@("$PsIonicLivraison\Log4Posh\Log4Posh.psd1",
+           "$PsIonicLivraison\Log4Posh\Log4Posh.psm1",
+           "$PsIonicLivraison\PsIonic\psionic.psd1",
+           "$PsIonicLivraison\PsIonic\psionic.psm1"|
+            Test-PSScript -IncludeSummaryReport
+          )
+ $Result          
+ if ($Result.Count -gt 0)
+ {Throw "Corriger les erreurs de syntaxe."}        
+} #TestPSSyntax
