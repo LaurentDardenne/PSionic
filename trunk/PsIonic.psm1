@@ -1095,10 +1095,12 @@ Function Expand-ZipFile {
 	param(
 		[parameter(Mandatory=$True,ValueFromPipeline=$True)]
 	  $File,        
- 
+      #Todo add LiterralPath
+      
         [ValidateNotNullOrEmpty()] 
         [parameter(Position=0,Mandatory=$True, ValueFromPipelineByPropertyName=$True, ParameterSetName="Default")]
 	  [PSObject]$Destination,
+           #Todo add $DestinationLiterralPath
 	    
       	[Parameter(Position=1,Mandatory=$false, ParameterSetName="Default")]
 	  [String] $Query,      
@@ -1134,6 +1136,8 @@ Function Expand-ZipFile {
     $isDefaultParameterSetName= $PsCmdlet.ParameterSetName -eq 'Default'
     
     $ReadOptions=New-ReadOptions $Encoding -Verbose:$isVerbose -Follow:$isFollow
+     #to manage delayed script block 
+    $PreviousDestination=$null
     
     Function ZipFileRead {
       try{
@@ -1232,53 +1236,55 @@ Function Expand-ZipFile {
       }
       else 
       {
-                                
-        if ($isDefaultParameterSetName) 
+         #Test à chaque itération car le delayed script block peut être demandé
+         #On mémorise donc le répertoire de destination courant                        
+        if (($PreviousDestination -ne $Destination) -and $isDefaultParameterSetName) 
         {
+           Write-debug ("delayed script block detected old {0} new {1}" -f $PreviousDestination,$Destination)  #<%REMOVE%>
+           $Logger.DebugFormat("delayed script block detected old {0} new {1}", $PreviousDestination,$Destination)  #<%REMOVE%>
+           $PreviousDestination=$Destination
            #Le chemin de destination doit être valide  
            #le chemin valide doit exister
            #Le chemin doit référencer le FileSystem
-          $PSPathInfo=Resolve-PSPath $zipPath
-          $Destination=$PSPathInfo.ResolvedPath
-          
+          $PSPathInfo=Resolve-PSPath -Path $Destination 
           if (-not $PSPathInfo.IsCandidate()) 
           {
-             $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F $Destination
+             $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F $Destination + "`r`n$($PSPathInfo.LastError)"r
              $Logger.Error($Msg) #<%REMOVE%>
              Write-Error $Msg
              continue 
           }
+          $Destination=$PSPathInfo.ResolvedPath
           if ($Create)
           {
-              #On le cré si possible
+              #On le crée si possible
               if ($PSPathInfo.IsValidForCreation())
               {              
-                $Logger.Debug("Create `$Destination directory $isDestinationExist") #<%REMOVE%>
+                $Logger.Debug("Create `$Destination directory") #<%REMOVE%>
                 Md $Destination > $Null
               }
           }
           elseif (-not $PSPathInfo.IsValidForExtraction())
           { throw ($PsIonicMsgs.PathMustExist -F $Destination) }            
-         }
-       }  
+        }
+      }#else zipath null  
               
-        Foreach($FileName in $ZipPath){
-          $Logger.Debug("Full path name : $FileName") #<%REMOVE%>
-          $zipFile= ZipFileRead
-          if ($ZipFile.Count -eq 0)
-          {
-            $Logger.Debug("No entries in the archive") #<%REMOVE%> 
-            if ($Passthru)
-            { return ,$ZipFile }
-            else 
-            { 
-              DisposeZip 
-              return $null            
-            } 
-          }
-          ExtractEntries
-        }#foreach zipFile
-      }#else zipath null
+      Foreach($FileName in $ZipPath){
+        $Logger.Debug("Full path name : $FileName") #<%REMOVE%>
+        $zipFile= ZipFileRead
+        if ($ZipFile.Count -eq 0)
+        {
+          $Logger.Debug("No entries in the archive") #<%REMOVE%> 
+          if ($Passthru)
+          { return ,$ZipFile }
+          else 
+          { 
+            DisposeZip 
+            return $null            
+          } 
+        }
+        ExtractEntries
+      }#foreach zipFile
     }
     catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
     {
@@ -1782,7 +1788,6 @@ function New-ReadOptions {
 #     } #end
 # }#Rename-ZipEntry 
 
-
 function Test-UNCPath {
 #Valide si un chemin est au format UNC (IPv4 uniquement).
 #On ne valide pas l'existence du chemin
@@ -1812,8 +1817,8 @@ Function Resolve-PSPath{
  param(
     [Parameter(Mandatory=$true,ValueFromPipeline=$true,ParameterSetName="Path")]
    [string]$Path,
-    [Parameter(Mandatory=$true,ValueFromPipeline=$true, ParameterSetName="LitteralPath")]
-   [String]$LitteralPath
+    [Parameter(Mandatory=$true,ValueFromPipeline=$true, ParameterSetName="LiteralPath")]
+   [String]$LiteralPath
  )
 
  begin { 
@@ -1828,7 +1833,7 @@ Function Resolve-PSPath{
      param(
         [Parameter(position=1)]
       $Name,
-      [switch] $asLitteral
+      [switch] $asLiteral
     )
       Write-debug "name=$name"
       $Helper = $ExecutionContext.SessionState.Path
@@ -1842,7 +1847,7 @@ Function Resolve-PSPath{
               Name=$Name;
               
                #Mémorise le type d'interprétation du path
-              asLitteral=$asLitteral
+              asLiteral=$asLiteral
               
                #Indique si le chemin résolu est valide
               isValid=$false
@@ -1929,14 +1934,14 @@ Function Resolve-PSPath{
   
  process {
    try {
-     $isLitteral = $PsCmdlet.ParameterSetName -eq 'LitteralPath'
-     if ( $isLitteral )
-     { $CurrentPath=$LitteralPath }
+     $isLiteral = $PsCmdlet.ParameterSetName -eq 'LiteralPath'
+     if ( $isLiteral )
+     { $CurrentPath=$LiteralPath }
      else
      { $CurrentPath=$Path }
 
      Write-Debug  "CurrentPath=$CurrentPath"
-     $Infos=New-PSPathInfo $CurrentPath -asLitteral:$isLitteral
+     $Infos=New-PSPathInfo $CurrentPath -asLiteral:$isLiteral
 
      $Infos.IsProviderQualified=$pathHelper.IsProviderQualified($CurrentPath)
      $ProviderInfo=$DriveInfo=$CurrentDriveName=$null
@@ -2137,7 +2142,7 @@ Function Resolve-PSPath{
            $result= $false
            if ($this.IsCandidate() -and $this.isItemExist)
            { 
-             if ($this.asLitteral)
+             if ($this.asLiteral)
              { $lpath=[Management.Automation.WildcardPattern]::Escape($this.ResolvedPath) }
              else 
              { $lpath=$this.ResolvedPath }
