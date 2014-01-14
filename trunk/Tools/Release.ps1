@@ -60,16 +60,19 @@ Task RemoveConditionnal -Depend TestLocalizedData { $go=$Configuration -ne "Debu
    $VerbosePreference='Continue'
    ."$PsIonicTools\Remove-Conditionnal.ps1"
 
-   $Directives=@('DEBUG','Remove')
+   $Directives=@('DEBUG')
    Dir "$PsIonicTrunk\PsIonic.psm1"|
     Foreach {
       Write-Verbose "Parse :$($_.FullName)"
-      $CurrentFileName=$_.Name
-      $_}|
-    Get-Content -ReadCount 0|
-    Remove-Conditionnal -ConditionnalsKeyWord  $Directives|
-    Remove-Conditionnal -Clean|
-    Set-Content -Path { "$PsIonicLivraison\PsIonic\$CurrentFileName"} -Force  
+      $CurrentFileName="$PsIonicLivraison\PsIonic\$($_.Name)"
+      Write-Warning "CurrentFileName=$CurrentFileName"
+     
+      $_|
+       Get-Content -ReadCount 0|
+       Remove-Conditionnal -ConditionnalsKeyWord  $Directives|
+       Remove-Conditionnal -Clean|
+       Set-Content -Path $CurrentFileName -Force
+    }  
 } #RemoveConditionnal
 
 Task TestLocalizedData -ContinueOnError {
