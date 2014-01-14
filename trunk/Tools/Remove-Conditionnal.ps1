@@ -38,7 +38,7 @@ Function Remove-Conditionnal {
      #<UNDEF %Nom_De_Directive_B%>        
 
 .
-    La directive #<%REMOVE%%> peut être placée à la fin de chaque ligne  :
+    La directive #<%REMOVE%> peut être placée à la fin de chaque ligne  :
          Write-Host 'Test' #<%REMOVE%> 
          #commentaire de Test #<%REMOVE%>
 .
@@ -55,6 +55,20 @@ Function Remove-Conditionnal {
      Write-Host 'Test' 
 .
     Ne placez donc pas de texte à la suite de cette directive. 
+.
+    La directive #<INCLUDE %'FullPathName'%>, doit être être placée en début de ligne :
+         #<INCLUDE %'C:\Temp\Test.ps1'%>"
+.
+    Elle indique que le fichier C:\Temp\Test.ps1 sera inclus dans le fichier en 
+    cours de traitement. Vous devez vous assurer de l'existence du fichier. 
+    Ce nom de fichier doit être précédé de %' et suivi de '%>
+    L'imbrication de directive INCLUDE est possible, car ce traitement
+    appel récursivement la fonction Remove-Conditionnal avec le contenu du 
+    paramètre -ConditionnalsKeyWord.
+    Cette directive attend un seul nom de fichier.
+    Les espaces en début et fin de chaîne sont supprimé.
+.
+    Ne placez donc pas de texte à la suite de cette directive.     
 
 .PARAMETER  InputObject
     Spécifie le texte du code source à transformer. 
@@ -306,6 +320,55 @@ Function Remove-Conditionnal {
 .    
     En précisant la directive '2008R2' on génèrerait du code dédié à Windows 
     SEVEN.
+    
+.EXAMPLE
+    @'
+    #Fichier d'inclusion C:\Temp\Test1.ps1
+    1-un
+    '@ > C:\Temp\Test1.ps1
+    #
+    #     
+    @'
+    #Fichier d'inclusion C:\Temp\Test2.ps1
+    #<INCLUDE %'C:\Temp\Test3.ps1'%>
+    2-un
+    #<DEFINE %DEBUG%>
+    2-deux
+    #<UNDEF %DEBUG%>  
+    '@ > C:\Temp\Test2.ps1
+    #
+    #    
+    @'
+    #Fichier d'inclusion C:\Temp\Test3.ps1
+    3-un
+    #<INCLUDE %'C:\Temp\Test1.ps1'%> 
+    $Logger.Debug('Test') #<%REMOVE%>
+    #<DEFINE %PSV2%>
+    3-deux
+    #<UNDEF %PSV2%>  
+    '@ > C:\Temp\Test3.ps1
+    #
+    #   
+    Dir C:\Temp\Test2.ps1|
+     Get-Content -ReadCount 0|
+     Remove-Conditionnal -ConditionnalsKeyWord  'DEBUG'
+.        
+    Description
+    -----------
+    Ces instructions crées trois fichiers. L'appel à Remove-Conditionnal génère  
+    le code suivant :
+    #Fichier d'inclusion C:\Temp\Test2.ps1
+    #Fichier d'inclusion C:\Temp\Test3.ps1
+    3-un
+    #Fichier d'inclusion C:\Temp\Test1.ps1
+    1-un
+    #<DEFINE %PSV2%>
+    3-deux
+    #<UNDEF %PSV2%>
+    2-un      
+.
+    Chaque appel interne à Remove-Conditionnal utilisera les directives déclarées 
+    sur l'appel d'origine.  
 
 .INPUTS
     System.Management.Automation.PSObject
@@ -355,14 +418,18 @@ param (
    }#New-ParsingDirective
 
    $oldofs,$ofs=$ofs,'|'
-   if ( $Clean)
-   {$RegexDefine="^\s*#<\s*DEFINE\s*%(?<ConditionalKeyWord>.*[^%\s])%"}
+   if ($Clean.isPresent)
+   {
+      $RegexDefine="^\s*#<\s*DEFINE\s*%(?<ConditionalKeyWord>.*[^%\s])%"
+      Write-Debug "Regex pour Clean :'$RegexDefine'"
+   }
    else 
    {
      $ConditionnalsKeyWord|
       Where {$Directive=$_; $Directive.Contains(' ')}|
       Foreach {Throw "Une directive contient des espaces :$Directive" }
      $RegexDefine="^\s*#<\s*DEFINE\s*%(?<ConditionalKeyWord>$ConditionnalsKeyWord)%"
+     Write-Debug "Regex de base:'$RegexDefine'"
    }
    $Directives=New-Object System.Collections.Queue
    $ofs=$oldofs
@@ -373,7 +440,7 @@ param (
    $isDirectiveBloc=$False
 
     #renvoi toutes les lignes sauf celles du bloc délimitées par une 'directive' 
-   if ($Clean)
+   if ($Clean.isPresent)
    {$CurrentDirective='.*[^%\s]'}
    else 
    {$CurrentDirective=$null}
@@ -388,7 +455,7 @@ param (
        {
           #Recherche le mot clé de début d'une directive, puis l'empile 
          $RegexDefine {   Write-Debug "Match DEFINE"
-                          if (-not $Clean)
+                          if (-not $Clean.isPresent)
                           {
                               $CurrentDirective=$Matches.ConditionalKeyWord
                               Write-Debug "Enqueue $CurrentDirective"
@@ -400,9 +467,8 @@ param (
                        }
                     
           #Recherche le mot clé de fin de la directive courante, puis dépile
-         "^\s*#<\s*UNDEF %${CurrentDirective}%>"   {    
-                                                     Write-Debug "Match UNDEF"
-                                                     if (-not $Clean)
+         "^\s*#<\s*UNDEF %${CurrentDirective}%>"   { Write-Debug "Match UNDEF"
+                                                     if (-not $Clean.isPresent)
                                                      {
                                                        if ($Directives.Count -gt 0) 
                                                        {
@@ -417,14 +483,37 @@ param (
                                                      continue
                                                   }
           #Supprime la ligne                                      
-         "#<%REMOVE%>"  { Write-Debug "Match REMOVE"
-                              if ($Clean)
-                               {$Line -replace "#<%REMOVE%>",''}
-                              continue
-                            } 
-         # "^\s*#<%EXPAND \$(?<VarName>.*)%%>"  {  #todo  #<%REMOVE%>
-         # "^\s*#<%INCLUDE \$(?<FileName>.*)%%>"  {  #todo  #<%REMOVE%>
-         
+         "#<%REMOVE%>"  {  Write-Debug "Match REMOVE"
+                           if ($Clean.isPresent)
+                           {$Line -replace "#<%REMOVE%>",''}
+                           #else on supprime tjr la ligne 
+                           continue
+                        } 
+          
+          #Décommente la ligne
+         "#<%UNCOMMENT%>"  { Write-Debug "Match UNCOMMENT"
+                             $Line -replace "^\s*#*<%UNCOMMENT%>",''
+                             continue
+                           }
+          #Traite un fichier la fois
+          #L'utilisateur à la charge de valider le nom et l'existence du fichier
+         "^\s*#<INCLUDE\s{1,}%'(?<FileName>.*)'%>" { 
+                             Write-Debug "Match INCLUDE"
+                             $FileName=$Matches.FileName.Trim()
+                             Write-Debug "Inclu le fichier $FileName"
+                              #Lit le fichier, le transforme à son tour, puis l'envoi dans le pipe
+                              #Imbrication d'INCLUDE possible
+                              #Exécution dans une nouvelle portée 
+                             if (-not $Clean.isPresent)
+                             {
+                                $NestedResult= Get-Content $FileName -ReadCount 0|
+                                                Remove-Conditionnal -ConditionnalsKeyWord $ConditionnalsKeyWord
+                                #Ici on émet le contenu du tableau et pas le tableau reçu
+                                #Seul le résultat final est renvoyé en tant que tableau 
+                               $NestedResult
+                             }
+                             continue
+                           }
          default {
            Write-Debug "Match Default"
              #On traite les lignes qui ne se trouvent pas dans le bloc de la 'directive'
@@ -440,7 +529,8 @@ param (
      $ofs=$oldofs
   }
    else 
-   { ,$Result } #renvoi un tableau
+   { ,$Result } #Renvoi un tableau, permet d'imbriquer un second appel sans transformation du résultat
    $Directives.Clear()
  }#process
 } #Remove-Conditionnal
+
