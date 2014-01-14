@@ -2,7 +2,8 @@
 
 #Write these line in the Windows PowerShell profile
 # ."$env:PsIonic\Tools\Profile_DevCodePlex.Ps1"
-#Puis créez une variable d'environnement système nommée PsIonic pointant sur votre répertoire de travail
+#Créez une variable d'environnement système nommée PsIonic pointant sur votre répertoire de travail
+#Puis modifiez les lignes indiquées comme spécfiques au poste de  développement
 
 $SM = [System.Environment+SpecialFolder]::MyDocuments
 $PSProfile="$([System.Environment]::GetFolderPath($SM))\WindowsPowerShell"
@@ -13,7 +14,7 @@ $ProjectName='PsIonic'
 
 $PsVersion=$PSVersionTable.PsVersion
 
-Set-Location "$SvnPathRepository\$ProjectName\Trunk\Tools"
+Set-Location "$SvnPathRepository\$ProjectName\Tools"
 
   #Pour cette hashtable on retarde la substitution, 
  #car on référence des clés de la hashtable 'primaire'
@@ -32,6 +33,9 @@ $Paths=@{
 
 $PsIonic=New-ProjectVariable $ProjectName  $SvnPathRepository 'https://psionic.svn.codeplex.com/svn' $Paths
 $PsIonic.NewVariables() #Crée des variables constante d'après les clés de la hashtable $PsIonic
+
+ #PSDrive sur le répertoire du projet 
+$null=New-PsDrive -Scope Global -Name $PsIonic.ProjectName -PSProvider FileSystem -Root $PsIonicTrunk 
 
 rv SM,Paths,ProjectName,SvnPathRepository
 Set-Location ..
