@@ -1,4 +1,4 @@
-# Expand-ZipFile command help
+﻿# Expand-ZipFile command help
 @{
 	command = 'Expand-ZipFile'
 	synopsis = $Datas.ExpandZipFileSynopsis
@@ -12,7 +12,7 @@
 		Destination = $Datas.ExpandZipFileParametersDestination
 		Encoding = $Datas.ExpandZipFileParametersEncoding
 		ExtractAction = $Datas.ExpandZipFileParametersExtractAction
-		File = $Datas.ExpandZipFileParametersFile
+		Path = $Datas.ExpandZipFileParametersPath
 		Flatten = $Datas.ExpandZipFileParametersFlatten
 		Follow = $Datas.ExpandZipFileParametersFollow
 		From = $Datas.ExpandZipFileParametersFrom

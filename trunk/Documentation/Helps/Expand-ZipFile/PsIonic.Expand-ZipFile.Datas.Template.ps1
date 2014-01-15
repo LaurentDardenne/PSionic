@@ -1,4 +1,4 @@
-# Expand-ZipFile command data
+﻿# Expand-ZipFile command data
 $Datas = @{
 	ExpandZipFileSynopsis = ''
 	ExpandZipFileDescription = ''
@@ -8,7 +8,7 @@ $Datas = @{
 	ExpandZipFileParametersDestination = ''
 	ExpandZipFileParametersEncoding = ''
 	ExpandZipFileParametersExtractAction = ''
-	ExpandZipFileParametersFile = ''
+	ExpandZipFileParametersPath = ''
 	ExpandZipFileParametersFlatten = ''
 	ExpandZipFileParametersFollow = ''
 	ExpandZipFileParametersFrom = ''

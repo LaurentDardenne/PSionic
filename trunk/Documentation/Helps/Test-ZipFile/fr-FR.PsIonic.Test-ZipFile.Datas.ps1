@@ -8,7 +8,7 @@ Il est également possible lors de ce test de verifier si l'archive est valide e
 	TestZipFileSetsDefault = ''
 	TestZipFileSetsFile = ''
 	TestZipFileParametersCheck = 'Vérifie si l''archive est correcte.'
-	TestZipFileParametersFile = 'Nom du fichier de l''archive à tester.'
+	TestZipFileParametersPath = 'Nom du fichier de l''archive à tester.'
 	TestZipFileParametersisValid = @"
 Valide si le nom d'archivbe indiqué est une archive Zip. 
 Si un fichier n'est pas une archive et que le paramètre 'isValid' est précisé alors une erreur non bloquante sera émise.
