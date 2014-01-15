@@ -1,4 +1,4 @@
-# Compress-ZipFile command help
+﻿# Compress-ZipFile command help
 @{
 	command = 'Compress-ZipFile'
 	synopsis = $Datas.CompressZipFileSynopsis
@@ -16,7 +16,7 @@
 		Comment = $Datas.CompressZipFileParametersComment
 		Encoding = $Datas.CompressZipFileParametersEncoding
 		Encryption = $Datas.CompressZipFileParametersEncryption
-		File = $Datas.CompressZipFileParametersFile
+		Path = $Datas.CompressZipFileParametersPath
 		Name = $Datas.CompressZipFileParametersName
 		NewUniformTimestamp = $Datas.CompressZipFileParametersNewUniformTimestamp
 		NotTraverseReparsePoints = $Datas.CompressZipFileParametersNotTraverseReparsePoints

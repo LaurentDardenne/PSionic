@@ -4,7 +4,7 @@ $Datas = @{
 	ExpandZipFileDescription = 'La cmdlet Expand-ZipFile permet d''extraire des fichiers et/ou des répertoires depuis une archive compressée au format Zip.'
 	ExpandZipFileSetsDefault = 'Jeu de paramètre 1'
 	ExpandZipFileSetsList = 'Jeu de paramètre 2'
-    ExpandZipFileParametersFile = 'Nom du fichier Zip sous la forme d''un objet de type String ou System.IO.FileInfo'
+    ExpandZipFileParametersPath = 'Nom du fichier Zip sous la forme d''un objet de type String ou System.IO.FileInfo'
 	ExpandZipFileParametersDestination = 'Répertoire de destination utilisé lors de l''extraction des données contenues dans une archive Zip.'
 	ExpandZipFileParametersQuery = @"
 Précise un critère de recherche pour les données à extraire de l'archive Zip.

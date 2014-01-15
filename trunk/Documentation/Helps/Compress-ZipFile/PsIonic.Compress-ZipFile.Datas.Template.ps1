@@ -1,4 +1,4 @@
-# Compress-ZipFile command data
+﻿# Compress-ZipFile command data
 $Datas = @{
 	CompressZipFileSynopsis = ''
 	CompressZipFileDescription = ''
@@ -12,7 +12,7 @@ $Datas = @{
 	CompressZipFileParametersComment = ''
 	CompressZipFileParametersEncoding = ''
 	CompressZipFileParametersEncryption = ''
-	CompressZipFileParametersFile = ''
+	CompressZipFileParametersPath = ''
 	CompressZipFileParametersName = ''
 	CompressZipFileParametersNewUniformTimestamp = ''
 	CompressZipFileParametersNotTraverseReparsePoints = ''

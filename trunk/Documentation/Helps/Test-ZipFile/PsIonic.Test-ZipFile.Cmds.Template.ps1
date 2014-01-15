@@ -1,4 +1,4 @@
-# Test-ZipFile command help
+﻿# Test-ZipFile command help
 @{
 	command = 'Test-ZipFile'
 	synopsis = $Datas.TestZipFileSynopsis
@@ -9,7 +9,7 @@
 	}
 	parameters = @{
 		Check = $Datas.TestZipFileParametersCheck
-		File = $Datas.TestZipFileParametersFile
+		Path = $Datas.TestZipFileParametersPath
 		isValid = $Datas.TestZipFileParametersisValid
 		Passthru = $Datas.TestZipFileParametersPassthru
 		Password = $Datas.TestZipFileParametersPassword

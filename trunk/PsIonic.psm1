@@ -626,7 +626,7 @@ Function Compress-ZipFile {
    [OutputType("SFX",[System.IO.FileInfo])]  #Emet une instance de fichier .exe
 	param( 
         [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
-      $File,
+      $Path,
         [ValidateNotNullOrEmpty()]
         [Parameter(Position=0, Mandatory=$true)]
       [string] $Name,
@@ -775,7 +775,7 @@ Function Compress-ZipFile {
 	} 
 
 	Process{   
-      GetObjectByType $File -Recurse:$Recurse|
+      GetObjectByType $Path -Recurse:$Recurse|
        Add-ZipEntry $ZipFile
 	} #Process
     
@@ -858,7 +858,7 @@ Function AddEntry {
     {
        $Logger.Debug("Recurse Add-Entry")  #<%REMOVE%>
        $InputObject.GetEnumerator()|
-        GetObjectByType $File|
+        GetObjectByType |  # TODO $File| bug à priori  
         Add-ZipEntry $ZipFile -Passthru:$Passthru      
     }
     elseif ($InputObject -is [System.String])
@@ -1094,7 +1094,7 @@ Function Expand-ZipFile {
     [OutputType("List",[Ionic.Zip.ZipEntry])]
 	param(
 		[parameter(Mandatory=$True,ValueFromPipeline=$True)]
-	  $File,        
+	  $Path,        
       #Todo add LiterralPath
       
         [ValidateNotNullOrEmpty()] 
@@ -1224,7 +1224,7 @@ Function Expand-ZipFile {
  }#begin
 
  Process{
-  Foreach($Archive in $File){
+  Foreach($Archive in $Path){
    try {
       $zipPath = GetArchivePath $Archive
       if ( $zipPath -eq $null )  
@@ -1254,7 +1254,7 @@ Function Expand-ZipFile {
              Write-Error $Msg
              continue 
           }
-          $Destination=$PSPathInfo.ResolvedPath
+          $Destination=$PSPathInfo.ResolvedPSPath
           if ($Create)
           {
               #On le crée si possible
@@ -1434,7 +1434,7 @@ Function Test-ZipFile{
   [OutputType("File",[System.String])]
  	param(
 		[parameter(Position=0,Mandatory=$True,ValueFromPipeline=$True)]
-	  $File, 
+	  $Path, 
 	  [String] $Password,     
       [switch] $isValid,  
       [switch] $Check,
@@ -1448,7 +1448,7 @@ Function Test-ZipFile{
     $Logger.Debug("-Verbose: $isVerbose") #<%REMOVE%>  
    }
     Process{
-        Foreach($Archive in $File){  
+        Foreach($Archive in $Path){  
           try {  
             $zipPath = GetArchivePath $Archive -Verbose:$isVerbose
          	if((-not $isValid) -and ($zipPath -eq $null))

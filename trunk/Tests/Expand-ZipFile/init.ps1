@@ -14,7 +14,7 @@ cp C:\Temp\PsIonic\3.0\PSIonicTools.dll $global:WorkDir\Archive\test\test1
 cp c:\Temp\PsIonic\Log4Net.Config.xml $global:WorkDir\Archive\test\test1\test2
 cp C:\Temp\PsIonic\Ionic.Zip.dll $global:WorkDir\Archive\directory
 cp c:\Temp\PsIonic\Log4Net.Config.xml $global:WorkDir\Archive\directory
-Compress-ZipFile -File $global:WorkDir\Archive -Name $global:WorkDir\Archive.zip
+Compress-ZipFile -Path $global:WorkDir\Archive -Name $global:WorkDir\Archive.zip
 
 rm $global:WorkDir\Archive -Recurse -force
 
@@ -22,6 +22,6 @@ rm $global:WorkDir\Archive -Recurse -force
 md $global:WorkDir\CryptedArchive\Archive > $null
 cp "$($PsIonic.tests)\Expand-ZipFile\about_Pester.help.txt" $global:WorkDir\CryptedArchive
 cp "$($PsIonic.tests)\Expand-ZipFile\PerfCenterCpl.ico" $global:WorkDir\CryptedArchive\Archive
-Compress-ZipFile -File $global:WorkDir\CryptedArchive -Name $global:WorkDir\CryptedArchive.zip -Password password
+Compress-ZipFile -Path $global:WorkDir\CryptedArchive -Name $global:WorkDir\CryptedArchive.zip -Password password
 
 rm $global:WorkDir\CryptedArchive -Recurse -force
