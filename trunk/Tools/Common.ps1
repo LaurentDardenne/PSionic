@@ -6,6 +6,7 @@ Properties {
    $Configuration=$Config
    $PSVersion=$PSVersionTable.PSVersion.ToString()
    $Cultures= "fr-FR","en-US"
+   $ProjectName=$PsIonic.ProjectName
 }
 
 if (-not $currentContext.tasks.default)
