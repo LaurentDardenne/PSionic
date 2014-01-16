@@ -378,8 +378,8 @@ Function Remove-Conditionnal {
 
 .NOTES
 		Author:  Laurent Dardenne
-		Version:  1.0
-		Date: 18/10/2012
+		Version:  1.1
+		Date: 16/01/2014
 
 .COMPONENT
     parsing
