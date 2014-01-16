@@ -1,10 +1,5 @@
-#Verrouille un fichier à des fins de tests
 Function Lock-File{
-# $Filename="C:\Temp\archive.zip"
-# $TestLockFile= Lock-File $FileName
-# # Execute test...
-# $TestLockFile.Close()
-
+#Verrouille un fichier à des fins de tests
   param([string] $Path)
 
   New-Object System.IO.FileStream($Path, 
@@ -13,4 +8,14 @@ Function Lock-File{
                                   [System.IO.FileShare]::None)
 } #Lock-File
 
+return
 
+&{
+ try {
+    $Filename="C:\Temp\t1.txt"
+    $TestLockFile= Lock-File $FileName
+    Test-IncludeFile $PsionicIncludeFiles
+  } finally {
+   $TestLockFile.Close()
+  }
+}
