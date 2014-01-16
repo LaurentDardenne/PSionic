@@ -1,5 +1,4 @@
 ﻿ConvertFrom-StringData @' 
- LoggerDotNotExist=La variable `$Logger n'existe pas ou est `$null
  ParameterStringEmpty=Le paramètre '{0}' ne peut être une chaîne vide.
  PathMustExist=Le nom de chemin n'existe pas : {0}
  PathIsNotAFileSystemPath=Chemin invalide pour le provider FileSystem : {0} 

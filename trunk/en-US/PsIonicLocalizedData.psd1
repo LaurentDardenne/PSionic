@@ -1,5 +1,4 @@
 ﻿ConvertFrom-StringData @'
- LoggerDotNotExist=The variable `$Logger does not exist or is `$null
  ParameterStringEmpty=The parameter '{0}' can not be an empty string.
  PathMustExist=The path does not exist : {0}
  ValueNotSupported=The value '{0}' is not suported.
