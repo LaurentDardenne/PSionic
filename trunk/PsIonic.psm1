@@ -566,7 +566,8 @@ Function Get-ZipFile {
   begin {
     [Switch] $isVerbose= $null
     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
-    $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>  
+    $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%> 
+    $isFollow=$PSBoundParameters.ContainsKey('Follow') 
     
     if ($PsCmdlet.ParameterSetName -eq "ManualOption")
     { 
@@ -856,7 +857,7 @@ Function AddEntry {
     }
     elseif ($isCollection)
     {
-       $Logger.Debug("Recurse Add-Entry")  #<%REMOVE%>
+       $Logger.Debug("Recurse Add-ZipEntry")  #<%REMOVE%>
        $InputObject.GetEnumerator()|
         GetObjectByType |  # TODO $File| bug à priori  
         Add-ZipEntry $ZipFile -Passthru:$Passthru      
@@ -1117,7 +1118,7 @@ Function Expand-ZipFile {
       [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
 
        [Parameter(ParameterSetName="Default")]
-      [switch] $Interactive,
+      [switch] $Interactive, #todo à implémenter
        
        [Parameter(Mandatory=$false, ParameterSetName="List")]
       [switch] $List,
@@ -1471,7 +1472,7 @@ Function Test-ZipFile{
           catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
           {
             $Logger.Fatal($_.Exception.Message) #<%REMOVE%>
-             # On émet dans le pipe que les nom des fichiers existant (-passthru) ou les nom des archives valides (-isValid -passthru) 
+             # On émet dans le pipe que les noms des fichiers existant (-passthru) ou les noms des archives valides (-isValid -passthru) 
              # Tous les fichiers inexistant et toutes les archives existantes invalides ne sont donc pas émises.
             if (($PsCmdlet.ParameterSetName -ne "File") -or ($Passthru -eq $false))
             { write-output $false }
@@ -1640,7 +1641,7 @@ function New-ReadOptions {
   
    $ReadOptions.Encoding=$Encoding   
 
-   if ($Follow) {Write-Warning "Under construction"}   
+   if ($isFollow) {Write-Warning "Under construction"}   
 
     #On laisse la possibilité de supprimer unitairement les ressources ?
    $Logger.Debug("Add Dispose method on a ReadOption instance")  #<%REMOVE%>
