@@ -5,10 +5,10 @@ Include "$PsIonicTools\Common.ps1"
 
 Task default -Depends Delivery,CompilePsIonicTools,BuildXmlHelp
 
-Task Delivery -Depends Clean,RemoveConditionnal {
+Task Delivery -Depends Clean,RemoveConditionnal,FindTodo {
 #Recopie les fichiers dans le répertoire de livraison  
   
-   $VerbosePreference='Continue'
+$VerbosePreference='Continue'
 
 #Module
    Copy "$PsIonicTrunk\Modules\Log4Posh" "$PsIonicLivraison" -Recurse
@@ -173,15 +173,13 @@ Task Init {
 } #Init
 
 Task FindTodo {
-
- Write-host "Recherche des occurences des TODO"
-
-  $Params=@{
-   Include=$(ql *.ps1,*.psm1,*.psd1,*.ps1xml,*.xml,*.txt,*.cs);
-   Exclude=$(ql *.bak,*.exe,*.dll)
-  }
+ $Pattern='(?<=#).*?todo'
+ $ResultFile="$env:Temp\$ProjectName-TODO-List.txt"
+ Write-host "Recherche les occurences des TODO"
+ Write-host "Résultat dans  : $ResultFile"
             
-  Get-ChildItem -Path $PsionicTrunk -Recurse @Params |
-   Where { (-not $_.PSisContainer) -and ($_.Length -gt 0)} |
-   Select-String -pattern 'TODO' 
+ Get-ChildItem -Path $PsionicTrunk -Include *.ps1,*.psm1,*.psd1,*.ps1xml,*.xml,*.txt,*.cs -Recurse |
+  Where { (-not $_.PSisContainer) -and ($_.Length -gt 0)} |
+  Select-String -pattern $Pattern|Set-Content $ResultFile -Encoding UTF8
+ Invoke-Item $ResultFile 
 } #FindTodo
