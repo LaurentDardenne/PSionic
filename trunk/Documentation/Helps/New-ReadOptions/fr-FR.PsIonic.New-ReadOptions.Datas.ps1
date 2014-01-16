@@ -14,7 +14,7 @@ Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'affich
 Concernant l'usage de l'encodage, consultez l'aide de la dll Ionic.
  
 Si le paramètre -Verbose est précisé alors cette objet d'option est configurée avec une instance de la classe PSIonicTools.PSVerboseTextWriter.
-La dll Ionic l'utilise pour afficher des messages supplémentaire lors d'opérations sur une archive zip. 
+La dll Ionic l'utilise pour afficher des messages supplémentaires lors d'opérations sur une archive zip. 
 La présence du paramètre Verbose impose donc sa libération implicite via un apppel à PSDispose sur l'archive ciblée par cette objet d'options.
 "@
 	NewReadOptionsExamplesRemarks1 = 'Cet exemple crée un objet option de lecture avec les valeurs par défaut.'
