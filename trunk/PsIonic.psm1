@@ -1250,23 +1250,24 @@ Function Expand-ZipFile {
           $PSPathInfo=Resolve-PSPath -Path $Destination 
           if (-not $PSPathInfo.IsCandidate()) 
           {
-             $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F $Destination + "`r`n$($PSPathInfo.LastError)"
+             $lFileName=If ($PSPathInfo.ResolvedPSPath -eq $null) {$PSPathInfo.Name} else {$PSPathInfo.ResolvedPSPath} 
+             $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F $lFileName + "`r`n$($PSPathInfo.LastError)"
              $Logger.Error($Msg) #<%REMOVE%>
              Write-Error $Msg
              continue 
           }
-          $Destination=$PSPathInfo.ResolvedPSPath
+          $Destination=$PSPathInfo.Win32PathName
           if ($Create)
           {
               #On le crée si possible
-              if ($PSPathInfo.IsValidForCreation())
+              if ($PSPathInfo.IsCandidateForCreation())
               {              
                 $Logger.Debug("Create `$Destination directory") #<%REMOVE%>
                 Md $Destination > $Null
               }
           }
-          elseif (-not $PSPathInfo.IsValidForExtraction())
-          { throw ($PsIonicMsgs.PathMustExist -F $Destination) }            
+          elseif (-not $PSPathInfo.IsCandidateForExtraction())
+          { throw ($PsIonicMsgs.PathMustExist -F $Destination ) }            
         }
       }#else zipath null  
               
@@ -1641,7 +1642,7 @@ function New-ReadOptions {
   
    $ReadOptions.Encoding=$Encoding   
 
-   if ($isFollow) {Write-Warning "Under construction"}   
+   if ($isFollow)  {Write-Warning "Follow is under construction"}   
 
     #On laisse la possibilité de supprimer unitairement les ressources ?
    $Logger.Debug("Add Dispose method on a ReadOption instance")  #<%REMOVE%>
