@@ -27,7 +27,7 @@
    $isValid=($Uri -ne $Null) -and ($Uri.Segments -ne $null) -and ($Uri.Segments.Count -ge 2) -and ($Path -match '^(\\{2}|/{2})(?!(\\|/))')
    #IsUnc égale $true alors LocalPath contient un path UNC transformé et valide.
    
-   Write-Debug "[Test-UNCPath] isValid=$isValid isUNnc=$($Uri.IsUnc) $Path $($Uri.LocalPath)"
+   Write-Debug "[Test-UNCPath] isValid=$isValid isUnc=$($Uri.IsUnc) $Path $($Uri.LocalPath)"
  }
  catch [System.Management.Automation.RuntimeException] {
    Write-Debug "[Test-UNCPath] $_"
