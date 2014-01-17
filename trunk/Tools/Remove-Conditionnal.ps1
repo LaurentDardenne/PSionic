@@ -83,7 +83,18 @@ Function Remove-Conditionnal {
 .PARAMETER  Clean
     Filtre toutes les lignes contenant une directive. Cette opération 
     supprime seulement les lignes contenant une directive et pas le texte
-    entre deux directives.    
+    entre deux directives.
+.        
+    Pour la directive Include, on supprime la ligne, sauf si le paramètre -Include 
+    est spécifié. Dans ce cas on inclut le fichier sur lequel on effectue le même 
+    traitement de nettoyage que demandé. 
+.    
+    Pour la directive Remove, on supprime l'occurence du nom de la directive, 
+    sauf si le paramètre -Remove est spécifié. Dans ce cas on supprime la ligne.
+.
+    Pour la directive unComment, on supprime l'occurence du nom de la directive, 
+    le commentaire reste, sauf si le paramètre -UnComment est spécifié.
+    Dans ce cas la ligne n'est plus commentée.
 
 .EXAMPLE
     $Code=@'
@@ -401,7 +412,10 @@ param (
         [Parameter(Mandatory=$true,position=0,ParameterSetName="Keyword")]
       [String[]]$ConditionnalsKeyWord,
        [Parameter(ParameterSetName="Clean")]
-      [Switch] $Clean
+      [Switch] $Clean, #L'opération de nettoyage des directives devrait être la dernière tâche de transformation
+      [Switch] $Remove, #on peut vouloir nettoyer les directives inutilisées et supprimer une ligne
+      [Switch] $Include, #idem et inclure un fichier
+      [Switch] $UnComment #idem, mais ne pas décommenter 
 )
  Begin {
    function New-ParsingDirective {
@@ -425,15 +439,29 @@ param (
    }
    else 
    {
+     $ConditionnalsKeyWord=$ConditionnalsKeyWord|Select -Unique
+     Write-Debug "Traite les directives : $ConditionnalsKeyWord"
+     
      $ConditionnalsKeyWord|
       Where {$Directive=$_; $Directive.Contains(' ')}|
       Foreach {Throw "Une directive contient des espaces :$Directive" }
      $RegexDefine="^\s*#<\s*DEFINE\s*%(?<ConditionalKeyWord>$ConditionnalsKeyWord)%"
      Write-Debug "Regex de base:'$RegexDefine'"
+
+      #Directives liées à un paramètre
+     $ReservedKeyWord=@('Clean','Remove','Include','UnComment')
+
+     $KeyWordsNotAllowed=@(Compare-object $ConditionnalsKeyWord $ReservedKeyWord -IncludeEqual -PassThru| Where {$_.SideIndicator -eq "=="})
+     if ($KeyWordsNotAllowed.Count -gt 0)
+     { 
+        $ofs=','
+        Throw "Ces noms de directive sont réservées : ${KeyWordsNotAllowed}.Utilisez le paramétre associé."
+     }     
    }
+   
    $Directives=New-Object System.Collections.Queue
    $ofs=$oldofs
- }       
+ }#begin       
  
  Process { 
    $LineNumber=0; 
@@ -484,34 +512,56 @@ param (
                                                   }
           #Supprime la ligne                                      
          "#<%REMOVE%>"  {  Write-Debug "Match REMOVE"
+                           if ($Remove.isPresent)
+                           { continue }
                            if ($Clean.isPresent)
-                           {$Line -replace "#<%REMOVE%>",''}
-                           #else on supprime tjr la ligne 
+                           { $Line -replace "#<%REMOVE%>",'' }
+                           else
+                           { $Line } 
                            continue
                         } 
           
           #Décommente la ligne
          "#<%UNCOMMENT%>"  { Write-Debug "Match UNCOMMENT"
-                             $Line -replace "^\s*#*<%UNCOMMENT%>",''
+                             if ($UnComment.isPresent)
+                             { $Line -replace "^\s*#*<%UNCOMMENT%>",''}
+                             elseif ($Clean.isPresent)
+                             { $Line -replace "^\s*#*<%UNCOMMENT%>(.*)",'#$1'} 
+                             else
+                             { $Line }
                              continue
                            }
+          
           #Traite un fichier la fois
           #L'utilisateur à la charge de valider le nom et l'existence du fichier
          "^\s*#<INCLUDE\s{1,}%'(?<FileName>.*)'%>" { 
                              Write-Debug "Match INCLUDE"
-                             $FileName=$Matches.FileName.Trim()
-                             Write-Debug "Inclu le fichier $FileName"
-                              #Lit le fichier, le transforme à son tour, puis l'envoi dans le pipe
-                              #Imbrication d'INCLUDE possible
-                              #Exécution dans une nouvelle portée 
-                             if (-not $Clean.isPresent)
+                             if ($Include.isPresent)
                              {
-                                $NestedResult= Get-Content $FileName -ReadCount 0|
-                                                Remove-Conditionnal -ConditionnalsKeyWord $ConditionnalsKeyWord
-                                #Ici on émet le contenu du tableau et pas le tableau reçu
-                                #Seul le résultat final est renvoyé en tant que tableau 
-                               $NestedResult
+                               $FileName=$Matches.FileName.Trim()
+                               Write-Debug "Inclut le fichier $FileName"
+                                #Lit le fichier, le transforme à son tour, puis l'envoi dans le pipe
+                                #Imbrication d'INCLUDE possible
+                                #Exécution dans une nouvelle portée 
+                               if ($Clean.isPresent)
+                               {
+                                  $NestedResult= Get-Content $FileName -ReadCount 0|
+                                                  Remove-Conditionnal -Clean -Remove:$Remove -Include:$Include -UnComment:$UnComment
+                                  #Ici on émet le contenu du tableau et pas le tableau reçu
+                                  #Seul le résultat final est renvoyé en tant que tableau 
+                                 $NestedResult
+                               }
+                               if (-not $Clean.isPresent)
+                               {
+                                  $NestedResult= Get-Content $FileName -ReadCount 0|
+                                                  Remove-Conditionnal -ConditionnalsKeyWord $ConditionnalsKeyWord -Remove:$Remove -Include:$Include -UnComment:$UnComment
+                                  #Ici on émet le contenu du tableau et pas le tableau reçu
+                                  #Seul le résultat final est renvoyé en tant que tableau 
+                                 $NestedResult
+                               }
                              }
+                             elseif (-not $Clean.isPresent)
+                             { $Line }
                              continue
                            }
          default {
