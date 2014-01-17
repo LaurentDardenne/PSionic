@@ -54,25 +54,38 @@ $VerbosePreference='Continue'
    Copy "$PsIonicTrunk\Revisions.txt" "$PsIonicLivraison\PsIonic"
 } #Delivery
 
-Task RemoveConditionnal -Depend TestLocalizedData { $go=$Configuration -ne "Debug"; if (-not $go) {Write-Host "Mode Debug, on passe la tâche en cours"} ; $go} {
-#Supprime les lignes de code de Debug et de test
-     
+Task RemoveConditionnal -Depend TestLocalizedData {
+#Traite les pseudo directives de parsing conditionnelle
+   
    $VerbosePreference='Continue'
    ."$PsIonicTools\Remove-Conditionnal.ps1"
 
-   $Directives=@('DEBUG')
    Dir "$PsIonicTrunk\PsIonic.psm1"|
     Foreach {
       Write-Verbose "Parse :$($_.FullName)"
       $CurrentFileName="$PsIonicLivraison\PsIonic\$($_.Name)"
       Write-Warning "CurrentFileName=$CurrentFileName"
-     
-      $_|
-       Get-Content -ReadCount 0|
-       Remove-Conditionnal -ConditionnalsKeyWord  $Directives|
+      if ($Configuration -ne "Debug")
+      { 
+         #Supprime les lignes de code de Debug et de test
+         #On traite une directive et supprime les ligne demandées. 
+         #On inclut les fichiers.       
+        $Directives=@('DEBUG')
+        $isRemove=$true 
+      }
+      else
+      { 
+         #On ne traite aucune directive et on ne supprime rien. 
+         #On inclut les fichiers.
+        $Directives=@('none')
+        $isRemove=$false 
+      }
+    
+      Get-Content -Path $_ -ReadCount 0|
+       Remove-Conditionnal -ConditionnalsKeyWord  $Directives -Include -Remove:$isRemove|
        Remove-Conditionnal -Clean|
        Set-Content -Path $CurrentFileName -Force
-    }  
+    }#foreach
 } #RemoveConditionnal
 
 Task TestLocalizedData -ContinueOnError {
