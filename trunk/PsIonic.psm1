@@ -24,6 +24,28 @@ Import-LocalizedData -BindingVariable PsIonicMsgs -Filename PsIonicLocalizedData
  "Strategy","Name","CompressionLevel","CompressionMethod","Comment","EmitTimesInWindowsFormatWhenSaving","EmitTimesInUnixFormatWhenSaving"
  )
 
+function New-Exception($Exception,$Message=$null) {
+#Crée et renvoi un objet exception pour l'utiliser avec $PSCmdlet.WriteError()
+
+   #Le constructeur de la classe de l'exception trappée est inaccessible  
+  if ($Exception.GetType().IsNotPublic)
+   {
+     $ExceptionClassName="System.Exception"
+      #On mémorise l'exception courante. 
+     $InnerException=$Exception
+   }
+  else
+   { 
+     $ExceptionClassName=$Exception.GetType().FullName
+     $InnerException=$Null
+   }
+  if ($Message -eq $null)
+   {$Message=$Exception.Message}
+    
+   #Recrée l'exception trappée avec un message personnalisé 
+	New-Object $ExceptionClassName($Message,$InnerException)       
+} #New-Exception
+
 Function New-ArrayReadOnly {
  param([ref]$Tableau)
    #La méthode AsReadOnly retourne un wrapper en lecture seule pour le tableau spécifié.
@@ -152,6 +174,73 @@ function isCollection {
  param($Object)
    $Object -is [System.Collections.IEnumerable] -and $Object -isnot [String]
 }#isCollection
+
+Function ConvertPSDataCollection {
+#Analyse la collection Erro d'un objet de type PSEventJob
+#Renvoi un objet exception ou génére une erreur normale.
+ param (
+  [System.Management.Automation.PSDataCollection[System.Management.Automation.ErrorRecord]] $PSEventJobError
+ )
+    #Le job de l'event peut provoquer des erreurs,
+   #on propage les possibles erreurs dans la session
+  if ($PSEventJobError.Count -gt 0)                   
+  { 
+     #Transforme la collection spécialisée en un array
+    $T=@($PSEventJobError.Error|% {$_})
+     #Ordre inverse de la collection $Error, on inverse le contenu 
+    [System.Array]::Reverse($T)
+    $ofs="`r`n"
+     #Ecrit la dernière erreur ou construit l'exception ayant arrêté le job
+    if ($T[0].Exception -isnot [Microsoft.PowerShell.Commands.WriteErrorException])
+    { Write-Output New-Exception $T[0].Exception "ExtractProgress -> $T" }
+    else
+    { Write-Error "$($T|% {$_.Exception}|out-string)" } 
+  }
+} #ConvertPSDataCollection
+
+#todo localisation event
+Function RegisterEventExtractProgress {
+ param(
+  $ZipFile,
+  [int] $ProgressID
+ )
+    Write-debug "RegisterEvent ExtractProgress" 
+    #Si le contexte est un job :
+    #   $ExecutionContext.Host.name -ne "ServerRemoteHost"
+    #alors l'information sera périméé une fois celui-ci terminé,
+    #bien que l'affichage ne se fasse pas sur la console 
+    # 
+    #On laisse la possibilité de faire de l'implicit remoting : 
+    # Extraction à distante, affichage de la progression en locale.
+    #
+    #
+    #Si $ProgressPreference est à 'SilentlyContinue', on ne traite pas l'event inutilement  
+    #Construit le scriptblock avec la valeur de ProgressBarCount courante
+    #évite une variable globale
+  $ProgressAction=@"
+    if (`$eventargs.EventType -eq [Ionic.Zip.ZipProgressEventType]::Extracting_AfterExtractEntry)
+    {
+       # Calcul du pourcentage du nombre de fichiers extrait
+      [int]`$percent = ((`$eventargs.EntriesExtracted / `$eventargs.EntriesTotal) * 100)
+      write-progress -ID $($ProgressID) -activity "Extract in progress" -Status "`$(`$eventargs.CurrentEntry.FileName)" -PercentComplete `$percent
+    }
+"@
+  $ProgressAction=[ScriptBlock]::Create($ProgressAction)
+  Register-ObjectEvent -InputObject $ZipFile -EventName ExtractProgress -SourceIdentifier ZipFileExtractProgress -action $ProgressAction
+}#RegisterEventExtractProgress
+
+Function UnRegisterEvent{
+  param( [System.Management.Automation.PSEventJob] $EventJob )
+  
+  $EventException=ConvertPSDataCollection $EventJob.Error
+  Write-debug "Unregister $($EventJob.Name) event" #<%REMOVE%>
+  Unregister-Event -SourceIdentifier $EventJob.Name -ErrorAction SilentlyContinue
+  Write-debug 'Remove event job'  #<%REMOVE%>
+  Remove-Job $EventJob
+  
+  if ($EventException -ne $null) 
+  { throw $EventException }  
+}#UnRegisterEvent
 
 function ConvertFrom-CliXml {
 # .ExternalHelp PsIonic-Help.xml 
@@ -535,7 +624,8 @@ Function Get-ZipFile {
       [string[]]$Name, 
         
         [Parameter(Position=0, Mandatory=$false, ParameterSetName="ReadOption")]
-  	  [Ionic.Zip.ReadOptions] $ReadOptions=$null,
+        [ValidateScript({@($_.PsObject.TypeNames[0] -contains "PsionicReadOptions").Count -gt 0})]
+      $ReadOptions=$null,
          
       [Ionic.Zip.SelfExtractorSaveOptions] $Options =$Script:DefaultSfxConfiguration,
   
@@ -553,30 +643,22 @@ Function Get-ZipFile {
         [Parameter(Position=0, Mandatory=$false, ParameterSetName="ManualOption")]
       [System.Text.Encoding] $Encoding,
       
+        [Parameter(ParameterSetName="ManualOption")]
+      [int]$ProgressID,
+      
       [switch] $NotTraverseReparsePoints,
       [switch] $SortEntries,
         # N'est pas exclusif avec $WindowsTimeFormat 
       [switch] $UnixTimeFormat,    
         # N'est pas exclusif avec $UnixTimeFormat
-      [switch] $WindowsTimeFormat,
-        [Parameter(Position=0, Mandatory=$false, ParameterSetName="ManualOption")]
-      [switch] $Follow
+      [switch] $WindowsTimeFormat
     )
 
   begin {
     [Switch] $isVerbose= $null
     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
     $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%> 
-    $isFollow=$PSBoundParameters.ContainsKey('Follow') 
-    
-    if ($PsCmdlet.ParameterSetName -eq "ManualOption")
-    { 
-      $ReadOptions=New-ReadOptions $Encoding -Verbose:$isVerbose -Follow:$isFollow
-    }
-    elseif ($ReadOptions -eq $null)
-    { 
-      $ReadOptions=New-ReadOptions -Verbose:$isVerbose
-    }
+    $isProgressID=$PSBoundParameters.ContainsKey('ProgressID')      
   }
  
   process {  
@@ -592,8 +674,29 @@ Function Get-ZipFile {
         }
         if ((TestZipArchive -Archive $FileName  -Password $Password -Passthru ) -ne $null)
         {   
-          $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
+
+          try {
+            if ($PsCmdlet.ParameterSetName -eq "ManualOption")
+            { 
+              if ($isProgressID)
+              { 
+                $pbi=New-ProgressBarInformations $ProgressID "Read in progress "
+                $ReadOptions=New-ReadOptions $Encoding $pbi -Verbose:$isVerbose 
+              }
+              else
+              { $ReadOptions=New-ReadOptions $Encoding -Verbose:$isVerbose }
          
+            }
+            elseif ($ReadOptions -eq $null)
+            {  $ReadOptions=New-ReadOptions -Verbose:$isVerbose  }              
+            
+            $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
+          } 
+          finally {
+            if ($ReadOptions -ne $null)
+            { $ReadOptions.Dispose() }              
+          }   
+
           $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
           $ZipFile.ZipErrorAction=$ZipErrorAction
       
@@ -1116,14 +1219,16 @@ Function Expand-ZipFile {
 	  [String] $Password,
 
       [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
-
+        
+        [Parameter(ParameterSetName="Default")]
+      [int]$ProgressID,
+      
        [Parameter(ParameterSetName="Default")]
       [switch] $Interactive, #todo à implémenter
        
        [Parameter(Mandatory=$false, ParameterSetName="List")]
       [switch] $List,
       [switch] $Flatten, 
-      [switch] $Follow,
       [switch] $Passthru,
        [Parameter(Mandatory=$false, ParameterSetName="Default")]
       [switch] $Create
@@ -1132,17 +1237,25 @@ Function Expand-ZipFile {
   Begin{
     [Switch] $isVerbose= $null
     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
-    
-    $isFollow=$PSBoundParameters.ContainsKey('Follow')
+    $isProgressID=$PSBoundParameters.ContainsKey('ProgressID')   
+    $Logger.Debug("Expand-ZipFile isProgressID=$isProgressID") #<%REMOVE%> 
     $isDefaultParameterSetName= $PsCmdlet.ParameterSetName -eq 'Default'
     
-    $ReadOptions=New-ReadOptions $Encoding -Verbose:$isVerbose -Follow:$isFollow
      #to manage delayed script block 
     $PreviousDestination=$null
     
     Function ZipFileRead {
       try{
         $Logger.Debug("Read the file $zipPath") #<%REMOVE%> 
+        #$isEvent= $isProgressID -and ($ProgressPreference -ne 'SilentlyContinue')
+        if ($isProgressID)
+        { 
+          $pbi=New-ProgressBarInformations $ProgressID "Read in progress "
+          $ReadOptions=New-ReadOptions $Encoding $pbi -Verbose:$isVerbose 
+        }
+        else
+        { $ReadOptions=New-ReadOptions $Encoding -Verbose:$isVerbose }          
+
         $ZipFile = [ZipFile]::Read($FileName,$ReadOptions)
         $ZipFile.FlattenFoldersOnExtract = $Flatten  
         
@@ -1154,12 +1267,20 @@ Function Expand-ZipFile {
         $Msg=$PsIonicMsgs.ZipArchiveReadError -F $FileName.ToString(), $_.Exception.Message
         $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
         throw (New-Object System.Exception($Msg,$_.exception))
-      }              
+      }
+      finally {
+        if ($ReadOptions -ne $null)
+        { $ReadOptions.Dispose() }                
+      }                     
     }#ZipFileRead
     
     function ExtractEntries {
       try{
         $isDispose=$true 
+         #Mémorise la Query
+        if ($Passthru)
+        { Add-Member -Input $ZipFile -MemberType NoteProperty -name Query -Value $Query }
+ 
         if($List){
             $ZipFile.Entries.GetEnumerator()|
              Foreach {Write-Output $_}
@@ -1204,6 +1325,12 @@ Function Expand-ZipFile {
          throw (New-Object System.Exception(($PsIonicMsgs.ZipArchiveBadPassword -F $zipPath),$_.Exception))
          
       }
+      #todo 
+      #InvalidOperationException (spécialisée) : n'est pas une archive 
+      #BadStateException (spécialisée): la construction du code est erroné, l'état du ZIP ne la permet pas 
+      #BadCrcException (spécialisée)
+      #ZipException : générique
+      # unsupported encryption algorithm, unsupported compression method 
       catch{
          $Msg=$PsIonicMsgs.ZipArchiveExtractError -F $zipPath, $_.Exception.Message
          if (($_.Exception -is [Ionic.Zip.ZipException]) -and ($ZipFile.ExtractExistingFile -ne "Throw") ) 
@@ -1285,7 +1412,18 @@ Function Expand-ZipFile {
             return $null            
           } 
         }
-        ExtractEntries
+         #Extract ProgressBar
+        try {
+          $isEvent=$isProgressID -and ($ProgressPreference -ne 'SilentlyContinue')
+          Write-debug "zipfile is null: $($zipfile -eq $null)"
+          if ($isEvent) 
+          { $RegEvent=RegisterEventExtractProgress $zipFile $ProgressID }
+          ExtractEntries
+        }
+        finally {
+          if ($isEvent)
+          { UnRegisterEvent $RegEvent  }
+        }#finally
       }#foreach zipFile
     }
     catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
@@ -1293,14 +1431,9 @@ Function Expand-ZipFile {
       $Logger.Error($_.Exception.Message) #<%REMOVE%>
       if (-not $isValid) 
       {Write-Error $_.Exception.Message}
-   }   
+    }   
   }#Foreach  
  } #process
- 
- end {
-   if ($ReadOptions -ne $null)
-   { $ReadOptions.Dispose() }
- }   
 }#Expand-ZipFile
 
 Function TestZipArchive {
@@ -1493,8 +1626,9 @@ Function ConvertTo-Sfx {
   	[string] $Name,  
   	 [Parameter(Position=1, Mandatory=$false)]
   	[Ionic.Zip.SelfExtractorSaveOptions] $SaveOptions =$Script:DefaultSfxConfiguration,
-    [Parameter(Position=2, Mandatory=$false)]
-  	[Ionic.Zip.ReadOptions] $ReadOptions=$null, 
+     [Parameter(Position=2, Mandatory=$false)]
+     [ValidateScript({@($_.PsObject.TypeNames[0] -contains "PsionicReadOptions").Count -gt 0})]
+    $ReadOptions=$null, 
 	 [Parameter(Position=3, Mandatory=$false)]
     [string] $Comment,
     [switch] $Passthru
@@ -1616,45 +1750,74 @@ Function New-ZipSfxOptions {
     $SfxOptions
 }#New-ZipSfxOptions
 
+Function New-ProgressBarInformations{
+param(
+         [Parameter(Mandatory=$True,position=0)]
+        [int] $activityId,
+         [Parameter(Mandatory=$True,position=1)]
+        [string] $activity
+)
+ $Logger.Debug("New New-ProgressBarInformations") #<%REMOVE%>
+ $O=New-Object PSObject -Property $PSBoundParameters
+ $O.PsObject.TypeNames.Insert(0,"ProgressBarInformations")
+ $O
+}# New-ProgressBarInformations
+
 function New-ReadOptions {
  # .ExternalHelp PsIonic-Help.xml         
   [CmdletBinding()]
   [OutputType([Ionic.Zip.ReadOptions])]
   Param (
         [Parameter(Position=0, Mandatory=$false)]
-      [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,  
-      [switch] $Follow
+      [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
+       [Parameter(Position=1, Mandatory=$false)]
+       [ValidateScript({@($_.PsObject.TypeNames[0] -eq "ProgressBarInformations").Count -gt 0})]
+      $ProgressBarInformations
   ) 
    [Switch] $isVerbose= $null
    [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
-   $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>  
+   $Logger.Debug("New-ReadOptions") #<%REMOVE%> 
+   $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>   
        
-   $isFollow=$PSBoundParameters.ContainsKey('Follow')
+   $isProgressBar=$PSBoundParameters.ContainsKey('ProgressBarInformations')
+   
    $ReadOptions=New-Object Ionic.Zip.ReadOptions 
    #Renseigne les membres de l'instance ZipFile à partir des options
    #  ZipFile.PSDispose supprimera bien les ressources allouées ici
    if ($isVerbose)
    {
-      $Logger.Debug("Configure PSVerboseTextWriter") #<%REMOVE%>
+      $Logger.Debug("Configure PSVerboseTextWriter") 
       $Context=$PSCmdlet.SessionState.PSVariable.Get("ExecutionContext").Value            
       $ReadOptions.StatusMessageWriter=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
    }    
   
    $ReadOptions.Encoding=$Encoding   
 
-   if ($isFollow)  {Write-Warning "Follow is under construction"}   
+   if ($isProgressBar)
+   { 
+    $Logger.Debug("Gestion du ReadProgress via PSIonicTools.PSZipReadProgress")  
+    $Context=$PSCmdlet.SessionState.PSVariable.Get("ExecutionContext").Value  
+    $PSZipReadProgress=New-Object PSIonicTools.PSZipReadProgress($Context,
+                                                                 $ProgressBarInformations.activityId,
+                                                                 $ProgressBarInformations.activity
+                                                                )
+    $PSZipReadProgress.SetZipReadProgressHandler($ReadOptions)
+   }   
 
     #On laisse la possibilité de supprimer unitairement les ressources ?
-   $Logger.Debug("Add Dispose method on a ReadOption instance")  #<%REMOVE%>
+   $Logger.Debug("Add Dispose method on a ReadOption instance")  
    Add-Member -Inputobject $ReadOptions -Force ScriptMethod Dispose{
       if (($this.StatusMessageWriter -ne $null) -and  ($this.StatusMessageWriter -is [PSIonicTools.PSVerboseTextWriter]))
       {
          #On libère que ce que l'on crée
-        Write-Debug("`t ReadOptions dispose PSStream") #<%REMOVE%> 
+        Write-Debug("`t ReadOptions dispose PSStream")  
         $this.StatusMessageWriter.Dispose()
         $this.StatusMessageWriter=$null               
       }   
    } 
+   #Si on passe utilise un paramètre de type [Ionic.Zip.ReadOptions]
+   #on perd le membre synthétique Dispose() 
+  $ReadOptions.PSObject.TypeNames.Insert(0,'PsionicReadOptions')
   $ReadOptions
 }#New-ReadOptions
 
@@ -1790,7 +1953,7 @@ function New-ReadOptions {
 #     } #end
 # }#Rename-ZipEntry 
 
-#<INCLUDE %'PsIonic:\Tools\Resolve-PSPath.ps1'%> 
+#<INCLUDE %'PsIonic:\Tools\Resolve-PSPath.ps1'%>   
 
 # Suppression des objets du module 
 Function OnRemovePsIonicZip {
@@ -1836,7 +1999,8 @@ Set-Alias -name sca            -value Stop-ConsoleAppender
 Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         ConvertTo-Sfx,
                                                         Add-ZipEntry,
-                                                        Expand-ZipFile, 
+                                                        Expand-ZipFile,
+                                                        New-ProgressBarInformations,
                                                         New-ReadOptions,
                                                         New-ZipSfxOptions,
                                                         Reset-PsIonicSfxOptions,
