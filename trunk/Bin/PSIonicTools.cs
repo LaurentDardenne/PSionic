@@ -39,6 +39,8 @@ namespace PSIonicTools
         {
             if (Context.Host.Name == "ServerRemoteHost")
             {
+               //todo WorkFlow & DSC ?   todo a l'origine pour orchestrator
+               //System.Management.Automation.CmdletInvocationException ?
               throw new InvalidOperationException(String.Format("This class need a ConsoleHost context. Job or remoting context is not permitted.",Context.Host.Name)); 
             }
             //L'instance peut accéder à la session Powershell
@@ -79,6 +81,79 @@ namespace PSIonicTools
                case 1 : entry.ZipErrorAction = ZipErrorAction.Skip; break;
                case 2 : entry.ZipErrorAction = ZipErrorAction.Throw; break;
                case 3 : e.Cancel = true; break;
+            }
+        }
+    }
+    
+    public class PSZipReadProgress
+    {
+        private EngineIntrinsics ExecutionContext;
+        
+        private int Count=0;
+	      private int activityId;
+	      private string activity;
+
+        public PSZipReadProgress(EngineIntrinsics Context,
+                              	 int ActivityId,
+                              	 string Activity)
+        {
+            activityId=ActivityId;
+	          activity=Activity;
+            if (Context.Host.Name == "ServerRemoteHost")
+            {
+               //todo WorkFlow & DSC ?
+              throw new InvalidOperationException(String.Format("This class need a ConsoleHost context. Job or remoting context is not permitted.",Context.Host.Name)); 
+            }
+            //L'instance peut accéder à la session Powershell
+            ExecutionContext = Context;
+        }
+
+         // ZIp::Read ne permet pas de connaitre l'instance pour l'utilser avec Register-ObjectEvent.
+        public void SetZipReadProgressHandler(ReadOptions Options)
+        {
+            Options.ReadProgress += this.PSIonicZipReadProgressHandler;
+        }
+
+        public void RemoveZipReadProgressHandler(ReadOptions Options)
+        {
+            Options.ReadProgress -= this.PSIonicZipReadProgressHandler;
+        }
+
+        //Est déclenché lors de la lecture d'un fichier ZIP ( ZipFile.Read() ) 
+        private void PSIonicZipReadProgressHandler(object sender, ReadProgressEventArgs e)
+        {
+            ProgressRecord progress=null;
+            //ExecutionContext.Host.UI.WriteWarningLine(e.EventType.ToString());
+            ZipEntry entry = e.CurrentEntry;
+            
+            switch (e.EventType)
+            {
+                case ZipProgressEventType.Reading_BeforeReadEntry:
+                  progress = new ProgressRecord(activityId, activity, string.Format("Read {0}",e.EntriesTotal));
+                  progress.RecordType = ProgressRecordType.Processing;
+                  progress.PercentComplete =-1;
+                  ExecutionContext.Host.UI.WriteProgress(1,progress);
+                  break;  
+                 //Reading_Completed ?
+                                  
+                case ZipProgressEventType.Reading_AfterReadEntry:
+                  ExecutionContext.Host.UI.WriteWarningLine(e.CurrentEntry.FileName);
+                  Count++;
+                  ExecutionContext.Host.UI.WriteWarningLine(e.CurrentEntry.FileName);
+                  if (Count == e.EntriesTotal)
+                  {
+                    progress = new ProgressRecord(activityId, activity, entry.FileName);
+                    progress.RecordType = ProgressRecordType.Completed;
+                    progress.PercentComplete =100;
+                  }
+                  else
+                  {
+                    progress = new ProgressRecord(activityId, activity, entry.FileName);
+                    progress.RecordType = ProgressRecordType.Processing;
+                    progress.PercentComplete =  (int) Math.Floor(((float) Count/ e.EntriesTotal)*100);
+                  }
+                  ExecutionContext.Host.UI.WriteProgress(1,progress);
+                  break;
             }
         }
     }
