@@ -43,9 +43,7 @@ $VerbosePreference='Continue'
 
 #Module
    Copy "$PsIonicTrunk\PsIonic.psd1" "$PsIonicLivraison\PsIonic"
-   if ( $Configuration -eq "Debug")
-   { Copy "$PsIonicTrunk\PsIonic.psm1" "$PsIonicLivraison\PsIonic" }
-   #else  PsIonic.psm1 est créé par la tâche RemoveConditionnal 
+   #PsIonic.psm1 est créé par la tâche RemoveConditionnal 
    
 #Setup
    Copy "$PsIonicTrunk\Setup\PsIonicSetup.ps1" "$PsIonicLivraison\PsIonic"
@@ -59,16 +57,17 @@ Task RemoveConditionnal -Depend TestLocalizedData {
    
    $VerbosePreference='Continue'
    ."$PsIonicTools\Remove-Conditionnal.ps1"
-
+   Write-debug "Configuration=$Configuration"
    Dir "$PsIonicTrunk\PsIonic.psm1"|
     Foreach {
       Write-Verbose "Parse :$($_.FullName)"
       $CurrentFileName="$PsIonicLivraison\PsIonic\$($_.Name)"
       Write-Warning "CurrentFileName=$CurrentFileName"
-      if ($Configuration -ne "Debug")
+      if ($Configuration -eq "Release")
       { 
+         Write-Warning "`tTraite la configuration Release"
          #Supprime les lignes de code de Debug et de test
-         #On traite une directive et supprime les ligne demandées. 
+         #On traite une directive et supprime les lignes demandées. 
          #On inclut les fichiers.       
         $Directives=@('DEBUG')
         $isRemove=$true 
@@ -77,13 +76,14 @@ Task RemoveConditionnal -Depend TestLocalizedData {
       { 
          #On ne traite aucune directive et on ne supprime rien. 
          #On inclut les fichiers.
-        $Directives=@('none')
+        Write-Warning "`tTraite la configuration DEBUG" 
+        $Directives=@('NODEBUG')
         $isRemove=$false 
       }
     
       Get-Content -Path $_ -ReadCount 0|
-       Remove-Conditionnal -ConditionnalsKeyWord  $Directives -Include -Remove:$isRemove|
-       Remove-Conditionnal -Clean|
+       Remove-Conditionnal -ConditionnalsKeyWord $Directives -Include -Remove:$isRemove|
+       Remove-Conditionnal -Clean| 
        Set-Content -Path $CurrentFileName -Force
     }#foreach
 } #RemoveConditionnal
@@ -186,13 +186,18 @@ Task Init {
 } #Init
 
 Task FindTodo {
- $Pattern='(?<=#).*?todo'
- $ResultFile="$env:Temp\$ProjectName-TODO-List.txt"
- Write-host "Recherche les occurences des TODO"
- Write-host "Résultat dans  : $ResultFile"
-            
- Get-ChildItem -Path $PsionicTrunk -Include *.ps1,*.psm1,*.psd1,*.ps1xml,*.xml,*.txt,*.cs -Recurse |
-  Where { (-not $_.PSisContainer) -and ($_.Length -gt 0)} |
-  Select-String -pattern $Pattern|Set-Content $ResultFile -Encoding UTF8
- Invoke-Item $ResultFile 
+if ($Configuration -eq "Release") 
+{
+   $Pattern='(?<=#).*?todo'
+   $ResultFile="$env:Temp\$ProjectName-TODO-List.txt"
+   Write-host "Recherche les occurences des TODO"
+   Write-host "Résultat dans  : $ResultFile"
+              
+   Get-ChildItem -Path $PsionicTrunk -Include *.ps1,*.psm1,*.psd1,*.ps1xml,*.xml,*.txt,*.cs -Recurse |
+    Where { (-not $_.PSisContainer) -and ($_.Length -gt 0)} |
+    Select-String -pattern $Pattern|Set-Content $ResultFile -Encoding UTF8
+   Invoke-Item $ResultFile
+}
+else
+{Write-Warning "Config DEBUG : tache inutile" } 
 } #FindTodo
