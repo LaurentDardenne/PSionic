@@ -1,4 +1,4 @@
-# Get-ZipFile command data
+﻿# Get-ZipFile command data
 $Datas = @{
 	GetZipFileSynopsis = ''
 	GetZipFileDescription = ''
@@ -7,7 +7,7 @@ $Datas = @{
 	GetZipFileSetsReadOption = ''
 	GetZipFileParametersEncoding = ''
 	GetZipFileParametersEncryption = ''
-	GetZipFileParametersFollow = ''
+	GetZipFileParametersProgressID = ''
 	GetZipFileParametersName = ''
 	GetZipFileParametersNotTraverseReparsePoints = ''
 	GetZipFileParametersOptions = ''

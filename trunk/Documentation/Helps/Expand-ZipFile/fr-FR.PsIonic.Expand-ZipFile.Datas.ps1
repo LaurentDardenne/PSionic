@@ -18,10 +18,10 @@ Attention, il n’y a pas de contrôle de cohérence sur le contenu de la query,
 	ExpandZipFileParametersInteractive = 'Passe les actions de la Cmdlet en mode interactif.'
 	ExpandZipFileParametersList = 'Liste les données contenues dans le fichier Zip.'
 	ExpandZipFileParametersFlatten = 'Les fichiers sont extraits sans arborescence.'
-	ExpandZipFileParametersFollow = @"
+	ExpandZipFileParametersProgressID = @"
 L'usage de ce paramètre crée un gestionnaire d'événements pour les opérations de lecture. 
 Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression. 
-"@ #TODO
+"@
 	ExpandZipFileParametersPassthru = 'Emet dans le pipeline les entrées contenues dans l''archive zip. Attention, dans ce cas la libération des ressources par l''appel à la méthode Close() est à votre charge.'
     ExpandZipFileParametersCreate = 'Créer le répertoire de destination si celui-ci n''existe pas.'	
 	ExpandZipFileInputsDescription1 = 'En entrée des String ou des Fileinfo'

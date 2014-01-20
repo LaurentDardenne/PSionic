@@ -5,7 +5,7 @@
 	description = $Datas.NewReadOptionsDescription
 	parameters = @{
 		Encoding = $Datas.NewReadOptionsParametersEncoding
-		Follow = $Datas.NewReadOptionsParametersFollow
+		ProgressBarInformations = $Datas.NewReadOptionsParametersProgressBarInformations
 	}
 	inputs = @(
 		@{
@@ -37,7 +37,8 @@ $ReadOptions=New-ReadOptions -Verbose
 		}
 		@{
 			code = {
-$ReadOptions=New-ReadOptions $Encoding -Follow         
+$pbi=New-ProgressBarInformations $ProgressID "Reading in progress  "
+$ReadOptions=New-ReadOptions $Encoding $pbi  
 			}
 			remarks = $Datas.NewReadOptionsExamplesRemarks1
 			test = { . $args[0] }

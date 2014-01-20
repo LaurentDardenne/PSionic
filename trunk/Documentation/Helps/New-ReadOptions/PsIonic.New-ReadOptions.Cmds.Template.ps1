@@ -1,11 +1,11 @@
-# New-ReadOptions command help
+﻿# New-ReadOptions command help
 @{
 	command = 'New-ReadOptions'
 	synopsis = $Datas.NewReadOptionsSynopsis
 	description = $Datas.NewReadOptionsDescription
 	parameters = @{
 		Encoding = $Datas.NewReadOptionsParametersEncoding
-		Follow = $Datas.NewReadOptionsParametersFollow
+		ProgressBarInformations = $Datas.NewReadOptionsParametersProgressBarInformations
 	}
 	inputs = @(
 		@{

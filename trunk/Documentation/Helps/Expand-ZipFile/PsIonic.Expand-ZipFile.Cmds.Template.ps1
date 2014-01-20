@@ -14,7 +14,7 @@
 		ExtractAction = $Datas.ExpandZipFileParametersExtractAction
 		Path = $Datas.ExpandZipFileParametersPath
 		Flatten = $Datas.ExpandZipFileParametersFlatten
-		Follow = $Datas.ExpandZipFileParametersFollow
+		ProgressID = $Datas.ExpandZipFileParametersProgressID
 		From = $Datas.ExpandZipFileParametersFrom
 		Interactive = $Datas.ExpandZipFileParametersInteractive
 		List = $Datas.ExpandZipFileParametersList

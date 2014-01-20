@@ -4,7 +4,7 @@ $Datas = @{
 	NewReadOptionsDescription = 'Il est possible de préciser différent comportement lors de la lecture d''une archive Zip  '
 	NewReadOptionsSets__AllParameterSets = ''
 	NewReadOptionsParametersEncoding = 'Précise l''encodage à utiliser lors de la lecture des entrées contenues dans l''archive. L''utilisation de la valeur par défaut est recommandée.'
-	NewReadOptionsParametersFollow = @"
+	NewReadOptionsParametersProgressBarInformations = @"
 L'usage de ce paramètre crée un gestionnaire d'événements pour les opérations de lecture. 
 Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression. 
 "@ #TODO

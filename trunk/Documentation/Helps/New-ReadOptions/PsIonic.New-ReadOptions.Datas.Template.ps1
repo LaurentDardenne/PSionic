@@ -1,10 +1,10 @@
-# New-ReadOptions command data
+﻿# New-ReadOptions command data
 $Datas = @{
 	NewReadOptionsSynopsis = ''
 	NewReadOptionsDescription = ''
 	NewReadOptionsSets__AllParameterSets = ''
 	NewReadOptionsParametersEncoding = ''
-	NewReadOptionsParametersFollow = ''
+	NewReadOptionsParametersProgressBarInformations = ''
 	NewReadOptionsInputsDescription1 = ''
 	NewReadOptionsOutputsDescriptionIonicZipReadOptions = ''
 	NewReadOptionsNotes = ''
