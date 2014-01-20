@@ -430,7 +430,13 @@ param (
      $O.PsObject.TypeNames[0] = "ParsingDirective"
      $O|Add-Member ScriptMethod ToString {'{0}:{1}' -F $this.Name,$this.Line} -force -pass
    }#New-ParsingDirective
-
+   
+   Write-Debug "Clean=$Clean"
+   Write-Debug "Remove=$Remove"
+   Write-Debug "Include=$Include"
+   Write-Debug "UnComment=$UnComment"
+   Write-Debug "ConditionnalsKeyWord : $ConditionnalsKeyWord" 
+   
    $oldofs,$ofs=$ofs,'|'
    if ($Clean.isPresent)
    {
@@ -440,7 +446,6 @@ param (
    else 
    {
      $ConditionnalsKeyWord=$ConditionnalsKeyWord|Select -Unique
-     Write-Debug "Traite les directives : $ConditionnalsKeyWord"
      
      $ConditionnalsKeyWord|
       Where {$Directive=$_; $Directive.Contains(' ')}|
@@ -478,7 +483,7 @@ param (
      Foreach-Object { 
        $LineNumber++
        [string]$Line=$_
-       Write-Debug "`t Traite $Line `t  isDirectiveBloc=$isDirectiveBloc"
+       #Write-Debug "`t Traite $Line `t  isDirectiveBloc=$isDirectiveBloc"
        switch -regex ($_)  
        {
           #Recherche le mot clé de début d'une directive, puis l'empile 
@@ -513,9 +518,15 @@ param (
           #Supprime la ligne                                      
          "#<%REMOVE%>"  {  Write-Debug "Match REMOVE"
                            if ($Remove.isPresent)
-                           { continue }
+                           { 
+                             Write-Debug "`tREMOVE Line"
+                             continue 
+                           }
                            if ($Clean.isPresent)
-                           { $Line -replace "#<%REMOVE%>",'' }
+                           { 
+                             Write-Debug "`tREMOVE directive"
+                             $Line -replace "#<%REMOVE%>",'' 
+                           }
                            else
                            { $Line } 
                            continue
@@ -524,9 +535,15 @@ param (
           #Décommente la ligne
          "#<%UNCOMMENT%>"  { Write-Debug "Match UNCOMMENT"
                              if ($UnComment.isPresent)
-                             { $Line -replace "^\s*#*<%UNCOMMENT%>",''}
+                             { 
+                               Write-Debug "`tUNCOMMENT  Line"
+                               $Line -replace "^\s*#*<%UNCOMMENT%>",''
+                             }
                              elseif ($Clean.isPresent)
-                             { $Line -replace "^\s*#*<%UNCOMMENT%>(.*)",'#$1'} 
+                             { 
+                               Write-Debug "`tRemove UNCOMMENT directive"
+                               $Line -replace "^\s*#*<%UNCOMMENT%>(.*)",'#$1'
+                             } 
                              else
                              { $Line }
                              continue
@@ -545,18 +562,18 @@ param (
                                 #Exécution dans une nouvelle portée 
                                if ($Clean.isPresent)
                                {
+                                  Write-Debug "Recurse Remove-Conditionnal -Clean"
                                   $NestedResult= Get-Content $FileName -ReadCount 0|
                                                   Remove-Conditionnal -Clean -Remove:$Remove -Include:$Include -UnComment:$UnComment
                                   #Ici on émet le contenu du tableau et pas le tableau reçu
                                   #Seul le résultat final est renvoyé en tant que tableau 
                                  $NestedResult
                                }
-                               if (-not $Clean.isPresent)
+                               else 
                                {
+                                  Write-Debug "Recurse Remove-Conditionnal $ConditionnalsKeyWord"
                                   $NestedResult= Get-Content $FileName -ReadCount 0|
                                                   Remove-Conditionnal -ConditionnalsKeyWord $ConditionnalsKeyWord -Remove:$Remove -Include:$Include -UnComment:$UnComment
-                                  #Ici on émet le contenu du tableau et pas le tableau reçu
-                                  #Seul le résultat final est renvoyé en tant que tableau 
                                  $NestedResult
                                }
                              }
@@ -565,7 +582,7 @@ param (
                              continue
                            }
          default {
-           Write-Debug "Match Default"
+           #Write-Debug "Match Default"
              #On traite les lignes qui ne se trouvent pas dans le bloc de la 'directive'
            if ($isDirectiveBloc -eq $false)
            {$Line}
