@@ -7,10 +7,11 @@ $Datas = @{
 	GetZipFileSetsReadOption = ''
 	GetZipFileParametersEncoding = 'Type d''encodage de l''archive. L''utilisation de la valeur par défaut est recommandée.'
 	GetZipFileParametersEncryption = 'Type de cryptage utilisé lors de l''opération de compression. Nécessite de préciser un mot de passe (cf. le paramètre Password).'
-	GetZipFileParametersFollow =@"
-L'usage de ce paramètre crée un gestionnaire d'événements pour les opérations de lecture. 
-Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression. 
-"@ #TODO
+	GetZipFileParametersProgressID =@"
+L'usage de ce paramètre crée un gestionnaire d'événements pour les opérations de lecture.
+Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression standardisé.
+Cette ID permet de distinguer la barre de progression interne des autres. Utilisez ce paramètre lorsque vous créez plus d'une barre de progression.
+"@
 	GetZipFileParametersName = 'Nom de fichier de l''archive'
 	GetZipFileParametersNotTraverseReparsePoints = 'Indique si les recherches traverseront les points d''analyse NTFS (Reparse Point), tels que les jonctions.'
 	GetZipFileParametersOptions = 'Options utilisées lors de la création d''un archive autoextractible (cf. New-ZipSfxOptions).'

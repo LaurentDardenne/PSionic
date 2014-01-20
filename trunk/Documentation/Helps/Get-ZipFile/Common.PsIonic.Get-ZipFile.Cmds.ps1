@@ -11,7 +11,7 @@
 	parameters = @{
 		Encoding = $Datas.GetZipFileParametersEncoding
 		Encryption = $Datas.GetZipFileParametersEncryption
-		Follow = $Datas.GetZipFileParametersFollow
+		ProgressID = $Datas.GetZipFileParametersProgressID
 		Name = $Datas.GetZipFileParametersName
 		NotTraverseReparsePoints = $Datas.GetZipFileParametersNotTraverseReparsePoints
 		Options = $Datas.GetZipFileParametersOptions
