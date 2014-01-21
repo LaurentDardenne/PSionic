@@ -1,36 +1,36 @@
-﻿# Expand-Entry command help
+﻿# Expand-ZipEntry command help
 @{
-	command = 'Expand-Entry'
-	synopsis = $Datas.ExpandEntrySynopsis
-	description = $Datas.ExpandEntryDescription
+	command = 'Expand-ZipEntry'
+	synopsis = $Datas.ExpandZipEntrySynopsis
+	description = $Datas.ExpandZipEntryDescription
 	parameters = @{
-		AsHashTable = $Datas.ExpandEntryParametersAsHashTable
-        Encoding = $Datas.ExpandEntryParametersEncoding
-		ExtractAction = $Datas.ExpandEntryParametersExtractAction
-		Name = $Datas.ExpandEntryParametersName
-		Password = $Datas.ExpandEntryParametersPassword
-		Strict = $Datas.ExpandEntryParametersStrict
-		XML = $Datas.ExpandEntryParametersXML
-		ZipFile = $Datas.ExpandEntryParametersZipFile
+		AsHashTable = $Datas.ExpandZipEntryParametersAsHashTable
+        Encoding = $Datas.ExpandZipEntryParametersEncoding
+		ExtractAction = $Datas.ExpandZipEntryParametersExtractAction
+		Name = $Datas.ExpandZipEntryParametersName
+		Password = $Datas.ExpandZipEntryParametersPassword
+		Strict = $Datas.ExpandZipEntryParametersStrict
+		XML = $Datas.ExpandZipEntryParametersXML
+		ZipFile = $Datas.ExpandZipEntryParametersZipFile
 	}
 	inputs = @(
 		@{
 			type = ''
-			description = $Datas.ExpandEntryInputsDescription1
+			description = $Datas.ExpandZipEntryInputsDescription1
 		}
 	)
 	outputs = @(
 		@{
 			type = 'Ionic.Zip.ZipEntry'
-			description = $Datas.ExpandEntryOutputsDescriptionIonicZipZipEntry
+			description = $Datas.ExpandZipEntryOutputsDescriptionIonicZipZipEntry
 		}
 	)
-	notes = $Datas.ExpandEntryNotes
+	notes = $Datas.ExpandZipEntryNotes
 	examples = @(
 		@{
 			code = {
 			}
-			remarks = $Datas.ExpandEntryExamplesRemarks1
+			remarks = $Datas.ExpandZipEntryExamplesRemarks1
 			test = { . $args[0] }
 		}
 	)
