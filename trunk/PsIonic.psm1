@@ -743,7 +743,7 @@ Function Compress-ZipFile {
       $Path,
         [ValidateNotNullOrEmpty()]
         [Parameter(Position=0, Mandatory=$true)]
-      [string] $Name,
+      [string] $OutputName,
         [Parameter(Position=1, Mandatory=$false, ParameterSetName="SFX")]
       [Ionic.Zip.SelfExtractorSaveOptions] $Options =$Script:DefaultSfxConfiguration,
       
@@ -844,7 +844,7 @@ Function Compress-ZipFile {
           $PSVW=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
       }
 
-      $ZipFile= NewZipFile $Name $PSVW $Encoding
+      $ZipFile= NewZipFile $OutputName $PSVW $Encoding
       if ( $CodePageIdentifier -ne [String]::Empty)
       { 
         $ZipFile.AlternateEncoding = System.Text.Encoding.GetEncoding($CodePageIdentifier)
@@ -858,7 +858,7 @@ Function Compress-ZipFile {
       SetZipErrorHandler $ZipFile
       AddMethods $ZipFile
       
-      $ZipFile.Name=$Name
+      $ZipFile.Name=$OutputName
       $ZipFile.Comment=$Comment
       $ZipFile.SortEntriesBeforeSaving=$SortEntries
       $ZipFile.TempFileFolder=$TempLocation 
@@ -1622,7 +1622,7 @@ Function ConvertTo-Sfx {
   	 [ValidateNotNullOrEmpty()]
   	 [ValidateScript( {Test-Path $_})]
   	 [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
-  	[string] $Name,  
+  	[string] $Path,  
   	 [Parameter(Position=1, Mandatory=$false)]
   	[Ionic.Zip.SelfExtractorSaveOptions] $SaveOptions =$Script:DefaultSfxConfiguration,
      [Parameter(Position=2, Mandatory=$false)]
@@ -1638,7 +1638,7 @@ Function ConvertTo-Sfx {
  }
  process {  
   try{
-      $zipFile = [Ionic.Zip.ZipFile]::Read($Name, $ReadOptions)
+      $zipFile = [Ionic.Zip.ZipFile]::Read($Path, $ReadOptions)
       $zipFile.Comment =$Comment
       SaveSFXFile $ZipFile $SaveOptions 
       if ($Passthru)
