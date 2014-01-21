@@ -1,10 +1,10 @@
-# ConvertTo-Sfx command data
+﻿# ConvertTo-Sfx command data
 $Datas = @{
 	ConvertToSfxSynopsis = ''
 	ConvertToSfxDescription = ''
 	ConvertToSfxSets__AllParameterSets = ''
 	ConvertToSfxParametersComment = ''
-	ConvertToSfxParametersName = ''
+	ConvertToSfxParametersPath = ''
 	ConvertToSfxParametersPassthru = ''
 	ConvertToSfxParametersReadOptions = ''
 	ConvertToSfxParametersSaveOptions = ''

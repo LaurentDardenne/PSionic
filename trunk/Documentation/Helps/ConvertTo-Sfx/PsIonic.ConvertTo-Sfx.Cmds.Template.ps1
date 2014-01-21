@@ -1,11 +1,11 @@
-# ConvertTo-Sfx command help
+﻿# ConvertTo-Sfx command help
 @{
 	command = 'ConvertTo-Sfx'
 	synopsis = $Datas.ConvertToSfxSynopsis
 	description = $Datas.ConvertToSfxDescription
 	parameters = @{
 		Comment = $Datas.ConvertToSfxParametersComment
-		Name = $Datas.ConvertToSfxParametersName
+		Path = $Datas.ConvertToSfxParametersPath
 		Passthru = $Datas.ConvertToSfxParametersPassthru
 		ReadOptions = $Datas.ConvertToSfxParametersReadOptions
 		SaveOptions = $Datas.ConvertToSfxParametersSaveOptions

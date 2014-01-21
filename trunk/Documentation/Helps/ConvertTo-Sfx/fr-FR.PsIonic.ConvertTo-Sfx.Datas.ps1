@@ -7,11 +7,10 @@ Vous pouvez également préciser une ligne de commande à exécuter une fois la 
 "@
 	ConvertToSfxSets__AllParameterSets = ''
 	ConvertToSfxParametersComment = 'Commentaire associé à l''archive.'
-	ConvertToSfxParametersName = 'Nom du fichier .zip a convertir.'
+	ConvertToSfxParametersPath = 'Nom du fichier .zip a convertir.'
 	ConvertToSfxParametersSaveOptions = 'Options de génération créées via la fonction New-ZipSfxOptions.'
     ConvertToSfxParametersReadOptions = 'Options appliquées lors de la lecture de l''archive (.zip) à partir de laquelle on génére une archive autoexetractible (.exe). Options créées via la fonction New-ReadOptions.'
 	ConvertToSfxParametersPassthru = 'Renvoi le fichier généré sous forme d''objet et pas seulement son nom.'
-	ConvertToSfxParametersZipFile = 'Nom du fichier de l''archive à convertir.'
 	ConvertToSfxInputsDescription1 = @"
 System.Management.Automation.PSObject
 
