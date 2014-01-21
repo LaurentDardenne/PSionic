@@ -14,7 +14,7 @@ $Datas = @{
 	CompressZipFileParametersEncoding = 'Type d''encodage de l''archive.L''utilisation de la valeur par défaut est recommandé.'
 	CompressZipFileParametersEncryption = 'Type de cryptage utilisé lors de l''opération de compression. Nécessite de préciser un mot de passe (cf. le paramètre Password).'
 	CompressZipFileParametersPath = 'Liste du nom de fichiers à compresser. Peut être un objet fichier ou une chaîne de caractères, dans ce cas celle-ci peut contenir des caractères génériques (* , ? , [A-D] ou [1CZ]).'
-	CompressZipFileParametersName = 'Nom du fichier l''archive à construire. Le nom du drive utilisé doit pointer sur un drive du provider FileSystem.'
+	CompressZipFileParametersOutputName = 'Nom du fichier de l''archive à construire. Le nom du drive utilisé doit pointer sur un drive du provider FileSystem.'
 	CompressZipFileParametersNewUniformTimestamp = 'Uniformise la date et de l''heure de toutes les entrées en prenant la date et l''heure de l''entrée la plus récente dans l''archive.'
 	CompressZipFileParametersNowUniformTimestamp = 'Uniformise, à partir de la date et l''heure courante, la date et de l''heure de toutes les entrées.'
 	CompressZipFileParametersNotTraverseReparsePoints = 'Indique si les recherches traverseront les points d''analyse NTFS (Reparse Point), tels que les jonctions.'
@@ -32,7 +32,7 @@ Attention, il n'est pas possible d'enregistrer une archive splittée dans une ar
 	CompressZipFileParametersTempLocation  = @"
 Nom du répertoire temporaire utilisé lors de la constrution de l'archive. 
 Par défaut la fonction récupère le contenu de la variable d'environnement %TEMP%.
-Sinon, le fichier temporaire de l'archive en cours de constrution sera enregistré dans le répertoire spécifié par le paramètre 'Name'.
+Sinon, le fichier temporaire de l'archive en cours de construction sera enregistré dans le répertoire spécifié par le paramètre 'OutputName'.
 "@
 	CompressZipFileParametersUniformTimestamp = 'Uniformise la date et de l''heure de toutes les entrées en prenant la date et l''heure précisée en argument.'
 	CompressZipFileParametersUnixTimeFormat = 'Le format de date des fichiers sera celui d''Unix'

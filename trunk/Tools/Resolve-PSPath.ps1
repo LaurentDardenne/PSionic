@@ -163,7 +163,6 @@ Function Resolve-PSPath{
  
    $pathHelper = $ExecutionContext.SessionState.Path
    
-   # $PSBoundParameters.ContainsKey("ErrorAction") -and $PSBoundParameters["ErrorAction"]
    $_EA= $null
    [void]$PSBoundParameters.TryGetValue('ErrorAction',[REF]$_EA)
    if ($_EA -ne $null) 

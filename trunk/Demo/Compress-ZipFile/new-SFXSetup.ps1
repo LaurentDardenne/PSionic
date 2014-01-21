@@ -52,7 +52,7 @@ Finally {
  #Create a self-extracting archive.
 "$PathModule\MyModule.psm1",
 "$PathModule\MySetup.ps1" |
- Compress-ZipFile -Name "$PathModule\myProject.exe" -Options $SfxConfiguration -SFX     
+ Compress-ZipFile -OutputName "$PathModule\myProject.exe" -Options $SfxConfiguration -SFX     
 
 #Delete the files
 "$PathModule\MyModule.psm1",
