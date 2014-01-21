@@ -5,7 +5,7 @@ $Datas = @{
 	ExpandZipFileSetsDefault = 'Jeu de paramètre 1'
 	ExpandZipFileSetsList = 'Jeu de paramètre 2'
     ExpandZipFileParametersPath = 'Nom du fichier Zip sous la forme d''un objet de type String ou System.IO.FileInfo'
-	ExpandZipFileParametersDestination = 'Répertoire de destination utilisé lors de l''extraction des données contenues dans une archive Zip.'
+	ExpandZipFileParametersOutputPath = 'Répertoire de destination utilisé lors de l''extraction des données contenues dans une archive Zip.'
 	ExpandZipFileParametersQuery = @"
 Précise un critère de recherche pour les données à extraire de l'archive Zip.
 Pour plus d'informations sur l'écriture et la syntaxe de la requête, consultez la documentation de la dll Ionic (fichier d'aide .chm).
