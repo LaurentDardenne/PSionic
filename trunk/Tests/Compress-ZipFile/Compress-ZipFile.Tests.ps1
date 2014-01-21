@@ -14,7 +14,7 @@ Describe "Compress-ZipFile" {
             if(-not (Test-Path $global:WorkDir\Archive.zip)){
                 throw "Archive introuvable"
             } 
-            &$PSionicModule {Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -ErrorAction Stop}
+            &$PSionicModule {Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ErrorAction Stop}
             del $global:WorkDir\Archive.zip
             rm $global:WorkDir\Archive -Recurse -Force
             $result = $true
@@ -31,7 +31,7 @@ Describe "Compress-ZipFile" {
             if(-not (Test-Path $global:WorkDir\Archive.zip)){
                 throw "Archive introuvable"
             } 
-            &$PSionicModule {Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -ErrorAction Stop}
+            &$PSionicModule {Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ErrorAction Stop}
             del $global:WorkDir\Archive.zip
             rm $global:WorkDir\Archive -Recurse -Force
             $result = $true
@@ -48,7 +48,7 @@ Describe "Compress-ZipFile" {
             if(-not (Test-Path $global:WorkDir\CryptedArchive.zip)){
                 throw "Archive introuvable"
             } 
-            &$PSionicModule {Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -Destination $global:WorkDir\CryptedArchive -create -Password password -ErrorAction Stop}
+            &$PSionicModule {Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -OutputPath $global:WorkDir\CryptedArchive -create -Password password -ErrorAction Stop}
             del $global:WorkDir\CryptedArchive.zip
             rm $global:WorkDir\CryptedArchive -Recurse -Force
             $result = $true

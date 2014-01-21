@@ -10,17 +10,17 @@ write-warning $global:here
 
     It "Expand C:\temp\unknown.zip file return true (exception)" {
         try{
-           Expand-ZipFile -Path C:\temp\unknown.zip -Destination $global:WorkDir -ErrorAction Stop
+           Expand-ZipFile -Path C:\temp\unknown.zip -OutputPath $global:WorkDir -ErrorAction Stop
         }catch{
             $result=$_.Exception.Message -match [regex]::Escape("Impossible de trouver le chemin d'accès « C:\temp\unknown.zip », car il n'existe pas.")
         }
         $result | should be ($true)
     }
 
-    It "Expand existing zip file in not existing destination return true (exception)" {
+    It "Expand existing zip file in not existing OutputPath return true (exception)" {
         try{
            $global:path = $global:WorkDir+"\Archive"
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination $path -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $path -ErrorAction Stop
         }catch {
             $result=$_.exception -is [System.Management.Automation.ItemNotFoundException]
         }
@@ -30,7 +30,7 @@ write-warning $global:here
     It "Expand a file that is not a zip file return true (exception)" {
         try{
            $global:notZipFile = $global:here+"\PerfCenterCpl.ico"
-		   Expand-ZipFile -Path $notZipFile -Destination $global:WorkDir -Create 
+		   Expand-ZipFile -Path $notZipFile -OutputPath $global:WorkDir -Create 
         }catch{
             $result=$_.Exception.InnerException.InnerException.InnerException -is [Ionic.Zip.BadReadException]
         }
@@ -40,7 +40,7 @@ write-warning $global:here
     It "Expand Archive.zip file return true" {
         try{
            md $global:WorkDir\Archive >$null
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ErrorAction Stop
            if(-not (test-path $global:WorkDir\Archive\test\test1\test2\Log4Net.Config.xml)){
              throw "Fichier provenant de l'archive non trouvé après extraction"
            }
@@ -53,9 +53,9 @@ write-warning $global:here
         $result | should be ($true)
     }
 	
-	It "Expand zip file to already existing destination (throw) return true (exception)" {
+	It "Expand zip file to already existing OutputPath (throw) return true (exception)" {
         try{
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -ErrorAction Stop
         }catch{
 			$Exception = "« The file $($global:WorkDir)\Archive\directory\Ionic.Zip.dll already exists. »"
 			$result=$_.Exception.Message -match ([regex]::Escape($Exception))
@@ -63,9 +63,9 @@ write-warning $global:here
         $result | should be ($true)
     }
 	
-	It "Expand zip file to already existing destination (OverwriteSilently) return true" {
+	It "Expand zip file to already existing OutputPath (OverwriteSilently) return true" {
         try{
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -ExtractAction OverwriteSilently -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -ExtractAction OverwriteSilently -ErrorAction Stop
            if(-not (test-path $global:WorkDir\Archive\test\test1\test2\Log4Net.Config.xml)){
              throw "Fichier provenant de l'archive non trouvé après extraction"
            }
@@ -80,7 +80,7 @@ write-warning $global:here
 	
 	It "Expand zip file to registry provider return true (exception)" {
         try{
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination hklm:\software -create -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath hklm:\software -create -ErrorAction Stop
         }catch{
            $result=$_.Exception.Message -match '^Chemin invalide pour le provider FileSystem'
         }
@@ -89,7 +89,7 @@ write-warning $global:here
  
 	It "Expand zip file to wsman provider return true (exception)" {
         try{
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination wsman:\localhost -create -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath wsman:\localhost -create -ErrorAction Stop
         }catch{
             $result=$_.Exception.Message -match '^Chemin invalide pour le provider FileSystem'
         }
@@ -100,7 +100,7 @@ write-warning $global:here
         try{
            remove-item  $global:WorkDir\Archive\directory\*.dll -ea SilentlyContinue
            remove-item  $global:WorkDir\Archive\test\test1\*.dll -ea SilentlyContinue
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Query '*.dll' -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -Query '*.dll' -ErrorAction Stop
            $Dllfiles = @(Get-ChildItem $global:WorkDir\Archive -filter *.dll -recurse|Where  { !$_.PSIsContainer})
            $Files =  @(Get-ChildItem $global:WorkDir\Archive -recurse -exclude *.dll|Where  { !$_.PSIsContainer})
            if($Dllfiles.count -ne 2 -or $Files.count -ne 5){
@@ -118,7 +118,7 @@ write-warning $global:here
     It "Expand one dll file from a subdirectory in zip file return true" {
         try{
            md $global:WorkDir\Archive >$null
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Query '*.dll' -From 'directory' -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -Query '*.dll' -From 'directory' -ErrorAction Stop
            $Dllfiles = @(Get-ChildItem $global:WorkDir\Archive -filter *.dll -recurse|Where  { !$_.PSIsContainer})
            if($Dllfiles.count -ne 1){
              throw "Le fichier .dll n'a pas été extrait"
@@ -135,7 +135,7 @@ write-warning $global:here
     It "Expand one dll file from a subdirectory in zip file with flatten return true" {
         try{
            md $global:WorkDir\Archive >$null
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Query '*.dll' -From 'directory' -Flatten -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -Query '*.dll' -From 'directory' -Flatten -ErrorAction Stop
            $Dllfiles = @(Get-ChildItem $global:WorkDir\Archive -filter *.dll -recurse|Where  { !$_.PSIsContainer})
            if($Dllfiles.count -ne 1){
              throw "Le fichier .dll n'a pas été extrait"
@@ -152,7 +152,7 @@ write-warning $global:here
     It "Expand zip file with many parameters from different parameter sets return true (exception)" {
         try{
            md $global:WorkDir\Archive >$null
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Query '*.dll' -From 'Archive\directory' -Flatten -List -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -Query '*.dll' -From 'Archive\directory' -Flatten -List -ErrorAction Stop
         }catch{
             $result= $_.Exception.Message -match 'Le jeu de paramètres ne peut pas être résolu à l''aide des paramètres nommés spécifiés.'
         }
@@ -173,7 +173,7 @@ write-warning $global:here
     It "Expand Archive.zip file with passthru parameter return true" {
         try{
             $result = $null
-            $result = Expand-ZipFile -Path $global:WorkDir\Archive.zip -Destination $global:WorkDir\Archive -create -Passthru -ErrorAction Stop
+            $result = Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -Passthru -ErrorAction Stop
 			$result.dispose()
             if(-not (test-path $global:WorkDir\Archive\test\test1\test2\Log4Net.Config.xml)){
                 throw "Fichier provenant de l'archive non trouvé après extraction"
@@ -190,7 +190,7 @@ write-warning $global:here
 
      It "Expand encrypted zip file with BAD password return true (exception)" {
         try{
-           Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -Destination $global:WorkDir\CryptedArchive -create -Password BADpassword -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -OutputPath $global:WorkDir\CryptedArchive -create -Password BADpassword -ErrorAction Stop
         }catch{
 			$Exception = (&$PSionicModule {$PsIonicMsgs.ZipArchiveBadPassword -f ($global:WorkDir+"\CryptedArchive.zip")})
             $result= $_.Exception.Message -match ([regex]::Escape($Exception))
@@ -200,7 +200,7 @@ write-warning $global:here
  
 #      It "Expand encrypted zip file with good password return true" {
 #         try{
-#            Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -Destination $global:WorkDir\CryptedArchive -create -Password password -ErrorAction Stop
+#            Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -OutputPath $global:WorkDir\CryptedArchive -create -Password password -ErrorAction Stop
 #            if(-not (test-path $global:WorkDir\CryptedArchive\Archive\PerfCenterCpl.ico)){
 #              throw "Fichier provenant de l'archive inexistant après extraction"
 #            }
@@ -218,7 +218,7 @@ write-warning $global:here
 # 
 #     It "Expand .ico file from encrypted zip file with good password return true" {
 #         try{
-#            Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -Destination $global:WorkDir\CryptedArchive -create -Query '*.ico' -Password password -ErrorAction Stop
+#            Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -OutputPath $global:WorkDir\CryptedArchive -create -Query '*.ico' -Password password -ErrorAction Stop
 #            $icoFile = Get-ChildItem $global:WorkDir\CryptedArchive -filter *.ico -recurse
 #            $Files =  Get-ChildItem $global:WorkDir\CryptedArchive -recurse
 #            if($icoFile.count -ne 1 -or $Files.count -ne 2){
