@@ -129,31 +129,33 @@ namespace PSIonicTools
             switch (e.EventType)
             {
                 case ZipProgressEventType.Reading_BeforeReadEntry:
+                   //Affiche uniquement le nombre d'entrée lues
                   progress = new ProgressRecord(activityId, activity, string.Format("Read {0}",e.EntriesTotal));
                   progress.RecordType = ProgressRecordType.Processing;
                   progress.PercentComplete =-1;
+
                   ExecutionContext.Host.UI.WriteProgress(1,progress);
                   break;  
-                 //Reading_Completed ?
                                   
                 case ZipProgressEventType.Reading_AfterReadEntry:
-                  ExecutionContext.Host.UI.WriteWarningLine(e.CurrentEntry.FileName);
+                   //Affiche la progression de lecture
                   Count++;
-                  ExecutionContext.Host.UI.WriteWarningLine(e.CurrentEntry.FileName);
-                  if (Count == e.EntriesTotal)
-                  {
-                    progress = new ProgressRecord(activityId, activity, entry.FileName);
-                    progress.RecordType = ProgressRecordType.Completed;
-                    progress.PercentComplete =100;
-                  }
-                  else
-                  {
-                    progress = new ProgressRecord(activityId, activity, entry.FileName);
-                    progress.RecordType = ProgressRecordType.Processing;
-                    progress.PercentComplete =  (int) Math.Floor(((float) Count/ e.EntriesTotal)*100);
-                  }
+                  progress = new ProgressRecord(activityId, activity, entry.FileName);
+                  progress.RecordType = ProgressRecordType.Processing;
+                  progress.PercentComplete =  (int) Math.Floor(((float) Count/ e.EntriesTotal)*100);
+
                   ExecutionContext.Host.UI.WriteProgress(1,progress);
-                  break;
+                  break;  
+                
+                case ZipProgressEventType.Reading_Completed:
+                   //clôt l'afffichage
+                  progress = new ProgressRecord(activityId, activity, "end of file");
+                  progress.RecordType = ProgressRecordType.Completed;
+                  progress.PercentComplete =100;
+                  Count=0;
+
+                  ExecutionContext.Host.UI.WriteProgress(1,progress);
+                  break;                  
             }
         }
     }
@@ -166,5 +168,48 @@ namespace PSIonicTools
             Zip.Password = null;
         }
     }
+
+    [Serializable]
+    public class PsionicException : System.ApplicationException
+    {
+       public PsionicException() : base()
+       {
+       }
+       
+       public PsionicException(string message) : base(message)
+       {
+       }
+       
+       public PsionicException(string message, Exception innerException)
+       : base(message, innerException)
+       {
+       }
+    }
+    
+    [Serializable]
+    public class PsionicInvalidValueException :PsionicException 
+    {
+       private object value=null;
+       public object Value 
+       {
+          get { return this.value; }
+       }
+       
+       public PsionicInvalidValueException(object Value) : base()
+       {
+          value=Value;
+       }
+       
+       public PsionicInvalidValueException(object Value,string message) : base(message)
+       {
+          value=Value;
+       }
+       
+       public PsionicInvalidValueException(object Value,string message, Exception innerException)
+        : base(message, innerException)
+       {
+          value=Value;
+       }      
+    }    
 }
 
