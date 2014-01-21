@@ -163,6 +163,7 @@ Function Resolve-PSPath{
  
    $pathHelper = $ExecutionContext.SessionState.Path
    
+   # $PSBoundParameters.ContainsKey("ErrorAction") -and $PSBoundParameters["ErrorAction"]
    $_EA= $null
    [void]$PSBoundParameters.TryGetValue('ErrorAction',[REF]$_EA)
    if ($_EA -ne $null) 
@@ -428,8 +429,16 @@ Function Resolve-PSPath{
         }  
       
       $Infos| 
-        Add-Member -Membertype Scriptmethod -Name FileInfo {
-           New-object System.IO.FileInfo $this.ResolvedPSPath
+        Add-Member -Membertype Scriptmethod -Name GetFileName {
+          If ($PSPathInfo.ResolvedPSPath -eq $null) 
+          {$PSPathInfo.Name} 
+          else 
+          {$PSPathInfo.ResolvedPSPath}
+        }
+      
+      $Infos| 
+        Add-Member -Membertype Scriptmethod -Name asFileInfo {
+           New-object System.IO.FileInfo $this.ResolvedPSPath #todo Resolved ou Win32Path ?
         }
       
       $Infos| 
