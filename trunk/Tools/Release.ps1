@@ -69,22 +69,23 @@ Task RemoveConditionnal -Depend TestLocalizedData {
          #Supprime les lignes de code de Debug et de test
          #On traite une directive et supprime les lignes demandées. 
          #On inclut les fichiers.       
-        $Directives=@('DEBUG')
-        $isRemove=$true 
+        Get-Content -Path $_ -ReadCount 0|
+         Remove-Conditionnal -ConditionnalsKeyWord 'DEBUG' -Include -Remove|
+         Remove-Conditionnal -Clean| 
+         Set-Content -Path $CurrentFileName -Force        
       }
       else
       { 
          #On ne traite aucune directive et on ne supprime rien. 
          #On inclut les fichiers.
         Write-Warning "`tTraite la configuration DEBUG" 
-        $Directives=@('NODEBUG')
-        $isRemove=$false 
+         #Directive inexistante et on ne supprime pas les directives
+         #sinon cela génére trop de différence en cas de comparaison de fichier
+        Get-Content -Path $_ -ReadCount 0|
+         Remove-Conditionnal -ConditionnalsKeyWord 'NODEBUG' -Include|
+         Set-Content -Path $CurrentFileName -Force        
+         
       }
-    
-      Get-Content -Path $_ -ReadCount 0|
-       Remove-Conditionnal -ConditionnalsKeyWord $Directives -Include -Remove:$isRemove|
-       Remove-Conditionnal -Clean| 
-       Set-Content -Path $CurrentFileName -Force
     }#foreach
 } #RemoveConditionnal
 
