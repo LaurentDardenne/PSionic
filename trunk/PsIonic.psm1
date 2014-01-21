@@ -843,6 +843,16 @@ Function Compress-ZipFile {
           $Context=$PSCmdlet.SessionState.PSVariable.Get("ExecutionContext").Value            
           $PSVW=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
       }
+       #Validation du chemin qui doit référencer le FileSystem
+      $PSPathInfo=Resolve-PSPath -Path $OutputName 
+      if (-not $PSPathInfo.IsCandidate()) 
+      {
+         $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
+         $Logger.Error($Msg) #<%REMOVE%>
+         Write-Error -Exception (New-Object PSIonicTools.PsionicException($Msg))  
+         continue 
+      }
+      $OutputName=$PSPathInfo.Win32PathName
 
       $ZipFile= NewZipFile $OutputName $PSVW $Encoding
       if ( $CodePageIdentifier -ne [String]::Empty)
@@ -1379,8 +1389,7 @@ Function Expand-ZipFile {
         $PSPathInfo=Resolve-PSPath -Path $OutputPath 
         if (-not $PSPathInfo.IsCandidate()) 
         {
-           $lFileName=If ($PSPathInfo.ResolvedPSPath -eq $null) {$PSPathInfo.Name} else {$PSPathInfo.ResolvedPSPath} 
-           $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F $lFileName + "`r`n$($PSPathInfo.LastError)"
+           $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName())+ "`r`n$($PSPathInfo.LastError)"
            $Logger.Error($Msg) #<%REMOVE%>
            Write-Error $Msg
            continue 
