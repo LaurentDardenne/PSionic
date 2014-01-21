@@ -4,8 +4,15 @@ $Datas = @{
 	ExpandZipFileDescription = 'La cmdlet Expand-ZipFile permet d''extraire des fichiers et/ou des répertoires depuis une archive compressée au format Zip.'
 	ExpandZipFileSetsDefault = 'Jeu de paramètre 1'
 	ExpandZipFileSetsList = 'Jeu de paramètre 2'
-    ExpandZipFileParametersPath = 'Nom du fichier Zip sous la forme d''un objet de type String ou System.IO.FileInfo'
-	ExpandZipFileParametersOutputPath = 'Répertoire de destination utilisé lors de l''extraction des données contenues dans une archive Zip.'
+    ExpandZipFileParametersPath = @"
+Nom du fichier Zip sous la forme d''un objet de type String ou System.IO.FileInfo.
+Dans le cas où c'est un type String et si celle-ci contient des jokers, alors la laison retardée (delayed script block) sur le paramètre -OutputPath 
+ne déclenchera qu'une seule, et pas pour chaque nom d'entrée résolue. En revanche la laison retardée sera déclenché pour chaque objet reçu. 
+"@
+	ExpandZipFileParametersOutputPath = @"
+Répertoire de destination utilisé lors de l''extraction des données contenues dans une archive Zip.
+Ce paramètre peut utiliser la laison retardée (delayed script block). 
+"@
 	ExpandZipFileParametersQuery = @"
 Précise un critère de recherche pour les données à extraire de l'archive Zip.
 Pour plus d'informations sur l'écriture et la syntaxe de la requête, consultez la documentation de la dll Ionic (fichier d'aide .chm).
@@ -19,8 +26,10 @@ Attention, il n’y a pas de contrôle de cohérence sur le contenu de la query,
 	ExpandZipFileParametersList = 'Liste les données contenues dans le fichier Zip.'
 	ExpandZipFileParametersFlatten = 'Les fichiers sont extraits sans arborescence.'
 	ExpandZipFileParametersProgressID = @"
-L'usage de ce paramètre crée un gestionnaire d'événements pour les opérations de lecture. 
-Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression. 
+Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression.
+L'usage de ce paramètre crée une barre de progression pour les opérations de lecture, celle-ci sera remplacée lors des opérations d'extraction. 
+la barre de progression pour les opérations de lecture n'affiche que le nombre des entrées lues.
+Si le paramètre -Query est précisé, alors la barre de progression d'extraction affichera uniquement les noms des fichier extrait, sinon elle affichera le nom et le pourcentage de la progression.  
 "@
 	ExpandZipFileParametersPassthru = 'Emet dans le pipeline les entrées contenues dans l''archive zip. Attention, dans ce cas la libération des ressources par l''appel à la méthode Close() est à votre charge.'
     ExpandZipFileParametersCreate = 'Créer le répertoire de destination si celui-ci n''existe pas.'	
