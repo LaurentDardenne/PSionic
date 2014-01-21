@@ -17,7 +17,7 @@ Describe "Test-ZipFile" {
 
     It "Test an valid archive file" {
         try{
-            Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -Name $global:WorkDir\TestArchive.zip -ErrorAction Stop
+            Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\TestArchive.zip -ErrorAction Stop
             $result = Test-ZipFile -Path $global:WorkDir\TestArchive.zip -ea Stop
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
@@ -28,7 +28,7 @@ Describe "Test-ZipFile" {
  
      It 'Test an array of a valid archive file ( @(Dir "$global:WorkDir\TestArchive.zip") )' {
         try{
-            Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -Name $global:WorkDir\TestArchive.zip -ErrorAction Stop
+            Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\TestArchive.zip -ErrorAction Stop
             $result = Test-ZipFile -Path @(Dir "$global:WorkDir\TestArchive.zip") -ea Stop
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow

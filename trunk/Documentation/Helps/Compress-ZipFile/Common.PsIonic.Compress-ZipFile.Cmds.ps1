@@ -17,7 +17,7 @@
 		Encoding = $Datas.CompressZipFileParametersEncoding
 		Encryption = $Datas.CompressZipFileParametersEncryption
 		Path = $Datas.CompressZipFileParametersPath
-		Name = $Datas.CompressZipFileParametersName
+		OutputName = $Datas.CompressZipFileParametersOutputName
 		NewUniformTimestamp = $Datas.CompressZipFileParametersNewUniformTimestamp
 		NotTraverseReparsePoints = $Datas.CompressZipFileParametersNotTraverseReparsePoints
 		NowUniformTimestamp = $Datas.CompressZipFileParametersNowUniformTimestamp
