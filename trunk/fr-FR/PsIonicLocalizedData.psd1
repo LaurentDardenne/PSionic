@@ -17,7 +17,7 @@
   
  AddEntryError=Impossible d'ajouter l'élement {0} dans l'archive '{1}' : {2}
  EntryIsNull=L'entrée '{0}' est `$null.
- ExpandEntryError=L'entrée nommée {0} n'existe pas dans l'archive '{1}'
+ ExpandZipEntryError=L'entrée nommée {0} n'existe pas dans l'archive '{1}'
  
  ZipArchiveReadError=Une erreur s'est produite lors de la lecture de l'archive {0} : {1}
  ZipArchiveExtractError=Une erreur s'est produite lors de l'extraction de l'archive {0} : {1}
@@ -26,8 +26,13 @@
  
  TestisArchiveError=Erreur lors du test de l'archive {0} : {1}
  isNotZipArchiveWarning=Le fichier n'est pas une archive Zip : {0}
- InvalidValue=Impossible de valider le paramètre '{0}'
+ 
+ ExcludedObject=Les objets de type type directory sont exclus.
+ IsNullOrEmptyArchivePath=Le nom de fichier est vide ou ToString() à renvoyée une chaîne vide.
+ EmptyResolution=La résolution ne trouve pas de fichier.
  
  SaveIsNotPermitted=Vous ne pouvez pas enregistrer une archive autoextratible via la méthode Save().
+ 
+ ProgressBarExtract="Extraction en cours"
 '@ 
 
