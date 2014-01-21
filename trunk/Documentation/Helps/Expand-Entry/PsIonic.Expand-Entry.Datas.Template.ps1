@@ -1,19 +1,19 @@
-# Expand-Entry command data
+﻿# Expand-ZipEntry command data
 $Datas = @{
-	ExpandEntrySynopsis = ''
-	ExpandEntryDescription = ''
-	ExpandEntrySetsDefault = ''
-	ExpandEntryParametersEncoding = ''
-	ExpandEntryParametersExtractAction = ''
-	ExpandEntryParametersName = ''
-	ExpandEntryParametersPassword = ''
-	ExpandEntryParametersStrict = ''
-	ExpandEntryParametersXML = ''
-	ExpandEntryParametersZipFile = ''
-	ExpandEntryInputsDescription1 = ''
-	ExpandEntryOutputsDescriptionIonicZipZipEntry = ''
-	ExpandEntryNotes = ''
-	ExpandEntryExamplesRemarks1 = ''
+	ExpandZipEntrySynopsis = ''
+	ExpandZipEntryDescription = ''
+	ExpandZipEntrySetsDefault = ''
+	ExpandZipEntryParametersEncoding = ''
+	ExpandZipEntryParametersExtractAction = ''
+	ExpandZipEntryParametersName = ''
+	ExpandZipEntryParametersPassword = ''
+	ExpandZipEntryParametersStrict = ''
+	ExpandZipEntryParametersXML = ''
+	ExpandZipEntryParametersZipFile = ''
+	ExpandZipEntryInputsDescription1 = ''
+	ExpandZipEntryOutputsDescriptionIonicZipZipEntry = ''
+	ExpandZipEntryNotes = ''
+	ExpandZipEntryExamplesRemarks1 = ''
 }
 
 
