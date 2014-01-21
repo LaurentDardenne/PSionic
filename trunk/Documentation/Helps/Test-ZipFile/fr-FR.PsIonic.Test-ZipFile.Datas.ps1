@@ -7,10 +7,14 @@ Il est également possible lors de ce test de verifier si l'archive est valide e
 '@
 	TestZipFileSetsDefault = ''
 	TestZipFileSetsFile = ''
-	TestZipFileParametersCheck = 'Vérifie si l''archive est correcte.'
+	TestZipFileParametersCheck = @"
+Vérifie si le catalogue de l''archive indiquée est correcte.
+Pour vérifier le contenu, vous devrez, sur la même ligne de commande, spécifier -isValid. 
+# On peut donc renvoyer true si on précise seulement -Check sur une archive invalide
+"@
 	TestZipFileParametersPath = 'Nom du fichier de l''archive à tester.'
 	TestZipFileParametersisValid = @"
-Valide si le nom d'archivbe indiqué est une archive Zip. 
+Vérifie si le contenu de l''archive indiquée est valide. 
 Si un fichier n'est pas une archive et que le paramètre 'isValid' est précisé alors une erreur non bloquante sera émise.
 "@
 	TestZipFileParametersPassthru = @'
