@@ -99,11 +99,11 @@ Try {
      $Logger.Debug("Add TypeAccelerators $($_.Key) =$($_.Value)") #<%REMOVE%>
      $AcceleratorsType::Add($_.Key,$_.Value)
    } Catch [System.Management.Automation.MethodInvocationException]{
-     write-Error $_.Exception.Message 
+     Write-Error -Exception $_.Exception 
    }
  } 
 } Catch [System.Management.Automation.RuntimeException] {
-   write-Error $_.Exception.Message
+   Write-Error -Exception $_.Exception
 }
 
 Function CloneSfxOptions { 
@@ -176,7 +176,7 @@ function isCollection {
 }#isCollection
 
 Function ConvertPSDataCollection {
-#Analyse la collection Erro d'un objet de type PSEventJob
+#Analyse la collection Error d'un objet de type PSEventJob
 #Renvoi un objet exception ou génére une erreur normale.
  param (
   [System.Management.Automation.PSDataCollection[System.Management.Automation.ErrorRecord]] $PSEventJobError
@@ -185,26 +185,31 @@ Function ConvertPSDataCollection {
    #on propage les possibles erreurs dans la session
   if ($PSEventJobError.Count -gt 0)                   
   { 
+    $PSEventJobError.Error|Export-Clixml 'c:\temp\PSEventJobError.xml'  #<%REMOVE%>
      #Transforme la collection spécialisée en un array
     $T=@($PSEventJobError.Error|% {$_})
-     #Ordre inverse de la collection $Error, on inverse le contenu 
+     #A la différence de la collection $Error, on doit inverse le contenu 
     [System.Array]::Reverse($T)
     $ofs="`r`n"
-     #Ecrit la dernière erreur ou construit l'exception ayant arrêté le job
     if ($T[0].Exception -isnot [Microsoft.PowerShell.Commands.WriteErrorException])
-    { Write-Output New-Exception $T[0].Exception "ExtractProgress -> $T" }
+    { 
+      #Construit l'exception ayant arrêté le job
+      Write-Output New-Exception $T[0].Exception "ExtractProgress -> $T" 
+    }
     else
-    { Write-Error "$($T|% {$_.Exception}|out-string)" } 
+    { 
+      #Ecrit la dernière erreur déclenchée dans le job 
+      Write-Error "ExtractProgress -> $($T|% {$_.Exception}|out-string)" 
+    } 
   }
 } #ConvertPSDataCollection
 
-#todo localisation event
 Function RegisterEventExtractProgress {
  param(
   $ZipFile,
   [int] $ProgressID
  )
-    Write-debug "RegisterEvent ExtractProgress" 
+    $Logger.Debug("RegisterEvent ExtractProgress") #<%REMOVE%> 
     #Si le contexte est un job :
     #   $ExecutionContext.Host.name -ne "ServerRemoteHost"
     #alors l'information sera périméé une fois celui-ci terminé,
@@ -220,9 +225,20 @@ Function RegisterEventExtractProgress {
   $ProgressAction=@"
     if (`$eventargs.EventType -eq [Ionic.Zip.ZipProgressEventType]::Extracting_AfterExtractEntry)
     {
-       # Calcul du pourcentage du nombre de fichiers extrait
-      [int]`$percent = ((`$eventargs.EntriesExtracted / `$eventargs.EntriesTotal) * 100)
-      write-progress -ID $($ProgressID) -activity "Extract in progress" -Status "`$(`$eventargs.CurrentEntry.FileName)" -PercentComplete `$percent
+      `$Logger.Debug("EntriesExtracted=`$(`$eventargs.EntriesExtracted)") #<%REMOVE%>
+      `$Logger.Debug("EntriesTotal=`$(`$eventargs.EntriesTotal)") #<%REMOVE%>
+      `$Logger.Debug("FileName=`$(`$eventargs.CurrentEntry.FileName)") #<%REMOVE%>
+      if (`$eventargs.EntriesTotal -eq 0)
+      {
+        `$Logger.Debug("-Query est précisée, EntriesTotal n'est pas pas renseigné")
+        write-progress -ID $($ProgressID) -activity "$($PsIonicMsgs.ProgressBarExtract)" -Status "`$(`$eventargs.CurrentEntry.FileName)"
+      }
+      else
+      {
+         # Calcul du pourcentage du nombre de fichiers extrait
+        [int]`$percent = ((`$eventargs.EntriesExtracted / `$eventargs.EntriesTotal) * 100)
+        write-progress -ID $($ProgressID) -activity "$($PsIonicMsgs.ProgressBarExtract)" -Status "`$(`$eventargs.CurrentEntry.FileName)" -PercentComplete `$percent
+      }
     }
 "@
   $ProgressAction=[ScriptBlock]::Create($ProgressAction)
@@ -233,13 +249,12 @@ Function UnRegisterEvent{
   param( [System.Management.Automation.PSEventJob] $EventJob )
   
   $EventException=ConvertPSDataCollection $EventJob.Error
-  Write-debug "Unregister $($EventJob.Name) event" #<%REMOVE%>
+  $Logger.Debug("Unregister $($EventJob.Name) event. Remove-Job")#<%REMOVE%>
   Unregister-Event -SourceIdentifier $EventJob.Name -ErrorAction SilentlyContinue
-  Write-debug 'Remove event job'  #<%REMOVE%>
   Remove-Job $EventJob
   
   if ($EventException -ne $null) 
-  { throw $EventException }  
+  { throw (New-Object PSIonicTools.PsionicException($EventException)) }  
 }#UnRegisterEvent
 
 function ConvertFrom-CliXml {
@@ -344,7 +359,7 @@ Function IsValueSupported {
  { 
    $Msg=$PsIonicMsgs.ValueNotSupported -F $value
    $Logger.Fatal($Msg)  #<%REMOVE%>
-   Throw $Msg 
+   Throw (New-Object PSIonicTools.PsionicException($Msg)) 
  } 
  
  $true
@@ -418,7 +433,7 @@ Function SetZipFileEncryption {
        { 
          $Msg=$PsIonicMsgs.InvalidPasswordForDataEncryptionValue -F $Password,$DataEncryption
          $Logger.Fatal($Msg) #<%REMOVE%>
-         Throw $Msg 
+         Throw (New-Object PSIonicTools.PsionicException($Msg)) 
        }
        $Logger.Debug("Encryption $DataEncryption") #<%REMOVE%>
        $ZipFile.Encryption = $DataEncryption
@@ -505,7 +520,7 @@ function SaveSFXFile {
   catch{
      $Msg=$PsIonicMsgs.ErrorSFX -F $TargetName,$_
      $Logger.Fatal($Msg,$_.Exception)  #<%REMOVE%>
-     Throw (New-Object System.Exception($Msg,$_.Exception))
+     Throw (New-Object PSIonicTools.PsionicException($Msg,$_.Exception))
   }
 } #SaveSFXFile
 
@@ -533,7 +548,7 @@ function AddMethodPSDispose{
       if (($this.StatusMessageTextWriter -ne $null) -and  ($this.StatusMessageTextWriter -is [PSIonicTools.PSVerboseTextWriter]))
       {
          #On libère que ce que l'on crée
-        Write-Debug("`t ZipFile Dispose PSStream") #<%REMOVE%> 
+        $Logger.Debug("`t ZipFile Dispose PSStream") #<%REMOVE%> 
         $this.StatusMessageTextWriter.Dispose()
         $this.StatusMessageTextWriter=$null               
       }   
@@ -548,18 +563,18 @@ function AddMethodPSDispose{
       $ZipErrorDeleguate=$EventField.GetValue($this)
       if ($ZipErrorDeleguate -ne $null)
       {
-         Write-Debug("`t Dispose delegates") #<%REMOVE%> 
+         $Logger.Debug("`t Dispose delegates") #<%REMOVE%> 
          #Récupère la liste des 'méthodes' à appeler
          # Au moins un, peut être de notre type : $_.Target -is [PSIonicTools.PSZipError]
         $ZipErrorDeleguate.GetInvocationList()|
         Foreach {
-           Write-Debug("`t Dispose $_") #<%REMOVE%>
+           $Logger.Debug("`t Dispose $_") #<%REMOVE%>
            #On supprime tous les abonnements  
           $Event.RemoveEventHandler($this,$_)
         }
       }
        #On appelle la méthode Dispose() de l'instance en cours
-      Write-Debug("Dispose $($this.Name)") #<%REMOVE%               
+      $Logger.Debug("Dispose $($this.Name)") #<%REMOVE%>               
       $this.Dispose()
   }            
 } #AddMethodPSDispose
@@ -574,17 +589,17 @@ function AddMethodClose{
   $Logger.Debug("Add close method on $($ZipInstance.Name)")  #<%REMOVE%>
   Add-Member -Inputobject $ZipInstance -Force ScriptMethod Close {
       try {
-        Write-Debug("Close : save $($this.Name)") #<%REMOVE%
+        $Logger.Debug("Close : save $($this.Name)") #<%REMOVE%>
         $this.Save()
       }
       catch [Ionic.Zip.BadStateException]
       {
         if  ($this.name.EndsWith(".exe"))
-        { Write-Error $PsIonicMsgs.SaveIsNotPermitted } 
+        { Write-Error $PsIonicMsgs.SaveIsNotPermitted -Exception $_.Exception} 
       } 
       finally {
        #On appelle la méthode Dispose() de l'instance en cours  
-       Write-Debug("Close : PSDispose $($this.Name)") #<%REMOVE%             
+       $Logger.Debug("Close : PSDispose $($this.Name)") #<%REMOVE%>             
       $this.PSDispose()
      }
   }            
@@ -665,13 +680,6 @@ Function Get-ZipFile {
     Foreach($Current in $Name){
      try {
         $FileName = GetArchivePath $Current
-        if($FileName -eq $null)
-        { 
-            $Msg=$PsIonicMsgs.InvalidValue -F $Name.ToString()
-            $Logger.Fatal($Msg) #<%REMOVE%>
-            Write-Error $Msg 
-            return $null
-        }
         if ((TestZipArchive -Archive $FileName  -Password $Password -Passthru ) -ne $null)
         {   
 
@@ -714,10 +722,12 @@ Function Get-ZipFile {
           ,$ZipFile
         }
      }
-     catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
+     catch [System.Management.Automation.ItemNotFoundException],
+           [System.Management.Automation.DriveNotFoundException],
+           [PsionicTools.PsionicInvalidValueException]
      {
         $Logger.Fatal($_.Exception.Message) #<%REMOVE%>
-        Write-Error $_.Exception.Message
+        Write-Error -Exception $_.Exception
      } 
    }#Foreach          
   } #Process
@@ -816,7 +826,7 @@ Function Compress-ZipFile {
       $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>          
           
       if ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
-      { Throw $PsIonicMsgs.CommentMaxValue }
+      { Throw (New-Object PSIonicTools.PsionicException($PsIonicMsgs.CommentMaxValue)) }
       
       $fixedTimestamp=$null
       If ($PSBoundParameters.ContainsKey('UTnow'))
@@ -898,7 +908,7 @@ Function Compress-ZipFile {
       {
         $Logger.Fatal("Save",$_.Exception) #<%REMOVE%>
         DisposeZip
-        Throw (New-Object System.Exception($_,$_.Exception))
+        Throw (New-Object PSIonicTools.PsionicException($_,$_.Exception))
       }
       
       if ($Passthru)
@@ -962,7 +972,7 @@ Function AddEntry {
     {
        $Logger.Debug("Recurse Add-ZipEntry")  #<%REMOVE%>
        $InputObject.GetEnumerator()|
-        GetObjectByType |  # TODO $File| bug à priori  
+        GetObjectByType |  
         Add-ZipEntry $ZipFile -Passthru:$Passthru      
     }
     elseif ($InputObject -is [System.String])
@@ -1002,7 +1012,7 @@ Function AddEntry {
     {$ZipEntry} 
    }
    catch { #ArgumentNullException or ArgumentException
-    Write-Error ($PsIonicMsgs.AddEntryError -F $InputObject,$ZipFile.Name,$_.Exception.Message)
+    Write-Error ($PsIonicMsgs.AddEntryError -F $InputObject,$ZipFile.Name,$_.Exception.Message) -Exception $_.Exception
    }
   }#process
 }#AddEntry
@@ -1047,15 +1057,12 @@ Function GetArchivePath {
 
     $Logger.Debug("GetArchivePath : récupération de l'objet ") #<%REMOVE%> 
     $Logger.Debug("Object type = $($Object.GetType())") #<%REMOVE%>
-	if($Object -is [System.IO.FileInfo])  
+
+	if ($Object -is [System.IO.FileInfo])  
 	{ return $Object.FullName  }
-    elseif( $Object -is [System.IO.DirectoryInfo])
-    { 
-      $Logger.Debug("The objects of the type directory are excluded : $Object") #<%REMOVE%> 
-      Write-Verbose "The objects of the type directory are excluded : $Object"  
-      return $null 
-    }
-	elseif($Object -is [String])
+    elseif ($Object -is [System.IO.DirectoryInfo])      
+    {  throw (New-Object PsionicTools.PsionicInvalidValueException($Object,$PsIonicMsgs.ExcludedObject)) }
+	elseif ($Object -is [String])
 	{ $ArchivePath = $Object  }
 	else
 	{   
@@ -1063,23 +1070,21 @@ Function GetArchivePath {
        $ArchivePath = $Object.ToString() 
     }
     if ([string]::IsNullOrEmpty($ArchivePath) )
-    {
-      $Logger.Debug("The file name is empty or ToString() return an empty string.") #<%REMOVE%>
-      Write-Verbose "The file name is empty or ToString() return an empty string." 
-      return $null 
-    }
-    
+    {  throw (New-Object PsionicTools.PsionicInvalidValueException($Object,$PsIonicMsgs.IsNullOrEmptyArchivePath)) }
+
     $Logger.Debug("The file name is '$ArchivePath'") #<%REMOVE%>
     try {
       $List=@(Resolve-Path $ArchivePath -ea Stop)
     } 
     catch [System.Management.Automation.ActionPreferenceStopException] 
     { 
-      throw $_.Exception 
+      throw $_.Exception #todo vérifier invocationInfo 
     }
 
-    if ($List.Count -eq 0) { return $null }
+    if ($List.Count -eq 0) 
+    { throw (New-Object PsionicTools.PsionicInvalidValueException($PsIonicMsgs.EmptyResolution))}
      
+     #todo Resolve-PSpath
     foreach ($Item in $List|Get-Item) {
      if ($Item -is [System.IO.FileInfo])
 	 { 
@@ -1094,7 +1099,7 @@ Function GetArchivePath {
     }#foreach
 } #GetArchivePath
 
-Function Expand-Entry { 
+Function Expand-ZipEntry { 
 # .ExternalHelp PsIonic-Help.xml         
     [CmdletBinding()] 
     [OutputType([System.String])]
@@ -1126,10 +1131,10 @@ Function Expand-Entry {
         $Logger.Debug("ReadEntry $EntryName in $($ZipFile.Name)") #<%REMOVE%>
         $Entry=$ZipFile[$EntryName]
         if ($Entry -ne $null)
-        { $Entry.Extract($Stream)}
+        { $Entry.Extract($Stream) }
         else 
         { 
-          $msg=$PsIonicMsgs.ExpandEntryError -F $EntryName,$ZipFile.Name
+          $msg=$PsIonicMsgs.ExpandZipEntryError -F $EntryName,$ZipFile.Name
           $Exception=New-Object System.ArgumentException($Msg,'Name')
           $Logger.Error($Msg) #<%REMOVE%>
           if ($Strict) 
@@ -1155,7 +1160,7 @@ Function Expand-Entry {
         if ($XML)
         { $Data=$Result -as [XML] }
         else 
-        { $Data=$Result -as [String] }
+        { $Data=$Result -as [String] } #todo sinon erreur ?
         if ($AsHashTable) 
         { 
           $Logger.Debug("Add Hashtable") #<%REMOVE%>
@@ -1189,23 +1194,22 @@ Function Expand-Entry {
    if ($AsHashTable) 
    { Write-Output $HTable}      
  }#end
-} #Expand-Entry
+} #Expand-ZipEntry
 
-Function Expand-ZipFile { 
+Function Expand-ZipFile {
 # .ExternalHelp PsIonic-Help.xml         
     [CmdletBinding(DefaultParameterSetName="Default")] 
 	[OutputType("Default",[Ionic.Zip.ZipFile])]
     [OutputType("List",[Ionic.Zip.ZipEntry])]
 	param(
 		[parameter(Mandatory=$True,ValueFromPipeline=$True)]
-	  $Path,        
-      #Todo add LiterralPath
-      
+	  $Path, #Todo add LiterralPath
+ 
         [ValidateNotNullOrEmpty()] 
         [parameter(Position=0,Mandatory=$True, ValueFromPipelineByPropertyName=$True, ParameterSetName="Default")]
-	  [PSObject]$Destination,
-           #Todo add $DestinationLiterralPath
-	    
+	  [PSObject]$OutputPath,#Todo add $LiterralOutputPathLiterral
+
+
       	[Parameter(Position=1,Mandatory=$false, ParameterSetName="Default")]
 	  [String] $Query,      
      
@@ -1242,9 +1246,10 @@ Function Expand-ZipFile {
     $isDefaultParameterSetName= $PsCmdlet.ParameterSetName -eq 'Default'
     
      #to manage delayed script block 
-    $PreviousDestination=$null
+    $PreviousOutputPath=$null
     
     Function ZipFileRead {
+     param( $FileName )
       try{
         $Logger.Debug("Read the file $zipPath") #<%REMOVE%> 
         #$isEvent= $isProgressID -and ($ProgressPreference -ne 'SilentlyContinue')
@@ -1266,7 +1271,7 @@ Function Expand-ZipFile {
         DisposeZip
         $Msg=$PsIonicMsgs.ZipArchiveReadError -F $FileName.ToString(), $_.Exception.Message
         $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
-        throw (New-Object System.Exception($Msg,$_.exception))
+        throw (New-Object PSIonicTools.PsionicException($Msg,$_.Exception))
       }
       finally {
         if ($ReadOptions -ne $null)
@@ -1277,9 +1282,11 @@ Function Expand-ZipFile {
     function ExtractEntries {
       try{
         $isDispose=$true 
-         #Mémorise la Query
         if ($Passthru)
-        { Add-Member -Input $ZipFile -MemberType NoteProperty -name Query -Value $Query }
+        { 
+          $Logger.Debug("Preserve the query by Add-Member") #<%REMOVE%>
+          Add-Member -Input ($ZipFile -as[PSobject]) -MemberType NoteProperty -name Query -Value $Query 
+        }
  
         if($List){
             $ZipFile.Entries.GetEnumerator()|
@@ -1297,22 +1304,27 @@ Function Expand-ZipFile {
               $Logger.Debug("Extraction using a query : $Query") #<%REMOVE%> 
               if( [String]::IsNullOrEmpty($From)){
                   $Logger.Debug("From = null") #<%REMOVE%>
-                  $Logger.Debug("Destination=$Destination") #<%REMOVE%>
+                  $Logger.Debug("OutputPath=$OutputPath") #<%REMOVE%>
                   $Logger.Debug("ExtractAction=$ExtractAction") #<%REMOVE%>
                   
                    #bug null to string, use reflection
                   [type[]] $private:ParameterTypesOfExtractSelectedEntriesMethod=[string],[string],[string],[Ionic.Zip.ExtractExistingFileAction]
                   $ExtractSelectedEntriesMethod=[Ionic.Zip.ZipFile].GetMethod("ExtractSelectedEntries",$private:ParameterTypesOfExtractSelectedEntriesMethod)
-                  $params = @($Query,$Null,($Destination.ToString()),$ExtractAction)
-                  $ZipEntry=$ExtractSelectedEntriesMethod.Invoke($ZipFile, $params)                        
+                  $params = @($Query,$Null,($OutputPath.ToString()),$ExtractAction)
+                  $ZipEntry=$ExtractSelectedEntriesMethod.Invoke($ZipFile, $params)  
+                  if ($Passthru){
+                    $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
+                    $isDispose=$false 
+                    return ,$ZipFile
+                  }                                            
               }
               else{
-                  $ZipFile.ExtractSelectedEntries($Query,$From,$Destination,$ExtractAction)  
+                  $ZipFile.ExtractSelectedEntries($Query,$From,$OutputPath,$ExtractAction)  
               }
           }
           else{ 
               $Logger.Debug("Extraction without query.") #<%REMOVE%>
-              $ZipFile.ExtractAll($Destination,$ExtractAction)
+              $ZipFile.ExtractAll($OutputPath,$ExtractAction)
               if ($Passthru){
                 $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
                 $isDispose=$false 
@@ -1322,7 +1334,7 @@ Function Expand-ZipFile {
        }#else
       }#try
       catch [Ionic.Zip.BadPasswordException]{
-         throw (New-Object System.Exception(($PsIonicMsgs.ZipArchiveBadPassword -F $zipPath),$_.Exception))
+         throw (New-Object PSIonicTools.PsionicException(($PsIonicMsgs.ZipArchiveBadPassword -F $zipPath),$_.Exception))
          
       }
       #todo 
@@ -1336,12 +1348,12 @@ Function Expand-ZipFile {
          if (($_.Exception -is [Ionic.Zip.ZipException]) -and ($ZipFile.ExtractExistingFile -ne "Throw") ) 
          {
            $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
-           throw (New-Object System.Exception($Msg,$_.Exception))
+           throw (New-Object PSIonicTools.PsionicException($Msg,$_.Exception))
          }
          else 
          {
            $Logger.Error($Msg) #<%REMOVE%>
-           Write-Error $Msg
+           Write-Error $Msg -Exception $_.Exception 
          }
       }
       finally{
@@ -1355,52 +1367,41 @@ Function Expand-ZipFile {
   Foreach($Archive in $Path){
    try {
       $zipPath = GetArchivePath $Archive
-      if ( $zipPath -eq $null )  
-      { 
-         # usage de ToString() pour éviter un bug v2
-        $Msg=$PsIonicMsgs.InvalidValue -F $Archive.ToString()
-        $Logger.Error($Msg) #<%REMOVE%>
-        Write-Error $Msg 
-      }
-      else 
+       #Test à chaque itération car le delayed script block peut être demandé
+       #On mémorise donc le répertoire de destination courant                        
+      if (($PreviousOutputPath -ne $OutputPath) -and $isDefaultParameterSetName) 
       {
-         #Test à chaque itération car le delayed script block peut être demandé
-         #On mémorise donc le répertoire de destination courant                        
-        if (($PreviousDestination -ne $Destination) -and $isDefaultParameterSetName) 
+         $Logger.DebugFormat("delayed script block detected Previous {0} New {1}", $PreviousOutputPath,$OutputPath)  #<%REMOVE%>
+         $PreviousOutputPath=$OutputPath
+         #Le chemin de destination doit être valide  
+         #le chemin valide doit exister
+         #Le chemin doit référencer le FileSystem
+        $PSPathInfo=Resolve-PSPath -Path $OutputPath 
+        if (-not $PSPathInfo.IsCandidate()) 
         {
-           Write-debug ("delayed script block detected old {0} new {1}" -f $PreviousDestination,$Destination)  #<%REMOVE%>
-           $Logger.DebugFormat("delayed script block detected old {0} new {1}", $PreviousDestination,$Destination)  #<%REMOVE%>
-           $PreviousDestination=$Destination
-           #Le chemin de destination doit être valide  
-           #le chemin valide doit exister
-           #Le chemin doit référencer le FileSystem
-          $PSPathInfo=Resolve-PSPath -Path $Destination 
-          if (-not $PSPathInfo.IsCandidate()) 
-          {
-             $lFileName=If ($PSPathInfo.ResolvedPSPath -eq $null) {$PSPathInfo.Name} else {$PSPathInfo.ResolvedPSPath} 
-             $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F $lFileName + "`r`n$($PSPathInfo.LastError)"
-             $Logger.Error($Msg) #<%REMOVE%>
-             Write-Error $Msg
-             continue 
-          }
-          $Destination=$PSPathInfo.Win32PathName
-          if ($Create)
-          {
-              #On le crée si possible
-              if ($PSPathInfo.IsCandidateForCreation())
-              {              
-                $Logger.Debug("Create `$Destination directory") #<%REMOVE%>
-                Md $Destination > $Null
-              }
-          }
-          elseif (-not $PSPathInfo.IsCandidateForExtraction())
-          { throw ($PsIonicMsgs.PathMustExist -F $Destination ) }            
+           $lFileName=If ($PSPathInfo.ResolvedPSPath -eq $null) {$PSPathInfo.Name} else {$PSPathInfo.ResolvedPSPath} 
+           $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F $lFileName + "`r`n$($PSPathInfo.LastError)"
+           $Logger.Error($Msg) #<%REMOVE%>
+           Write-Error $Msg
+           continue 
         }
-      }#else zipath null  
+        $OutputPath=$PSPathInfo.Win32PathName
+        if ($Create)
+        {
+            #On le crée si possible
+            if ($PSPathInfo.IsCandidateForCreation())
+            {              
+              $Logger.Debug("Create `$OutputPath directory") #<%REMOVE%>
+              Md $OutputPath > $Null
+            }
+        }
+        elseif (-not $PSPathInfo.IsCandidateForExtraction())
+        { throw (New-Object PSIonicTools.PsionicException(($PsIonicMsgs.PathMustExist -F $OutputPath ))) }            
+      }
               
       Foreach($FileName in $ZipPath){
         $Logger.Debug("Full path name : $FileName") #<%REMOVE%>
-        $zipFile= ZipFileRead
+        $zipFile= ZipFileRead $FileName
         if ($ZipFile.Count -eq 0)
         {
           $Logger.Debug("No entries in the archive") #<%REMOVE%> 
@@ -1415,7 +1416,7 @@ Function Expand-ZipFile {
          #Extract ProgressBar
         try {
           $isEvent=$isProgressID -and ($ProgressPreference -ne 'SilentlyContinue')
-          Write-debug "zipfile is null: $($zipfile -eq $null)"
+          $Logger.Debug("zipfile is null: $($zipfile.psbase -eq $null)") #<%REMOVE%>
           if ($isEvent) 
           { $RegEvent=RegisterEventExtractProgress $zipFile $ProgressID }
           ExtractEntries
@@ -1426,11 +1427,12 @@ Function Expand-ZipFile {
         }#finally
       }#foreach zipFile
     }
-    catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
+    catch [System.Management.Automation.ItemNotFoundException],
+          [System.Management.Automation.DriveNotFoundException],
+          [PsionicTools.PsionicInvalidValueException]
     {
       $Logger.Error($_.Exception.Message) #<%REMOVE%>
-      if (-not $isValid) 
-      {Write-Error $_.Exception.Message}
+      Write-Error -Exception $_.Exception 
     }   
   }#Foreach  
  } #process
@@ -1453,13 +1455,12 @@ Function TestZipArchive {
 
     # Isvalid=$true vérifie le contenu, mais Check=$true ne vérifie que le catalogue
     # On peut donc renvoyer true si on précise seulement -Check sur une archive invalide
-    #todo doc
     $Logger.Debug("Est-ce une archive ?") #<%REMOVE%>
     try{
         $isZipFile = [ZipFile]::isZipFile($Archive, $isValid)
     }
     catch{
-        throw (New-Object System.Exception(($PsIonicMsgs.TestisArchiveError -F $Archive,$_),$_.Exception)) 
+        throw (New-Object PSIonicTools.PsionicException(($PsIonicMsgs.TestisArchiveError -F $Archive,$_),$_.Exception)) 
         
     }
 #<DEFINE %DEBUG%>
@@ -1490,7 +1491,7 @@ Function TestZipArchive {
         }
       }
       catch{
-         throw (New-Object System.Exception(($PsIonicMsgs.ZipArchiveCheckIntegrityError -F $Archive,$_),$_.Exception))
+         throw (New-Object PSIonicTools.PsionicException(($PsIonicMsgs.ZipArchiveCheckIntegrityError -F $Archive,$_),$_.Exception))
       }
     }
 
@@ -1500,7 +1501,7 @@ Function TestZipArchive {
             $goodPassword = [ZipFile]::CheckZipPassword($Archive, $Password)
         }
         catch{
-            throw (New-Object System.Exception(($PsIonicMsgs.ZipArchiveCheckPasswordError -F $Archive,$_),$_.Exception))
+            throw (New-Object PSIonicTools.PsionicException(($PsIonicMsgs.ZipArchiveCheckPasswordError -F $Archive,$_),$_.Exception))
         }
     }
 
@@ -1586,30 +1587,28 @@ Function Test-ZipFile{
         Foreach($Archive in $Path){  
           try {  
             $zipPath = GetArchivePath $Archive -Verbose:$isVerbose
-         	if((-not $isValid) -and ($zipPath -eq $null))
-         	{ 
-                 # usage de ToString() pour éviter un bug v2
-                $Msg=$PsIonicMsgs.InvalidValue -F $Archive.ToString()
-                $Logger.Error($Msg) #<%REMOVE%>
-                Write-Error $Msg
-             }
-             else {
-              Foreach($ZipFile in $ZipPath){
+            Foreach($ZipFile in $ZipPath){
                $Logger.Debug("Full path name : $zipFile ") #<%REMOVE%>
                if ($PsCmdlet.ParameterSetName -eq "File")
                {TestZipArchive -Archive $zipFile -isValid:$isValid -Check:$Check -Repair:$Repair -Password $Password -Passthru:$Passthru -verbose:$isVerbose}
                else
                {TestZipArchive -Archive $zipFile -isValid:$isValid -Check:$Check -Repair:$Repair -Password $Password -verbose:$isVerbose}
-              }
             }
           }
-          catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.DriveNotFoundException]
+          catch [System.Management.Automation.ItemNotFoundException],
+                [System.Management.Automation.DriveNotFoundException],
+                [PsionicTools.PsionicInvalidValueException]
           {
-            $Logger.Fatal($_.Exception.Message) #<%REMOVE%>
-             # On émet dans le pipe que les noms des fichiers existant (-passthru) ou les noms des archives valides (-isValid -passthru) 
-             # Tous les fichiers inexistant et toutes les archives existantes invalides ne sont donc pas émises.
-            if (($PsCmdlet.ParameterSetName -ne "File") -or ($Passthru -eq $false))
-            { write-output $false }
+              $Logger.Debug("isValid=$isValid") #<%REMOVE%>
+              $Logger.Debug("$($_.Exception -is [PsionicTools.PsionicInvalidValueException])") #<%REMOVE%>
+              $Logger.Debug("$($_.Exception.GetType().FullName)") #<%REMOVE%>
+              if (-not $isValid -and ($_.Exception -is [PsionicTools.PsionicInvalidValueException]))
+              { Write-Error -Exception $_.Exception }
+              $Logger.Error($_.Exception.Message)  #<%REMOVE%>
+               # On émet dans le pipe que les noms des fichiers existant (-passthru) ou les noms des archives valides (-isValid -passthru) 
+               # Tous les fichiers inexistant et toutes les archives existantes invalides ne sont donc pas émises.
+              if (($PsCmdlet.ParameterSetName -ne "File") -or ($Passthru -eq $false))
+              { Write-Output $false }           
           }#catch
         }#Foreach
     }#process
@@ -1810,7 +1809,7 @@ function New-ReadOptions {
       if (($this.StatusMessageWriter -ne $null) -and  ($this.StatusMessageWriter -is [PSIonicTools.PSVerboseTextWriter]))
       {
          #On libère que ce que l'on crée
-        Write-Debug("`t ReadOptions dispose PSStream")  
+        $Logger.Debug("`t ReadOptions dispose PSStream") #<%REMOVE%>  
         $this.StatusMessageWriter.Dispose()
         $this.StatusMessageWriter=$null               
       }   
@@ -1963,7 +1962,7 @@ Function OnRemovePsIonicZip {
        $Logger.Debug("Remove TypeAccelerators $($_.Key)") #<%REMOVE%> 
        [void]$AcceleratorsType::Remove($_.Key)
      } Catch {
-       write-Error $_.Exception.Message
+       write-Error -Exception $_.Exception 
      }
    }
 #<DEFINE %DEBUG%>
@@ -2011,7 +2010,7 @@ Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         Format-ZipFile,
                                                         ConvertFrom-CliXml,
                                                         ConvertTo-CliXml,
-                                                        Expand-Entry
+                                                        Expand-ZipEntry
                                                         #Update-ZipFile,
                                                         #Sync-ZipFile,
                                                         #Split-ZipFile,
