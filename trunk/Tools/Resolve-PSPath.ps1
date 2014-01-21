@@ -27,10 +27,10 @@
    $isValid=($Uri -ne $Null) -and ($Uri.Segments -ne $null) -and ($Uri.Segments.Count -ge 2) -and ($Path -match '^(\\{2}|/{2})(?!(\\|/))')
    #IsUnc égale $true alors LocalPath contient un path UNC transformé et valide.
    
-   Write-Debug "[Test-UNCPath] isValid=$isValid isUnc=$($Uri.IsUnc) $Path $($Uri.LocalPath)"
+   Write-Debug "[Test-UNCPath] isValid=$isValid isUnc=$($Uri.IsUnc) $Path $($Uri.LocalPath)" #<%REMOVE%>
  }
  catch [System.Management.Automation.RuntimeException] {
-   Write-Debug "[Test-UNCPath] $_"
+   Write-Debug "[Test-UNCPath] $_" #<%REMOVE%>
    $isValid=$false
  }
  $isValid
@@ -61,7 +61,7 @@ Function Resolve-PSPath{
       $Name,
       [switch] $asLiteral
     )
-      Write-debug "name=$name"
+      Write-debug "name=$name" #<%REMOVE%>
       $Helper = $ExecutionContext.SessionState.Path
       $O=New-Object PSObject -Property @{
          # !! Certaines propriétés boolean sont affectées par défaut à $false
@@ -169,7 +169,7 @@ Function Resolve-PSPath{
    if ($_EA -ne $null) 
    { $ErrorActionPreference=$_EA}
    
-   Write-Debug "Resolve-PSPath.Begin `$ErrorActionPreference=$ErrorActionPreference" 
+   Write-Debug "Resolve-PSPath.Begin `$ErrorActionPreference=$ErrorActionPreference" #<%REMOVE%> 
  }#begin
   
  process {
@@ -180,7 +180,7 @@ Function Resolve-PSPath{
      else
      { $CurrentPath=$Path }
 
-     Write-Debug  "CurrentPath=$CurrentPath"
+     Write-Debug  "CurrentPath=$CurrentPath" #<%REMOVE%>
      $Infos=New-PSPathInfo $CurrentPath -asLiteral:$isLiteral
 
      $Infos.IsProviderQualified=$pathHelper.IsProviderQualified($CurrentPath)
@@ -212,30 +212,32 @@ Function Resolve-PSPath{
        #Les chemins UNC débutant par plus de 2 '\' sont pris en compte, 
        # et fonctionne avec des cmdlets de PS v2, mais déclenchera des exceptions avec ces mêmes cmdlets sous la V3.  
       $ursvPath=$pathHelper.GetUnresolvedProviderPathFromPSPath($CurrentPath,[ref]$ProviderInfo,[ref]$DriveInfo)
-      Write-debug "ursvPath=$ursvPath"
+      Write-debug "ursvPath=$ursvPath" #<%REMOVE%>
             
       $Infos.isProviderExist=$True     
       $Infos.Provider=$ProviderInfo.Name
       $Infos.isFileSystemProvider=$ProviderInfo.Name -eq 'FileSystem'
 
-      Write-Debug "Provider : $ProviderInfo"
-      Write-debug "IsProviderQualified = $($Infos.IsProviderQualified)"
-      Write-debug "IsAbsolute = $($infos.IsAbsolute)"
+      Write-Debug "Provider : $ProviderInfo" #<%REMOVE%>
+      Write-debug "IsProviderQualified = $($Infos.IsProviderQualified)" #<%REMOVE%>
+      Write-debug "IsAbsolute = $($infos.IsAbsolute)" #<%REMOVE%>
       
       if ($Infos.IsProviderQualified -eq $false)
       {
         if ($Infos.IsAbsolute -eq $false) 
         {
-          Write-debug "On change le path RELATIF : $ursvPath"
+          Write-debug "On change le path RELATIF : $ursvPath" #<%REMOVE%>
           $CurrentPath=$ursvPath
         }
+#<DEFINE %DEBUG%>
         else  #sinon on perd l'information du provider HKLM:\*  --> HKEY_LOCAL_MACHINE\*
         { Write-debug "On ne change pas le path ABSOLU : $CurrentPath" } 
+#<UNDEF %DEBUG%>         
         $Infos.IsUnc=Test-UNCPath $CurrentPath       
       }
       else 
       { 
-        Write-debug "On ne change pas le path PROVIDER-QUALIFIED : $CurrentPath"
+        Write-debug "On ne change pas le path PROVIDER-QUALIFIED : $CurrentPath" #<%REMOVE%>
         #'Registry::\\localhost\c$\temp' ne doit pas être reconnu comme UNC 
         if ($Infos.isFileSystemProvider)  
         { 
@@ -253,16 +255,16 @@ Function Resolve-PSPath{
         } 
       }
 
-      Write-debug "isUNC=$($Infos.IsUnc)"
+      Write-debug "isUNC=$($Infos.IsUnc)" #<%REMOVE%>
       
        #Ici on ne traite que des drives connus sur des providers existant
-      Write-debug "CurrentDrivename=$CurrentDrivename"
+      Write-debug "CurrentDrivename=$CurrentDrivename" #<%REMOVE%>
       $Infos.CurrentDrivename=$CurrentDrivename
       if ($DriveInfo -ne $null)
       {
         $Infos.DriveName=$DriveInfo.Name
         $infos.isDriveExist=$True
-        Write-Debug "Drive name: $($DriveInfo.Name)"
+        Write-Debug "Drive name: $($DriveInfo.Name)" #<%REMOVE%>
       }
      
       #Pour 'c:\temp\MyTest[a' iswildcard vaut $true, mais le globbing est invalide, à priori la seule présence du [ renvoi $true  
@@ -273,14 +275,14 @@ Function Resolve-PSPath{
       else
       {  $infos.isWildCard=[Management.Automation.WildcardPattern]::ContainsWildcardCharacters($CurrentPath)}
        
-      Write-Debug "Path résolu : $CurrentPath" 
+      Write-Debug "Path résolu : $CurrentPath" #<%REMOVE%> 
      } catch [System.Management.Automation.ProviderInvocationException],
               # sur la registry les noms de chemin '\..' et '\..' déclenche :  
               #  Le chemin d'accès 'HKEY_LOCAL_MACHINE\..' fait référence à un élément situé hors du chemin d'accès de base 'HKEY_LOCAL_MACHINE'.  
              [System.Management.Automation.PSInvalidOperationException] {
        #Sur la registry, '~' déclenche cette exception, car la propriété Home n'est pas renseigné.
-       Write-Debug  "$_"
-       Write-Debug "Path n'est pas résolu : $CurrentPath"
+       Write-Debug  "$_" #<%REMOVE%>
+       Write-Debug "Path n'est pas résolu : $CurrentPath" #<%REMOVE%>
        $Infos.LastError=New-PSPathInfoError $_
        #On quitte, car les informations nécessaires sont inconnues. 
        return
@@ -288,12 +290,12 @@ Function Resolve-PSPath{
      
      if (($Infos.IsProviderQualified -eq $false) -and ($Infos.IsAbsolute -eq $false) -and ($Infos.isFileSystemProvider -eq $false) ) 
      {
-       Write-debug "Ajoute le nom du provider : $CurrentPath"
+       Write-debug "Ajoute le nom du provider : $CurrentPath" #<%REMOVE%>
        if ($Infos.IsUnc)
        {$Infos.ResolvedPSPath='FileSystem::'+$CurrentPath }
        else
        {$Infos.ResolvedPSPath=$Infos.Provider+'::'+$CurrentPath }
-       Write-debug "Resultat après l'ajout : $($Infos.ResolvedPSPath)" 
+       Write-debug "Resultat après l'ajout : $($Infos.ResolvedPSPath)" #<%REMOVE%> 
      }
      else
      {$Infos.ResolvedPSPath=$CurrentPath}
@@ -305,11 +307,11 @@ Function Resolve-PSPath{
        { $Infos.isItemExist= $ExecutionContext.InvokeProvider.Item.Exists(([Management.Automation.WildcardPattern]::Escape($Infos.ResolvedPSPath)),$false,$false) } 
        else 
        { $Infos.isItemExist= $ExecutionContext.InvokeProvider.Item.Exists($Infos.ResolvedPSPath,$false,$false) }
-       Write-Debug "L'item existe-til ? $($Infos.isItemExist)"
+       Write-Debug "L'item existe-til ? $($Infos.isItemExist)" #<%REMOVE%>
        if ($Infos.isItemExist)
        {
          try {
-           Write-Debug "Analyse le globbing."
+           Write-Debug "Analyse le globbing." #<%REMOVE%>
            $provider=$null
             #renvoi le nom du provider et le fichier ou les fichiers en cas de globbing
            if ($isLiteral)
@@ -317,9 +319,9 @@ Function Resolve-PSPath{
            else 
            { $result=@($pathHelper.GetResolvedProviderPathFromPSPath($Infos.ResolvedPSPath,[ref]$provider)) }
            $Infos.Count=$Result.Count
-           Write-Debug ("Count={0} Result[0]={1} " -F $Infos.Count,$Result[0]) 
+           Write-Debug ("Count={0} Result[0]={1} " -F $Infos.Count,$Result[0]) #<%REMOVE%> 
          } catch [System.Management.Automation.PSInvalidOperationException] {
-             Write-Debug  "Exception GetResolvedProviderPathFromPSPath : $($_.Exception.GetType().Name)"
+             Write-Debug  "Exception GetResolvedProviderPathFromPSPath : $($_.Exception.GetType().Name)" #<%REMOVE%>
              #Sur la registry, '~' déclenche cette exception, car la propriété Home n'est pas renseigné.
             $Infos.Count=0
          }
@@ -327,8 +329,8 @@ Function Resolve-PSPath{
      }  
      catch [System.Management.Automation.MethodInvocationException]  {
            #Path Invalide. 'C:\temp\t>\t.txt' -> "Caractères non conformes dans le chemin d'accès."
-       Write-Debug  "$_"
-       Write-Debug  "Exception Exists: $($_.Exception.GetType().Name)"
+       Write-Debug  "$_" #<%REMOVE%>
+       Write-Debug  "Exception Exists: $($_.Exception.GetType().Name)" #<%REMOVE%>
        $Infos.LastError=New-PSPathInfoError $_        
      }
 
@@ -359,7 +361,7 @@ Function Resolve-PSPath{
            #Ces noms ne peuvent exister et seront considéré comme inconnus.
            #Pour d'autres provider ces caractères et noms peuvent être autorisés.
           [System.NotSupportedException] {
-      Write-Debug  "Exception : $($_.Exception.GetType().Name)"
+      Write-Debug  "Exception : $($_.Exception.GetType().Name)" #<%REMOVE%>
       $Infos.LastError=New-PSPathInfoError $_
     }
     finally {
@@ -371,8 +373,13 @@ Function Resolve-PSPath{
                    ($this.LastError -eq $null)  -and 
                    (($this.isFileSystemProvider -eq $true) -or ($this.isUNC -eq $true)) -and 
                    ($this.isWildcard -eq $false)  
+#<DEFINE %DEBUG%>
           if (-not $result)
-          { Write-Debug "Chemin invalide pour une utilisation sur le FileSystem : $($this.ResolvedPSPath)" } 
+          { 
+            $FileName=If ($this.ResolvedPSPath -eq $null) {$this.Name} else {$this.ResolvedPSPath} 
+            Write-Debug "Chemin invalide pour une utilisation sur le FileSystem : $FileName"  
+          } 
+#<UNDEF %DEBUG%>          
           $result                    
         }  
 
@@ -392,8 +399,10 @@ Function Resolve-PSPath{
              { $lpath=$this.ResolvedPSPath }
              $result=$ExecutionContext.InvokeProvider.Item.IsContainer($lpath)
            }
-           If ($result)
-           { Write-Debug "Valide en tant que répertoire d'extraction : $($this.ResolvedPSPath)"}
+#<DEFINE %DEBUG%>           
+           If ($result) 
+           { Write-Debug "Valide en tant que répertoire d'extraction : $($this.ResolvedPSPath)" }
+#<UNDEF %DEBUG%>             
            $result     
         }  
 
@@ -412,8 +421,10 @@ Function Resolve-PSPath{
             #Par exemple les chemin pointant sur un CDROM sont considérés comme valide, 
             #ceux n'ayant pas la permision d'écriture également.
            $result= ( $this.IsCandidate() -and ($this.isItemExist -eq $false) ) 
-           If ($result)
-           { Write-Debug "Valide pour une création de répertoire d'extraction : $($this.ResolvedPSPath)"}
+#<DEFINE %DEBUG%>
+           If ($result) 
+           { Write-Debug "Valide pour une création de répertoire d'extraction : $($this.ResolvedPSPath)"} 
+#<UNDEF %DEBUG%>
            $result
         }  
       
@@ -438,7 +449,7 @@ Function Resolve-PSPath{
              $Infos.isPSValid=$pathHelper.isValid($Infos.ResolvedPSPath) 
          } catch [System.Management.Automation.ProviderInvocationException]  {
              #Par exemple pour 'Registry::\\localhost\c$\temp' ou 'Registry::..\temp'
-             Write-Debug  "isPSValid : $($_.Exception.GetType().Name)"
+             Write-Debug  "isPSValid : $($_.Exception.GetType().Name)" #<%REMOVE%>
             $Infos.LastError=New-PSPathInfoError $_
          } finally {
              Pop-Location
