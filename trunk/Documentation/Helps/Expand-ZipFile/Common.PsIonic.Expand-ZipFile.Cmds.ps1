@@ -9,7 +9,7 @@
 	}
 	parameters = @{
 		Create = $Datas.ExpandZipFileParametersCreate
-		Destination = $Datas.ExpandZipFileParametersDestination
+		OutputPath = $Datas.ExpandZipFileParametersOutputPath
 		Encoding = $Datas.ExpandZipFileParametersEncoding
 		ExtractAction = $Datas.ExpandZipFileParametersExtractAction
 		Path = $Datas.ExpandZipFileParametersPath
@@ -50,7 +50,7 @@
     examples = @(
 		@{
 			code = {
-              Expand-ZipFile -Path C:\Archive.zip -Destination C:\Temp\
+              Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\
 			}
 			remarks = $Datas.CompressZipFileExamplesRemarks1
 			test = { . $args[0] }
@@ -65,14 +65,14 @@
 		}
 		@{
 			code = {
-              Expand-ZipFile -Path C:\Archive.zip -Destination C:\Temp\ -Query 'name = *.jpg'
+              Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\ -Query 'name = *.jpg'
 			}
 			remarks = $Datas.CompressZipFileExamplesRemarks3
 			test = { . $args[0] }
 		}
 		@{
 			code = {
-              Expand-ZipFile -Path C:\Archive.zip -Destination C:\Temp\ -Query 'type = D'
+              Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\ -Query 'type = D'
 			}
 			remarks = $Datas.CompressZipFileExamplesRemarks4
 			test = { . $args[0] }

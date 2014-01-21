@@ -9,7 +9,7 @@
 	}
 	parameters = @{
 		Create = $Datas.ExpandZipFileParametersCreate
-		Destination = $Datas.ExpandZipFileParametersDestination
+		OutputPath = $Datas.ExpandZipFileParametersOutputPath
 		Encoding = $Datas.ExpandZipFileParametersEncoding
 		ExtractAction = $Datas.ExpandZipFileParametersExtractAction
 		Path = $Datas.ExpandZipFileParametersPath
