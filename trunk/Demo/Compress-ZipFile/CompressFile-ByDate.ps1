@@ -6,4 +6,8 @@
 
 $FileInfoLib= New-FilterLib (New-FactoryFilterDate)
 $FileInfoLib
-Dir |Where $FileInfoLib.Yesterday
+Dir |
+ Where $FileInfoLib.Yesterday |
+ Compress-ZipFile -OutputName C:\Temp\Test1.zip
+
+Get-ZipFile -name C:\Temp\Test1.zip 
