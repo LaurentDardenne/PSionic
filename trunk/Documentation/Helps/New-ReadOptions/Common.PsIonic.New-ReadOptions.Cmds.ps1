@@ -45,7 +45,7 @@ $ReadOptions=New-ReadOptions $Encoding $pbi
 		}
 		@{
 			code = {
-$pbi=New-ProgressBarInformations $ProgressID "Reading in progress  "
+$pbi=New-ProgressBarInformations $ProgressID "Reading in progress "
 $ReadOptions=New-ReadOptions $Encoding $pbi  
 $ReadOptions.StatusMessageWriter = [System.Console]::Out
 			}

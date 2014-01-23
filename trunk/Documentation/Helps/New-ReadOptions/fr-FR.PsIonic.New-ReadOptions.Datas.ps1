@@ -25,7 +25,6 @@ La présence du paramètre Verbose impose donc sa libération implicite via un a
 Cet exemple crée un objet option de lecture avec une valeur d''encodage par défaut et une barre de progression. 
 Puis on modifie directement sa proprièté StatusMessageWriter afin d'afficher le suivi de l'opération sur la console et plus sur le flux verbose. 
 "@
-     ExamplesRemarks
 }
 
 
