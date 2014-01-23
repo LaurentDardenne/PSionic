@@ -33,6 +33,6 @@
  
  SaveIsNotPermitted=You specified an EXE for a plain zip file.
  
- ProgressBarExtract="Extract in progress"
+ ProgressBarExtract=Extract in progress
 '@ 
 

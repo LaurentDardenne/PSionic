@@ -33,6 +33,6 @@
  
  SaveIsNotPermitted=Vous ne pouvez pas enregistrer une archive autoextratible via la méthode Save().
  
- ProgressBarExtract="Extraction en cours"
+ ProgressBarExtract=Extraction en cours
 '@ 
 
