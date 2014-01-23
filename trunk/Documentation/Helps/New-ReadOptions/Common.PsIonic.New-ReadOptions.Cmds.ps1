@@ -32,7 +32,7 @@ $ReadOptions=New-ReadOptions
 			code = {
 $ReadOptions=New-ReadOptions -Verbose         
 			}
-			remarks = $Datas.NewReadOptionsExamplesRemarks1
+			remarks = $Datas.NewReadOptionsExamplesRemarks2
 			test = { . $args[0] }
 		}
 		@{
@@ -40,7 +40,16 @@ $ReadOptions=New-ReadOptions -Verbose
 $pbi=New-ProgressBarInformations $ProgressID "Reading in progress  "
 $ReadOptions=New-ReadOptions $Encoding $pbi  
 			}
-			remarks = $Datas.NewReadOptionsExamplesRemarks1
+			remarks = $Datas.NewReadOptionsExamplesRemarks3
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+$pbi=New-ProgressBarInformations $ProgressID "Reading in progress  "
+$ReadOptions=New-ReadOptions $Encoding $pbi  
+$ReadOptions.StatusMessageWriter = [System.Console]::Out
+			}
+			remarks = $Datas.NewReadOptionsExamplesRemarks4
 			test = { . $args[0] }
 		}
 	)
@@ -48,4 +57,3 @@ $ReadOptions=New-ReadOptions $Encoding $pbi
 		@{ text = ''; URI = '' }
 	)
 }
-
