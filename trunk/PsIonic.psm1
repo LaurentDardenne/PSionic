@@ -185,20 +185,21 @@ Function ConvertPSDataCollection {
    #on propage les possibles erreurs dans la session
   if ($PSEventJobError.Count -gt 0)                   
   { 
-    $PSEventJobError.Error|Export-Clixml 'c:\temp\PSEventJobError.xml'  #<%REMOVE%>
+    $PSEventJobError|Export-Clixml 'C:\Temp\PSEventJobError.xml'  #<%REMOVE%> 
      #Transforme la collection spécialisée en un array
-    $T=@($PSEventJobError.Error|% {$_})
+    $T=@($PSEventJobError|% {$_})
      #A la différence de la collection $Error, on doit inverse le contenu 
     [System.Array]::Reverse($T)
     $ofs="`r`n"
+    
     if ($T[0].Exception -isnot [Microsoft.PowerShell.Commands.WriteErrorException])
     { 
-      #Construit l'exception ayant arrêté le job
-      Write-Output New-Exception $T[0].Exception "ExtractProgress -> $T" 
+      $Logger.Debug("Construit l'exception ayant arrêté le job")
+      Write-Output (New-Exception $T[0].Exception "ExtractProgress -> $($T|% {$_.Exception}|out-string)") 
     }
     else
     { 
-      #Ecrit la dernière erreur déclenchée dans le job 
+      $Logger.Debug("Ecrit la dernière erreur déclenchée dans le job") 
       Write-Error "ExtractProgress -> $($T|% {$_.Exception}|out-string)" 
     } 
   }
@@ -225,9 +226,9 @@ Function RegisterEventExtractProgress {
   $ProgressAction=@"
     if (`$eventargs.EventType -eq [Ionic.Zip.ZipProgressEventType]::Extracting_AfterExtractEntry)
     {
-      `$Logger.Debug("EntriesExtracted=`$(`$eventargs.EntriesExtracted)") #<%REMOVE%>
-      `$Logger.Debug("EntriesTotal=`$(`$eventargs.EntriesTotal)") #<%REMOVE%>
-      `$Logger.Debug("FileName=`$(`$eventargs.CurrentEntry.FileName)") #<%REMOVE%>
+#       `$Logger.Debug("EntriesExtracted=`$(`$eventargs.EntriesExtracted)") #<%REMOVE%>
+#       `$Logger.Debug("EntriesTotal=`$(`$eventargs.EntriesTotal)") #<%REMOVE%>
+#       `$Logger.Debug("FileName=`$(`$eventargs.CurrentEntry.FileName)") #<%REMOVE%>
       if (`$eventargs.EntriesTotal -eq 0)
       {
         `$Logger.Debug("-Query est précisée, EntriesTotal n'est pas pas renseigné")
@@ -545,34 +546,42 @@ function AddMethodPSDispose{
   
   $Logger.Debug("Add PSDispose method on $($ZipInstance.Name)")  #<%REMOVE%>
   Add-Member -Inputobject $ZipInstance -Force ScriptMethod PSDispose{
+     function RemoveAddedEventHandler{
+      param($Object,$EventName)
+         #Récupère l'événement ZipError
+        $Event=$Object.GetEvent($EventName)
+         #Un event à un délégué privé
+        $bindingFlags = [Reflection.BindingFlags]"GetField,NonPublic,Instance"
+         #On récupère la valeur du délégué privé
+        $EventField = $Object.GetField($EventName,$bindingFlags)
+        $Deleguate=$EventField.GetValue($this)
+        if ($Deleguate -ne $null)
+        {
+          $Logger.Debug("`t Dispose '$EventName' delegates") #<%REMOVE%> 
+           #Récupère la liste des 'méthodes' à appeler par l'event
+          $Deleguate.GetInvocationList()|
+          Foreach {
+             $Logger.Debug("`t Dispose $_") #<%REMOVE%>
+              #On supprime tous les abonnements  
+             $Event.RemoveEventHandler($this,$_)
+          }
+        }
+        else { $Logger.Debug("`t '$EventName' delegates is NULL.") }#<%REMOVE%> }  
+     } #RemoveAddedEventHandler             
+     
       if (($this.StatusMessageTextWriter -ne $null) -and  ($this.StatusMessageTextWriter -is [PSIonicTools.PSVerboseTextWriter]))
       {
-         #On libère que ce que l'on crée
+         #On ne libère que ce que l'on crée
         $Logger.Debug("`t ZipFile Dispose PSStream") #<%REMOVE%> 
         $this.StatusMessageTextWriter.Dispose()
         $this.StatusMessageTextWriter=$null               
       }   
        #Récupère le type de l'instance
       $MyType=$this.GetType()
-       #Récupère l'événement ZipError
-      $Event=$MyType.GetEvent('ZipError')
-       #Un event à un délégué privé
-      $bindingFlags = [Reflection.BindingFlags]"GetField,NonPublic,Instance"
-       #On récupère la valeur du délégué privé
-      $EventField = $MyType.GetField('ZipError',$bindingFlags)
-      $ZipErrorDeleguate=$EventField.GetValue($this)
-      if ($ZipErrorDeleguate -ne $null)
-      {
-         $Logger.Debug("`t Dispose delegates") #<%REMOVE%> 
-         #Récupère la liste des 'méthodes' à appeler
-         # Au moins un, peut être de notre type : $_.Target -is [PSIonicTools.PSZipError]
-        $ZipErrorDeleguate.GetInvocationList()|
-        Foreach {
-           $Logger.Debug("`t Dispose $_") #<%REMOVE%>
-           #On supprime tous les abonnements  
-          $Event.RemoveEventHandler($this,$_)
-        }
-      }
+
+      RemoveAddedEventHandler $MyType 'ZipError' 
+      RemoveAddedEventHandler $MyType 'ReadProgress'
+
        #On appelle la méthode Dispose() de l'instance en cours
       $Logger.Debug("Dispose $($this.Name)") #<%REMOVE%>               
       $this.Dispose()
@@ -639,8 +648,7 @@ Function Get-ZipFile {
       [string[]]$Name, 
         
         [Parameter(Position=0, Mandatory=$false, ParameterSetName="ReadOption")]
-        [ValidateScript({@($_.PsObject.TypeNames[0] -contains "PsionicReadOptions").Count -gt 0})]
-      $ReadOptions=$null,
+      [Ionic.Zip.ReadOptions]$ReadOptions=$null,
          
       [Ionic.Zip.SelfExtractorSaveOptions] $Options =$Script:DefaultSfxConfiguration,
   
@@ -683,44 +691,38 @@ Function Get-ZipFile {
         if ((TestZipArchive -Archive $FileName  -Password $Password -Passthru ) -ne $null)
         {   
 
-          try {
-            if ($PsCmdlet.ParameterSetName -eq "ManualOption")
-            { 
-              if ($isProgressID)
-              { 
-                $pbi=New-ProgressBarInformations $ProgressID "Read in progress "
-                $ReadOptions=New-ReadOptions $Encoding $pbi -Verbose:$isVerbose 
-              }
-              else
-              { $ReadOptions=New-ReadOptions $Encoding -Verbose:$isVerbose }
-         
-            }
-            elseif ($ReadOptions -eq $null)
-            {  $ReadOptions=New-ReadOptions -Verbose:$isVerbose  }              
-            
-            $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
-          } 
-          finally {
-            if ($ReadOptions -ne $null)
-            { $ReadOptions.Dispose() }              
-          }   
-
-          $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
-          $ZipFile.ZipErrorAction=$ZipErrorAction
-      
-          SetZipErrorHandler $ZipFile
-          AddMethods $ZipFile
-      
-          $ZipFile.SortEntriesBeforeSaving=$SortEntries
-          $ZipFile.TempFileFolder=$TempLocation 
-          $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
-          $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat
-          
-          if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
-          { SetZipFileEncryption $ZipFile $Encryption $Password }
-           #Les autres options sont renseignées avec les valeurs par défaut
-          ,$ZipFile
+        if ($PsCmdlet.ParameterSetName -eq "ManualOption")
+        { 
+          if ($isProgressID)
+          { 
+            $pbi=New-ProgressBarInformations $ProgressID "Read in progress "
+            $ReadOptions=New-ReadOptions $Encoding $pbi -Verbose:$isVerbose 
+          }
+          else
+          { $ReadOptions=New-ReadOptions $Encoding -Verbose:$isVerbose }
+     
         }
+        elseif ($ReadOptions -eq $null)
+        {  $ReadOptions=New-ReadOptions -Verbose:$isVerbose  }              
+        
+        $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
+
+        $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
+        $ZipFile.ZipErrorAction=$ZipErrorAction
+    
+        SetZipErrorHandler $ZipFile
+        AddMethods $ZipFile
+    
+        $ZipFile.SortEntriesBeforeSaving=$SortEntries
+        $ZipFile.TempFileFolder=$TempLocation 
+        $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
+        $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat
+        
+        if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
+        { SetZipFileEncryption $ZipFile $Encryption $Password }
+         #Les autres options sont renseignées avec les valeurs par défaut
+        ,$ZipFile
+      }
      }
      catch [System.Management.Automation.ItemNotFoundException],
            [System.Management.Automation.DriveNotFoundException],
@@ -1032,12 +1034,12 @@ Function Add-ZipEntry {
  [CmdletBinding()] 
  [OutputType([Ionic.Zip.ZipEntry])]
   param (
-     [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
+      [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
     $Object,
-       [ValidateNotNull()]
+      [ValidateNotNull()]
       [Parameter(Position=0,Mandatory=$true)]
     [Ionic.Zip.ZipFile] $ZipFile,
-     [Parameter(Position=1,Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
+      [Parameter(Position=1,Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
     [string] $Name, 
     [string] $DirectoryPath=[string]::Empty,
     [switch] $Passthru
@@ -1095,6 +1097,7 @@ Function GetArchivePath {
     { throw (New-Object PsionicTools.PsionicInvalidValueException($PsIonicMsgs.EmptyResolution))}
      
      #todo Resolve-PSpath
+     # vérfier si hklm:\*.* est traité
     foreach ($Item in $List|Get-Item) {
      if ($Item -is [System.IO.FileInfo])
 	 { 
@@ -1170,7 +1173,7 @@ Function Expand-ZipEntry {
         if ($XML)
         { $Data=$Result -as [XML] }
         else 
-        { $Data=$Result -as [String] } #todo sinon erreur ?
+        { $Data=$Result -as [String] }
         if ($AsHashTable) 
         { 
           $Logger.Debug("Add Hashtable") #<%REMOVE%>
@@ -1283,10 +1286,6 @@ Function Expand-ZipFile {
         $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
         throw (New-Object PSIonicTools.PsionicException($Msg,$_.Exception))
       }
-      finally {
-        if ($ReadOptions -ne $null)
-        { $ReadOptions.Dispose() }                
-      }                     
     }#ZipFileRead
     
     function ExtractEntries {
@@ -1635,8 +1634,7 @@ Function ConvertTo-Sfx {
   	 [Parameter(Position=1, Mandatory=$false)]
   	[Ionic.Zip.SelfExtractorSaveOptions] $SaveOptions =$Script:DefaultSfxConfiguration,
      [Parameter(Position=2, Mandatory=$false)]
-     [ValidateScript({@($_.PsObject.TypeNames[0] -contains "PsionicReadOptions").Count -gt 0})]
-    $ReadOptions=$null, 
+    [Ionic.Zip.ReadOptions]$ReadOptions=$null, 
 	 [Parameter(Position=3, Mandatory=$false)]
     [string] $Comment,
     [switch] $Passthru
@@ -1812,20 +1810,9 @@ function New-ReadOptions {
     $PSZipReadProgress.SetZipReadProgressHandler($ReadOptions)
    }   
 
-    #On laisse la possibilité de supprimer unitairement les ressources ?
-   $Logger.Debug("Add Dispose method on a ReadOption instance")  
-   Add-Member -Inputobject $ReadOptions -Force ScriptMethod Dispose{
-      if (($this.StatusMessageWriter -ne $null) -and  ($this.StatusMessageWriter -is [PSIonicTools.PSVerboseTextWriter]))
-      {
-         #On libère que ce que l'on crée
-        $Logger.Debug("`t ReadOptions dispose PSStream") #<%REMOVE%>  
-        $this.StatusMessageWriter.Dispose()
-        $this.StatusMessageWriter=$null               
-      }   
-   } 
-   #Si on passe utilise un paramètre de type [Ionic.Zip.ReadOptions]
-   #on perd le membre synthétique Dispose() 
-  $ReadOptions.PSObject.TypeNames.Insert(0,'PsionicReadOptions')
+   #Si on crée un ReadOptions c'est pour l'associer à un ZipFile ( cf. ::Read() )
+   #C'est donc l'instance du zip qui libérera les ressources
+
   $ReadOptions
 }#New-ReadOptions
 
@@ -1974,10 +1961,6 @@ Function OnRemovePsIonicZip {
        write-Error -Exception $_.Exception 
      }
    }
-#<DEFINE %DEBUG%>
-#todo  Stop-Log4Net vérifier si + module utilise une config différente ou une dll de version différente !!!
-#<UNDEF %DEBUG%>   
-  
 }#OnRemovePsIonicZip
  
 # Section  Initialization
