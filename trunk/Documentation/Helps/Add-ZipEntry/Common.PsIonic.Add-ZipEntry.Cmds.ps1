@@ -68,7 +68,7 @@ $ZipFile.Close()
 #Todo Byte[]
          
 			}
-			remarks = $Datas.GetZipFileExamplesRemarks4
+			remarks = $Datas.GetZipFileExamplesRemarks5
 			test = { . $args[0] }
 		}
 	)

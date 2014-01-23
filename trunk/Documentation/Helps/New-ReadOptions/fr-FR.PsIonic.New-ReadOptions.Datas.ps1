@@ -7,7 +7,8 @@ $Datas = @{
 	NewReadOptionsParametersProgressBarInformations = @"
 L'usage de ce paramètre crée un gestionnaire d'événements pour les opérations de lecture. 
 Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression. 
-"@ #TODO
+L'objet passé en paramètre est construit à l'aide de fonction New-ProgressBarInformations.
+"@
 	NewReadOptionsInputsDescription1 = ''
 	NewReadOptionsOutputsDescriptionIonicZipReadOptions = 'Ionic.Zip.ReadOptions'
 	NewReadOptionsNotes = @"
@@ -19,7 +20,12 @@ La présence du paramètre Verbose impose donc sa libération implicite via un a
 "@
 	NewReadOptionsExamplesRemarks1 = 'Cet exemple crée un objet option de lecture avec les valeurs par défaut.'
     NewReadOptionsExamplesRemarks2 = 'Cet exemple crée un objet option de lecture avec une valeur d''encodage par défaut et un PSVerboseTextWriter pour des affichages supplémentaires.'
-    NewReadOptionsExamplesRemarks3 = 'Cet exemple crée un objet option de lecture vec une valeur d''encodage par défaut et une barre de progression.'
+    NewReadOptionsExamplesRemarks3 = 'Cet exemple crée un objet option de lecture avec une valeur d''encodage par défaut et une barre de progression.'
+    NewReadOptionsExamplesRemarks4 = @"
+Cet exemple crée un objet option de lecture avec une valeur d''encodage par défaut et une barre de progression. 
+Puis on modifie directement sa proprièté StatusMessageWriter afin d'afficher le suivi de l'opération sur la console et plus sur le flux verbose. 
+"@
+     ExamplesRemarks
 }
 
 

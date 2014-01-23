@@ -1,8 +1,7 @@
-﻿#todo description à revoir
-# Compress-ZipFile command data
+﻿# Compress-ZipFile command data
 $Datas = @{
 	CompressZipFileSynopsis = 'Compresse une liste de fichiers dans une archive .ZIP.'
-	CompressZipFileDescription = 'Compresse une liste de fichiers dans une archive .ZIP.'
+	CompressZipFileDescription = 'Le cmdlet Compress-ZipFile compresse des fichiers et/ou des répertoires dans une archive compressée au format Zip.'
 	CompressZipFileSetsFile = 'jeux de paramètre 2'
 	CompressZipFileSetsSFX = 'jeux de paramètre 3'
 	CompressZipFileSetsUT = 'jeux de paramètre 4'
@@ -24,7 +23,7 @@ $Datas = @{
 	CompressZipFileParametersPassword = 'Mot de passe utilisé lors de la du cryptage. Nécessite de préciser un mode de cryptage (cf. le paramètre Encryption).'
 	CompressZipFileParametersRecurse = 'Parcourt récursif des arborescences (todo ?) '
 	CompressZipFileParametersSFX = 'Construit une archive compressée et autoextractible. La fonction génére un fichier .exe.'
-	CompressZipFileParametersSortEntries = 'Les entrées sont triées' #todo tjr utilisée ?
+	CompressZipFileParametersSortEntries = "Les entrées sont triées avant d'être enregistrées. Selon le nombre de fichiers traités, ce traitment peut ralentir l'opération de compression." 
 	CompressZipFileParametersSplit = @"
 Découpe le fichier d'archive par segment de la taille spécifiée. La syntaxe suivante 64Kb est possible et le nombre maximum de segment est de 99.
 Attention, il n'est pas possible d'enregistrer une archive splittée dans une archive autoextractible.
