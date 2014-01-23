@@ -435,24 +435,13 @@ Function Resolve-PSPath{
           else 
           {$PSPathInfo.ResolvedPSPath}
         }
-      
-      $Infos| 
-        Add-Member -Membertype Scriptmethod -Name asFileInfo {
-           New-object System.IO.FileInfo $this.ResolvedPSPath #todo Resolved ou Win32Path ?
-        }
-      
-      $Infos| 
-        Add-Member -Membertype Scriptmethod -Name FileNameTimeStamped {
-           param ($Date=(Get-Date),$Format='dd-MM-yyyy-HH-mm-ss')
-            $SF=$this.FileInfo 
-            "{0}\{1}-{2:$Format}{3}" -F $SF.Directory,$SF.BaseName,$Date,$SF.Extension
-        }
 
         #Un chemin tel que 'registry::hklm:\' est considéré comme candidate
         #on s'assure que sa construction est valide pour le provider   
        if ($Infos.ResolvedPSPath -ne $null)
        { 
          try {
+              #La validation doit se faire à l'aide du provider ciblé
              Push-Location $env:windir
              $Infos.isPSValid=$pathHelper.isValid($Infos.ResolvedPSPath) 
          } catch [System.Management.Automation.ProviderInvocationException]  {
@@ -473,6 +462,21 @@ Function Resolve-PSPath{
         #
         #Replace corrige un bug de PS
         $Infos.Win32PathName=$ursvPath -replace '^\\{2,}','\\' -replace '(?<!^)\\{2,}','\' 
+      }
+      
+       #Ajoute des méthodes au champ contenant le nom de fichier recherché
+      if($Infos.Win32PathName -ne $null)
+      {
+         $Infos.Win32PathName=$Infos.Win32PathName -as [PSobject]
+         
+         $Infos.Win32PathName|Add-Member -Membertype Scriptmethod -Name GetasFileInfo {
+            New-object System.IO.FileInfo $this
+         } -pass|
+         Add-Member -Membertype Scriptmethod -Name GetFileNameTimeStamped {
+          param ($Date=(Get-Date),$Format='dd-MM-yyyy-HH-mm-ss')
+           $SF=$this.GetasFileInfo()
+           "{0}\{1}-{2:$Format}{3}" -F $SF.Directory,$SF.BaseName,$Date,$SF.Extension
+         }
       }
       Write-Output $Infos
     }
