@@ -1,4 +1,4 @@
-#DemoInvokeErrorEvent
+ï»¿#DemoInvokeErrorEvent
 
 if ((Get-Module PsIonic) -eq $null) 
 {
@@ -16,35 +16,32 @@ Function Lock-File([string] $Path)
                                   [System.IO.FileShare]::None)
 }
 
-$temp=[System.IO.Path]::GetTempPath() -replace '\\$',''
-fsutil file createnew "$Temp\TestPsIonic\testfile1.txt" 1000 >$null
-fsutil file createnew "$Temp\TestPsIonic\testfile2.log" 500 >$null
-fsutil file createnew "$Temp\TestPsIonic\testfile3.txt" 20 >$null
-fsutil file createnew "$Temp\TestPsIonic\testfile4.dat" 3000 >$null
-fsutil file createnew "$Temp\TestPsIonic\testfile5.txt" 10000 >$null
+if (Test-Path $Env:Temp)
+{ $Temp=$Env:Temp }
+else
+{ $Temp=[System.IO.Path]::GetTempPath() -replace '\\$','' }
 
-$TestLockFiles= @(
- (Lock-File "$Temp\testfile5.txt"),
- (Lock-File "$Temp\testfile4.dat"),
- (Lock-File "$Temp\testfile1.txt")
- )
- 
-$directoryToZip = "$Temp\TestPsIonic"
-md $directoryToZip -ea SilentlyContinue > $null
-$directoryToZip = Get-Item $directoryToZip
+$TestDirectory="$Temp\TestPsIonic"
+Write-host "Test in $TestDirectory"
+md $TestDirectory -ea SilentlyContinue >$null
  
 $zipFileToCreate = "$Temp\ArchiveTest.zip"
-  try {
-    $zip =  new-object Ionic.Zip.ZipFile
-    $zip.StatusMessageTextWriter= [System.Console]::Out;
-    $ZH.SetZipErrorHandler($zip)
-    $Zip.ZipErrorAction = "InvokeErrorEvent"
+ 
+fsutil file createnew "$TestDirectory\testfile1.txt" 1000 >$null
+fsutil file createnew "$TestDirectory\testfile2.log" 500 >$null
+fsutil file createnew "$TestDirectory\testfile3.txt" 20 >$null
+fsutil file createnew "$TestDirectory\testfile4.dat" 3000 >$null
+fsutil file createnew "$TestDirectory\testfile5.txt" 10000 >$null
 
-    #ATTENTION crée une archive avec *.* en nom de répertoire todo test
-   [void]$Zip.AddDirectory($directoryToZip.FullName, $directoryToZip.Name)
-    [void]$Zip.Save($zipFileToCreate)
-  } 
-  Finally {
-   $Zip.Dispose()
-   $TestLockFiles|% {$_.Close()}
-  }
+$TestLockFiles= @(
+ (Lock-File "$TestDirectory\testfile5.txt"),
+ (Lock-File "$TestDirectory\testfile4.dat"),
+ (Lock-File "$TestDirectory\testfile1.txt")
+ )
+try {
+  Dir  "$TestDirectory\testfile?.txt"|
+   Compress-ZipFile -OutputName $zipFileToCreate -ZipErrorAction InvokeErrorEvent #-Verbose 
+} 
+Finally {
+ $TestLockFiles|% {$_.Close()}
+}
