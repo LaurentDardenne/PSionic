@@ -27,7 +27,7 @@
  TestisArchiveError=Erreur lors du test de l'archive {0} : {1}
  isNotZipArchiveWarning=Le fichier n'est pas une archive Zip : {0}
  
- ExcludedObject=Les objets de type type directory sont exclus.
+ ExcludedObject=L'object courant n'est pas une instance du type System.IO.FileInfo : {0}
  IsNullOrEmptyArchivePath=Le nom de fichier est vide ou ToString() à renvoyée une chaîne vide.
  EmptyResolution=La résolution ne trouve pas de fichier.
  
