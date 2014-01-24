@@ -25,7 +25,7 @@ Import-LocalizedData -BindingVariable PsIonicMsgs -Filename PsIonicLocalizedData
  )
 
 function New-Exception($Exception,$Message=$null) {
-#Crée et renvoi un objet exception pour l'utiliser avec $PSCmdlet.WriteError()
+#Crée et renvoi un objet exception
 
    #Le constructeur de la classe de l'exception trappée est inaccessible  
   if ($Exception.GetType().IsNotPublic)
@@ -728,7 +728,7 @@ Function Get-ZipFile {
            [System.Management.Automation.DriveNotFoundException],
            [PsionicTools.PsionicInvalidValueException]
      {
-        $Logger.Fatal($_.Exception.Message) #<%REMOVE%>
+        $Logger.Error($_.Exception.Message) #<%REMOVE%>
         Write-Error -Exception $_.Exception
      } 
    }#Foreach          
@@ -1073,7 +1073,7 @@ Function GetArchivePath {
 	if ($Object -is [System.IO.FileInfo])  
 	{ return $Object.FullName  }
     elseif ($Object -is [System.IO.DirectoryInfo])      
-    {  throw (New-Object PsionicTools.PsionicInvalidValueException($Object,$PsIonicMsgs.ExcludedObject)) }
+    {  throw (New-Object PsionicTools.PsionicInvalidValueException($Object,($PsIonicMsgs.ExcludedObject -F $Object))) }
 	elseif ($Object -is [String])
 	{ $ArchivePath = $Object  }
 	else
@@ -1105,10 +1105,7 @@ Function GetArchivePath {
         Write-Output $Item.FullName 
      }
      else
-     {
-       $Logger.Debug("Is not an instance of System.IO.FileInfo : $Item") #<%REMOVE%>
-       Write-Verbose "Is not an instance of System.IO.FileInfo : $Item"
-     } 
+     { throw (New-Object PsionicTools.PsionicInvalidValueException($Object,($PsIonicMsgs.ExcludedObject -F $Item))) } 
     }#foreach
 } #GetArchivePath
 
@@ -1264,7 +1261,7 @@ Function Expand-ZipFile {
     Function ZipFileRead {
      param( $FileName )
       try{
-        $Logger.Debug("Read the file $zipPath") #<%REMOVE%> 
+        $Logger.Debug("Read the file $FileName") #<%REMOVE%> 
         #$isEvent= $isProgressID -and ($ProgressPreference -ne 'SilentlyContinue')
         if ($isProgressID)
         { 
@@ -1346,23 +1343,22 @@ Function Expand-ZipFile {
          throw (New-Object PSIonicTools.PsionicException(($PsIonicMsgs.ZipArchiveBadPassword -F $zipPath),$_.Exception))
          
       }
-      #todo 
       #InvalidOperationException (spécialisée) : n'est pas une archive 
       #BadStateException (spécialisée): la construction du code est erroné, l'état du ZIP ne la permet pas 
       #BadCrcException (spécialisée)
-      #ZipException : générique
-      # unsupported encryption algorithm, unsupported compression method 
+      #ZipException : générique . Unsupported encryption algorithm, unsupported compression method 
       catch{
          $Msg=$PsIonicMsgs.ZipArchiveExtractError -F $zipPath, $_.Exception.Message
-         if (($_.Exception -is [Ionic.Zip.ZipException]) -and ($ZipFile.ExtractExistingFile -ne "Throw") ) 
+         $ex=New-Object PSIonicTools.PsionicException($Msg,$_.Exception)
+         if (($_.Exception.GetType().IsSubClassOf([Ionic.Zip.ZipException])) -and ($ZipFile.ExtractExistingFile -ne "Throw") ) 
          {
            $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
-           throw (New-Object PSIonicTools.PsionicException($Msg,$_.Exception))
+           throw $ex
          }
          else 
          {
            $Logger.Error($Msg) #<%REMOVE%>
-           Write-Error $Msg -Exception $_.Exception 
+           Write-Error -Exception $ex 
          }
       }
       finally{
