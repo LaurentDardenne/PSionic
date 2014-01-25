@@ -2,12 +2,17 @@
 $Datas = @{
 	ExpandZipFileSynopsis = 'Extrait des fichiers et/ou des répertoires depuis une archive compressée au format Zip.'
 	ExpandZipFileDescription = 'La cmdlet Expand-ZipFile permet d''extraire des fichiers et/ou des répertoires depuis une archive compressée au format Zip.'
-	ExpandZipFileSetsDefault = 'Jeu de paramètre 1'
-	ExpandZipFileSetsList = 'Jeu de paramètre 2'
+	ExpandZipFileSetsPath = 'Jeu de paramètre 1'
+	ExpandZipFileSetsLiteralPath = 'Jeu de paramètre 2'
     ExpandZipFileParametersPath = @"
 Nom du fichier Zip sous la forme d''un objet de type String ou System.IO.FileInfo.
 Dans le cas où c'est un type String et si celle-ci contient des jokers, alors la laison retardée (delayed script block) sur le paramètre -OutputPath 
-ne déclenchera qu'une seule, et pas pour chaque nom d'entrée résolue. En revanche la laison retardée sera déclenché pour chaque objet reçu. 
+ne se déclenchera qu'une seule, et pas pour chaque nom d'entrée résolue. En revanche la laison retardée sera déclenchée pour chaque objet reçu. 
+"@
+    ExpandZipFileParametersLiteralPath = @"
+Nom du fichier Zip sous la forme d''un objet de type String ou System.IO.FileInfo.
+Dans le cas où c'est un type String celui-ci ne doit pas contenir de jokers. La laison retardée (delayed script block) sur le paramètre -OutputPath 
+ne se déclenchera qu'une seule. En revanche la laison retardée sera déclenchée pour chaque objet reçu. 
 "@
 	ExpandZipFileParametersOutputPath = @"
 Répertoire de destination utilisé lors de l''extraction des données contenues dans une archive Zip.
@@ -23,7 +28,6 @@ Attention, il n’y a pas de contrôle de cohérence sur le contenu de la query,
     ExpandZipFileParametersPassword = 'Précise le mot de passe nécessaire à l''extraction d''une archive encryptée.'	
 	ExpandZipFileParametersEncoding = 'Type d''encodage de l''archive. L''utilisation de la valeur par défaut est recommandée.'
 	ExpandZipFileParametersInteractive = 'Passe les actions de la Cmdlet en mode interactif.'
-	ExpandZipFileParametersList = 'Liste les données contenues dans le fichier Zip.'
 	ExpandZipFileParametersFlatten = 'Les fichiers sont extraits sans arborescence.'
 	ExpandZipFileParametersProgressID = @"
 Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression.
@@ -34,9 +38,9 @@ Si le paramètre -Query est précisé, alors la barre de progression d'extractio
 	ExpandZipFileParametersPassthru = 'Emet dans le pipeline les entrées contenues dans l''archive zip. Attention, dans ce cas la libération des ressources par l''appel à la méthode Close() est à votre charge.'
     ExpandZipFileParametersCreate = 'Créer le répertoire de destination si celui-ci n''existe pas.'	
 	ExpandZipFileInputsDescription1 = 'En entrée des String ou des Fileinfo'
-	ExpandZipFileOutputsDescriptionDefault = 'Emet une instance de type ZipFile.'
+	ExpandZipFileOutputsDescriptionPath = 'Emet une instance de type ZipFile.'
 	ExpandZipFileOutputsDescriptionIonicZipZipFile = 'Emet une instance de type ZipFile.'
-	ExpandZipFileOutputsDescriptionList = 'Emet une ou des instance(s) de type ZipFile.'
+	ExpandZipFileOutputsDescriptionLieteralPath = 'Emet une ou des instance(s) de type ZipFile.'
 	ExpandZipFileOutputsDescriptionIonicZipZipEntry = 'Emet une instance de type ZipEntry.'
 	ExpandZipFileNotes = @"
 Une archive Zip peut donc théorie contenir plusieurs entrées dont chacune a un mode de compression différente des autres. 
@@ -45,8 +49,8 @@ Cette fonction suppose que le mot de passe et le type de cryptage est commun à 
 	ExpandZipFileExamplesRemarks1 = 'Extrait les données contenues dans une archive Zip vers un répertoire de destination.'
     ExpandZipFileExamplesRemarks2 = 'Extrait les données contenues dans des archives Zip vers un répertoire de destination.'
     ExpandZipFileExamplesRemarks3 = @"
- Extrait les données contenues dans une archive Zip vers un répertoire de destination.
- Seules les données correspondantes à la requête sont extraites, ici les fichiers dont l'extension est '.jpg'.
+Extrait les données contenues dans une archive Zip vers un répertoire de destination.
+Seules les données correspondantes à la requête sont extraites, ici les fichiers dont l'extension est '.jpg'.
  "@
     ExpandZipFileExamplesRemarks4 = @"
 Extrait les données contenues dans une archive Zip vers un répertoire de destination.
