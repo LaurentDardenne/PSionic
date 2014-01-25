@@ -83,9 +83,9 @@ Function Resolve-PSPath{
                #On peut donc l'utiliser pour un accès disque.
               isPSValid=$false
                
-               #Nombre de fichier si le globbing est détecté
+               #Liste des fichiers si le globbing est détecté. Les élements sont du type string.
                #Le globbing peut être détecté sans pour autant que le chemin renvoit de fichier
-              Count=0;
+              ResolvedPSFiles=@();
                
                #Texte de la dernière exception rencontrée (exceptions gérées uniquement)
                #On décharge l'appelant de la gestion des exceptions déclenchées dans ce traitement.
@@ -163,7 +163,6 @@ Function Resolve-PSPath{
  
    $pathHelper = $ExecutionContext.SessionState.Path
    
-   # $PSBoundParameters.ContainsKey("ErrorAction") -and $PSBoundParameters["ErrorAction"]
    $_EA= $null
    [void]$PSBoundParameters.TryGetValue('ErrorAction',[REF]$_EA)
    if ($_EA -ne $null) 
@@ -307,7 +306,7 @@ Function Resolve-PSPath{
        { $Infos.isItemExist= $ExecutionContext.InvokeProvider.Item.Exists(([Management.Automation.WildcardPattern]::Escape($Infos.ResolvedPSPath)),$false,$false) } 
        else 
        { $Infos.isItemExist= $ExecutionContext.InvokeProvider.Item.Exists($Infos.ResolvedPSPath,$false,$false) }
-       Write-Debug "L'item existe-til ? $($Infos.isItemExist)" #<%REMOVE%>
+       Write-Debug "L'item existe-t-il ? $($Infos.isItemExist)" #<%REMOVE%>
        if ($Infos.isItemExist)
        {
          try {
@@ -315,15 +314,13 @@ Function Resolve-PSPath{
            $provider=$null
             #renvoi le nom du provider et le fichier ou les fichiers en cas de globbing
            if ($isLiteral)
-           { $result=@($pathHelper.GetResolvedProviderPathFromPSPath(([Management.Automation.WildcardPattern]::Escape($Infos.ResolvedPSPath)),[ref]$provider)) }
+           { $Infos.ResolvedPSFiles=@($pathHelper.GetResolvedProviderPathFromPSPath(([Management.Automation.WildcardPattern]::Escape($Infos.ResolvedPSPath)),[ref]$provider)) }
            else 
-           { $result=@($pathHelper.GetResolvedProviderPathFromPSPath($Infos.ResolvedPSPath,[ref]$provider)) }
-           $Infos.Count=$Result.Count
-           Write-Debug ("Count={0} Result[0]={1} " -F $Infos.Count,$Result[0]) #<%REMOVE%> 
+           { $Infos.ResolvedPSFiles=@($pathHelper.GetResolvedProviderPathFromPSPath($Infos.ResolvedPSPath,[ref]$provider)) }
+           Write-Debug ("ResolvedPSFiles.Count={0}" -F $Infos.ResolvedPSFiles.Count) #<%REMOVE%> 
          } catch [System.Management.Automation.PSInvalidOperationException] {
              Write-Debug  "Exception GetResolvedProviderPathFromPSPath : $($_.Exception.GetType().Name)" #<%REMOVE%>
              #Sur la registry, '~' déclenche cette exception, car la propriété Home n'est pas renseigné.
-            $Infos.Count=0
          }
        }
      }  
@@ -430,10 +427,10 @@ Function Resolve-PSPath{
       
       $Infos| 
         Add-Member -Membertype Scriptmethod -Name GetFileName {
-          If ($PSPathInfo.ResolvedPSPath -eq $null) 
-          {$PSPathInfo.Name} 
+          If ($this.ResolvedPSPath -eq $null) 
+          {$this.Name} 
           else 
-          {$PSPathInfo.ResolvedPSPath}
+          {$this.ResolvedPSPath}
         }
 
         #Un chemin tel que 'registry::hklm:\' est considéré comme candidate

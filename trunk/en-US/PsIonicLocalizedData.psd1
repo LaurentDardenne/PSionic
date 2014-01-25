@@ -1,6 +1,8 @@
 ﻿ConvertFrom-StringData @'
  ParameterStringEmpty=The parameter '{0}' can not be an empty string.
  PathMustExist=The path does not exist : {0}
+ PathIsNotAFileSystemPath=Path is invalid for the FileSystem provider : {0}
+ PathIsNotAFile=The path is not a file : {0}  
  ValueNotSupported=The value '{0}' is not supported.
  TypeNotSupported={0}: The type '{1}' is not supported.
  CommentMaxValue=The value of 'Comment' parameter must not exceeds 32767 characters.
@@ -29,7 +31,7 @@
  
  ExcludedObject=The current object is not an instance of System.IO.FileInfo type : {0}
  IsNullOrEmptyArchivePath=The file name is empty or ToString() return an empty string.
- EmptyResolution=The resolution does not find file.
+ EmptyResolve=The resolve does not find file.
  
  SaveIsNotPermitted=You specified an EXE for a plain zip file.
  

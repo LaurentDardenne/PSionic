@@ -661,7 +661,8 @@ Function Get-ZipFile {
       
       [String] $Password,
       
-      [string] $TempLocation =[System.IO.Path]::GetTempPath(), #Possible Security Exception
+       #Possible Security Exception
+      [string] $TempLocation =[System.IO.Path]::GetTempPath(), 
       
         [Parameter(Position=0, Mandatory=$false, ParameterSetName="ManualOption")]
       [System.Text.Encoding] $Encoding,
@@ -785,7 +786,8 @@ Function Compress-ZipFile {
       [switch] $Passthru,
        [Parameter(ParameterSetName="SFX")]
       [switch] $SFX,
-      [switch] $NotTraverseReparsePoints, #todo à implémenter
+        #todo à implémenter
+      [switch] $NotTraverseReparsePoints, 
       [switch] $SortEntries,
         # N'est pas exclusif avec $WindowsTimeFormat 
       [switch] $UnixTimeFormat,    
@@ -1064,7 +1066,8 @@ Function GetArchivePath {
 # dans tous les autres cas on renvoie $null. 
   [CmdletBinding()] 
   param (
-    $Object
+    $Object,
+    [switch] $asLiteral
   )
 
     $Logger.Debug("GetArchivePath : récupération de l'objet ") #<%REMOVE%> 
@@ -1073,7 +1076,7 @@ Function GetArchivePath {
 	if ($Object -is [System.IO.FileInfo])  
 	{ return $Object.FullName  }
     elseif ($Object -is [System.IO.DirectoryInfo])      
-    {  throw (New-Object PsionicTools.PsionicInvalidValueException($Object,($PsIonicMsgs.ExcludedObject -F $Object))) }
+    {  throw (New-Object PsionicTools.PsionicInvalidValueException($Object,$PsIonicMsgs.ExcludedObject)) }
 	elseif ($Object -is [String])
 	{ $ArchivePath = $Object  }
 	else
@@ -1085,28 +1088,30 @@ Function GetArchivePath {
     {  throw (New-Object PsionicTools.PsionicInvalidValueException($Object,$PsIonicMsgs.IsNullOrEmptyArchivePath)) }
 
     $Logger.Debug("The file name is '$ArchivePath'") #<%REMOVE%>
-    try {
-      $List=@(Resolve-Path $ArchivePath -ea Stop)
-    } 
-    catch [System.Management.Automation.ActionPreferenceStopException] 
-    { 
-      throw $_.Exception #todo vérifier invocationInfo 
+    
+    if ($asLiteral)
+    { $Result=Resolve-PSPath -LiteralPath $ArchivePath -ea Stop }
+    else 
+    { $Result=Resolve-PSPath -Path $ArchivePath -ea Stop }
+    
+   
+    $isCandidat= $Result.isPSValid  -and
+                ($Result.LastError -eq $null)  -and 
+                (($Result.isFileSystemProvider -eq $true) -or ($Result.isUNC -eq $true)) -and 
+                $Result.isItemExist
+    if ($isCandidat -and -not $ExecutionContext.InvokeProvider.Item.IsContainer( ([Management.Automation.WildcardPattern]::Escape($Result.Win32PathName) ))) 
+    {
+      $Msg=$PsIonicMsgs.PathIsNotAFile -F $Result.GetFilename()
+      throw (New-Object PsionicTools.PsionicInvalidValueException($Result.Win32PathName,$Msg))
     }
 
-    if ($List.Count -eq 0) 
-    { throw (New-Object PsionicTools.PsionicInvalidValueException($PsIonicMsgs.EmptyResolution))}
-     
-     #todo Resolve-PSpath
-     # vérfier si hklm:\*.* est traité
-    foreach ($Item in $List|Get-Item) {
-     if ($Item -is [System.IO.FileInfo])
-	 { 
-        $Logger.Debug("return $($Item.FullName)") #<%REMOVE%> 
-        Write-Output $Item.FullName 
-     }
-     else
-     { throw (New-Object PsionicTools.PsionicInvalidValueException($Object,($PsIonicMsgs.ExcludedObject -F $Item))) } 
-    }#foreach
+    if ($Result.ResolvedPSFiles.Count -eq 0) 
+    { throw (New-Object PsionicTools.PsionicInvalidValueException($PsIonicMsgs.EmptyResolve))}
+    $Result.ResolvedPSFiles|
+     Foreach{ 
+        $Logger.Debug("return $_") #<%REMOVE%> 
+        Write-Output $_ 
+     }#foreach
 } #GetArchivePath
 
 Function Expand-ZipEntry { 
@@ -1208,25 +1213,27 @@ Function Expand-ZipEntry {
 
 Function Expand-ZipFile {
 # .ExternalHelp PsIonic-Help.xml         
-    [CmdletBinding(DefaultParameterSetName="Default")] 
-	[OutputType("Default",[Ionic.Zip.ZipFile])]
-    [OutputType("List",[Ionic.Zip.ZipEntry])]
+    [CmdletBinding(DefaultParameterSetName="Path")] 
 	param(
-		[parameter(Mandatory=$True,ValueFromPipeline=$True)]
-	  $Path, #Todo add LiterralPath
+		#Utilisé par des API PS et Win32
+       	[parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="Path")]
+	  $Path, 
+	
+	    [parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="LiteralPath")]
+	  $LiteralPath,  
  
+         #Utilisé par des API Win32 
         [ValidateNotNullOrEmpty()] 
-        [parameter(Position=0,Mandatory=$True, ValueFromPipelineByPropertyName=$True, ParameterSetName="Default")]
-	  [PSObject]$OutputPath,#Todo add $LiterralOutputPathLiterral
+        [parameter(Position=0,Mandatory=$True, ValueFromPipelineByPropertyName=$True)]
+	  [PSObject]$OutputPath,
 
-
-      	[Parameter(Position=1,Mandatory=$false, ParameterSetName="Default")]
+      	[Parameter(Position=1,Mandatory=$false)]
 	  [String] $Query,      
      
-        [Parameter(Mandatory=$false, ParameterSetName="Default")]
+        [Parameter(Mandatory=$false)]
 	  [String] $From, 
 
-        [Parameter(Mandatory=$false, ParameterSetName="Default")] 
+        [Parameter(Mandatory=$false)]
 		[ValidateScript( { IsValueSupported $_ -Extract } )] 
 	  [Ionic.Zip.ExtractExistingFileAction] $ExtractAction=[Ionic.Zip.ExtractExistingFileAction]::Throw,
 	
@@ -1234,17 +1241,12 @@ Function Expand-ZipFile {
 
       [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
         
-        [Parameter(ParameterSetName="Default")]
       [int]$ProgressID,
       
-       [Parameter(ParameterSetName="Default")]
       [switch] $Interactive, #todo à implémenter
        
-       [Parameter(Mandatory=$false, ParameterSetName="List")]
-      [switch] $List,
       [switch] $Flatten, 
       [switch] $Passthru,
-       [Parameter(Mandatory=$false, ParameterSetName="Default")]
       [switch] $Create
 	)
 
@@ -1253,8 +1255,8 @@ Function Expand-ZipFile {
     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
     $isProgressID=$PSBoundParameters.ContainsKey('ProgressID')   
     $Logger.Debug("Expand-ZipFile isProgressID=$isProgressID") #<%REMOVE%> 
-    $isDefaultParameterSetName= $PsCmdlet.ParameterSetName -eq 'Default'
-    
+    $isLiteral = $PsCmdlet.ParameterSetName -eq 'LiteralPath'
+     
      #to manage delayed script block 
     $PreviousOutputPath=$null
     
@@ -1293,51 +1295,46 @@ Function Expand-ZipFile {
           $Logger.Debug("Preserve the query by Add-Member") #<%REMOVE%>
           Add-Member -Input ($ZipFile -as[PSobject]) -MemberType NoteProperty -name Query -Value $Query 
         }
- 
-        if($List){
-            $ZipFile.Entries.GetEnumerator()|
-             Foreach {Write-Output $_}
-        } 
-        else{
-          if(-not [String]::IsNullOrEmpty($Password))
-          {  
-              $Logger.Debug("Set Password") #<%REMOVE%> 
-              $ZipFile.password = $Password  
-          }
-          
-          if (-not [String]::IsNullOrEmpty($Query)) 
-          {  
-              $Logger.Debug("Extraction using a query : $Query") #<%REMOVE%> 
-              if( [String]::IsNullOrEmpty($From)){
-                  $Logger.Debug("From = null") #<%REMOVE%>
-                  $Logger.Debug("OutputPath=$OutputPath") #<%REMOVE%>
-                  $Logger.Debug("ExtractAction=$ExtractAction") #<%REMOVE%>
-                  
-                   #bug null to string, use reflection
-                  [type[]] $private:ParameterTypesOfExtractSelectedEntriesMethod=[string],[string],[string],[Ionic.Zip.ExtractExistingFileAction]
-                  $ExtractSelectedEntriesMethod=[Ionic.Zip.ZipFile].GetMethod("ExtractSelectedEntries",$private:ParameterTypesOfExtractSelectedEntriesMethod)
-                  $params = @($Query,$Null,($OutputPath.ToString()),$ExtractAction)
-                  $ZipEntry=$ExtractSelectedEntriesMethod.Invoke($ZipFile, $params)  
-                  if ($Passthru){
-                    $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
-                    $isDispose=$false 
-                    return ,$ZipFile
-                  }                                            
-              }
-              else{
-                  $ZipFile.ExtractSelectedEntries($Query,$From,$OutputPath,$ExtractAction)  
-              }
-          }
-          else{ 
-              $Logger.Debug("Extraction without query.") #<%REMOVE%>
-              $ZipFile.ExtractAll($OutputPath,$ExtractAction)
-              if ($Passthru){
-                $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
-                $isDispose=$false 
-                return ,$ZipFile
-              }              
-          }#else isnotnul $Query
-       }#else
+
+        if(-not [String]::IsNullOrEmpty($Password))
+        {  
+            $Logger.Debug("Set Password") #<%REMOVE%> 
+            $ZipFile.password = $Password  
+        }
+        
+        if (-not [String]::IsNullOrEmpty($Query)) 
+        {  
+            $Logger.Debug("Extraction using a query : $Query") #<%REMOVE%> 
+            if( [String]::IsNullOrEmpty($From)){
+                $Logger.Debug("From = null") #<%REMOVE%>
+                $Logger.Debug("OutputPath=$OutputPath") #<%REMOVE%>
+                $Logger.Debug("ExtractAction=$ExtractAction") #<%REMOVE%>
+                
+                 #bug null to string, use reflection
+                [type[]] $private:ParameterTypesOfExtractSelectedEntriesMethod=[string],[string],[string],[Ionic.Zip.ExtractExistingFileAction]
+                $ExtractSelectedEntriesMethod=[Ionic.Zip.ZipFile].GetMethod("ExtractSelectedEntries",$private:ParameterTypesOfExtractSelectedEntriesMethod)
+                $params = @($Query,$Null,($OutputPath.ToString()),$ExtractAction)
+                $ZipEntry=$ExtractSelectedEntriesMethod.Invoke($ZipFile, $params)  
+                if ($Passthru){
+                  $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
+                  $isDispose=$false 
+                  return ,$ZipFile
+                }                                            
+            }
+            else{
+                $ZipFile.ExtractSelectedEntries($Query,$From,$OutputPath,$ExtractAction)  
+            }
+        }
+        else{ 
+            $Logger.Debug("Extraction without query.") #<%REMOVE%>
+            $ZipFile.ExtractAll($OutputPath,$ExtractAction)
+            if ($Passthru){
+              $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
+              $isDispose=$false 
+              return ,$ZipFile
+            }              
+        }#else isnotnul $Query
+
       }#try
       catch [Ionic.Zip.BadPasswordException]{
          throw (New-Object PSIonicTools.PsionicException(($PsIonicMsgs.ZipArchiveBadPassword -F $zipPath),$_.Exception))
@@ -1371,17 +1368,19 @@ Function Expand-ZipFile {
  Process{
   Foreach($Archive in $Path){
    try {
-      $zipPath = GetArchivePath $Archive
+      $zipPath = GetArchivePath $Archive -asLiteral:$isLiteral
        #Test à chaque itération car le delayed script block peut être demandé
        #On mémorise donc le répertoire de destination courant                        
-      if (($PreviousOutputPath -ne $OutputPath) -and $isDefaultParameterSetName) 
+      if ($PreviousOutputPath -ne $OutputPath) 
       {
          $Logger.DebugFormat("delayed script block detected Previous {0} New {1}", $PreviousOutputPath,$OutputPath)  #<%REMOVE%>
          $PreviousOutputPath=$OutputPath
          #Le chemin de destination doit être valide  
          #le chemin valide doit exister
          #Le chemin doit référencer le FileSystem
-        $PSPathInfo=Resolve-PSPath -Path $OutputPath 
+         #Comme on attend une seule entrée on n'interprète pas le globbing
+        $PSPathInfo=Resolve-PSPath -LiteralPath $OutputPath
+        $PSPathInfo|select * 
         if (-not $PSPathInfo.IsCandidate()) 
         {
            $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName())+ "`r`n$($PSPathInfo.LastError)"
@@ -1389,6 +1388,7 @@ Function Expand-ZipFile {
            Write-Error $Msg
            continue 
         }
+        $Logger.DebugFormat("validation de OutputPath=$($PSPathInfo.Win32PathName)")
         $OutputPath=$PSPathInfo.Win32PathName
         if ($Create)
         {
@@ -1441,6 +1441,247 @@ Function Expand-ZipFile {
   }#Foreach  
  } #process
 }#Expand-ZipFile
+
+# Function Read-ZipEntry {
+# # .ExternalHelp PsIonic-Help.xml         
+#     [CmdletBinding(DefaultParameterSetName="Default")] 
+# 	[OutputType("Default",[Ionic.Zip.ZipFile])]
+#     [OutputType("List",[Ionic.Zip.ZipEntry])]
+# 	param(
+# 		#Utilisé par des API PS et Win32
+#         [parameter(Mandatory=$True,ValueFromPipeline=$True)]
+# 	  $Path, 
+# 	
+#     	[parameter(Mandatory=$True,ValueFromPipeline=$True)]
+# 	  $LiteralPath,  
+#  
+#         #Utilisé par des API Win32 
+#         [ValidateNotNullOrEmpty()] 
+#         [parameter(Position=0,Mandatory=$True, ValueFromPipelineByPropertyName=$True,ParameterSetName="Default")]
+# 	  [PSObject]$OutputPath,
+# 
+#       	[Parameter(Position=1,Mandatory=$false, ParameterSetName="Default")]
+# 	  [String] $Query,      
+#      
+#         [Parameter(Mandatory=$false, ParameterSetName="Default")]
+# 	  [String] $From, 
+# 
+#         [Parameter(Mandatory=$false, ParameterSetName="Default")]
+# 		[ValidateScript( { IsValueSupported $_ -Extract } )] 
+# 	  [Ionic.Zip.ExtractExistingFileAction] $ExtractAction=[Ionic.Zip.ExtractExistingFileAction]::Throw,
+# 	
+# 	  [String] $Password,
+# 
+#       [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
+#         
+#         [Parameter(ParameterSetName="Default")]
+#       [int]$ProgressID,
+#       
+#        [Parameter(ParameterSetName="Default")]
+#       [switch] $Interactive, #todo à implémenter
+#        
+#        [Parameter(Mandatory=$false, ParameterSetName="List")]
+#       [switch] $List,
+#       [switch] $Flatten, 
+#       [switch] $Passthru,
+#        [Parameter(Mandatory=$false, ParameterSetName="Default")]
+#       [switch] $Create
+# 	)
+# 
+#   Begin{
+#     [Switch] $isVerbose= $null
+#     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
+#     $isProgressID=$PSBoundParameters.ContainsKey('ProgressID')   
+#     $Logger.Debug("Expand-ZipFile isProgressID=$isProgressID") #<%REMOVE%> 
+#     $isDefaultParameterSetName= $PsCmdlet.ParameterSetName -eq 'Default'
+#     
+#      #to manage delayed script block 
+#     $PreviousOutputPath=$null
+#     
+#     Function ZipFileRead {
+#      param( $FileName )
+#       try{
+#         $Logger.Debug("Read the file $FileName") #<%REMOVE%> 
+#         #$isEvent= $isProgressID -and ($ProgressPreference -ne 'SilentlyContinue')
+#         if ($isProgressID)
+#         { 
+#           $pbi=New-ProgressBarInformations $ProgressID "Read in progress "
+#           $ReadOptions=New-ReadOptions $Encoding $pbi -Verbose:$isVerbose 
+#         }
+#         else
+#         { $ReadOptions=New-ReadOptions $Encoding -Verbose:$isVerbose }          
+# 
+#         $ZipFile = [ZipFile]::Read($FileName,$ReadOptions)
+#         $ZipFile.FlattenFoldersOnExtract = $Flatten  
+#         
+#         AddMethods $ZipFile
+#         return ,$zipFile
+#       }
+#       catch {
+#         DisposeZip
+#         $Msg=$PsIonicMsgs.ZipArchiveReadError -F $FileName.ToString(), $_.Exception.Message
+#         $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
+#         throw (New-Object PSIonicTools.PsionicException($Msg,$_.Exception))
+#       }
+#     }#ZipFileRead
+#     
+#     function ExtractEntries {
+#       try{
+#         $isDispose=$true 
+#         if ($Passthru)
+#         { 
+#           $Logger.Debug("Preserve the query by Add-Member") #<%REMOVE%>
+#           Add-Member -Input ($ZipFile -as[PSobject]) -MemberType NoteProperty -name Query -Value $Query 
+#         }
+#  
+#         if($List){
+#             $ZipFile.Entries.GetEnumerator()|
+#              Foreach {Write-Output $_}
+#         } 
+#         else{
+#           if(-not [String]::IsNullOrEmpty($Password))
+#           {  
+#               $Logger.Debug("Set Password") #<%REMOVE%> 
+#               $ZipFile.password = $Password  
+#           }
+#           
+#           if (-not [String]::IsNullOrEmpty($Query)) 
+#           {  
+#               $Logger.Debug("Extraction using a query : $Query") #<%REMOVE%> 
+#               if( [String]::IsNullOrEmpty($From)){
+#                   $Logger.Debug("From = null") #<%REMOVE%>
+#                   $Logger.Debug("OutputPath=$OutputPath") #<%REMOVE%>
+#                   $Logger.Debug("ExtractAction=$ExtractAction") #<%REMOVE%>
+#                   
+#                    #bug null to string, use reflection
+#                   [type[]] $private:ParameterTypesOfExtractSelectedEntriesMethod=[string],[string],[string],[Ionic.Zip.ExtractExistingFileAction]
+#                   $ExtractSelectedEntriesMethod=[Ionic.Zip.ZipFile].GetMethod("ExtractSelectedEntries",$private:ParameterTypesOfExtractSelectedEntriesMethod)
+#                   $params = @($Query,$Null,($OutputPath.ToString()),$ExtractAction)
+#                   $ZipEntry=$ExtractSelectedEntriesMethod.Invoke($ZipFile, $params)  
+#                   if ($Passthru){
+#                     $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
+#                     $isDispose=$false 
+#                     return ,$ZipFile
+#                   }                                            
+#               }
+#               else{
+#                   $ZipFile.ExtractSelectedEntries($Query,$From,$OutputPath,$ExtractAction)  
+#               }
+#           }
+#           else{ 
+#               $Logger.Debug("Extraction without query.") #<%REMOVE%>
+#               $ZipFile.ExtractAll($OutputPath,$ExtractAction)
+#               if ($Passthru){
+#                 $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
+#                 $isDispose=$false 
+#                 return ,$ZipFile
+#               }              
+#           }#else isnotnul $Query
+#        }#else
+#       }#try
+#       catch [Ionic.Zip.BadPasswordException]{
+#          throw (New-Object PSIonicTools.PsionicException(($PsIonicMsgs.ZipArchiveBadPassword -F $zipPath),$_.Exception))
+#          
+#       }
+#       #InvalidOperationException (spécialisée) : n'est pas une archive 
+#       #BadStateException (spécialisée): la construction du code est erroné, l'état du ZIP ne la permet pas 
+#       #BadCrcException (spécialisée)
+#       #ZipException : générique . Unsupported encryption algorithm, unsupported compression method 
+#       catch{
+#          $Msg=$PsIonicMsgs.ZipArchiveExtractError -F $zipPath, $_.Exception.Message
+#          $ex=New-Object PSIonicTools.PsionicException($Msg,$_.Exception)
+#          if (($_.Exception.GetType().IsSubClassOf([Ionic.Zip.ZipException])) -and ($ZipFile.ExtractExistingFile -ne "Throw") ) 
+#          {
+#            $Logger.Fatal($Msg,$_.Exception) #<%REMOVE%>
+#            throw $ex
+#          }
+#          else 
+#          {
+#            $Logger.Error($Msg) #<%REMOVE%>
+#            Write-Error -Exception $ex 
+#          }
+#       }
+#       finally{
+#         if ($isDispose)
+#         { DisposeZip }
+#       }             
+#     }#ExtractEntries
+#  }#begin
+# 
+#  Process{
+#   Foreach($Archive in $Path){
+#    try {
+#       $zipPath = GetArchivePath $Archive #-asLiteral:$isLiteral todo
+#        #Test à chaque itération car le delayed script block peut être demandé
+#        #On mémorise donc le répertoire de destination courant                        
+#       if (($PreviousOutputPath -ne $OutputPath) -and $isDefaultParameterSetName) 
+#       {
+#          $Logger.DebugFormat("delayed script block detected Previous {0} New {1}", $PreviousOutputPath,$OutputPath)  #<%REMOVE%>
+#          $PreviousOutputPath=$OutputPath
+#          #Le chemin de destination doit être valide  
+#          #le chemin valide doit exister
+#          #Le chemin doit référencer le FileSystem
+#          #Comme on attend une seule entrée on n'interprète pas le globbing
+#         $PSPathInfo=Resolve-PSPath -LiteralPath $OutputPath 
+#         if (-not $PSPathInfo.IsCandidate()) 
+#         {
+#            $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName())+ "`r`n$($PSPathInfo.LastError)"
+#            $Logger.Error($Msg) #<%REMOVE%>
+#            Write-Error $Msg
+#            continue 
+#         }
+#         $OutputPath=$PSPathInfo.Win32PathName
+#         if ($Create)
+#         {
+#             #On le crée si possible
+#             if ($PSPathInfo.IsCandidateForCreation())
+#             {              
+#               $Logger.Debug("Create `$OutputPath directory") #<%REMOVE%>
+#               Md $OutputPath > $Null
+#             }
+#         }
+#         elseif (-not $PSPathInfo.IsCandidateForExtraction())
+#         { throw (New-Object PSIonicTools.PsionicException(($PsIonicMsgs.PathMustExist -F $OutputPath ))) }            
+#       }
+#               
+#       Foreach($FileName in $ZipPath){
+#         $Logger.Debug("Full path name : $FileName") #<%REMOVE%>
+#         $zipFile= ZipFileRead $FileName
+#         if ($ZipFile.Count -eq 0)
+#         {
+#           $Logger.Debug("No entries in the archive") #<%REMOVE%> 
+#           if ($Passthru)
+#           { return ,$ZipFile }
+#           else 
+#           { 
+#             DisposeZip 
+#             return $null            
+#           } 
+#         }
+#          #Extract ProgressBar
+#         try {
+#           $isEvent=$isProgressID -and ($ProgressPreference -ne 'SilentlyContinue')
+#           $Logger.Debug("zipfile is null: $($zipfile.psbase -eq $null)") #<%REMOVE%>
+#           if ($isEvent) 
+#           { $RegEvent=RegisterEventExtractProgress $zipFile $ProgressID }
+#           ExtractEntries
+#         }
+#         finally {
+#           if ($isEvent)
+#           { UnRegisterEvent $RegEvent  }
+#         }#finally
+#       }#foreach zipFile
+#     }
+#     catch [System.Management.Automation.ItemNotFoundException],
+#           [System.Management.Automation.DriveNotFoundException],
+#           [PsionicTools.PsionicInvalidValueException]
+#     {
+#       $Logger.Error($_.Exception.Message) #<%REMOVE%>
+#       Write-Error -Exception $_.Exception 
+#     }   
+#   }#Foreach  
+#  } #process
+# }#Read-ZipEntry
 
 Function TestZipArchive {
  [CmdletBinding()]         
@@ -1590,7 +1831,7 @@ Function Test-ZipFile{
     Process{
         Foreach($Archive in $Path){  
           try {  
-            $zipPath = GetArchivePath $Archive -Verbose:$isVerbose
+            $zipPath = GetArchivePath $Archive
             Foreach($ZipFile in $ZipPath){
                $Logger.Debug("Full path name : $zipFile ") #<%REMOVE%>
                if ($PsCmdlet.ParameterSetName -eq "File")
