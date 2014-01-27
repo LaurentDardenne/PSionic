@@ -60,6 +60,7 @@ Task RemoveConditionnal -Depend TestLocalizedData {
    Write-debug "Configuration=$Configuration"
    Dir "$PsIonicTrunk\PsIonic.psm1"|
     Foreach {
+      $Source=$_
       Write-Verbose "Parse :$($_.FullName)"
       $CurrentFileName="$PsIonicLivraison\PsIonic\$($_.Name)"
       Write-Warning "CurrentFileName=$CurrentFileName"
@@ -82,7 +83,7 @@ Task RemoveConditionnal -Depend TestLocalizedData {
          #Directive inexistante et on ne supprime pas les directives
          #sinon cela génére trop de différence en cas de comparaison de fichier
         Get-Content -Path $_ -ReadCount 0|
-         Remove-Conditionnal -ConditionnalsKeyWord 'NODEBUG' -Include|
+         Remove-Conditionnal -ConditionnalsKeyWord 'NODEBUG' -Include -Container $Source|
          Set-Content -Path $CurrentFileName -Force        
          
       }
@@ -127,7 +128,7 @@ Task BuildXmlHelp {
   ."$PSScripts\Helps\Helps.ps1"
   ."$PsIonicTools\HelpsAddon.ps1"
   
-  $Excludes='Set-Log4NETDebugLevel','Stop-ConsoleAppender','Start-ConsoleAppender','ConvertFrom-CliXml','ConvertTo-CliXml'
+  $Excludes='ConvertFrom-CliXml','ConvertTo-CliXml'
  
   #$Cultures | todo
   "fr-Fr" | 
