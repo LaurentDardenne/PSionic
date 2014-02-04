@@ -372,10 +372,7 @@ Function Resolve-PSPath{
                    ($this.isWildcard -eq $false)  
 #<DEFINE %DEBUG%>
           if (-not $result)
-          { 
-            $FileName=If ($this.ResolvedPSPath -eq $null) {$this.Name} else {$this.ResolvedPSPath} 
-            Write-Debug "Chemin invalide pour une utilisation sur le FileSystem : $FileName"  
-          } 
+          { Write-Debug "Chemin invalide pour une utilisation sur le FileSystem : $($this.GetFileName())" } 
 #<UNDEF %DEBUG%>          
           $result                    
         }  
@@ -391,14 +388,14 @@ Function Resolve-PSPath{
            if ($this.IsCandidate() -and $this.isItemExist)
            { 
              if ($this.asLiteral)
-             { $lpath=[Management.Automation.WildcardPattern]::Escape($this.ResolvedPSPath) }
+             { $lpath=[Management.Automation.WildcardPattern]::Escape($this.Win32PathName) }
              else 
-             { $lpath=$this.ResolvedPSPath }
+             { $lpath=$this.Win32PathName }
              $result=$ExecutionContext.InvokeProvider.Item.IsContainer($lpath)
            }
 #<DEFINE %DEBUG%>           
            If ($result) 
-           { Write-Debug "Valide en tant que répertoire d'extraction : $($this.ResolvedPSPath)" }
+           { Write-Debug "Valide en tant que répertoire d'extraction : $($this.Win32PathName)" }
 #<UNDEF %DEBUG%>             
            $result     
         }  
@@ -420,17 +417,19 @@ Function Resolve-PSPath{
            $result= ( $this.IsCandidate() -and ($this.isItemExist -eq $false) ) 
 #<DEFINE %DEBUG%>
            If ($result) 
-           { Write-Debug "Valide pour une création de répertoire d'extraction : $($this.ResolvedPSPath)"} 
+           { Write-Debug "Valide pour une création de répertoire d'extraction : $($this.Win32PathName)"} 
 #<UNDEF %DEBUG%>
            $result
         }  
       
       $Infos| 
         Add-Member -Membertype Scriptmethod -Name GetFileName {
-          If ($this.ResolvedPSPath -eq $null) 
-          {$this.Name} 
+          If ($this.Win32PathName -ne $null) 
+          {$this.Win32PathName } 
+          elseIf ($this.ResolvedPSPath -ne $null) 
+          {$this.ResolvedPSPath}          
           else 
-          {$this.ResolvedPSPath}
+          {$this.Name} 
         }
 
         #Un chemin tel que 'registry::hklm:\' est considéré comme candidate
