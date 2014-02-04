@@ -1,4 +1,6 @@
-﻿#PsIonic.psm1
+﻿#todo rechercher et modifier -SFX
+#todo revoir Read-Entry, nécessaire ?   
+#PsIonic.psm1
 # ------------------------------------------------------------------
 # Depend : Ionic.Zip.Dll
 # copyright (c) 2008 by Dino Chiesa
@@ -857,10 +859,10 @@ Function Compress-ZipFile {
       try {
         if ($SetLastModifiedProperty -ne $null)
         {
-            #on s'assure de référencer la variable Entry de la boucle
+            #on s'assure de référencer la variable ZipFile de la fonction
            $SbBounded=$MyInvocation.MyCommand.ScriptBlock.Module.NewBoundScriptBlock($SetLastModifiedProperty)
-           foreach($entry in $ZipFile)
-           { &$SbBounded }
+            #Le scriptblock doit itérer sur chaque entrée de l'archive
+           &$SbBounded 
         }
         $Logger.Debug("Save zip")  #<%REMOVE%>
         $ZipFile.Save()
