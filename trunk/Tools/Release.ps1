@@ -1,5 +1,6 @@
 ﻿#Release.ps1
 #Construit la version Release via Psake
+# La compilation doit se faire sous PS v3, ainsi on a les deux DLL pour les framework .Net v2 et 4.0
 
 Include "$PsIonicTools\Common.ps1"
 
@@ -27,8 +28,8 @@ $VerbosePreference='Continue'
 #Doc xml localisée
    Copy "$PsIonicTrunk\en-US\PsIonicLocalizedData.psd1" "$PsIonicLivraison\PsIonic\en-US\PsIonicLocalizedData.psd1" 
    Copy "$PsIonicTrunk\fr-FR\PsIonicLocalizedData.psd1" "$PsIonicLivraison\PsIonic\fr-FR\PsIonicLocalizedData.psd1" 
-#Demo
-   Copy "$PsIonicTrunk\Demo" "$PsIonicLivraison\PsIonic\Demo" -Recurse
+#Demos
+   Copy "$PsIonicTrunk\Demos" "$PsIonicLivraison\PsIonic\Demos" -Recurse
 
 #PS1mxl   
    Copy "$PsIonicTrunk\FormatData\PsIonic.ReadOptions.Format.ps1xml" "$PsIonicLivraison\PsIonic\FormatData\PsIonic.ReadOptions.Format.ps1xml"
