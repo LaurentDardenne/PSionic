@@ -26,7 +26,7 @@
 	examples = @(
 		@{
 			code = {
-$ZipFile=Get-Zipfile -Name C:\Temp\Test.zip
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
 $File=Get-Item C:\Temp\Test.ps1 
 Add-ZipEntry -Object $File -ZipFile $ZipFile
 $ZipFile.Close()
@@ -36,7 +36,7 @@ $ZipFile.Close()
 		}
 		@{
 			code = {
-$ZipFile=Get-Zipfile -Name C:\Temp\Test.zip
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
 Get-ChildItem *.txt|Add-ZipEntry -ZipFile $ZipFile
 $ZipFile.Close()
 			}
@@ -45,9 +45,9 @@ $ZipFile.Close()
 		}
 		@{
 			code = {
-$ZipFile=Get-Zipfile -Name C:\Temp\Test.zip
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
 [string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
-Add-ZipEntry -Object $Text -Name MyText -ZipFile $ZipFile
+Add-ZipEntry -Object $Text -Path MyText -ZipFile $ZipFile
 $ZipFile.Close()
 			}
 			remarks = $Datas.GetZipFileExamplesRemarks3
@@ -55,8 +55,8 @@ $ZipFile.Close()
 		}
 		@{
 			code = {
-$ZipFile=Get-Zipfile -Name C:\Temp\Test.zip         
-ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Name PSVersiontable -ZipFile $ZipFile
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
+ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Path PSVersiontable -ZipFile $ZipFile
 $ZipFile.Close()
          
 			}

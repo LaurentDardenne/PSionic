@@ -12,7 +12,7 @@
 		Encoding = $Datas.GetZipFileParametersEncoding
 		Encryption = $Datas.GetZipFileParametersEncryption
 		ProgressID = $Datas.GetZipFileParametersProgressID
-		Name = $Datas.GetZipFileParametersName
+		Path = $Datas.GetZipFileParametersPath
 		NotTraverseReparsePoints = $Datas.GetZipFileParametersNotTraverseReparsePoints
 		Options = $Datas.GetZipFileParametersOptions
 		Password = $Datas.GetZipFileParametersPassword
@@ -46,7 +46,7 @@
 
 			code = {
 $File=Dir C:\Temp\Test.ps1 
-$ZipFile=Get-Zipfile -Name Test.zip
+$ZipFile=Get-Zipfile -Path Test.zip
 Add-ZipEntry -Object $File -ZipFile $ZipFile
 $ZipFile.Save()
 $ZipFile.PSDispose()
@@ -58,7 +58,7 @@ $ZipFile.PSDispose()
 
 			code = {
 $File=Dir C:\Temp\Test.ps1 
-$ZipFile=Get-Zipfile -Name Test.zip
+$ZipFile=Get-Zipfile -Path Test.zip
 $ZipFile.Save()
 $ZipFile.PSDispose()
 			}
@@ -68,7 +68,7 @@ $ZipFile.PSDispose()
 		@{
 
 			code = {
-$Zip=Get-Zipfile -Name Test.zip
+$Zip=Get-Zipfile -Path Test.zip
  $ofs="`r`n"
  [string]$Text=Get-Content C:\Temp\Test.ps1
 Add-ZipEntry -Object $Text -EntryName MyText -ZipFile $ZipFile
@@ -82,7 +82,7 @@ $ZipFile.PSDispose()
 		@{
 
 			code = {
-$Zip=Get-Zipfile -Name Test.zip
+$Zip=Get-Zipfile -Path Test.zip
 Dir *.txt|Add-ZipEntry -ZipFile $Zip
          
 			}
