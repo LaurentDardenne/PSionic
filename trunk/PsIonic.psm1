@@ -1,5 +1,4 @@
-﻿#todo rechercher et modifier -SFX
-#todo revoir Read-Entry, nécessaire ?   
+﻿#todo revoir Read-Entry, nécessaire ?   
 #PsIonic.psm1
 # ------------------------------------------------------------------
 # Depend : Ionic.Zip.Dll
@@ -385,13 +384,13 @@ Function NewZipFile{
   if ($statusMessageWriter -ne $null) 
   {$Parameters +=$statusMessageWriter }
   
-  if ($Encoding -ne [ZipFile]::DefaultEncoding) 
+  if ($Encoding -ne $null -and $Encoding -ne [ZipFile]::DefaultEncoding) 
   {
      $Parameters +=$Encoding #[Ionic.Zip.ZipOption]::Always
   }
   #else #[Ionic.Zip.ZipOption]::Newer
-
-  New-Object ZipFile -ArgumentList $Parameters 
+  
+  New-Object Ionic.Zip.ZipFile -ArgumentList $Parameters 
 }#NewZipFile
 
 Function SetZipFileEncryption {
@@ -718,7 +717,7 @@ Function Get-ZipFile {
             $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
             $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat
             
-            if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
+            if (-not [string]::IsNullOrEmpty($Password) -or ($Encryption -ne "None"))
             { SetZipFileEncryption $ZipFile $Encryption $Password }
              #Les autres options sont renseignées avec les valeurs par défaut
             ,$ZipFile
@@ -744,48 +743,44 @@ Function Compress-ZipFile {
    [OutputType([Ionic.Zip.ZipFile])] #Emet une instance de ZipFile
 	param( 
        	[parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="Path")]
-	  $Path, 
-	
+	  $Path,
+
 	    [parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="LiteralPath")]
-	  $LiteralPath,        
+	  $LiteralPath,
 
         [ValidateNotNullOrEmpty()]
         [Parameter(Position=0, Mandatory=$true)]
       [string] $OutputName,
-      
+
         [ValidateScript( {$_ -ge 64Kb})]  
-      [Int] $Split= 0, 
+      [Int] $Split= 0,
 
       [Ionic.Zip.ZipErrorAction] $ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw,  
       
       [string] $Comment,
       
-      [Ionic.Zip.EncryptionAlgorithm] $Encryption="None", 
+      [Ionic.Zip.EncryptionAlgorithm] $Encryption=[Ionic.Zip.EncryptionAlgorithm]::None,
 
       [String] $Password,
 
        #Possible Security Exception
       [string] $TempLocation, 
       [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
-     
+
         [Alias('CP')]
-      [string]$CodePageIdentifier=[String]::Empty, 
-     
-         #todo à tester 
-         #exécute la modification de la propriété LastModified de chaque entrée 
-         #avant d'enregistrer la nouvelle archive
-         #La variable $Entry est accessible
+      [string]$CodePageIdentifier=[String]::Empty,
+
       [scriptblock]$SetLastModifiedProperty,
-      
+
       [switch] $Passthru,
         #todo à implémenter
-      [switch] $NotTraverseReparsePoints, 
+      [switch] $NotTraverseReparsePoints,
       [switch] $SortEntries,
         # N'est pas exclusif avec $WindowsTimeFormat 
-      [switch] $UnixTimeFormat,    
+      [switch] $UnixTimeFormat,
         # N'est pas exclusif avec $UnixTimeFormat
-      [switch] $WindowsTimeFormat, 
-      [switch] $Recurse 
+      [switch] $WindowsTimeFormat,
+      [switch] $Recurse
       )
  
 	Begin{
@@ -819,12 +814,14 @@ Function Compress-ZipFile {
       $ZipFile= NewZipFile $OutputName $PSVW $Encoding
       if ( $CodePageIdentifier -ne [String]::Empty)
       { 
-        $ZipFile.AlternateEncoding = System.Text.Encoding.GetEncoding($CodePageIdentifier)
-        $ZipFilezip.AlternateEncodingUsage = ZipOption.Always
+        $ZipFile.AlternateEncoding = [System.Text.Encoding]::GetEncoding($CodePageIdentifier)
+        $ZipFile.AlternateEncodingUsage = [Ionic.Zip.ZipOption]::Always
       }
       
        #Archive avec + de 0xffff entrées
       $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
+      if ($ZipErrorAction -eq $null)  #bug parseur v2 de la v3 ?
+      {$ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw}
       $ZipFile.ZipErrorAction=$ZipErrorAction
 
       SetZipErrorHandler $ZipFile
@@ -843,8 +840,10 @@ Function Compress-ZipFile {
       { $ZipFile.EmitTimesInWindowsFormatWhenSaving=$true }
       else
       { $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat }
-      
-      if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
+
+      if ($Encryption -eq $null)  #bug parseur v2 de la v3 ?
+      { $Encryption="None"}            
+      if (-not [string]::IsNullOrEmpty($Password) -or ($Encryption -ne "None"))
       { SetZipFileEncryption $ZipFile $Encryption $Password }
     
      #Les autres options sont renseignées avec les valeurs par défaut
@@ -887,29 +886,31 @@ Function Compress-SfxFile {
    [OutputType([System.IO.FileInfo])]  #Emet une instance de fichier .exe
 	param( 
        	[parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="Path")]
-	  $Path, 
-	
+	  $Path,
+
 	    [parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="LiteralPath")]
-	  $LiteralPath,        
+	  $LiteralPath,
 
         [ValidateNotNullOrEmpty()]
         [Parameter(Position=0, Mandatory=$true)]
       [string] $OutputName,
 
       [Ionic.Zip.SelfExtractorSaveOptions] $Options =$Script:DefaultSfxConfiguration,
-      
-      [Ionic.Zip.ZipErrorAction] $ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw,  
-      
+
+      [Ionic.Zip.ZipErrorAction] $ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw,
+
       [string] $Comment,
-      
-      [Ionic.Zip.EncryptionAlgorithm] $Encryption="None", 
+
+      [Ionic.Zip.EncryptionAlgorithm] $Encryption="None",
+
       [String] $Password,
        #Possible Security Exception
-      [string] $TempLocation =[System.IO.Path]::GetTempPath(), 
+      [string] $TempLocation,
+
       [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
-     
+
         [Alias('CP')]
-      [string]$CodePageIdentifier=[String]::Empty, 
+      [string]$CodePageIdentifier=[String]::Empty,
       
       [scriptblock]$SetLastModifiedProperty,
       
@@ -918,10 +919,10 @@ Function Compress-SfxFile {
       [switch] $NotTraverseReparsePoints, 
       [switch] $SortEntries,
         # N'est pas exclusif avec $WindowsTimeFormat 
-      [switch] $UnixTimeFormat,    
+      [switch] $UnixTimeFormat,
         # N'est pas exclusif avec $UnixTimeFormat
-      [switch] $WindowsTimeFormat, 
-      [switch] $Recurse 
+      [switch] $WindowsTimeFormat,
+      [switch] $Recurse
       )
  
 	Begin{
@@ -955,12 +956,14 @@ Function Compress-SfxFile {
       $ZipFile= NewZipFile $OutputName $PSVW $Encoding
       if ( $CodePageIdentifier -ne [String]::Empty)
       { 
-        $ZipFile.AlternateEncoding = System.Text.Encoding.GetEncoding($CodePageIdentifier)
-        $ZipFilezip.AlternateEncodingUsage = ZipOption.Always
+        $ZipFile.AlternateEncoding = [System.Text.Encoding]::GetEncoding($CodePageIdentifier)
+        $ZipFilezip.AlternateEncodingUsage = [Ionic.Zip.ZipOption]::Always
       }
       
        #Archive avec + de 0xffff entrées
       $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
+      if ($ZipErrorAction -eq $null)  #bug parseur v2 de la v3 ?
+      {$ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw}      
       $ZipFile.ZipErrorAction=$ZipErrorAction
 
       SetZipErrorHandler $ZipFile
@@ -980,7 +983,9 @@ Function Compress-SfxFile {
       else
       { $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat }
       
-      if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
+      if ($Encryption -eq $null)  #bug parseur v2 de la v3 ?
+      { $Encryption="None"}            
+      if (-not [string]::IsNullOrEmpty($Password) -or ($Encryption -ne "None"))
       { SetZipFileEncryption $ZipFile $Encryption $Password }
 
        #Configure la taille des segments 
