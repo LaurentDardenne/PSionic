@@ -2,7 +2,6 @@
 $Datas = @{
 	GetZipFileSynopsis = ''
 	GetZipFileDescription = ''
-	GetZipFileSetsFile = ''
 	GetZipFileSetsManualOption = ''
 	GetZipFileSetsReadOption = ''
 	GetZipFileParametersEncoding = ''
@@ -14,7 +13,6 @@ $Datas = @{
 	GetZipFileParametersPassword = ''
 	GetZipFileParametersReadOptions = ''
 	GetZipFileParametersSortEntries = ''
-	GetZipFileParametersSplit = ''
 	GetZipFileParametersTempLocation = ''
 	GetZipFileParametersUnixTimeFormat = ''
 	GetZipFileParametersWindowsTimeFormat = ''

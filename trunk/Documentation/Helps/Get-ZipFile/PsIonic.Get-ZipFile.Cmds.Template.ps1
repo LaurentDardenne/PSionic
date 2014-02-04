@@ -4,7 +4,6 @@
 	synopsis = $Datas.GetZipFileSynopsis
 	description = $Datas.GetZipFileDescription
 	sets = @{
-		File = $Datas.GetZipFileSetsFile
 		ManualOption = $Datas.GetZipFileSetsManualOption
 		ReadOption = $Datas.GetZipFileSetsReadOption
 	}
@@ -18,7 +17,6 @@
 		Password = $Datas.GetZipFileParametersPassword
 		ReadOptions = $Datas.GetZipFileParametersReadOptions
 		SortEntries = $Datas.GetZipFileParametersSortEntries
-		Split = $Datas.GetZipFileParametersSplit
 		TempLocation = $Datas.GetZipFileParametersTempLocation
 		UnixTimeFormat = $Datas.GetZipFileParametersUnixTimeFormat
 		WindowsTimeFormat = $Datas.GetZipFileParametersWindowsTimeFormat
