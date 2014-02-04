@@ -1,0 +1,31 @@
+﻿# Compress-SfxFile command data
+$Datas = @{
+	CompressSfxFileSynopsis = ''
+	CompressSfxFileDescription = ''
+	CompressSfxFileSetsLiteralPath = ''
+	CompressSfxFileSetsPath = ''
+	CompressSfxFileParametersCodePageIdentifier = ''
+	CompressSfxFileParametersComment = ''
+	CompressSfxFileParametersEncoding = ''
+	CompressSfxFileParametersEncryption = ''
+	CompressSfxFileParametersLiteralPath = ''
+	CompressSfxFileParametersNotTraverseReparsePoints = ''
+	CompressSfxFileParametersOptions = ''
+	CompressSfxFileParametersOutputName = ''
+    CompressSfxFileParametersPassthru = ''
+	CompressSfxFileParametersPassword = ''
+	CompressSfxFileParametersPath = ''
+	CompressSfxFileParametersRecurse = ''
+	CompressSfxFileParametersSetLastModifiedProperty = ''
+	CompressSfxFileParametersSortEntries = ''
+	CompressSfxFileParametersTempLocation = ''
+	CompressSfxFileParametersUnixTimeFormat = ''
+	CompressSfxFileParametersWindowsTimeFormat = ''
+	CompressSfxFileParametersZipErrorAction = ''
+	CompressSfxFileInputsDescription1 = ''
+	CompressSfxFileOutputsDescriptionSystemIOFileInfo = ''
+	CompressSfxFileNotes = ''
+	CompressSfxFileExamplesRemarks1 = ''
+}
+
+
