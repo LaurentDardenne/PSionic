@@ -3,7 +3,7 @@
 
 Include "$PsIonicTools\Common.ps1"
 
-Task default -Depends Delivery,CompilePsIonicTools,BuildXmlHelp
+Task default -Depends Delivery,CompilePsIonicTools,BuildXmlHelp,TestBomFinal
 
 Task Delivery -Depends Clean,RemoveConditionnal,FindTodo {
 #Recopie les fichiers dans le répertoire de livraison  
@@ -70,21 +70,21 @@ Task RemoveConditionnal -Depend TestLocalizedData {
          #Supprime les lignes de code de Debug et de test
          #On traite une directive et supprime les lignes demandées. 
          #On inclut les fichiers.       
-        Get-Content -Path $_ -ReadCount 0|
+        Get-Content -Path $_ -ReadCount 0 -Encoding UTF8|
          Remove-Conditionnal -ConditionnalsKeyWord 'DEBUG' -Include -Remove|
          Remove-Conditionnal -Clean| 
-         Set-Content -Path $CurrentFileName -Force        
+         Set-Content -Path $CurrentFileName -Force -Encoding UTF8        
       }
       else
       { 
          #On ne traite aucune directive et on ne supprime rien. 
-         #On inclut les fichiers.
+         #On inclut uniquement les fichiers.
         Write-Warning "`tTraite la configuration DEBUG" 
          #Directive inexistante et on ne supprime pas les directives
-         #sinon cela génére trop de différence en cas de comparaison de fichier
-        Get-Content -Path $_ -ReadCount 0|
+         #sinon cela génére trop de différences en cas de comparaison de fichier
+        Get-Content -Path $_ -ReadCount 0 -Encoding UTF8|
          Remove-Conditionnal -ConditionnalsKeyWord 'NODEBUG' -Include -Container $Source|
-         Set-Content -Path $CurrentFileName -Force        
+         Set-Content -Path $CurrentFileName -Force -Encoding UTF8       
          
       }
     }#foreach
@@ -166,26 +166,46 @@ Task Clean -Depends Init {
    } 
 } #Clean
 
-Task Init {
+Task Init -Depends TestBOM {
 #validation à minima des prérequis
 
  Write-host "Mode $Configuration"
   if (-not (Test-Path Variable:Psionic))
   {Throw "La variable Psionic n'est pas déclarée."}
-  "$PSScripts\Helps\Helps.ps1"| 
-    Foreach {
-     if (-Not (Test-Path $_))
-     {Throw "Fichier nécessaire introuvable :$_"}
+  
+  if (-Not (Test-Path "$PSScripts\Helps\Helps.ps1"))
+  {Throw "Fichier nécessaire introuvable :$_"}
     
-     Import-Module DTW.PS.FileSystem 
-     $InvalidFiles=@(&"$PsIonicTools\Test-BOMFile")
-     if ($InvalidFiles.Count -ne 0)
-     { 
-       $InvalidFiles |Format-List *
-       Throw "Des fichiers ne sont pas encodés en UTF8 ou sont codés BigEndian."
-     }  
-    }#foreach  
 } #Init
+
+Task TestBOM {
+#Validation de l'encodage des fichiers AVANT la génération  
+  
+  Write-Host "Validation de l'encodage des fichiers du répertoire : $PsionicTrunk"
+  
+  Import-Module DTW.PS.FileSystem -Global
+  
+  $InvalidFiles=@(&"$PsIonicTools\Test-BOMFile.ps1" $PsionicTrunk)
+  if ($InvalidFiles.Count -ne 0)
+  { 
+     $InvalidFiles |Format-List *
+     Throw "Des fichiers ne sont pas encodés en UTF8 ou sont codés BigEndian."
+  }
+} #TestBOM
+
+#On duplique la tâche, car PSake ne peut exécuter deux fois une même tâche
+Task TestBOMFinal {
+#Validation de l'encodage des fichiers APRES la génération  
+  
+  Write-Host "Validation de l'encodage des fichiers du répertoire : $PsionicLivraison"
+  $InvalidFiles=@(&"$PsIonicTools\Test-BOMFile.ps1" $PsionicLivraison)
+  if ($InvalidFiles.Count -ne 0)
+  { 
+     $InvalidFiles |Format-List *
+     Throw "Des fichiers ne sont pas encodés en UTF8 ou sont codés BigEndian."
+  }
+} #TestBOMFinal
+
 
 Task FindTodo {
 if ($Configuration -eq "Release") 
