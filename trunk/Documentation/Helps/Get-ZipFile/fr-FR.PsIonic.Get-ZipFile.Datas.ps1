@@ -12,7 +12,7 @@ L'usage de ce paramètre crée un gestionnaire d'événements pour les opératio
 Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression standardisé.
 Cette ID permet de distinguer la barre de progression interne des autres. Utilisez ce paramètre lorsque vous créez plus d'une barre de progression.
 "@
-	GetZipFileParametersName = 'Nom de fichier de l''archive'
+	GetZipFileParametersPath = 'Nom du ou des fichiers de l''archive à lire.'
 	GetZipFileParametersNotTraverseReparsePoints = 'Indique si les recherches traverseront les points d''analyse NTFS (Reparse Point), tels que les jonctions.'
 	GetZipFileParametersOptions = 'Options utilisées lors de la création d''un archive autoextractible (cf. New-ZipSfxOptions).'
 	GetZipFileParametersPassword = 'Précise le mot de passe nécessaire à la lecture d''une archive encryptée.'

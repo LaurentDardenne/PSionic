@@ -12,7 +12,7 @@
 		Encoding = $Datas.GetZipFileParametersEncoding
 		Encryption = $Datas.GetZipFileParametersEncryption
 		ProgressID = $Datas.GetZipFileParametersProgressID
-		Name = $Datas.GetZipFileParametersName
+		Path = $Datas.GetZipFileParametersPath
 		NotTraverseReparsePoints = $Datas.GetZipFileParametersNotTraverseReparsePoints
 		Options = $Datas.GetZipFileParametersOptions
 		Password = $Datas.GetZipFileParametersPassword
