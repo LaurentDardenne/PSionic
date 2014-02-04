@@ -640,20 +640,17 @@ function DisposeZip{
 
 Function Get-ZipFile {
 # .ExternalHelp PsIonic-Help.xml          
-   [CmdletBinding(DefaultParameterSetName="File")] 
-   [OutputType("File",[Ionic.Zip.ZipFile])] #Emet une instance de ZipFile
+   [CmdletBinding(DefaultParameterSetName="ManualOption")] 
+   [OutputType([Ionic.Zip.ZipFile])] #Emet une instance de ZipFile
 	param( 
         [ValidateNotNullOrEmpty()]
         [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
-      [string[]]$Name, 
+      [string[]]$Path, 
         
         [Parameter(Position=0, Mandatory=$false, ParameterSetName="ReadOption")]
       [Ionic.Zip.ReadOptions]$ReadOptions=$null,
          
       [Ionic.Zip.SelfExtractorSaveOptions] $Options =$Script:DefaultSfxConfiguration,
-  
-        [ValidateScript( {$_ -ge 64Kb})]  
-      [Int] $Split= 0, 
       
       [Ionic.Zip.ZipErrorAction] $ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw,  
       
@@ -686,71 +683,74 @@ Function Get-ZipFile {
   }
  
   process {  
-    Foreach($Current in $Name){
+    Foreach($Current in $Path){
      try {
-        $FileName = GetArchivePath $Current
-        if ((TestZipArchive -Archive $FileName  -Password $Password -Passthru ) -ne $null)
-        {   
-
-        if ($PsCmdlet.ParameterSetName -eq "ManualOption")
-        { 
-          if ($isProgressID)
-          { 
-            $pbi=New-ProgressBarInformations $ProgressID "Read in progress "
-            $ReadOptions=New-ReadOptions $Encoding $pbi -Verbose:$isVerbose 
-          }
-          else
-          { $ReadOptions=New-ReadOptions $Encoding -Verbose:$isVerbose }
-     
-        }
-        elseif ($ReadOptions -eq $null)
-        {  $ReadOptions=New-ReadOptions -Verbose:$isVerbose  }              
-        
-        $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
-
-        $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
-        $ZipFile.ZipErrorAction=$ZipErrorAction
+        foreach ($FileName in (GetArchivePath $Current)) 
+        {
+          if ((TestZipArchive -Archive $FileName  -Password $Password -Passthru ) -ne $null)
+          {   
+            if ($PsCmdlet.ParameterSetName -eq "ManualOption")
+            { 
+              if ($isProgressID)
+              { 
+                $pbi=New-ProgressBarInformations $ProgressID "Read in progress "
+                $ReadOptions=New-ReadOptions $Encoding $pbi -Verbose:$isVerbose 
+              }
+              else
+              { $ReadOptions=New-ReadOptions $Encoding -Verbose:$isVerbose }
+         
+            }
+            elseif ($ReadOptions -eq $null)
+            {  $ReadOptions=New-ReadOptions -Verbose:$isVerbose  }              
+            
+            $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
     
-        SetZipErrorHandler $ZipFile
-        AddMethods $ZipFile
-    
-        $ZipFile.SortEntriesBeforeSaving=$SortEntries
-        $ZipFile.TempFileFolder=$TempLocation 
-        $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
-        $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat
+            $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
+            $ZipFile.ZipErrorAction=$ZipErrorAction
         
-        if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
-        { SetZipFileEncryption $ZipFile $Encryption $Password }
-         #Les autres options sont renseignées avec les valeurs par défaut
-        ,$ZipFile
-      }
-     }
-     catch [System.Management.Automation.ItemNotFoundException],
-           [System.Management.Automation.DriveNotFoundException],
-           [PsionicTools.PsionicInvalidValueException]
-     {
-        $Logger.Error($_.Exception.Message) #<%REMOVE%>
-        Write-Error -Exception $_.Exception
-     } 
-   }#Foreach          
+            SetZipErrorHandler $ZipFile
+            AddMethods $ZipFile
+        
+            $ZipFile.SortEntriesBeforeSaving=$SortEntries
+            $ZipFile.TempFileFolder=$TempLocation 
+            $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
+            $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat
+            
+            if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
+            { SetZipFileEncryption $ZipFile $Encryption $Password }
+             #Les autres options sont renseignées avec les valeurs par défaut
+            ,$ZipFile
+         }
+        }#Foreach $FileName
+       }
+       catch [System.Management.Automation.ItemNotFoundException],
+             [System.Management.Automation.DriveNotFoundException],
+             [PsionicTools.PsionicInvalidValueException]
+       {
+          $Logger.Error($_.Exception.Message) #<%REMOVE%>
+          Write-Error -Exception $_.Exception
+       } 
+   }#Foreach $Path          
   } #Process
 } #Get-ZipFile
 
+#Duplication de code en 
+#lieu et place d'un proxy
 Function Compress-ZipFile {
 # .ExternalHelp PsIonic-Help.xml          
-   [CmdletBinding(DefaultParameterSetName="File")] 
-   [OutputType("File",[Ionic.Zip.ZipFile])] #Emet une instance de ZipFile
-   [OutputType("SFX",[System.IO.FileInfo])]  #Emet une instance de fichier .exe
+   [CmdletBinding(DefaultParameterSetName="Path")] 
+   [OutputType([Ionic.Zip.ZipFile])] #Emet une instance de ZipFile
 	param( 
-        [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
-      $Path,
+       	[parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="Path")]
+	  $Path, 
+	
+	    [parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="LiteralPath")]
+	  $LiteralPath,        
+
         [ValidateNotNullOrEmpty()]
         [Parameter(Position=0, Mandatory=$true)]
       [string] $OutputName,
-        [Parameter(Position=1, Mandatory=$false, ParameterSetName="SFX")]
-      [Ionic.Zip.SelfExtractorSaveOptions] $Options =$Script:DefaultSfxConfiguration,
       
-        [Parameter(ParameterSetName="File")]
         [ValidateScript( {$_ -ge 64Kb})]  
       [Int] $Split= 0, 
 
@@ -759,33 +759,23 @@ Function Compress-ZipFile {
       [string] $Comment,
       
       [Ionic.Zip.EncryptionAlgorithm] $Encryption="None", 
+
       [String] $Password,
-      [string] $TempLocation =[System.IO.Path]::GetTempPath(), #Possible Security Exception
+
+       #Possible Security Exception
+      [string] $TempLocation, 
       [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
      
-         [Alias('CP')]
-       [string]$CodePageIdentifier=[String]::Empty, 
+        [Alias('CP')]
+      [string]$CodePageIdentifier=[String]::Empty, 
      
-        [Parameter(ParameterSetName="UT")]
-        [Alias('UT')]
-      [Datetime] $UniformTimestamp,
-        
-        [Parameter(ParameterSetName="UTnow")]
-        [Alias('UTnow')]
-      [switch] $NowUniformTimestamp,
-        
-        [Parameter(ParameterSetName="UTnewest")]
-        [Alias('UTnewest')]
-      [switch] $NewUniformTimestamp,
-        
-        [Parameter(ParameterSetName="UToldest")]
-        [Alias('UToldest')]      
-      [switch] $OldUniformTimestamp,
+         #todo à tester 
+         #exécute la modification de la propriété LastModified de chaque entrée 
+         #avant d'enregistrer la nouvelle archive
+         #La variable $Entry est accessible
+      [scriptblock]$SetLastModifiedProperty,
       
-        [Parameter(ParameterSetName="File")]
       [switch] $Passthru,
-       [Parameter(ParameterSetName="SFX")]
-      [switch] $SFX,
         #todo à implémenter
       [switch] $NotTraverseReparsePoints, 
       [switch] $SortEntries,
@@ -797,46 +787,12 @@ Function Compress-ZipFile {
       )
  
 	Begin{
-       function SetUniformTimestamp {
-          if ($fixedTimestamp -ne $null)
-          {
-            if ($PSBoundParameters.ContainsKey('UTnewest'))
-            {
-               $fixedTimestamp = New-Object System.DateTime(1601,1,1,0,0,0)
-               foreach($entry in $ZipFile)
-               {
-                 if ($entry.LastModified -gt $fixedTimestamp)
-                 { $fixedTimestamp = $entry.LastModified }
-               }
-            }
-            elseif ($PSBoundParameters.ContainsKey('UToldest'))
-            {
-              foreach($entry in $ZipFile)
-              {
-                if ($entry.LastModified -lt $fixedTimestamp)
-                { $fixedTimestamp = $entry.LastModified }
-              }   
-            }
-          }
-          if ($fixedTimestamp -ne $null)
-          {
-            foreach($entry in $zipFile)
-            { $entry.LastModified = $fixedTimestamp }
-          }         
-       }#SetUniformTimestamp   
-	   
       [Switch] $isVerbose= $null
       [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
       $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>          
           
       if ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
       { Throw (New-Object PSIonicTools.PsionicException($PsIonicMsgs.CommentMaxValue)) }
-      
-      $fixedTimestamp=$null
-      If ($PSBoundParameters.ContainsKey('UTnow'))
-      { $fixedTimestamp = [System.DateTime]::UtcNow }
-      elseif ($PSBoundParameters.ContainsKey('UT'))
-      { $fixedTimestamp=$UniformTimestamp }
 
       $psZipErrorHandler=$null
       $PSVW=$null
@@ -875,7 +831,8 @@ Function Compress-ZipFile {
       $ZipFile.Name=$OutputName
       $ZipFile.Comment=$Comment
       $ZipFile.SortEntriesBeforeSaving=$SortEntries
-      $ZipFile.TempFileFolder=$TempLocation 
+      if ($PSBoundParameters.ContainsKey('TempLocation'))
+      { $ZipFile.TempFileFolder=$TempLocation } 
 
       $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
        #Par défaut sauvegarde au format de date Windows
@@ -888,17 +845,6 @@ Function Compress-ZipFile {
       if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
       { SetZipFileEncryption $ZipFile $Encryption $Password }
     
-       #Exclusion mutuelle via les attributs
-      $isSplittedZip = $PSBoundParameters.ContainsKey('Split')
-      $isSFX = $PsCmdlet.ParameterSetName -eq "Sfx" 
-       
-      $Logger.Debug("isSplittedZip =$isSplittedZip")  #<%REMOVE%> 
-      $Logger.Debug("isSFXp =$isSFX")  #<%REMOVE%> 
-       #Configure la taille des segments 
-      If ($isSplittedZip)
-      { $ZipFile.MaxOutputSegmentSize=$Split }
-      else
-      { $ZipFile.MaxOutputSegmentSize= 0 }    
      #Les autres options sont renseignées avec les valeurs par défaut
 	} 
 
@@ -909,33 +855,167 @@ Function Compress-ZipFile {
     
     End {
       try {
-        SetUniformTimestamp
-        if ($PsCmdlet.ParameterSetName -eq "Sfx")
-        {  SaveSFXFile $ZipFile $Options  }
-        else 
+        if ($SetLastModifiedProperty -ne $null)
         {
-          $Logger.Debug("Save zip")  #<%REMOVE%>
-          $ZipFile.Save()
+            #on s'assure de référencer la variable Entry de la boucle
+           $SbBounded=$MyInvocation.MyCommand.ScriptBlock.Module.NewBoundScriptBlock($SetLastModifiedProperty)
+           foreach($entry in $ZipFile)
+           { &$SbBounded }
         }
+        $Logger.Debug("Save zip")  #<%REMOVE%>
+        $ZipFile.Save()
       } 
       catch [System.IO.IOException] 
       {
-        $Logger.Fatal("Save",$_.Exception) #<%REMOVE%>
+        $Logger.Fatal("Save zip",$_.Exception) #<%REMOVE%>
         DisposeZip
         Throw (New-Object PSIonicTools.PsionicException($_,$_.Exception))
       }
       
       if ($Passthru)
-      { 
-        if ($PsCmdlet.ParameterSetName -eq "Sfx")
-        {Get-Item (GetSFXname $ZipFile.Name)} # Renvoi un fichier .exe
-        else 
-        { ,$ZipFile } # Renvoi une instance de ZipFile, on connait son nom via Name
-      }
+      { ,$ZipFile } # Renvoi une instance de ZipFile, on connait son nom via Name
       else  
       { DisposeZip }
     }#End
 } #Compress-ZipFile
+
+Function Compress-SfxFile {
+# .ExternalHelp PsIonic-Help.xml          
+   [CmdletBinding(DefaultParameterSetName="Path")] 
+   [OutputType([System.IO.FileInfo])]  #Emet une instance de fichier .exe
+	param( 
+       	[parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="Path")]
+	  $Path, 
+	
+	    [parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="LiteralPath")]
+	  $LiteralPath,        
+
+        [ValidateNotNullOrEmpty()]
+        [Parameter(Position=0, Mandatory=$true)]
+      [string] $OutputName,
+
+      [Ionic.Zip.SelfExtractorSaveOptions] $Options =$Script:DefaultSfxConfiguration,
+      
+      [Ionic.Zip.ZipErrorAction] $ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw,  
+      
+      [string] $Comment,
+      
+      [Ionic.Zip.EncryptionAlgorithm] $Encryption="None", 
+      [String] $Password,
+       #Possible Security Exception
+      [string] $TempLocation =[System.IO.Path]::GetTempPath(), 
+      [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
+     
+        [Alias('CP')]
+      [string]$CodePageIdentifier=[String]::Empty, 
+      
+      [scriptblock]$SetLastModifiedProperty,
+      
+      [switch] $Passthru,
+        #todo à implémenter
+      [switch] $NotTraverseReparsePoints, 
+      [switch] $SortEntries,
+        # N'est pas exclusif avec $WindowsTimeFormat 
+      [switch] $UnixTimeFormat,    
+        # N'est pas exclusif avec $UnixTimeFormat
+      [switch] $WindowsTimeFormat, 
+      [switch] $Recurse 
+      )
+ 
+	Begin{
+      [Switch] $isVerbose= $null
+      [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
+      $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>          
+          
+      if ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
+      { Throw (New-Object PSIonicTools.PsionicException($PsIonicMsgs.CommentMaxValue)) }
+
+      $psZipErrorHandler=$null
+      $PSVW=$null
+      if ($isverbose)
+      {
+          $Logger.Debug("Configure PSVerboseTextWriter") #<%REMOVE%>
+           #On récupère le contexte d'exécution de la session, pas celui du module. 
+          $Context=$PSCmdlet.SessionState.PSVariable.Get("ExecutionContext").Value            
+          $PSVW=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
+      }
+       #Validation du chemin qui doit référencer le FileSystem
+      $PSPathInfo=Resolve-PSPath -Path $OutputName 
+      if (-not $PSPathInfo.IsCandidate()) 
+      {
+         $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
+         $Logger.Error($Msg) #<%REMOVE%>
+         Write-Error -Exception (New-Object PSIonicTools.PsionicException($Msg))  
+         continue 
+      }
+      $OutputName=$PSPathInfo.Win32PathName
+
+      $ZipFile= NewZipFile $OutputName $PSVW $Encoding
+      if ( $CodePageIdentifier -ne [String]::Empty)
+      { 
+        $ZipFile.AlternateEncoding = System.Text.Encoding.GetEncoding($CodePageIdentifier)
+        $ZipFilezip.AlternateEncodingUsage = ZipOption.Always
+      }
+      
+       #Archive avec + de 0xffff entrées
+      $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
+      $ZipFile.ZipErrorAction=$ZipErrorAction
+
+      SetZipErrorHandler $ZipFile
+      AddMethods $ZipFile
+        
+      $ZipFile.Name=$OutputName
+      $ZipFile.Comment=$Comment
+      $ZipFile.SortEntriesBeforeSaving=$SortEntries
+      if ($PSBoundParameters.ContainsKey('TempLocation'))
+      { $ZipFile.TempFileFolder=$TempLocation } 
+
+      $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
+       #Par défaut sauvegarde au format de date Windows
+       #WindowsTimeFormat existe pour porter la cas WindowsTimeFormat:$False 
+      if ( -not $PSBoundParameters.ContainsKey('UnixTimeFormat') -and -not $PSBoundParameters.ContainsKey('WindowsTimeFormat') )
+      { $ZipFile.EmitTimesInWindowsFormatWhenSaving=$true }
+      else
+      { $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat }
+      
+      if (-not [string]::IsNullOrEmpty($Password) -or ($DataEncryption -ne "None"))
+      { SetZipFileEncryption $ZipFile $Encryption $Password }
+
+       #Configure la taille des segments 
+      $ZipFile.MaxOutputSegmentSize=$Split
+     #Les autres options sont renseignées avec les valeurs par défaut
+	} 
+
+	Process{   
+      GetObjectByType $Path -Recurse:$Recurse|
+       Add-ZipEntry $ZipFile
+	} #Process
+    
+    End {
+      try {
+        if ($SetLastModifiedProperty -ne $null)
+        {
+            #on s'assure de référencer la variable Entry de la boucle
+           $SbBounded=$MyInvocation.MyCommand.ScriptBlock.Module.NewBoundScriptBlock($SetLastModifiedProperty)
+           foreach($entry in $ZipFile)
+           { &$SbBounded } 
+        }
+        $Logger.Debug("Save sfx zip")  #<%REMOVE%>
+        SaveSFXFile $ZipFile $Options 
+      } 
+      catch [System.IO.IOException] 
+      {
+        $Logger.Fatal("Save Sfx",$_.Exception) #<%REMOVE%>
+        DisposeZip
+        Throw (New-Object PSIonicTools.PsionicException($_,$_.Exception))
+      }
+      
+      if ($Passthru)
+      { Get-Item (GetSFXname $ZipFile.Name) } # Renvoi un fichier .exe
+      else  
+      { DisposeZip }
+    }#End
+} #Compress-SfxFile
 
 Function AddEntry {
    param (
@@ -1094,25 +1174,35 @@ Function GetArchivePath {
     else 
     { $Result=Resolve-PSPath -Path $ArchivePath -ea Stop }
     
-   
-    $isCandidat= $Result.isPSValid  -and
-                ($Result.LastError -eq $null)  -and 
-                (($Result.isFileSystemProvider -eq $true) -or ($Result.isUNC -eq $true)) -and 
-                $Result.isItemExist
-    if ($isCandidat -and -not $ExecutionContext.InvokeProvider.Item.IsContainer( ([Management.Automation.WildcardPattern]::Escape($Result.Win32PathName) ))) 
+    $isCandidat=($Result.LastError -eq $null)  -and 
+                (($Result.isFileSystemProvider -eq $true) -or ($Result.isUNC -eq $true))
+    $Logger.Debug("isCandidat=$isCandidat") #<%REMOVE%>
+    $TargetFile=$Result.GetFilename()
+    
+    if (-not $isCandidat) 
     {
-      $Msg=$PsIonicMsgs.PathIsNotAFile -F $Result.GetFilename()
-      throw (New-Object PsionicTools.PsionicInvalidValueException($Result.Win32PathName,$Msg))
+      $Msg=$PsIonicMsgs.PathIsNotAFile -F $TargetFile
+      throw (New-Object PsionicTools.PsionicInvalidValueException($TargetFile,$Msg))
     }
 
     if ($Result.ResolvedPSFiles.Count -eq 0) 
-    { throw (New-Object PsionicTools.PsionicInvalidValueException($PsIonicMsgs.EmptyResolve))}
-    $Result.ResolvedPSFiles|
-     Foreach{ 
-        $Logger.Debug("return $_") #<%REMOVE%> 
-        Write-Output $_ 
-     }#foreach
+    { throw (New-Object PsionicTools.PsionicInvalidValueException($TargetFile,$PsIonicMsgs.EmptyResolve))}
+    
+    try {
+      Push-Location $env:windir
+       #on reçoit au moins un fichier
+       #on peut recevoir des fichiers et des répertoires, ex: 'C:\temp\*'
+      $Result.ResolvedPSFiles|
+       Where {-not $ExecutionContext.InvokeProvider.Item.IsContainer($_)}|
+       Foreach{ 
+         $Logger.Debug("return $_") #<%REMOVE%> 
+         Write-Output $_ 
+       }#foreach
+    }finally {
+      Pop-Location
+    }    
 } #GetArchivePath
+
 
 Function Expand-ZipEntry { 
 # .ExternalHelp PsIonic-Help.xml         
@@ -1380,7 +1470,6 @@ Function Expand-ZipFile {
          #Le chemin doit référencer le FileSystem
          #Comme on attend une seule entrée on n'interprète pas le globbing
         $PSPathInfo=Resolve-PSPath -LiteralPath $OutputPath
-        $PSPathInfo|select * 
         if (-not $PSPathInfo.IsCandidate()) 
         {
            $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName())+ "`r`n$($PSPathInfo.LastError)"
@@ -1879,7 +1968,11 @@ Function ConvertTo-Sfx {
  begin {
    if ($ReadOptions -eq $null)
    { $ReadOptions = New-Object Ionic.Zip.ReadOptions}
+
+   if ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
+   { Throw (New-Object PSIonicTools.PsionicException($PsIonicMsgs.CommentMaxValue)) }
  }
+
  process {  
   try{
       $zipFile = [Ionic.Zip.ZipFile]::Read($Path, $ReadOptions)
@@ -1964,7 +2057,7 @@ Function New-ZipSfxOptions {
                           RemoveUnpackedFilesAfterExecute=$Remove;
                           Quiet=$Quiet;
                          } 
-     #Renseigne chaque membres de type string  
+     #Renseigne chaque membre de type string  
      # à partir du paramètre associé s'il n'est pas vide.
 	if ($ExtractDirectory -ne [string]::Empty)
     { $SfxOptions.DefaultExtractDirectory =$ExtractDirectory }  
@@ -2225,6 +2318,7 @@ Set-Alias -name sca            -value Stop-ConsoleAppender
 #<UNDEF %DEBUG%> 
 
 Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
+                                                        Compress-SfxFile,
                                                         ConvertTo-Sfx,
                                                         Add-ZipEntry,
                                                         Expand-ZipFile,
