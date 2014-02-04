@@ -205,7 +205,7 @@ function Get-Log4NetRootLogger {
      [ValidateScript( {Test-IsImplementingInterface $_ "log4net.Core.ILoggerWrapper"} )]
      [Parameter(Position=0,
                 Mandatory=$True,
-                ValueFromPipelineByPropertyName = $true,  #todo impleter Process ou le pipe est inutile
+                ValueFromPipelineByPropertyName = $true, 
                 ParameterSetName="Logger")]
     $Logger, 
      [Parameter(ParameterSetName="Default")]
