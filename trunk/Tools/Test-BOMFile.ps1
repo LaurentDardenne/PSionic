@@ -1,11 +1,15 @@
-﻿function ql{ $args }
+﻿param (
+ [Parameter(mandatory=$true)]
+ $Path
+)
+function ql{ $args }
 
 $Params=@{
  Include=$(ql *.ps1,*.psm1,*.psd1,*.ps1xml,*.xml,*.txt);
  Exclude=$(ql *.bak,*.exe,*.dll,*.Cmds.Template.ps1,*.Datas.Template.ps1)
 }
           
-Get-ChildItem -Path $PsionicTrunk -Recurse @Params |
+Get-ChildItem -Path $Path -Recurse @Params |
  Where { (-not $_.PSisContainer) -and ($_.Length -gt 0)}| 
  Foreach  {
    Write-Verbose "Test BOM for  $($_.FullName)"
