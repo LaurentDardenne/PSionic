@@ -10,4 +10,4 @@ Dir |
  Where $FileInfoLib.Yesterday |
  Compress-ZipFile -OutputName C:\Temp\Test1.zip
 
-Get-ZipFile -name C:\Temp\Test1.zip 
+Get-ZipFile -Path C:\Temp\Test1.zip 
