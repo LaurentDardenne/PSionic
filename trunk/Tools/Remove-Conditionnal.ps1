@@ -106,6 +106,12 @@ Function Remove-Conditionnal {
 .    
     Il est possible de combiner ce paramètre avec un ou plusieurs des 
     paramètres suivant :  -Remove -UnComment -Include 
+
+.PARAMETER Encoding
+    Indique le type d'encodage à utiliser lors de l'inclusion de fichiers. 
+    La valeur par défault est ASCII.
+    Pour plus de détails sur les type d'encodage disponible, consultez l'aide en 
+    ligne du cmdlet Get-Content.
     
 .PARAMETER Include
     Inclus le fichier précisé dans les directives : #<INCLUDE %'FullPathName'%>
@@ -126,6 +132,8 @@ Function Remove-Conditionnal {
     Ne placez pas de texte à la suite de cette directive. 
 .       
     Il est possible de combiner ce paramètre avec le paramètre -Clean.
+.
+    Par défaut la lecture des fichiers à inclure utilise l'encodage ASCII.    
 
 .PARAMETER Remove
     Supprime les lignes de code source contenant la directive <%REMOVE%>. 
@@ -412,13 +420,13 @@ Function Remove-Conditionnal {
     #
     #   
     Dir C:\Temp\Test2.ps1|
-     Get-Content -ReadCount 0|
+     Get-Content -ReadCount 0 -Encoding Unicode|
      Remove-Conditionnal -ConditionnalsKeyWord 'DEBUG' -Include -Container 'C:\Temp\Test2.ps1'
 .        
     Description
     -----------
-    Ces instructions crées trois fichiers, puis l'appel à Remove-Conditionnal 
-    génère le code suivant :
+    Ces instructions créent trois fichiers avec l'encodage par défaut, 
+    puis l'appel à Remove-Conditionnal génère le code suivant :
     #Fichier d'inclusion C:\Temp\Test2.ps1
     #Fichier d'inclusion C:\Temp\Test3.ps1
     3-un
@@ -470,7 +478,8 @@ param (
        #Nom de la source hébergeant les données à traiter
         [AllowNull()]
       [String]$Container,
-      
+  
+      [Microsoft.PowerShell.Commands.FileSystemCmdletProviderEncoding] $Encoding='ASCII',
        [Parameter(ParameterSetName="Clean")]
       [Switch] $Clean, #L'opération de nettoyage des directives devrait être la dernière tâche de transformation
       [Switch] $Remove, #on peut vouloir nettoyer les directives inutilisées et supprimer une ligne
@@ -665,7 +674,7 @@ param (
                                if ($Clean.isPresent)
                                {
                                   Write-Debug "Recurse Remove-Conditionnal -Clean"
-                                  $NestedResult= Get-Content $FileName -ReadCount 0|
+                                  $NestedResult= Get-Content $FileName -ReadCount 0 -Encoding:$Encoding|
                                                   Remove-Conditionnal -Clean -Remove:$Remove -Include:$Include -UnComment:$UnComment -Container:$FileName
                                   #Ici on émet le contenu du tableau et pas le tableau reçu
                                   #Seul le résultat final est renvoyé en tant que tableau 
@@ -676,12 +685,12 @@ param (
                                   Write-Debug "Recurse Remove-Conditionnal $ConditionnalsKeyWord"
                                   if ($isConditionnalsKeyWord)
                                   {
-                                    $NestedResult= Get-Content $FileName -ReadCount 0|
+                                    $NestedResult= Get-Content $FileName -ReadCount 0 -Encoding:$Encoding|
                                                     Remove-Conditionnal -ConditionnalsKeyWord $ConditionnalsKeyWord -Remove:$Remove -Include:$Include -UnComment:$UnComment -Container:$FileName
                                   }
                                   else
                                   {
-                                    $NestedResult= Get-Content $FileName -ReadCount 0|
+                                    $NestedResult= Get-Content $FileName -ReadCount 0 -Encoding:$Encoding|
                                                     Remove-Conditionnal -Remove:$Remove -Include:$Include -UnComment:$UnComment -Container:$FileName
                                   }
                                                                                                                                           
