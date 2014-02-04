@@ -143,7 +143,8 @@ Task BuildXmlHelp {
     Foreach {
       $Module.ExportedFunctions.GetEnumerator()|
        Where {$Excludes -notContains $_.Key} |
-       Join-XmlHelp $Module.Name -Source $TempLocation "$PsIonicLivraison\PsIonic\$_" -Culture $_
+       Join-XmlHelp $Module.Name -Source $TempLocation "$PsIonicLivraison\PsIonic" -Culture $_
+       #Join-XmlHelp crée le répertoire spécifique à une culture
     } 
    
   Remove-Module PsIonic
