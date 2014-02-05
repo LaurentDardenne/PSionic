@@ -26,41 +26,52 @@
 	examples = @(
 		@{
 			code = {
-$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
-$File=Get-Item C:\Temp\Test.ps1 
-Add-ZipEntry -Object $File -ZipFile $ZipFile
-$ZipFile.Close()
+try {         
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+  $File=Get-Item C:\Temp\Test.ps1 
+  Add-ZipEntry -Object $File -ZipFile $ZipFile
+} finally {
+  $ZipFile.Close()
+}
 			}
-			remarks = $Datas.GetZipFileExamplesRemarks1
+			remarks = $Datas.AddZipEntryExamplesRemarks1
 			test = { . $args[0] }
 		}
 		@{
 			code = {
-$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
-Get-ChildItem *.txt|Add-ZipEntry -ZipFile $ZipFile
-$ZipFile.Close()
+try {         
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+  Get-ChildItem *.txt|Add-ZipEntry -ZipFile $ZipFile
+} finally {
+  $ZipFile.Close()
+}
 			}
-			remarks = $Datas.GetZipFileExamplesRemarks2
+			remarks = $Datas.AddZipEntryExamplesRemarks2
 			test = { . $args[0] }
 		}
 		@{
 			code = {
-$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
-[string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
-Add-ZipEntry -Object $Text -Path MyText -ZipFile $ZipFile
-$ZipFile.Close()
+try {         
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+  [string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
+  Add-ZipEntry -Object $Text -Path MyText -ZipFile $ZipFile
+} finally {
+  $ZipFile.Close()
+}
 			}
-			remarks = $Datas.GetZipFileExamplesRemarks3
+			remarks = $Datas.AddZipEntryExamplesRemarks3
 			test = { . $args[0] }
 		}
 		@{
 			code = {
-$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
-ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Path PSVersiontable -ZipFile $ZipFile
-$ZipFile.Close()
-         
+try {
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
+  ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Path PSVersiontable -ZipFile $ZipFile
+} finally {
+  $ZipFile.Close()
+}
 			}
-			remarks = $Datas.GetZipFileExamplesRemarks4
+			remarks = $Datas.AddZipEntryExamplesRemarks4
 			test = { . $args[0] }
 		}
 		@{
@@ -68,7 +79,7 @@ $ZipFile.Close()
 #Todo Byte[]
          
 			}
-			remarks = $Datas.GetZipFileExamplesRemarks5
+			remarks = $Datas.AddZipEntryExamplesRemarks5
 			test = { . $args[0] }
 		}
 	)

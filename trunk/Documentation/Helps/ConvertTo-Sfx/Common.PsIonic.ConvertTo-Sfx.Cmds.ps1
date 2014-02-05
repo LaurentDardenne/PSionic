@@ -29,11 +29,9 @@
          
 $ZipFileName="C:\Temp\MySetup.zip" 
 
-$Files="C:\Project\MyScripts\*"
 $ReadOptions = New-Object Ionic.Zip.ReadOptions -Property @{ 
                 StatusMessageWriter = [System.Console]::Out
               } 
-
 $Save=@{
     ExeOnUnpack="Powershell -noprofile -File .\MySetup.ps1";  
     Description="Setup for the my module"; 
@@ -44,8 +42,7 @@ $Save=@{
 }
 $SaveOptions=New-ZipSfxOptions @Save
 
-dir $Files |
- ConvertTo-Sfx $ZipFileName -Save $SaveOptions -Read $ReadOptions #todo à vérifier           
+ConvertTo-Sfx $ZipFileName -Save $SaveOptions -Read $ReadOptions           
 			}
 			remarks = $Datas.ConvertToSfxExamplesRemarks1
 			test = { . $args[0] }

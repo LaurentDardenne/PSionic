@@ -1,7 +1,7 @@
 ﻿# Format-ZipFile command data
 $Datas = @{
 	FormatZipFileSynopsis = 'Formate le contenu des propriètés d''un objet archive.'
-	FormatZipFileDescription = 'Formate le contenu des propriètés d''une archive Zip. Consultez la rubrique Notes pour le détails des propriètés affichées par défaut.'
+	FormatZipFileDescription = 'Formate le contenu des propriètés d''une archive Zip. Consultez la rubrique Notes pour le détail des propriètés affichées par défaut.'
 	FormatZipFileSets__AllParameterSets = ''
 	FormatZipFileParametersProperties = 'Tableau de nom de proriété à afficher lors de l''appel interne à Format-List'
 	FormatZipFileParametersZip = 'Objet archive sur lequel appliquer le formatage.'
@@ -43,7 +43,7 @@ Liste des propriétés affichées par défaut :
   Comment
   EmitTimesInWindowsFormatWhenSaving
 "@
-    FormatZipFileExamplesRemarks1 = 'Cet exemple récupère un objet archive à partir d''un nom de fichier, puis formate son contenu avant de libérer les ressouces systèmes.'
+    FormatZipFileExamplesRemarks1 = 'Cet exemple récupère un objet archive à partir d''un nom de fichier, puis formate son contenu avant de libérer les ressources systèmes.'
 }  
 
 

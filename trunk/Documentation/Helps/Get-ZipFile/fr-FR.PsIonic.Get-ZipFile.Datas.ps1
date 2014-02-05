@@ -1,7 +1,7 @@
 ﻿# Get-ZipFile command data
 $Datas = @{
 	GetZipFileSynopsis = 'Obtient un objet archive à partir d''un fichier Zip.'
-	GetZipFileDescription = 'Obtient un objet archive à partir d''un fichier Zip. L''objet archive ne contient que le catalogue, une liste d''objet de type ZipEntry, pour récupèrer le contenu d''une entrée du catalogue vous devez l''extraire sur un lecteur du système de fichier.'
+	GetZipFileDescription = 'Obtient un objet archive à partir d''un fichier Zip. L''objet archive ne contient que le catalogue, une liste d''objets de type ZipEntry, pour récupèrer le contenu d''une entrée du catalogue vous devez l''extraire sur un lecteur du système de fichier.'
 	GetZipFileSetsManualOption = ''
 	GetZipFileSetsReadOption = ''
 	GetZipFileParametersEncoding = 'Type d''encodage de l''archive. L''utilisation de la valeur par défaut est recommandée.'
@@ -25,7 +25,7 @@ Cette ID permet de distinguer la barre de progression interne des autres. Utilis
 	GetZipFileOutputsDescriptionIonicZipZipFile = 'Ionic.Zip.ZipFile'
 	GetZipFileNotes = @"
 Cette fonction renvoyant seulement un objet archive Zip à partir de son nom complet, la plupart des paramètres servent à configurer les propriètes de l'archive si vous souhaitez la modifier.
-Par exemple, le paramètre 'Encryption' n’influe pas sur la lecture du Zip, seul le paramètre Password est nécessaire, car ceux sont les entrées de l'archive Zip qui portent l’information de cryptage, et pas l'objet de type [ZipFile].
+Par exemple, le paramètre 'Encryption' n’influe pas sur la lecture du Zip, seul le paramètre Password est nécessaire, car ce sont les entrées de l'archive Zip qui portent l’information de cryptage, et pas l'objet de type [ZipFile].
 Une archive Zip peut donc en théorie contenir plusieurs entrées dont chacune a un mode de compression différente des autres.
 ATTENTION, pour chaque objet renvoyé vous devrez appeler la méthode PSDispose afin de libérer correctement les ressources de l'archive.
 "@
@@ -39,7 +39,8 @@ Cet exemple lit un fichier zip, lui ajoute une entrée à partir d'un fichier, p
 Cet exemple lit un fichier zip, lui ajoute une entrée à partir d'une chaine de caractères, puis l'enregistre et enfin libére ses ressources. 
 "@
     GetZipFileExamplesRemarks4 =  @"
-Cet exemple lit un fichier zip, lui ajoute tous les fichier txt d'un répertoire, puis l'enregistre et enfin libére ses ressources. 
+Cet exemple lit un fichier zip, lui ajoute tous les fichiers txt d'un répertoire, puis l'enregistre en libérant ses ressources. 
+La méthode Close() appelle en interne la méthode Save() puis PSDispose(). 
 "@
 }
 

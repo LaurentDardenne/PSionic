@@ -87,9 +87,8 @@ try {
 try {
  $Zip=Get-Zipfile -Path Test.zip
  Dir *.txt|Add-ZipEntry -ZipFile $Zip
- $ZipFile.Save() 
 } finally {
- $ZipFile.PSDispose()
+ $ZipFile.Close()
 }
          
 			}

@@ -13,18 +13,13 @@ Contenu associé à une entrée d'archive. Les types attendus sont :
    - Un ou des objets fichiers ou répertoires,
    - un nom ou des noms de fichier ou de répertoire,
    - une chaîne de caractères,
-   - ou un tableau d'octets
-Tous les autres types d'objet seront transformés en chaîne de caratères via la méthode ToString().   
+   - ou un tableau d'octets.
+Tous les autres types d'objet seront transformés en chaîne de caractères via la méthode ToString().   
 "@
-	AddZipEntryParametersPassthru = 'Une fois l''entrée aujoutée au catalogue de l''archive, elle est émise dans le pipeline.'
+	AddZipEntryParametersPassthru = 'Une fois l''entrée ajoutée au catalogue de l''archive, elle est émise dans le pipeline.'
 	AddZipEntryParametersZipFile = 'Archive cible dans laquelle on ajoute l''entrée précisée. Ce paramètre attend un objet de type ZipFile et pas un nom de fichier.'
 	AddZipEntryInputsDescription1 = @"
-System.Byte[]
-System.String
-System.IO.DirectoryInfo
-System.IO.FileInfo
-Ionic.Zip.ZipEntry
-
+System.Byte[], System.String, System.IO.DirectoryInfo, System.IO.FileInfo, Ionic.Zip.ZipEntry.
 Vous pouvez émettre n'importe quel objet des types précédents dans le pipeline.
 "@
 	AddZipEntryOutputsDescriptionIonicZipZipEntry = 'Ionic.Zip.ZipEntry'
@@ -37,20 +32,20 @@ Ces commandes ajoutent une entrée dans l'archive C:\Temp\Test.zip.
   -la quatrième enregistre l'archive sur le disque et libére les ressources systèmes.  
 "@
     AddZipEntryExamplesRemarks2 = @"
-Ces commandes ajoutent des entrées dans l'archive nommée C:\Temp\Test.zip. 
+Ces commandes ajoutent des entrées dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
   -la seconde, depuis le répertoire courant, ajoute dans l'archive tous les fichiers portant l'extension .txt, 
   -la troisème enregistre l'archive sur le disque et libére les ressources systèmes.
 "@        
     AddZipEntryExamplesRemarks3 = @"
-Ces commandes ajoutent, à partir d'une chaîne de caratères, une entrée nommée dans l'archive C:\Temp\Test.zip. 
+Ces commandes ajoutent, à partir d'une chaîne de caractères, une entrée nommée dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
   -la seconde lit un fichier texte et récupère le résultat dans une chaîne de caractères,
   -la troisième crée une entrée dont le contenu est renseigné à partir d'une chaîne de caractères, 
   -la quatrième enregistre l'archive sur le disque et libére les ressources systèmes.
 "@  
     AddZipEntryExamplesRemarks4 = @"
-Ces commandes ajoutent, à partir d'un objet sérialsé , une entrée nommée dans l'archive C:\Temp\Test.zip. 
+Ces commandes ajoutent, à partir d'un objet sérialisé, une entrée nommée dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
   -la seconde sérialise l'objet contenu dans la variable PSVersiontable et l'ajoute en tant qu'entrée nommée dans l'archive, 
   -la troisème enregistre l'archive sur le disque et libére les ressources systèmes.
