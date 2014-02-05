@@ -17,7 +17,6 @@
 		Flatten = $Datas.ExpandZipFileParametersFlatten
 		ProgressID = $Datas.ExpandZipFileParametersProgressID
 		From = $Datas.ExpandZipFileParametersFrom
-		Interactive = $Datas.ExpandZipFileParametersInteractive
 		Passthru = $Datas.ExpandZipFileParametersPassthru
 		Password = $Datas.ExpandZipFileParametersPassword
 		Query = $Datas.ExpandZipFileParametersQuery

@@ -13,7 +13,6 @@ $Datas = @{
 	ExpandZipFileParametersFlatten = ''
 	ExpandZipFileParametersProgressID = ''
 	ExpandZipFileParametersFrom = ''
-	ExpandZipFileParametersInteractive = ''
 	ExpandZipFileParametersPassthru = ''
 	ExpandZipFileParametersPassword = ''
 	ExpandZipFileParametersQuery = ''
