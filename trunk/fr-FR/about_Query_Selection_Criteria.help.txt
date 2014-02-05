@@ -1,0 +1,97 @@
+﻿TOPIC
+    about_Query_Selection_Criteria
+
+SHORT DESCRIPTION
+    Describes the statements to matching a specified criteria into a Query.
+
+LONG DESCRIPTION
+  Specify the criteria in statements of 3 elements:  a noun, an operator, and a value. 
+   
+  Consider the string "name != *.doc" . 
+   The noun is "name". 
+   The operator is "!=", implying "Not Equal". 
+   The value is "*.doc". 
+  
+  That criterion, in English, says "all files with a name that does not end in the .doc extension." 
+  
+  Supported nouns include "name" (or "filename") for the filename; 
+   "atime", "mtime", and "ctime" for last access time, last modfied time, and created time of the file, respectively; 
+   "attributes" (or "attrs") for the file attributes; 
+   "size" (or "length") for the file length (uncompressed), 
+   and "type" for the type of object, either a file or a directory. 
+   The "attributes", "name" and "type" nouns both support = and != as operators. 
+   The "size", "atime", "mtime", and "ctime" nouns support = and !=, and >, >=, <, <= as well. 
+   The times are taken to be expressed in local time. 
+  
+  Specify values for the file attributes as a string with one or more of the characters H,R,S,A,I,L in any order, 
+  implying file attributes of Hidden, ReadOnly, System, Archive, NotContextIndexed, and ReparsePoint (symbolic link) respectively. 
+  
+  To specify a time, use YYYY-MM-DD-HH:mm:ss or YYYY/MM/DD-HH:mm:ss as the format. 
+  If you omit the HH:mm:ss portion, it is assumed to be 00:00:00 (midnight). 
+  
+  The value for a size criterion is expressed in integer quantities of bytes, kilobytes (use k or kb after the number), megabytes (m or mb), or gigabytes (g or gb). 
+  
+  The value for a name is a pattern to match against the filename, potentially including wildcards. 
+  The pattern follows CMD.exe glob rules: * implies one or more of any character, while ? implies one character. 
+  If the name pattern contains any slashes, it is matched to the entire filename, including the path; otherwise, it is matched against only 
+  the filename without the path. 
+  This means a pattern of "*\*.*" matches all files one directory level deep, while a pattern of "*.*" matches all files in all directories. 
+  
+  To specify a name pattern that includes spaces, use single quotes around the pattern. 
+  A pattern of "'* *.*'" will match all files that have spaces in the filename. The full criteria string for that would be "name = '* *.*'" . 
+  
+  The value for a type criterion is either F (implying a file) or D (implying a directory). 
+  
+  Some examples: 
+  
+  criteria Files retrieved 
+  name != *.xls      :  any file with an extension that is not .xls 
+   
+  name = *.mp3       :  any file with a .mp3 extension. 
+   
+  *.mp3              : (same as above) any file with a .mp3 extension. 
+   
+  attributes = A     : all files whose attributes include the Archive bit. 
+   
+  attributes != H    : all files whose attributes do not include the Hidden bit. 
+   
+  mtime > 2009-01-01 : all files with a last modified time after January 1st, 2009. 
+   
+  size > 2gb         : all files whose uncompressed size is greater than 2gb. 
+   
+  type = D           : all directories in the filesystem. 
+   
+  You can combine criteria with the conjunctions AND or OR. 
+  Using a string like "name = *.txt AND size >= 100k" for the selectionCriteria retrieves entries whose names end in .txt, 
+  and whose uncompressed size is greater than or equal to 100 kilobytes. 
+  
+  For more complex combinations of criteria, you can use parenthesis to group clauses in the boolean logic. 
+  Without parenthesis, the precedence of the criterion atoms is determined by order of appearance. 
+  Unlike the C# language, the AND conjunction does not take precendence over the logical OR. 
+  This is important only in strings that contain 3 or more criterion atoms. 
+  In other words, "name = *.txt and size > 1000 or attributes = H" implies "((name = *.txt AND size > 1000) OR attributes = H)" 
+  while "attributes = H OR name = *.txt and size > 1000" evaluates to "((attributes = H OR name = *.txt) AND size > 1000)". 
+  When in doubt, use parenthesis. 
+  
+  Using time properties requires some extra care. 
+  If you want to retrieve all entries that were last updated on 2009 February 14, specify a time range like so:
+  "mtime >= 2009-02-14 AND mtime < 2009-02-15". 
+  
+  Read this to say: all files updated after 12:00am on February 14th, until 12:00am on February 15th. 
+  You can use the same bracketing approach to specify any time period - a year, a month, a week, and so on. 
+  
+  The syntax allows one special case: if you provide a string with no spaces, it is treated as a pattern to match for the filename.
+  Therefore a string like "*.xls" will be equivalent to specifying "name = *.xls". 
+  
+  There is no logic in this method that insures that the file inclusion criteria are internally consistent.
+  For example, it's possible to specify criteria that says the file must have a size of less than 100 bytes, 
+  as well as a size that is greater than 1000 bytes. Obviously no file will ever satisfy such criteria, 
+  but this method does not detect such logical inconsistencies. 
+  
+  The caller is responsible for insuring the criteria are sensible. 
+  
+  Examples :
+  todo
+
+SEE ALSO
+    about_Assignment_Operators
