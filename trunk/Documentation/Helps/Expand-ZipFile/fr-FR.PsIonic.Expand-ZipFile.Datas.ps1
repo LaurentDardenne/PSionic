@@ -27,7 +27,6 @@ Attention, il n’y a pas de contrôle de cohérence sur le contenu de la query,
 	ExpandZipFileParametersExtractAction = 'Précise le comportement à adopter lorsque des données sont déjà présentes dans le répertoire de destination.'
     ExpandZipFileParametersPassword = 'Précise le mot de passe nécessaire à l''extraction d''une archive encryptée.'	
 	ExpandZipFileParametersEncoding = 'Type d''encodage de l''archive. L''utilisation de la valeur par défaut est recommandée.'
-	ExpandZipFileParametersInteractive = 'Passe les actions de la Cmdlet en mode interactif.'
 	ExpandZipFileParametersFlatten = 'Les fichiers sont extraits sans arborescence.'
 	ExpandZipFileParametersProgressID = @"
 Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression.
