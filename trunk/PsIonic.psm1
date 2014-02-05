@@ -4,6 +4,9 @@
 # copyright (c) 2008 by Dino Chiesa
 # ------------------------------------------------------------------
 
+#bugs PS v2 :
+#parameters-initialization : https://connect.microsoft.com/PowerShell/feedback/details/578341/parameters-initialization
+
 Add-Type -Path "$psScriptRoot\$($PSVersionTable.PSVersion)\PSIonicTools.dll"
  
 Start-Log4Net "$psScriptRoot\Log4Net.Config.xml"
@@ -491,6 +494,7 @@ Function GetObjectByType {
            #     ?, *, [a], [abc], [a-c], Test*[a][0-9], etc.
         #Renvoi une liste de Pathinfo
        Resolve-Path $Object|Get-ChildItem  -Recurse:$Recurse
+       #todo ne renvoie pas tous les fichiers cf. 'literalPath'
      }   
   } #GetObject
  }#begin 
@@ -513,8 +517,8 @@ function SaveSFXFile {
  )
   $Logger.Debug("Save sfx")  #<%REMOVE%>
   $TargetName = GetSFXname $Zip.Name
-  $Logger.DebugFormat($PsIonicMsgs.ConvertingFile, $TargetName)  #<%REMOVE%>
-  Write-Verbose ($PsIonicMsgs.ConvertingFile -F $TargetName)
+  $Logger.DebugFormat($PsIonicMsgs.ConvertingFile, $Zip.Name)  #<%REMOVE%>
+  Write-Verbose ($PsIonicMsgs.ConvertingFile -F $Zip.Name)
   try{
       $Zip.SaveSelfExtractor($TargetName, $Options)  
   }
@@ -753,7 +757,7 @@ Function Compress-ZipFile {
       [Int] $Split= 0,
 
       [Ionic.Zip.ZipErrorAction] $ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw,  
-      
+       
       [string] $Comment,
       
       [Ionic.Zip.EncryptionAlgorithm] $Encryption=[Ionic.Zip.EncryptionAlgorithm]::None,
@@ -783,8 +787,10 @@ Function Compress-ZipFile {
       [Switch] $isVerbose= $null
       [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
       $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>          
-          
-      if ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
+      
+      if (-not $PSBoundParameters.ContainsKey('Comment')) 
+      { $Comment=[String]::Empty} #bug : parameters-initialization
+      elseif ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
       { Throw (New-Object PSIonicTools.PsionicException($PsIonicMsgs.CommentMaxValue)) }
 
       $psZipErrorHandler=$null
@@ -816,7 +822,7 @@ Function Compress-ZipFile {
       
        #Archive avec + de 0xffff entrées
       $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
-      if ($ZipErrorAction -eq $null)  #bug parseur v2 de la v3 ?
+      if ($ZipErrorAction -eq $null)  #bug : parameters-initialization
       {$ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw}
       $ZipFile.ZipErrorAction=$ZipErrorAction
 
@@ -837,7 +843,7 @@ Function Compress-ZipFile {
       else
       { $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat }
 
-      if ($Encryption -eq $null)  #bug parseur v2 de la v3 ?
+      if ($Encryption -eq $null)  #bug : parameters-initialization
       { $Encryption="None"}            
       if (-not [string]::IsNullOrEmpty($Password) -or ($Encryption -ne "None"))
       { SetZipFileEncryption $ZipFile $Encryption $Password }
@@ -854,6 +860,7 @@ Function Compress-ZipFile {
       try {
         if ($SetLastModifiedProperty -ne $null)
         {
+           $Logger.Debug("Call SetLastModifiedProperty scriptblock")  #<%REMOVE%>
             #on s'assure de référencer la variable ZipFile de la fonction
            $SbBounded=$MyInvocation.MyCommand.ScriptBlock.Module.NewBoundScriptBlock($SetLastModifiedProperty)
             #Le scriptblock doit itérer sur chaque entrée de l'archive
@@ -927,7 +934,9 @@ Function Compress-SfxFile {
       [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
       $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>          
           
-      if ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
+      if (-not $PSBoundParameters.ContainsKey('Comment')) 
+      { $Comment=[String]::Empty} #bug : parameters-initialization
+      elseif ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
       { Throw (New-Object PSIonicTools.PsionicException($PsIonicMsgs.CommentMaxValue)) }
 
       $psZipErrorHandler=$null
@@ -960,7 +969,7 @@ Function Compress-SfxFile {
        #Archive avec + de 0xffff entrées
       $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
      
-      if ($ZipErrorAction -eq $null)  #bug parseur v2 de la v3 ?
+      if ($ZipErrorAction -eq $null)  #bug : parameters-initialization
       {$ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw}      
       $ZipFile.ZipErrorAction=$ZipErrorAction
 
@@ -981,7 +990,7 @@ Function Compress-SfxFile {
       else
       { $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat }
       
-      if ($Encryption -eq $null)  #bug parseur v2 de la v3 ?
+      if ($Encryption -eq $null)  #bug : parameters-initialization
       { $Encryption="None"}            
       if (-not [string]::IsNullOrEmpty($Password) -or ($Encryption -ne "None"))
       { SetZipFileEncryption $ZipFile $Encryption $Password }
@@ -1000,11 +1009,13 @@ Function Compress-SfxFile {
       try {
         if ($SetLastModifiedProperty -ne $null)
         {
-            #on s'assure de référencer la variable Entry de la boucle
+           $Logger.Debug("Call SetLastModifiedProperty scriptblock")  #<%REMOVE%>
+            #on s'assure de référencer la variable ZipFile de la fonction
            $SbBounded=$MyInvocation.MyCommand.ScriptBlock.Module.NewBoundScriptBlock($SetLastModifiedProperty)
-           foreach($entry in $ZipFile)
-           { &$SbBounded } 
+            #Le scriptblock doit itérer sur chaque entrée de l'archive
+           &$SbBounded 
         }
+
         $Logger.Debug("Save sfx zip")  #<%REMOVE%>
         SaveSFXFile $ZipFile $Options 
       } 
@@ -1352,7 +1363,7 @@ Function Expand-ZipFile {
     $Logger.Debug("Expand-ZipFile isProgressID=$isProgressID") #<%REMOVE%> 
     $isLiteral = $PsCmdlet.ParameterSetName -eq 'LiteralPath'
      
-     #to manage delayed script block 
+     #To manage delayed script block 
     $PreviousOutputPath=$null
     
     Function ZipFileRead {
