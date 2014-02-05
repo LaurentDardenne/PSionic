@@ -14,15 +14,15 @@ Peut être un objet fichier ou une chaîne de caractères.
 "@
 	CompressSfxFileParametersNotTraverseReparsePoints = 'Indique si les recherches traverseront les points d''analyse NTFS (Reparse Point), tels que les jonctions.'
 	CompressSfxFileParametersOptions = 'Options utilisées lors de la création d''un archive autoextractible (cf. New-ZipSfxOptions).'
-	CompressSfxFileParametersOutputName = 'Nom du fichier de l''archive à construire. Le nom du drive utilisé doit pointer sur un drive du provider FileSystem.'
+	CompressSfxFileParametersOutputName = 'Nom du fichier de l''archive à construire. Le nom du lecteur utilisé doit pointer sur un lecteur du provider FileSystem.'
     CompressSfxFileParametersPassthru = 'Emet le fichier d''archive dans le pipeline. Attention, dans ce cas la libération des ressources par l''appel à la méthode Close() est à votre charge.'	
-    CompressSfxFileParametersPassword = 'Mot de passe utilisé lors de la du cryptage. Nécessite de préciser un mode de cryptage (cf. le paramètre Encryption).'
+    CompressSfxFileParametersPassword = 'Mot de passe utilisé lors du cryptage. Nécessite de préciser un mode de cryptage (cf. le paramètre Encryption).'
 	CompressSfxFileParametersPath =@"
-Liste des nom de fichiers à compresser. Peut être un objet fichier ou une chaîne de caractères, dans ce cas celle-ci peut contenir des caractères génériques (* , ? , [A-D] ou [1CZ]).
+Liste des noms de fichier à compresser. Peut être un objet fichier ou une chaîne de caractères, dans ce cas celle-ci peut contenir des caractères génériques (* , ? , [A-D] ou [1CZ]).
 "@
-	CompressSfxFileParametersRecurse = 'Parcourt récursif des arborescences (todo ?) '
+	CompressSfxFileParametersRecurse = 'Parcourt récursif des arborescences définies par le paramètre Path ou LiteralPath.'
 	CompressSfxFileParametersSetLastModifiedProperty =  @"
-Permet, avant d'enregister l'archive, de modifier la propriété LastModified de chaque entrée de l'archive. La variable $Entry doit être utilisée dans le corps du scriptblock.
+Permet, avant d'enregister l'archive, de modifier la propriété LastModified de chaque entrée de l'archive. La variable `$ZipFile, représentant l'archive en cours de traitement, doit être utilisée dans le corps du scriptblock.
 "@
 	CompressSfxFileParametersSortEntries = @"
 Les entrées sont triées avant d'être enregistrées. Selon le nombre de fichiers traités, ce traitement peut ralentir l'opération de compression.
@@ -38,10 +38,10 @@ Sinon, le fichier temporaire de l'archive en cours de construction sera enregist
 	CompressSfxFileInputsDescription1 = 'System.String,System.IO.FileInfo'
     CompressSfxFileOutputsDescriptionSystemIOFileInfo ='System.IO.FileInfo'
 	CompressSfxFileNotes = @"
-Selon le contenu, votre archive peut être compressée en 64 bits, pour déterminer si l‘archive utilise les extensions Zip64 consultez le propriété ''OutputUsedZip64'' de l''archive.
+Selon le contenu, votre archive peut être compressée en 64 bits, pour déterminer si l‘archive utilise les extensions Zip64 consultez le propriété 'OutputUsedZip64' de l'archive.
 Aucun contrôle n'est effectué sur l'espace disponible lors de la création de l'archive.
 "@ 
-	CompressSfxFileExamplesRemarks1 = ''
+	CompressSfxFileExamplesRemarks1 = 'todo'
 }
 
 

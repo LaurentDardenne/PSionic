@@ -48,6 +48,30 @@ Get-ChildItem *.txt|Compress-File C:\Temp\Test.zip
 			remarks = $Datas.CompressZipFileExamplesRemarks1
 			test = { . $args[0] }
 		}
+		@{
+			code = {
+$ZipFileName="C:\Temp\Test.zip"
+$FileNames='C:\Temp\ListeFichiers.txt'
+Dir C:\Temp\*.ps1| Foreach-object {$_.Fullname}| Set-Content -Path $FilesNameTest
+ 
+Get-Content $FilesName| Compress-ZipFile $ZipFileName
+			}
+			remarks = $Datas.CompressZipFileExamplesRemarks2
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+$ZipFileName="C:\Temp\Test.zip"
+$FileNames=@(
+ 'C:\Temp\*.ps1',
+ 'C:\Temp\Test2.zip',
+ 'C:\Temp\*.txt'
+)
+$FileNames| Compress-ZipFile $ZipFileName
+			}
+			remarks = $Datas.CompressZipFileExamplesRemarks3
+			test = { . $args[0] }
+		}
 	)
 	links = @(
 		@{ text = 'Test online'; URI = 'http://psionic.codeplex.com/wikipage?title=Compress-ZipFile_FR' }

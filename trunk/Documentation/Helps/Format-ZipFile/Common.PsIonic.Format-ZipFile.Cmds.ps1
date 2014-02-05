@@ -23,8 +23,11 @@
 	examples = @(
 		@{
 			code = {
-($ZipFile=Get-Zipfile -Path Test.zip)|Format-ZipFile
-$ZipFile.PSDispose()
+try {         
+  ($ZipFile=Get-Zipfile -Path Test.zip)|Format-ZipFile
+} finally {
+  $ZipFile.PSDispose()
+}  
 			}
 			remarks = $Datas.FormatZipFileExamplesRemarks1
 			test = { . $args[0] }

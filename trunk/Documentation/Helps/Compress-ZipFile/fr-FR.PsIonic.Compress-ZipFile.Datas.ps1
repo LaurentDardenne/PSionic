@@ -4,22 +4,22 @@ $Datas = @{
 	CompressZipFileDescription = 'Le cmdlet Compress-ZipFile compresse des fichiers et/ou des répertoires dans une archive au format Zip.'
 	CompressZipFileSetsLiteralPath = ''
 	CompressZipFileSetsPath = ''
-	CompressZipFileParametersCodePageIdentifier = 'Nom de la page de code utilisé pour le nom de fichier. L''utilisation de la valeur par défaut est recommandée.'
+	CompressZipFileParametersCodePageIdentifier = 'Nom de la page de code utilisée pour le nom de fichier. L''utilisation de la valeur par défaut est recommandée.'
 	CompressZipFileParametersComment = 'Commentaire associé à l''archive.'
-	CompressZipFileParametersEncoding = 'Type d''encodage de l''archive.L''utilisation de la valeur par défaut est recommandé.'
+	CompressZipFileParametersEncoding = 'Type d''encodage de l''archive. L''utilisation de la valeur par défaut est recommandé.'
 	CompressZipFileParametersEncryption = 'Type de cryptage utilisé lors de l''opération de compression. Nécessite de préciser un mot de passe (cf. le paramètre Password).'
 	CompressZipFileParametersLiteralPath = @"
-Liste des nom de fichiers à compresser,ceux-ci sont traités tel quel, c'est-à-dire que les caractères génériques ne sont pas interprétés. 
+Liste des nom de fichiers à compresser, ceux-ci sont traités tel quel, c'est-à-dire que les caractères génériques ne sont pas interprétés. 
 Peut être un objet fichier ou une chaîne de caractères.
 "@
 	CompressZipFileParametersNotTraverseReparsePoints = 'Indique si les recherches traverseront les points d''analyse NTFS (Reparse Point), tels que les jonctions.'
-	CompressZipFileParametersOutputName = 'Nom du fichier de l''archive à construire. Le nom du drive utilisé doit pointer sur un drive du provider FileSystem.'
+	CompressZipFileParametersOutputName = 'Nom du fichier de l''archive à construire. Le nom du lecteur utilisé doit pointer sur un lecteur du provider FileSystem.'
 	CompressZipFileParametersPassthru = 'Emet le fichier d''archive dans le pipeline. Attention, dans ce cas la libération des ressources par l''appel à la méthode Close() est à votre charge.'
-	CompressZipFileParametersPassword = 'Mot de passe utilisé lors de la du cryptage. Nécessite de préciser un mode de cryptage (cf. le paramètre Encryption).'
+	CompressZipFileParametersPassword = 'Mot de passe utilisé lors du cryptage. Nécessite de préciser un mode de cryptage (cf. le paramètre Encryption).'
 	CompressZipFileParametersPath = @"
-Liste des nom de fichiers à compresser. Peut être un objet fichier ou une chaîne de caractères, dans ce cas celle-ci peut contenir des caractères génériques (* , ? , [A-D] ou [1CZ]).
+Liste des noms de fichier à compresser. Peut être un objet fichier ou une chaîne de caractères, dans ce cas celle-ci peut contenir des caractères génériques (* , ? , [A-D] ou [1CZ]).
 "@
-	CompressZipFileParametersRecurse = 'Parcourt récursif des arborescences (todo ?) '
+	CompressZipFileParametersRecurse = 'Parcourt récursif des arborescences définies par le paramètre Path ou LiteralPath.'
 	CompressZipFileParametersSetLastModifiedProperty = @"
 Permet, avant d'enregister l'archive, de modifier la propriété LastModified de chaque entrée de l'archive. La variable $Entry doit être utilisée dans le corps du scriptblock.
 "@
@@ -43,5 +43,16 @@ Sinon, le fichier temporaire de l'archive en cours de construction sera enregist
 Selon le contenu, votre archive peut être compressée en 64 bits, pour déterminer si l‘archive utilise les extensions Zip64 consultez le propriété ''OutputUsedZip64'' de l''archive.
 Aucun contrôle n'est effectué sur l'espace disponible lors de la création de l'archive.
 "@ 
-	CompressZipFileExamplesRemarks1 = "Cet exemple ajoute, à partir du répertoire courant, tous les fichiers dont l''extension est '.txt' dans l''archive 'C:\Temp\Test.zip'."
+	CompressZipFileExamplesRemarks1 = @"
+Cet exemple ajoute, à partir du répertoire courant, tous les fichiers dont l'extension est '.TXT' dans l'archive 'C:\Temp\Test.zip'.
+"@
+	CompressZipFileExamplesRemarks2 = @"
+Cet exemple construit une liste de noms de fichier et l'enregistre dans un fichier texte.
+Ensuite ce fichier texte est lu ligne par ligne et chaque nom de fichier est ajouté dans l'archive 'C:\Temp\Test.zip'.
+"@
+	CompressZipFileExamplesRemarks3 = @"
+Cet exemple construit un tableau de noms de fichier, certains comportant des jokers.
+Ensuite chaque nom de fichier est résolu, puis le résultat de la résolution est ajouté dans l'archive 'C:\Temp\Test.zip'.
+"@
+
 }
