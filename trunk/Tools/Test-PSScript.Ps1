@@ -12,7 +12,7 @@
    ) 
 
    begin 
-   { $total=$fails=0 }  #todo ajouter le cas inconnu
+   { $total=$fails=$FileUnknown=0 }   
 
    process 
    { 
@@ -39,7 +39,7 @@
              $total++
            }#if 
            else 
-           { Write-Warning  "File unknown :'$_'" } 
+           { Write-Warning  "File unknown :'$_'";$FileUnknown++ } 
        }#for 
    }#process  
 
@@ -47,7 +47,7 @@
    { 
       if($IncludeSummaryReport)  
       { 
-         Write-Host "`n$total script(s) processed, $fails script(s) contain syntax errors." 
+         Write-Host "`n$total script(s) processed, $fails script(s) contain syntax errors,  $FileUnknown file(s) unknown." 
       } 
    } 
 } #Test-PSScript
