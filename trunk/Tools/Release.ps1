@@ -131,7 +131,8 @@ Task BuildXmlHelp {
   
   $Excludes='ConvertFrom-CliXml','ConvertTo-CliXml'
  
-  #$Cultures | todo
+  Write-Warning "!!! Reste la doc de la culture en-US "
+  #$Cultures |
   "fr-Fr" | 
     Foreach {
       $Module.ExportedFunctions.GetEnumerator()|
@@ -139,7 +140,6 @@ Task BuildXmlHelp {
        ConvertTo-XmlHelp $Module.Name -Source $PsIonicHelp -Target $TempLocation  -Culture $_
     }
    
-  #$Cultures |
   "fr-Fr" | 
     Foreach {
       $Module.ExportedFunctions.GetEnumerator()|
