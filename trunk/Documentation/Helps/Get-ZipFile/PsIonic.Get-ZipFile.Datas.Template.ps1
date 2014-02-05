@@ -18,7 +18,6 @@ $Datas = @{
 	GetZipFileParametersWindowsTimeFormat = ''
 	GetZipFileParametersZipErrorAction = ''
 	GetZipFileInputsDescription1 = ''
-	GetZipFileOutputsDescriptionFile = ''
 	GetZipFileOutputsDescriptionIonicZipZipFile = ''
 	GetZipFileNotes = ''
 	GetZipFileExamplesRemarks1 = ''

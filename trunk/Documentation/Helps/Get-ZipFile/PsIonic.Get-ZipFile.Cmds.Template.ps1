@@ -30,10 +30,6 @@
 	)
 	outputs = @(
 		@{
-			type = 'File'
-			description = $Datas.GetZipFileOutputsDescriptionFile
-		}
-		@{
 			type = 'Ionic.Zip.ZipFile'
 			description = $Datas.GetZipFileOutputsDescriptionIonicZipZipFile
 		}
