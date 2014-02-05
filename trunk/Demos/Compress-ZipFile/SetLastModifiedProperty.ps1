@@ -1,4 +1,7 @@
-﻿$SbUTnewest={
+﻿$scriptPath = split-path -Parent (split-path -Parent $MyInvocation.MyCommand.Definition)
+. "$scriptPath\Initialize-Demo.ps1
+
+$SbUTnewest={
   $fixedTimestamp = New-Object System.DateTime(1601,1,1,0,0,0)
   foreach($entry in $ZipFile)
   {
@@ -24,13 +27,14 @@ $sbUToldest={
 }
 
 $sbTimestamp={
-  $fixedTimestamp = [Datetime]::Now              
+  $fixedTimestamp = [Datetime]::Now  
+  #or
+  #  $fixedTimestamp = "10/01/2014 16:37" -as [Datetime]                   
   
   foreach($entry in $ZipFile)
   { $entry.LastModified = $fixedTimestamp }
 }
 
-#todo chemins des fichiers de test
-Get-ChildItem C:\temp\PsIonic  -Exclude *.zip,*.exe -rec|
+Get-ChildItem $TestDirectory -Exclude *.zip|
  Where {!$_.psiscontainer}| 
- Compress-ZipFile -OutputName C:\temp\Archive.zip -ErrorAction Stop -SetLastModifiedProperty $sbUToldest
+ Compress-ZipFile -OutputName "$TestDirectory\LastModifiedProperty.zip" -ErrorAction Stop -SetLastModifiedProperty $sbUToldest
