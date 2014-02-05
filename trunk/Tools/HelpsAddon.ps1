@@ -52,7 +52,7 @@ function Initialize-HelpFile {
       #Liste des commandes concernées par la génération
      [Parameter(Position=2)]
      [ValidateNotNullOrEmpty()]
-   $Command='*',
+  [string[]]$Command='*',
       #On recharge le module
       #Pour Metadata ce n'est pas nécessaire.
      [Parameter(ParameterSetName="Name")]
@@ -110,7 +110,16 @@ function Initialize-HelpFile {
        
        Write-debug "Create Helps template for the module : $ModuleName"
        $Module.ExportedFunctions.GetEnumerator()|
-         Where {$_ -like $Command }|
+         Where {
+          #Write-Debug  "Filtre $($_.Key)"
+          $Result=$false
+          foreach ($cmd in $Command){
+            #Write-Debug "Valide $cmd"
+            if ($_.Key -like "$cmd")
+            {$Result=$true;break}
+           }
+          $Result 
+         }|
          Foreach {
            $Current=$_.Key
            Write-debug "Template for command : $Current"
@@ -135,7 +144,7 @@ function Initialize-HelpFile {
  }#process
 }#Initialize-HelpFile
 
-Function New-CommandHelpTemplate {
+Function New-CommandHelpTemplate { 
  param (
    [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
    [ValidateNotNullOrEmpty()]
@@ -159,7 +168,6 @@ Function New-CommandHelpTemplate {
     Write-Verbose "`r`nCurrent command : $CommandName"
     $WorkingDirectory="$TargetDirectory\$CommandName"
     Write-debug "[New-CommandHelpTemplate] WorkingDirectory=$WorkingDirectory"
-    #todo implémenter Overwrite
     if (-not (Test-Path $WorkingDirectory) )
     {  
       Write-debug "Create WorkingDirectory '$WorkingDirectory'"
