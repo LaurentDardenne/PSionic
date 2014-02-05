@@ -30,10 +30,6 @@
 	)
 	outputs = @(
 		@{
-			type = 'File'
-			description = $Datas.GetZipFileOutputsDescriptionFile
-		}
-		@{
 			type = 'Ionic.Zip.ZipFile'
 			description = $Datas.GetZipFileOutputsDescriptionIonicZipZipFile
 		}
@@ -43,11 +39,12 @@
 		@{
 
 			code = {
-$File=Dir C:\Temp\Test.ps1 
-$ZipFile=Get-Zipfile -Path Test.zip
-Add-ZipEntry -Object $File -ZipFile $ZipFile
-$ZipFile.Save()
-$ZipFile.PSDispose()
+try {
+ $ZipFile=Get-Zipfile -Path Test.zip
+ $ZipFile
+} finally {
+ $ZipFile.PSDispose()
+}
 			}
 			remarks = $Datas.GetZipFileExamplesRemarks1
 			test = { . $args[0] }
@@ -55,10 +52,14 @@ $ZipFile.PSDispose()
 		@{
 
 			code = {
-$File=Dir C:\Temp\Test.ps1 
-$ZipFile=Get-Zipfile -Path Test.zip
-$ZipFile.Save()
-$ZipFile.PSDispose()
+try {         
+ $File=Dir C:\Temp\Test.ps1 
+ $ZipFile=Get-Zipfile -Path Test.zip
+ Add-ZipEntry -Object $File -ZipFile $ZipFile
+ $ZipFile.Save()
+} finally {
+ $ZipFile.PSDispose()
+}
 			}
 			remarks = $Datas.GetZipFileExamplesRemarks2
 			test = { . $args[0] }
@@ -66,12 +67,15 @@ $ZipFile.PSDispose()
 		@{
 
 			code = {
-$Zip=Get-Zipfile -Path Test.zip
- $ofs="`r`n"
- [string]$Text=Get-Content C:\Temp\Test.ps1
-Add-ZipEntry -Object $Text -EntryName MyText -ZipFile $ZipFile
-$ZipFile.Save()
-$ZipFile.PSDispose()
+try {         
+ $Zip=Get-Zipfile -Path Test.zip
+  $ofs="`r`n"
+  [string]$Text=Get-Content C:\Temp\Test.ps1
+ Add-ZipEntry -Object $Text -EntryName MyText -ZipFile $ZipFile
+ $ZipFile.Save()
+} finally {
+ $ZipFile.PSDispose()
+}
          
 			}
 			remarks = $Datas.GetZipFileExamplesRemarks3
@@ -80,8 +84,13 @@ $ZipFile.PSDispose()
 		@{
 
 			code = {
-$Zip=Get-Zipfile -Path Test.zip
-Dir *.txt|Add-ZipEntry -ZipFile $Zip
+try {
+ $Zip=Get-Zipfile -Path Test.zip
+ Dir *.txt|Add-ZipEntry -ZipFile $Zip
+ $ZipFile.Save() 
+} finally {
+ $ZipFile.PSDispose()
+}
          
 			}
 			remarks = $Datas.GetZipFileExamplesRemarks4
