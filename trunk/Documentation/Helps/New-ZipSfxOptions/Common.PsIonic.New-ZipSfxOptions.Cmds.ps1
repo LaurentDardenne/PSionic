@@ -45,6 +45,14 @@ $MyConfiguration=New-ZipSfxOptions -Copyright "This module is free for non-comme
 			remarks = $Datas.NewZipSfxOptionsExamplesRemarks1
 			test = { . $args[0] }
 		}
+		@{
+			code = {
+New-ZipSfxOptions -Copyright "This module is free for non-commercial purposes."|Set-PsIonicSfxOptions
+
+			}
+			remarks = $Datas.NewZipSfxOptionsExamplesRemarks2
+			test = { . $args[0] }
+		}
 	)
 	links = @(
 		@{ text = 'AdditionalCompilerSwitches'; URI = 'http://msdn.microsoft.com/en-us/library/system.codedom.compiler.compilerparameters(v=vs.80).aspx' }

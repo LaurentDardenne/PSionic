@@ -54,7 +54,7 @@ try {
 try {         
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
   [string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
-  Add-ZipEntry -Object $Text -Path MyText -ZipFile $ZipFile
+  Add-ZipEntry -Object $Text -Name MyText -ZipFile $ZipFile
 } finally {
   $ZipFile.Close()
 }
@@ -66,7 +66,7 @@ try {
 			code = {
 try {
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
-  ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Path PSVersiontable -ZipFile $ZipFile
+  ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Name PSVersiontable -ZipFile $ZipFile
 } finally {
   $ZipFile.Close()
 }
@@ -76,8 +76,13 @@ try {
 		}
 		@{
 			code = {
-#Todo Byte[]
-         
+try {         
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+  [byte[]] $Array=@(1..20)
+  Add-ZipEntry -Object $Array -Name MyArray -ZipFile $ZipFile
+} finally {
+  $ZipFile.Close()
+}
 			}
 			remarks = $Datas.AddZipEntryExamplesRemarks5
 			test = { . $args[0] }
