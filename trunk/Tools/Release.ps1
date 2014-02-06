@@ -11,10 +11,10 @@ Task Delivery -Depends Clean,RemoveConditionnal,FindTodo {
   
 $VerbosePreference='Continue'
 
-#Module
+#Modules requis
    Copy "$PsIonicTrunk\Modules\Log4Posh" "$PsIonicLivraison" -Recurse
  
-#lg4N config
+#log4Net config
 # on copie la config de dev nécessaire au build. 
    Copy "$PsIonicTrunk\Log4Net.Config.xml" "$PsIonicLivraison\PsIonic"
       #crée le template pour le setup
@@ -28,14 +28,15 @@ $VerbosePreference='Continue'
 #Doc xml localisée
    Copy "$PsIonicTrunk\en-US\PsIonicLocalizedData.psd1" "$PsIonicLivraison\PsIonic\en-US\PsIonicLocalizedData.psd1" 
    Copy "$PsIonicTrunk\fr-FR\PsIonicLocalizedData.psd1" "$PsIonicLivraison\PsIonic\fr-FR\PsIonicLocalizedData.psd1" 
+
 #Demos
    Copy "$PsIonicTrunk\Demos" "$PsIonicLivraison\PsIonic\Demos" -Recurse
 
-#PS1mxl   
+#PS1xml   
    Copy "$PsIonicTrunk\FormatData\PsIonic.ReadOptions.Format.ps1xml" "$PsIonicLivraison\PsIonic\FormatData\PsIonic.ReadOptions.Format.ps1xml"
    Copy "$PsIonicTrunk\FormatData\PsIonic.ZipEntry.Format.ps1xml" "$PsIonicLivraison\PsIonic\FormatData\PsIonic.ZipEntry.Format.ps1xml"
 
-   Copy "$PsIonicTrunk\TypeData" "$PsIonicLivraison\PsIonic\TypeData" -Recurse
+   Copy "$PsIonicTrunk\TypeData\System.ZipEntry.Types.ps1xml" "$PsIonicLivraison\PsIonic\TypeData\System.ZipEntry.Types.ps1xml"
 
 #Licence                         
    Copy "$PsIonicTrunk\Documentation\Licence"  "$PsIonicLivraison\PsIonic\Documentation\Licence" -Recurse 
@@ -43,8 +44,10 @@ $VerbosePreference='Continue'
    Copy "$PsIonicTrunk\Licence-PsIonicModule.txt" "$PsIonicLivraison\PsIonic" 
 
 #Module
+      #PsIonic.psm1 est créé par la tâche RemoveConditionnal
    Copy "$PsIonicTrunk\PsIonic.psd1" "$PsIonicLivraison\PsIonic"
-   #PsIonic.psm1 est créé par la tâche RemoveConditionnal 
+   Copy "$PsIonicTrunk\PsIonic.ico" "$PsIonicLivraison\PsIonic"
+   Copy "$PsIonicTrunk\Get-PsIonicDefaultSfxConfiguration.ps1" "$PsIonicLivraison\PsIonic"
    
 #Setup
    Copy "$PsIonicTrunk\Setup\PsIonicSetup.ps1" "$PsIonicLivraison\PsIonic"

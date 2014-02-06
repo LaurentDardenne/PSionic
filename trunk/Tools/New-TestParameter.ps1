@@ -162,7 +162,7 @@ $Result.lines|Sort-Object|% {Write-host $_ -fore green;$_}|Invoke-Expression
 #On peut aussi générer du code de test pour Pester ou un autre module de test :
 $Template=@'
 #
-    It "Test ..TODO.." {
+    It "Test ..TO DO.." {
         try{
           `$result = $_ -ea Stop
         }catch{
