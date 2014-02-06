@@ -129,6 +129,8 @@ Function CloneSfxOptions {
 Function Set-PsIonicSfxOptions { 
 # .ExternalHelp PsIonic-Help.xml         
   param (
+    [Parameter(Position=0, Mandatory=$True,ValueFromPipeline=$True)]
+    [ValidateNotNullOrEmpty()]
    [Ionic.Zip.SelfExtractorSaveOptions] $Options
   )
   [void](CloneSfxOptions $Options $Script:DefaultSfxConfiguration)
@@ -1222,23 +1224,32 @@ Function GetArchivePath {
 
 Function Expand-ZipEntry { 
 # .ExternalHelp PsIonic-Help.xml         
-    [CmdletBinding()] 
-    [OutputType([System.String])]
+    [CmdletBinding(DefaultParameterSetName="String")] 
+    [OutputType('XML',[System.Xml.XmlDocument])] 
+    [OutputType('String',[System.String])]
+    [OutputType('ByteArray',[Byte[]])]
 	param(
 		[ValidateNotNull()] 
         [parameter(Mandatory=$True,ValueFromPipeline=$True)]
-      [Ionic.Zip.ZipFile] $ZipFile,        
+      [Ionic.Zip.ZipFile] $ZipFile,   
+           
       	[Parameter(Position=1,Mandatory=$True,ValueFromPipeline=$True)]
 	  [String[]] $Name,      
-        [Parameter(Mandatory=$false, ParameterSetName="Default")] 
-		[ValidateScript( { IsValueSupported $_ -Extract } )] 
+	
+    	[ValidateScript( { IsValueSupported $_ -Extract } )] 
 	  [Ionic.Zip.ExtractExistingFileAction] $ExtractAction=[Ionic.Zip.ExtractExistingFileAction]::Throw,
 	
 	  [String] $Password,
 
       [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
       [Switch] $AsHashTable,
+
+        [parameter(ParameterSetName="ByteArray")]
+      [Switch] $Byte,
+
+        [parameter(ParameterSetName="XML")]
       [Switch] $XML,
+
       [Switch] $Strict
 	)
  begin {
@@ -1280,8 +1291,12 @@ Function Expand-ZipEntry {
         $Result= $Reader.ReadToEnd()
         if ($XML)
         { $Data=$Result -as [XML] }
+        elseif($Byte)
+          #Todo revoir le type de lecture des streams
+        { $Data=[byte[]][char[]]$Result }  
         else 
         { $Data=$Result -as [String] }
+
         if ($AsHashTable) 
         { 
           $Logger.Debug("Add Hashtable") #<%REMOVE%>
@@ -1290,7 +1305,10 @@ Function Expand-ZipEntry {
         else
         { 
            $Logger.Debug("Send Datas") #<%REMOVE%>
-           Write-output $Data
+           if ($Byte)
+           { ,$Data}
+           else
+           { Write-output $Data }
         }
      }
      finally 
@@ -1349,8 +1367,6 @@ Function Expand-ZipFile {
         
       [int]$ProgressID,
       
-      [switch] $Interactive,
-       
       [switch] $Flatten, 
       [switch] $Passthru,
       [switch] $Create
@@ -1765,7 +1781,7 @@ Function ConvertTo-Sfx {
 Function New-ZipSfxOptions {
 # .ExternalHelp PsIonic-Help.xml         
 	[CmdletBinding(DefaultParameterSetName = "CmdLine")]
-	[OutputType([Ionic.Zip.SelfExtractorSaveOptions])]
+	[OutputType([Ionic.Zip.SelfExtractorSaveOptions])]      
 	Param (
           [ValidateNotNullOrEmpty()]
           [Parameter(Position=0, Mandatory=$false)]
@@ -1784,7 +1800,7 @@ Function New-ZipSfxOptions {
         [System.Version] $FileVersion='1.0.0.0',
   
           [ValidateNotNullOrEmpty()]
-          [ValidateScript( { IsIconImage $_ } )]
+          [ValidateScript( { IsIconImage $_.Trim() } )]
 		[string] $IconFile,
     
          [ValidateScript( { IsValueSupported $_ -Extract } )]
@@ -1811,6 +1827,7 @@ Function New-ZipSfxOptions {
         
 		[Parameter(ParameterSetName="CmdLine")]
 		[switch] $CmdLine, 
+    
 		[Parameter(ParameterSetName="GUI")]
 		[switch] $GUI 
 	)
@@ -1818,7 +1835,11 @@ Function New-ZipSfxOptions {
 	if ($PsCmdlet.ParameterSetName -eq "CmdLine")
      { $Flavor = [ZipSfxFlavor]::ConsoleApplication }
 	else
-    { $Flavor = [ZipSfxFlavor]::WinFormsApplication }
+    { 
+      $Flavor = [ZipSfxFlavor]::WinFormsApplication
+      if ($WindowTitle -ne [string]::Empty)
+      { $SfxOptions.SfxExeWindowTitle=$WindowTitle.Trim() }
+    }
 
      #Crée une instance et renseigne seulement les membres  
      # qui ne sont pas de type string
@@ -1832,31 +1853,27 @@ Function New-ZipSfxOptions {
                           RemoveUnpackedFilesAfterExecute=$Remove;
                           Quiet=$Quiet;
                          } 
-     #Renseigne chaque membre de type string  
-     # à partir du paramètre associé s'il n'est pas vide.
+
 	if ($ExtractDirectory -ne [string]::Empty)
-    { $SfxOptions.DefaultExtractDirectory =$ExtractDirectory }  
+    { $SfxOptions.DefaultExtractDirectory =$ExtractDirectory.Trim() }  
 	
     if ($ExeOnUnpack -ne [string]::Empty)
-    { $SfxOptions.PostExtractCommandLine = $ExeOnUnpack }
+    { $SfxOptions.PostExtractCommandLine = $ExeOnUnpack.Trim() }
     
     if ($Description -ne [string]::Empty)
-    { $SfxOptions.Description=$Description } 
+    { $SfxOptions.Description=$Description.Trim() } 
     
     if ($IconFile -ne [string]::Empty)
-    { $SfxOptions.IconFile=$IconFile }
+    { $SfxOptions.IconFile=$IconFile.Trim() }
     
     if ($NameOfProduct -ne [string]::Empty)
-    { $SfxOptions.ProductName=$NameOfProduct }
+    { $SfxOptions.ProductName=$NameOfProduct.Trim() }
     
     if ($VersionOfProduct -ne [string]::Empty)
-    { $SfxOptions.ProductVersion=$VersionOfProduct }
+    { $SfxOptions.ProductVersion=$VersionOfProduct.Trim() }
   
     if ($Copyright -ne [string]::Empty)
-    { $SfxOptions.Copyright=$Copyright } 
-    
-    if ($WindowTitle -ne [string]::Empty)
-    { $SfxOptions.SfxExeWindowTitle=$WindowTitle }
+    { $SfxOptions.Copyright=$Copyright.Trim() } 
    
     $SfxOptions
 }#New-ZipSfxOptions
@@ -2071,12 +2088,21 @@ Function OnRemovePsIonicZip {
 # Section  Initialization
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { OnRemovePsIonicZip }
                                                         
-Reset-PsIonicSfxOptions 
+#Crée la variable
+Reset-PsIonicSfxOptions                                                        
+If (Test-Path Function:Get-PsIonicDefaultSfxConfiguration)
+{ 
+  #A ce stade, les fonctions de ce module ne sont pas encore accesssible à la fonction externe. 
+  #Même si ce code se trouvait après l'appel à Export-ModuleMember 
+  $FunctionBounded=$MyInvocation.MyCommand.ScriptBlock.Module.NewBoundScriptBlock(${function:Get-PsIonicDefaultSfxConfiguration})
+  &$FunctionBounded|Set-PsIonicSfxOptions
+}
+
  
 Set-Alias -name cmpzf   -value Compress-ZiFile
 Set-Alias -name expzf   -value Expand-ZiFile
 Set-Alias -name cnvsfx  -value ConvertTo-Sfx
-Set-Alias -name fz      -value Format-ZipFile
+Set-Alias -name fzf     -value Format-ZipFile
 Set-Alias -name tstzf   -value Test-ZipFile
 Set-Alias -name gzf     -value Get-ZipFile
 Set-Alias -name adze    -value Add-ZipEntry
@@ -2085,12 +2111,6 @@ Set-Alias -name nzfo    -value New-ZipSfxOptions
 Set-Alias -name rzfo    -value Reset-PsIonicSfxOptions
 Set-Alias -name szfo    -value Set-PsIonicSfxOptions
 Set-Alias -name gzfo    -value Get-PsIonicSfxOptions
-
-#<DEFINE %DEBUG%>
-Set-Alias -name Set-DebugLevel -value Set-Log4NETDebugLevel
-Set-Alias -name dbglvl         -value Set-Log4NETDebugLevel
-Set-Alias -name sca            -value Stop-ConsoleAppender
-#<UNDEF %DEBUG%> 
 
 Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         Compress-SfxFile,
