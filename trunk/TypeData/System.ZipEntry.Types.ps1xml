@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- *****************************************************************************************************************
+Permet de retrouver les mêmes infos que celles affichées via le fichier de formatage : PsIonic.ZipEntry.Format.ps1xml
+****************************************************************************************************************** -->
+<Types>
+  <Type> 
+     <Name>Ionic.Zip.ZipEntry</Name> 
+       <Members>
+          <AliasProperty>
+              <Name>Size</Name>
+              <ReferencedMemberName>UncompressedSize</ReferencedMemberName>
+          </AliasProperty>
+          <AliasProperty>
+              <Name>Ratio</Name>
+              <ReferencedMemberName>CompressionRatio</ReferencedMemberName>
+          </AliasProperty>
+          <AliasProperty>
+              <Name>Encrypted</Name>
+              <ReferencedMemberName>UsesEncryptionCount</ReferencedMemberName>
+          </AliasProperty>                    
+      </Members>
+  </Type>
+</Types> 
