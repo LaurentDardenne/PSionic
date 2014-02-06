@@ -29,9 +29,9 @@
     'FormatData\PsIonic.ReadOptions.Format.ps1xml'
   )
   
-#  TypesToProcess     = @(
-#      'TypeData\Psionic.xxx.Type.ps1xml'
-#  )
+  TypesToProcess     = @(
+      'TypeData\System.ZipEntry.Types.ps1xml'
+  )
   
   # Assemblies qui doivent être chargés préalablement à l'importation de ce module
 	RequiredAssemblies = @((Join-Path $psScriptRoot 'IOnic.Zip.dll'),
