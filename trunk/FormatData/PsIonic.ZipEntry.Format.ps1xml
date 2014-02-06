@@ -35,7 +35,7 @@
             <Width>8</Width>           				
           </TableColumnHeader>   
           <TableColumnHeader>
-          	<Label>Name</Label>	
+          	<Label>FileName</Label>	
             <Alignment>Left</Alignment>
             <Width>30</Width>           				
           </TableColumnHeader>                  
