@@ -1,24 +1,24 @@
-﻿# Expand-ZipFile command help
+# Expand-ZipFile command help
 @{
 	command = 'Expand-ZipFile'
 	synopsis = $Datas.ExpandZipFileSynopsis
 	description = $Datas.ExpandZipFileDescription
 	sets = @{
-		Path = $Datas.ExpandZipFileSetsPath
 		LiteralPath = $Datas.ExpandZipFileSetsLiteralPath
+		Path = $Datas.ExpandZipFileSetsPath
 	}
 	parameters = @{
 		Create = $Datas.ExpandZipFileParametersCreate
-		OutputPath = $Datas.ExpandZipFileParametersOutputPath
 		Encoding = $Datas.ExpandZipFileParametersEncoding
 		ExtractAction = $Datas.ExpandZipFileParametersExtractAction
-		Path = $Datas.ExpandZipFileParametersPath
-		LiteralPath = $Datas.ExpandZipFileParametersLiteralPath    
 		Flatten = $Datas.ExpandZipFileParametersFlatten
-		ProgressID = $Datas.ExpandZipFileParametersProgressID
 		From = $Datas.ExpandZipFileParametersFrom
+		LiteralPath = $Datas.ExpandZipFileParametersLiteralPath
+		OutputPath = $Datas.ExpandZipFileParametersOutputPath
 		Passthru = $Datas.ExpandZipFileParametersPassthru
 		Password = $Datas.ExpandZipFileParametersPassword
+		Path = $Datas.ExpandZipFileParametersPath
+		ProgressID = $Datas.ExpandZipFileParametersProgressID
 		Query = $Datas.ExpandZipFileParametersQuery
 	}
 	inputs = @(
@@ -29,20 +29,8 @@
 	)
 	outputs = @(
 		@{
-			type = 'Path'
-			description = $Datas.ExpandZipFileOutputsDescriptionPath
-		}
-		@{
-			type = 'Ionic.Zip.ZipFile'
-			description = $Datas.ExpandZipFileOutputsDescriptionIonicZipZipFile
-		}
-		@{
-			type = 'LiteralPath'
-			description = $Datas.ExpandZipFileOutputsDescriptionLiteralPath
-		}
-		@{
-			type = 'Ionic.Zip.ZipEntry'
-			description = $Datas.ExpandZipFileOutputsDescriptionIonicZipZipEntry
+			type = ''
+			description = $Datas.ExpandZipFileOutputsDescription1
 		}
 	)
 	notes = $Datas.ExpandZipFileNotes

@@ -23,20 +23,12 @@
 	)
 	outputs = @(
 		@{
-			type = 'Default'
-			description = $Datas.TestZipFileOutputsDescriptionDefault
+			type = 'System.Boolean'
+			description = $Datas.TestZipFileOutputsDescriptionSystemBoolean
 		}
 		@{
-			type = 'bool'
-			description = $Datas.TestZipFileOutputsDescriptionbool
-		}
-		@{
-			type = 'File'
-			description = $Datas.TestZipFileOutputsDescriptionFile
-		}
-		@{
-			type = 'string'
-			description = $Datas.TestZipFileOutputsDescriptionstring
+			type = 'System.String'
+			description = $Datas.TestZipFileOutputsDescriptionSystemString
 		}
 	)
 	notes = $Datas.TestZipFileNotes

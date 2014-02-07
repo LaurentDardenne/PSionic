@@ -29,20 +29,8 @@
 	)
 	outputs = @(
 		@{
-			type = 'Path'
-			description = $Datas.ExpandZipFileOutputsDescriptionPath
-		}
-		@{
-			type = 'Ionic.Zip.ZipFile'
-			description = $Datas.ExpandZipFileOutputsDescriptionIonicZipZipFile
-		}
-		@{
-			type = 'LiteralPath'
-			description = $Datas.ExpandZipFileOutputsDescriptionLiteralPath
-		}
-		@{
-			type = 'Ionic.Zip.ZipEntry'
-			description = $Datas.ExpandZipFileOutputsDescriptionIonicZipZipEntry
+			type = ''
+			description = $Datas.ExpandZipFileOutputsDescription1
 		}
 	)
 	notes = $Datas.ExpandZipFileNotes
