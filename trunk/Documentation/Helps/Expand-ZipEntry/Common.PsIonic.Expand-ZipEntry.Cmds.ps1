@@ -41,12 +41,65 @@
 	)
 	notes = $Datas.ExpandZipEntryNotes
 	examples = @(
-		@{
-			#title = ''
-			#introduction = ''
-			code = {
+		@{ 
+ 			code = {
+try {         
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+  [string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
+  Add-ZipEntry -Object $Text -Name MyText -ZipFile $ZipFile
+} finally {
+  $ZipFile.Close()
+}
+Remove-Variable Text
+try {
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+  [string]$Text =Expand-ZipEntry -Zip $ZipFile MyText   
+} finally {
+  $ZipFile.PSDispose()
+}
 			}
-			remarks = $Datas.ExpandZipEntryExamplesRemarks1
+			remarks = $Datas.AddZipEntryExamplesRemarks1
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+try {
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
+  ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Name 'PSVersiontable.climxl' -ZipFile $ZipFile
+} finally {
+  $ZipFile.Close()
+}
+
+try {
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+  $MaTableDeVersion=Expand-ZipEntry -Zip $ZipFile 'PSVersiontable.climxl'|ConvertFrom-CliXml   
+} finally {
+  $ZipFile.PSDispose()
+}
+$MaTableDeVersion
+
+			}
+			remarks = $Datas.AddZipEntryExamplesRemarks2
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+try {         
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+  [byte[]] $Array=@(1..20)
+  Add-ZipEntry -Object $Array -Name MyArray -ZipFile $ZipFile
+} finally {
+  $ZipFile.Close()
+}
+Remove-Variable Array
+try {
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+  $Array=Expand-ZipEntry -Zip $ZipFile MyArray -Byte   
+} finally {
+  $ZipFile.PSDispose()
+}
+			}
+			remarks = $Datas.AddZipEntryExamplesRemarks3
 			test = { . $args[0] }
 		}
 	)

@@ -26,7 +26,6 @@
 	examples = @(
 		@{
 			code = {
-         
 $ZipFileName="C:\Temp\MySetup.zip" 
 
 $ReadOptions = New-Object Ionic.Zip.ReadOptions -Property @{ 

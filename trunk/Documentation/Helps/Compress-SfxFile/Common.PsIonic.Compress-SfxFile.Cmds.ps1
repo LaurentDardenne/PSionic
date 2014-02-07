@@ -42,11 +42,33 @@
 	notes = $Datas.CompressSfxFileNotes
 	examples = @(
 		@{
-			#title = ''
-			#introduction = ''
 			code = {
+ $ZipFileName="C:\Temp\MySetup.exe"
+ 
+ $Save=@{
+	ExeOnUnpack="Powershell -noprofile -File .\MySetup.ps1";  
+      Description="Setup for one Powershell module"; 
+      ExtractExistingFile=[Ionic.Zip.ExtractExistingFileAction]::OverwriteSilently;
+      NameOfProduct="MyProject";
+      VersionOfProduct="1.0.0";
+      Copyright='This module is free for non-commercial purposes.'
+ }
+ $SaveOptions=New-ZipSfxOptions @Save
+
+ Dir "C:\Temp\*.ps1"|
+   Compress-SfxFile $ZipFileName -Options $SaveOptions          
 			}
 			remarks = $Datas.CompressSfxFileExamplesRemarks1
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+$ZipFileName="C:\Temp\MySetup.exe"
+
+Dir "C:\Temp\*.ps1"|
+   Compress-SfxFile $ZipFileName -Options (Get-PsIonicSfxOptions) -Verbose         
+			}
+			remarks = $Datas.CompressSfxFileExamplesRemarks2
 			test = { . $args[0] }
 		}
 	)
