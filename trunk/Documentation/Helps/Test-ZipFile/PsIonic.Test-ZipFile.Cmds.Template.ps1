@@ -1,4 +1,4 @@
-﻿# Test-ZipFile command help
+# Test-ZipFile command help
 @{
 	command = 'Test-ZipFile'
 	synopsis = $Datas.TestZipFileSynopsis
@@ -9,10 +9,10 @@
 	}
 	parameters = @{
 		Check = $Datas.TestZipFileParametersCheck
-		Path = $Datas.TestZipFileParametersPath
 		isValid = $Datas.TestZipFileParametersisValid
 		Passthru = $Datas.TestZipFileParametersPassthru
 		Password = $Datas.TestZipFileParametersPassword
+		Path = $Datas.TestZipFileParametersPath
 		Repair = $Datas.TestZipFileParametersRepair
 	}
 	inputs = @(
@@ -23,20 +23,12 @@
 	)
 	outputs = @(
 		@{
-			type = 'Default'
-			description = $Datas.TestZipFileOutputsDescriptionDefault
+			type = 'System.Boolean'
+			description = $Datas.TestZipFileOutputsDescriptionSystemBoolean
 		}
 		@{
-			type = 'bool'
-			description = $Datas.TestZipFileOutputsDescriptionbool
-		}
-		@{
-			type = 'File'
-			description = $Datas.TestZipFileOutputsDescriptionFile
-		}
-		@{
-			type = 'string'
-			description = $Datas.TestZipFileOutputsDescriptionstring
+			type = 'System.String'
+			description = $Datas.TestZipFileOutputsDescriptionSystemString
 		}
 	)
 	notes = $Datas.TestZipFileNotes

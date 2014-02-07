@@ -1,8 +1,12 @@
-﻿# Expand-ZipEntry command data
+# Expand-ZipEntry command data
 $Datas = @{
 	ExpandZipEntrySynopsis = ''
 	ExpandZipEntryDescription = ''
-	ExpandZipEntrySetsDefault = ''
+	ExpandZipEntrySetsByteArray = ''
+	ExpandZipEntrySetsString = ''
+	ExpandZipEntrySetsXML = ''
+	ExpandZipEntryParametersAsHashTable = ''
+	ExpandZipEntryParametersByte = ''
 	ExpandZipEntryParametersEncoding = ''
 	ExpandZipEntryParametersExtractAction = ''
 	ExpandZipEntryParametersName = ''
@@ -11,7 +15,9 @@ $Datas = @{
 	ExpandZipEntryParametersXML = ''
 	ExpandZipEntryParametersZipFile = ''
 	ExpandZipEntryInputsDescription1 = ''
-	ExpandZipEntryOutputsDescriptionIonicZipZipEntry = ''
+	ExpandZipEntryOutputsDescriptionSystemXmlXmlDocument = ''
+	ExpandZipEntryOutputsDescriptionSystemString = ''
+	ExpandZipEntryOutputsDescriptionSystemByte = ''
 	ExpandZipEntryNotes = ''
 	ExpandZipEntryExamplesRemarks1 = ''
 }

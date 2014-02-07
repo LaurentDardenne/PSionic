@@ -37,10 +37,7 @@ Si le paramètre -Query est précisé, alors la barre de progression d'extractio
 	ExpandZipFileParametersPassthru = 'Emet dans le pipeline les entrées contenues dans l''archive zip. Attention, dans ce cas la libération des ressources par l''appel à la méthode Close() est à votre charge.'
     ExpandZipFileParametersCreate = 'Crée le répertoire de destination si celui-ci n''existe pas.'	
 	ExpandZipFileInputsDescription1 = 'En entrée des String ou des Fileinfo'
-	ExpandZipFileOutputsDescriptionPath = 'Emet une instance de type ZipFile.'
-	ExpandZipFileOutputsDescriptionIonicZipZipFile = 'Emet une instance de type ZipFile.'
-	ExpandZipFileOutputsDescriptionLiteralPath = 'Emet une ou des instance(s) de type ZipFile.'
-	ExpandZipFileOutputsDescriptionIonicZipZipEntry = 'Emet une instance de type ZipEntry. todo a effacer'
+	ExpandZipFileOutputsDescription1 = ''
 	ExpandZipFileNotes = @"
 Une archive Zip peut donc en théorie contenir plusieurs entrées dont chacune a un mode de compression et/ou de cryptage différent des autres. 
 par contre, cette fonction suppose que le mot de passe est commun à toutes les entrées de l'archive, sinon une exception sera déclenchée lors du traitement du premier fichier possédant un mot de passe différent.

@@ -23,7 +23,7 @@ System.Byte[], System.String, System.IO.DirectoryInfo, System.IO.FileInfo, Ionic
 Vous pouvez émettre n'importe quel objet des types précédents dans le pipeline.
 "@
 	AddZipEntryOutputsDescriptionIonicZipZipEntry = 'Ionic.Zip.ZipEntry'
-	AddZipEntryNotes = ''
+	AddZipEntryNotes = 'Cette fonction est couplée à la fonction nommée Expand-ZipEntry'
 	AddZipEntryExamplesRemarks1 = @"
 Ces commandes ajoutent une entrée dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
@@ -35,7 +35,7 @@ Ces commandes ajoutent une entrée dans l'archive C:\Temp\Test.zip.
 Ces commandes ajoutent des entrées dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
   -la seconde, depuis le répertoire courant, ajoute dans l'archive tous les fichiers portant l'extension .txt, 
-  -la troisème enregistre l'archive sur le disque et libére les ressources systèmes.
+  -la troisième enregistre l'archive sur le disque et libére les ressources systèmes.
 "@        
     AddZipEntryExamplesRemarks3 = @"
 Ces commandes ajoutent, à partir d'une chaîne de caractères, une entrée nommée dans l'archive C:\Temp\Test.zip. 
@@ -48,9 +48,14 @@ Ces commandes ajoutent, à partir d'une chaîne de caractères, une entrée nomm
 Ces commandes ajoutent, à partir d'un objet sérialisé, une entrée nommée dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
   -la seconde sérialise l'objet contenu dans la variable PSVersiontable et l'ajoute en tant qu'entrée nommée dans l'archive, 
-  -la troisème enregistre l'archive sur le disque et libére les ressources systèmes.
+  -la troisième enregistre l'archive sur le disque et libére les ressources systèmes.
 "@  
-    AddZipEntryExamplesRemarks5 = 'TODO'
+    AddZipEntryExamplesRemarks5 =@'
+Ces commandes ajoutent une entrée nommée MyArray dans l'archive C:\Temp\Test.zip. 
+  -La première instruction crée un objet archive à partir d'un nom de fichier, 
+  -la seconde ajoute l'objet contenu dans la variable $Array et l'ajoute dans l'archive en tant qu'entrée nommée MyArray, 
+  -la troisième enregistre l'archive sur le disque et libére les ressources systèmes.  
+'@
 }
 
 

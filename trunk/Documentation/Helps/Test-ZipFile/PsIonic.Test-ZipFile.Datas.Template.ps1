@@ -1,20 +1,18 @@
-﻿# Test-ZipFile command data
+# Test-ZipFile command data
 $Datas = @{
 	TestZipFileSynopsis = ''
 	TestZipFileDescription = ''
 	TestZipFileSetsDefault = ''
 	TestZipFileSetsFile = ''
 	TestZipFileParametersCheck = ''
-	TestZipFileParametersPath = ''
 	TestZipFileParametersisValid = ''
 	TestZipFileParametersPassthru = ''
 	TestZipFileParametersPassword = ''
+	TestZipFileParametersPath = ''
 	TestZipFileParametersRepair = ''
 	TestZipFileInputsDescription1 = ''
-	TestZipFileOutputsDescriptionDefault = ''
-	TestZipFileOutputsDescriptionbool = ''
-	TestZipFileOutputsDescriptionFile = ''
-	TestZipFileOutputsDescriptionstring = ''
+	TestZipFileOutputsDescriptionSystemBoolean = ''
+	TestZipFileOutputsDescriptionSystemString = ''
 	TestZipFileNotes = ''
 	TestZipFileExamplesRemarks1 = ''
 }

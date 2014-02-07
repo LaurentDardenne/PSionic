@@ -1,9 +1,16 @@
-﻿# Expand-ZipEntry command help
+# Expand-ZipEntry command help
 @{
 	command = 'Expand-ZipEntry'
 	synopsis = $Datas.ExpandZipEntrySynopsis
 	description = $Datas.ExpandZipEntryDescription
+	sets = @{
+		ByteArray = $Datas.ExpandZipEntrySetsByteArray
+		String = $Datas.ExpandZipEntrySetsString
+		XML = $Datas.ExpandZipEntrySetsXML
+	}
 	parameters = @{
+		AsHashTable = $Datas.ExpandZipEntryParametersAsHashTable
+		Byte = $Datas.ExpandZipEntryParametersByte
 		Encoding = $Datas.ExpandZipEntryParametersEncoding
 		ExtractAction = $Datas.ExpandZipEntryParametersExtractAction
 		Name = $Datas.ExpandZipEntryParametersName
@@ -20,8 +27,16 @@
 	)
 	outputs = @(
 		@{
-			type = 'Ionic.Zip.ZipEntry'
-			description = $Datas.ExpandZipEntryOutputsDescriptionIonicZipZipEntry
+			type = 'System.Xml.XmlDocument'
+			description = $Datas.ExpandZipEntryOutputsDescriptionSystemXmlXmlDocument
+		}
+		@{
+			type = 'System.String'
+			description = $Datas.ExpandZipEntryOutputsDescriptionSystemString
+		}
+		@{
+			type = 'System.Byte[]'
+			description = $Datas.ExpandZipEntryOutputsDescriptionSystemByte
 		}
 	)
 	notes = $Datas.ExpandZipEntryNotes
