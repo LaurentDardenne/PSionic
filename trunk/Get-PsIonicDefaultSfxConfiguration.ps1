@@ -7,7 +7,7 @@
   $SfxOptions=@{
     ExeOnUnpack="Powershell -noprofile -File .\MySetup.ps1"
     ExtractDirectory='%TEMP%'
-    Description='Todo'
+    Description='Archive autoextractible exécutant un script Powershell en fin d''extraction.'
     FileVersion='1.0'
     IconFile="$(($env:PSModulePath -split ';')[0])\PsIonic\PsIonic.ico"
     ExtractExistingFile='OverwriteSilently'

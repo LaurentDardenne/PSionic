@@ -49,6 +49,50 @@ function New-Exception($Exception,$Message=$null) {
 	New-Object $ExceptionClassName($Message,$InnerException)       
 } #New-Exception
 
+Function New-TypedVariable{
+ # $Value peut être encapsulé dans un PSObject avant l'appel :
+ # New-TypedVariable Informations (new-object PSObject($Value))
+  param(
+     [Parameter(Position=1, Mandatory=$true)]
+     [ValidateNotNullOrEmpty()]
+    [String] $VariableName,
+     [Parameter(Position=2, Mandatory=$true)]
+     [AllowNull()]     
+    $Value,     
+    [switch] $ReadOnly
+  )
+  
+  function private:New-VariableInLocalScope {
+       #On crée une variable dans une nouvelle portée
+       #évitant ainsi d'écraser un des paramètres de la fonction New-TypedVariable
+       # portant le même nom que $VariableName.
+       #Le nom de la variable devient le nom du membre. 
+      New-Variable $VariableName -value $Value
+      gv $VariableName                        
+  }
+
+  $Variable=private:New-VariableInLocalScope
+  if ($ReadOnly) 
+   {$Variable.Options="ReadOnly"}
+    #On renvoi l'objet variable, celle-ci servira à créer le membre via 
+    #le constructeur de la classe PSVariableProperty
+  $Variable
+}#New-TypedVariable
+
+Function New-PSVariableProperty{
+#Crée un membre de type PSVariableProperty (affiché comme un NoteProperty).    
+  param(
+     [Parameter(Position=1, Mandatory=$true)]
+     [ValidateNotNullOrEmpty()]
+    [String] $MemberName,
+     [Parameter(Position=2, Mandatory=$true)]
+     [AllowNull()]
+    $Value,  
+    [switch] $ReadOnly
+  )
+  New-Object System.Management.Automation.PSVariableProperty( (New-TypedVariable $MemberName $Value -ReadOnly:$ReadOnly) )        
+} #New-PSVariableProperty
+
 Function New-ArrayReadOnly {
  param([ref]$Tableau)
    #La méthode AsReadOnly retourne un wrapper en lecture seule pour le tableau spécifié.
@@ -78,6 +122,45 @@ function Format-ZipFile {
   )
   $Zip.PSbase|Format-List $Properties
 }
+
+Function ConvertTo-PSZipEntryInfo {
+#Transforme chaque entrée d'un champ Info de type string en type PSObject
+#Les propriétés de chque objet sont en lecture seule 
+ param([string]$Info)
+ 
+  $TextHelper=(Get-Culture).TextInfo
+  $Entries=New-Object System.Collections.Arraylist
+  
+  $Items=@($Info -split "`n`n")
+  if ($Items.count -eq 1)
+  { $Borne=0 } #ZipEntry.Info
+  else 
+  { $Borne=1 } #ZipFile.Info
+
+  $Items[$Borne..($Items.Count-1)]|
+    Where {$_ -ne [string]::Empty}|
+    foreach {
+      $Properties=@{}
+      foreach ($Line in ($_ -split "`n"))
+      {
+        $Logger.Debug("Traite $_") #<%REMOVE%>     
+        if ($Line -match '(?<Name>.*?):\s*(?<Value>.*)')
+        {
+          $Logger.Debug("Name=$($Matches.Name) Value=$($Matches.Value)") #<%REMOVE%>
+          $Name=$TextHelper.ToTitleCase($Matches.Name) -Replace ' |\?','' 
+          $Properties.$Name=$Matches.Value
+        }
+      }#for $Line
+      $Current=New-Object PSObject 
+      $Properties.GetEnumerator()|
+       Foreach {
+        $Current.PSObject.Properties.Add( (New-PSVariableProperty $_.Key $_.Value -ReadOnly) )
+       } #for $Properties
+      $Current.PSTypeNames.Insert(0, 'PSZipEntryInfo')
+      $Entries.Add($Current) > $null
+   }#for Items
+  ,$Entries 
+}#ConvertTo-PSZipEntryInfo
 
 #------------
 
@@ -1225,9 +1308,9 @@ Function GetArchivePath {
 Function Expand-ZipEntry { 
 # .ExternalHelp PsIonic-Help.xml         
     [CmdletBinding(DefaultParameterSetName="String")] 
-    [OutputType('XML',[System.Xml.XmlDocument])] 
-    [OutputType('String',[System.String])]
-    [OutputType('ByteArray',[Byte[]])]
+    [OutputType([System.Xml.XmlDocument],ParametersetName='XML')] 
+    [OutputType([System.String],ParametersetName='String')]
+    [OutputType([Byte[]],ParameterSetName='ByteArray')]
 	param(
 		[ValidateNotNull()] 
         [parameter(Mandatory=$True,ValueFromPipeline=$True)]
@@ -1691,8 +1774,8 @@ Function TestZipArchive {
 Function Test-ZipFile{
 # .ExternalHelp PsIonic-Help.xml              
   [CmdletBinding(DefaultParameterSetName="Default")]
-  [OutputType("Default",[boolean])]
-  [OutputType("File",[System.String])]
+  [OutputType([boolean],ParameterSetName='Default')]
+  [OutputType([System.String],ParameterSetName='File')]
  	param(
 		[parameter(Position=0,Mandatory=$True,ValueFromPipeline=$True)]
 	  $Path, 
@@ -1747,13 +1830,17 @@ Function ConvertTo-Sfx {
   	 [ValidateNotNullOrEmpty()]
   	 [ValidateScript( {Test-Path $_})]
   	 [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
-  	[string] $Path,  
+  	[string] $Path, 
+       
   	 [Parameter(Position=1, Mandatory=$false)]
   	[Ionic.Zip.SelfExtractorSaveOptions] $SaveOptions =$Script:DefaultSfxConfiguration,
+   
      [Parameter(Position=2, Mandatory=$false)]
-    [Ionic.Zip.ReadOptions]$ReadOptions=$null, 
+    [Ionic.Zip.ReadOptions]$ReadOptions=$null,
+     
 	 [Parameter(Position=3, Mandatory=$false)]
     [string] $Comment,
+    
     [switch] $Passthru
   )
  begin {
@@ -2128,7 +2215,8 @@ Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         Format-ZipFile,
                                                         ConvertFrom-CliXml,
                                                         ConvertTo-CliXml,
-                                                        Expand-ZipEntry
+                                                        Expand-ZipEntry,
+                                                        ConvertTo-PSZipEntryInfo
                                                         #Update-ZipFile,
                                                         #Sync-ZipFile,
                                                         #Split-ZipFile,
