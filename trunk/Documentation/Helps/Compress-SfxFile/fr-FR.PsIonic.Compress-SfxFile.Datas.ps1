@@ -38,10 +38,18 @@ Sinon, le fichier temporaire de l'archive en cours de construction sera enregist
 	CompressSfxFileInputsDescription1 = 'System.String,System.IO.FileInfo'
     CompressSfxFileOutputsDescriptionSystemIOFileInfo ='System.IO.FileInfo'
 	CompressSfxFileNotes = @"
-Selon le contenu, votre archive peut être compressée en 64 bits, pour déterminer si l‘archive utilise les extensions Zip64 consultez le propriété 'OutputUsedZip64' de l'archive.
+Selon le contenu, votre archive peut être compressée en 64 bits, pour déterminer si l'archive utilise les extensions Zip64 consultez le propriété 'OutputUsedZip64' de l'archive.
 Aucun contrôle n'est effectué sur l'espace disponible lors de la création de l'archive.
 "@ 
-	CompressSfxFileExamplesRemarks1 = 'todo'
+	CompressSfxFileExamplesRemarks1 = @'
+Ces instructions créent une archive autoextractible contenant tous les fichiers .ps1 du répertoire C:\temp.
+Les options sont définies avant la création.
+'@
+ 	CompressSfxFileExamplesRemarks2 = @'
+Ces instructions créent une archive autoextractible contenant tous les fichiers .ps1 du répertoire C:\temp.
+Les options sont récupérées par la fonction Get-PsIonicSfxOptions qui sont les options par défaut de PsIonic ou ceux que vous avez configuré.
+L'usage du paramètre -Verbose permet l'affichage de la progression sur la console.  
+'@
 }
 
 

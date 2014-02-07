@@ -28,5 +28,9 @@ Par exemple %UserProfile%, celles-ci seront substituées lors de l'exécution de
 
 Attention, il n'est pas possible d'enregistrer une archive splittée dans une archive autoextractible.
 "@
-	ConvertToSfxExamplesRemarks1 = 'todo'
+	ConvertToSfxExamplesRemarks1 = @'
+Ces instructions crée, à l'aide de la fonction New-ZipSfxOptions, le paramètrage qui sera utilisé lors de la construction de l'archive autoextractible.
+Enfin, on convertit un fichier d'archive .Zip en un fichier d'archive autoextractible .Exe.
+La variable $ReadOption paramètre l'affichage de la progression du traitement sur la console. 
+'@ 
 }
