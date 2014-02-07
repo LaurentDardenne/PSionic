@@ -33,26 +33,35 @@ function Initialize-HelpFile {
      [Parameter(Mandatory=$true,ValueFromPipeline = $true,ParameterSetName="Name")]
      [ValidateNotNullOrEmpty()]    
    [string] $Name,
+   
      [Parameter(Mandatory=$true,ValueFromPipeline = $true,ParameterSetName="Path")]
      [ValidateNotNullOrEmpty()]    
    [System.IO.FileInfo] $Path,
+   
       #Les métadonnées du module sont passé en paramètres
      [Parameter(Mandatory=$true,ValueFromPipeline = $true,ParameterSetName="MetaData")]
    [System.Management.Automation.PSModuleInfo] $Module,
+   
       #Répertoire parent où seront généré les squelettes de fichier d'aide du module 
       #Est crée s'il n'existe pas
      [Parameter(Position=0)]
      [ValidateNotNullOrEmpty()]    
    $WorkingDirectory=(Join-Path $env:Temp 'Helps'),
+   
       #culture concernée, par défaut celle en cours 
       #dans la session
      [Parameter(Position=1)]
      [ValidateNotNullOrEmpty()]
    [string[]]$Culture=@(Get-Culture),
+   
       #Liste des commandes concernées par la génération
      [Parameter(Position=2)]
      [ValidateNotNullOrEmpty()]
   [string[]]$Command='*',
+  
+     [Parameter(Position=3)]
+  [Microsoft.PowerShell.Commands.FileSystemCmdletProviderEncoding] $Encoding='UTF8',
+  
       #On recharge le module
       #Pour Metadata ce n'est pas nécessaire.
      [Parameter(ParameterSetName="Name")]
@@ -123,7 +132,7 @@ function Initialize-HelpFile {
          Foreach {
            $Current=$_.Key
            Write-debug "Template for command : $Current"
-           $Current|New-CommandHelpTemplate $Module.Name $CurrentDirectory
+           $Current|New-CommandHelpTemplate $Module.Name $CurrentDirectory -Encoding:$Encoding
            $Culture|
             Foreach { 
              $Current|New-CommandHelp $Module.Name $CurrentDirectory $_
@@ -156,7 +165,10 @@ Function New-CommandHelpTemplate {
   
     [Parameter(Position=1,Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
-  [string] $TargetDirectory
+  [string] $TargetDirectory,
+  
+    [Parameter(Position=3)]
+  [Microsoft.PowerShell.Commands.FileSystemCmdletProviderEncoding] $Encoding='UTF8'  
  )
 
  Process {
@@ -201,12 +213,12 @@ Function New-CommandHelpTemplate {
      }#Foreach 
  
     Write-verbose "Write $FileDataBlocTemplate"
-    $sBuildData.ToString()|Set-Content $FileDataBlocTemplate
+    $sBuildData.ToString()|Set-Content $FileDataBlocTemplate -Encoding:$Encoding
    
     Write-verbose "Write $FileCmdBlocTemplate"
-    $sBuildCmd.ToString() |Set-Content $FileCmdBlocTemplate 
+    $sBuildCmd.ToString() |Set-Content $FileCmdBlocTemplate -Encoding:$Encoding 
     Write-verbose "Write $FileCmdBlocCommon"
-    $sBuildCmd.ToString() |Set-Content $FileCmdBlocCommon  
+    $sBuildCmd.ToString() |Set-Content $FileCmdBlocCommon -Encoding:$Encoding  
  }#process
 } #New-CommandHelpTemplate
 
