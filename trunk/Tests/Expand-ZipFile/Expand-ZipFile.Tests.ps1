@@ -12,7 +12,7 @@ write-warning $global:here
         try{
            Expand-ZipFile -Path C:\temp\unknown.zip -OutputPath $global:WorkDir -ErrorAction Stop
         }catch{
-            $result=$_.Exception.Message -match [regex]::Escape("Impossible de trouver le chemin d'accès « C:\temp\unknown.zip », car il n'existe pas.")
+            $result=$_.Exception.Message -match [regex]::Escape("Impossible de trouver le chemin d'accès 'C:\temp\unknown.zip', car il n'existe pas")
         }
         $result | should be ($true)
     }
@@ -20,9 +20,9 @@ write-warning $global:here
     It "Expand existing zip file in not existing OutputPath return true (exception)" {
         try{
            $global:path = $global:WorkDir+"\Archive"
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $path -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath "${path}2" -ExtractAction overwritesilently -ErrorAction Stop
         }catch {
-            $result=$_.exception -is [System.Management.Automation.ItemNotFoundException]
+            $result=$_.exception -is [PSIonicTools.PsionicException]
         }
         $result| should be ($true)
     }
@@ -149,27 +149,6 @@ write-warning $global:here
         $result | should be ($true)
     }
  
-    It "Expand zip file with many parameters from different parameter sets return true (exception)" {
-        try{
-           md $global:WorkDir\Archive >$null
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -Query '*.dll' -From 'Archive\directory' -Flatten -List -ErrorAction Stop
-        }catch{
-            $result= $_.Exception.Message -match 'Le jeu de paramètres ne peut pas être résolu à l''aide des paramètres nommés spécifiés.'
-        }
-        $result | should be ($true)
-    }
- 
-    It "Expand zip file with list parameter return true" {
-        try{
-            $result = $null
-            $result = Expand-ZipFile -Path $global:WorkDir\Archive.zip -List -ErrorAction Stop
-        }catch{
-            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
-            $result= $false
-        }
-        $result | should be ($true)
-    }
- 
     It "Expand Archive.zip file with passthru parameter return true" {
         try{
             $result = $null
@@ -198,45 +177,42 @@ write-warning $global:here
         $result | should be ($true)
     }
  
-#      It "Expand encrypted zip file with good password return true" {
-#         try{
-#            Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -OutputPath $global:WorkDir\CryptedArchive -create -Password password -ErrorAction Stop
-#            if(-not (test-path $global:WorkDir\CryptedArchive\Archive\PerfCenterCpl.ico)){
-#              throw "Fichier provenant de l'archive inexistant après extraction"
-#            }
-#            if(-not (test-path $global:WorkDir\CryptedArchive\about_Pester.help.txt)){
-#              throw "Fichier provenant de l'archive inexistant après extraction"
-#            }
-#            rm $global:WorkDir\CryptedArchive -Recurse -Force
-#            $result=$true
-#         }catch{
-#             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
-#             $result=$false
-#         }
-#         $result | should be ($true)
-#     }
-# 
-#     It "Expand .ico file from encrypted zip file with good password return true" {
-#         try{
-#            Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -OutputPath $global:WorkDir\CryptedArchive -create -Query '*.ico' -Password password -ErrorAction Stop
-#            $icoFile = Get-ChildItem $global:WorkDir\CryptedArchive -filter *.ico -recurse
-#            $Files =  Get-ChildItem $global:WorkDir\CryptedArchive -recurse
-#            if($icoFile.count -ne 1 -or $Files.count -ne 2){
-#              throw "Les fichiers n'ont pas été extraits"
-#            }
-#            if(-not (test-path $global:WorkDir\CryptedArchive\Archive\PerfCenterCpl.ico)){
-#              throw "Le fichier .ico n'a pas été extrait"
-#            }
-#            rm $global:WorkDir\CryptedArchive -Recurse -Force
-#            $result=$true
-#         }catch{
-#             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
-#             $result=$false
-#         }
-#         $result | should be ($true)
-#     }
-# 
-#     # TODO : Follow, Interactive
-# 
-  }
+     It "Expand encrypted zip file with good password return true" {
+        try{
+           Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -OutputPath $global:WorkDir\CryptedArchive -create -Password password -ErrorAction Stop
+           if(-not (test-path $global:WorkDir\CryptedArchive\Archive\PerfCenterCpl.ico)){
+             throw "Fichier provenant de l'archive inexistant après extraction"
+           }
+           if(-not (test-path $global:WorkDir\CryptedArchive\about_Pester.help.txt)){
+             throw "Fichier provenant de l'archive inexistant après extraction"
+           }
+           rm $global:WorkDir\CryptedArchive -Recurse -Force
+           $result=$true
+        }catch{
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
+            $result=$false
+        }
+        $result | should be ($true)
+    }
+
+    It "Expand .ico file from encrypted zip file with good password return true" {
+        try{
+           Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -OutputPath $global:WorkDir\CryptedArchive -create -Query '*.ico' -Password password -ExtractAction OverwriteSilently -ErrorAction Stop
+           $icoFile = @(Get-ChildItem $global:WorkDir\CryptedArchive -filter *.ico -recurse)
+           $Files =  @(Get-ChildItem $global:WorkDir\CryptedArchive -recurse)
+           if($icoFile.count -ne 1 -or $Files.count -ne 2){
+             throw "Les fichiers n'ont pas été extraits"
+           }
+           if(-not (test-path $global:WorkDir\CryptedArchive\Archive\PerfCenterCpl.ico)){
+             throw "Le fichier .ico n'a pas été extrait"
+           }
+           rm $global:WorkDir\CryptedArchive -Recurse -Force
+           $result=$true
+        }catch{
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
+            $result=$false
+        }
+        $result | should be ($true)
+    }
+}
 

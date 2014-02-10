@@ -10,11 +10,11 @@ Describe "Compress-ZipFile" {
 
     It "Compress data to zip file and then expand it return true" {
         try{
-            &$PSionicModule {Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\Archive.zip -ErrorAction Stop  }
+            Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\Archive.zip -ErrorAction Stop 
             if(-not (Test-Path $global:WorkDir\Archive.zip)){
                 throw "Archive introuvable"
             } 
-            &$PSionicModule {Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ErrorAction Stop}
+            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ErrorAction Stop
             del $global:WorkDir\Archive.zip
             rm $global:WorkDir\Archive -Recurse -Force
             $result = $true
@@ -27,11 +27,11 @@ Describe "Compress-ZipFile" {
 
     It "Compress data to zip file with comment and then expand it return true" {
         try{
-            &$PSionicModule {Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\Archive.zip -Comment "un commentaire pour tests : 03/03/2013" -ErrorAction Stop  }
+            Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\Archive.zip -Comment "un commentaire pour tests : 03/03/2013" -ErrorAction Stop
             if(-not (Test-Path $global:WorkDir\Archive.zip)){
                 throw "Archive introuvable"
             } 
-            &$PSionicModule {Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ErrorAction Stop}
+            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ErrorAction Stop
             del $global:WorkDir\Archive.zip
             rm $global:WorkDir\Archive -Recurse -Force
             $result = $true
@@ -44,11 +44,11 @@ Describe "Compress-ZipFile" {
 
     It "Compress data to zip file with password (default encryption) and then expand it return true" {
         try{
-            &$PSionicModule {Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\CryptedArchive.zip -Password password -ErrorAction Stop  }
+            Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\CryptedArchive.zip -Password password -ErrorAction Stop
             if(-not (Test-Path $global:WorkDir\CryptedArchive.zip)){
                 throw "Archive introuvable"
             } 
-            &$PSionicModule {Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -OutputPath $global:WorkDir\CryptedArchive -create -Password password -ErrorAction Stop}
+            Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -OutputPath $global:WorkDir\CryptedArchive -create -Password password -ErrorAction Stop
             del $global:WorkDir\CryptedArchive.zip
             rm $global:WorkDir\CryptedArchive -Recurse -Force
             $result = $true
@@ -61,21 +61,19 @@ Describe "Compress-ZipFile" {
 
     It "Compress data to zip file with bad password for WinZipAes256 encryption (exception)" {
         try{
-            &$PSionicModule {Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\CryptedArchive.zip -Password password -Encryption WinZipAes256 -ErrorAction Stop  }
+            Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\CryptedArchive.zip -Encryption WinZipAes256 -ErrorAction Stop
         }catch{
-            $result=$_.Exception.Message -match "La valeur du paramètre Password \('password'\) est invalide pour la valeur de DataEncryption 'WinZipAes256'."
+            $result=$_.Exception.Message -match "La valeur du paramètre Password \(''\) est invalide pour la valeur de DataEncryption 'WinZipAes256'."
         }
         $result | should be ($true)
     }
 
     It "Compress data to zip file with password (Bad encryption) return true (exception)" {
         try{
-            &$PSionicModule {Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\CryptedArchive.zip -Password password -Encryption BadEncryption -ErrorAction Stop  }
+            Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\CryptedArchive.zip -Password password -Encryption BadEncryption -ErrorAction Stop
         }catch{
             $result=$_.Exception.Message -match 'Impossible de traiter la transformation d''argument sur le paramètre « Encryption »'
         }
         $result | should be ($true)
     }
-
-
 }
