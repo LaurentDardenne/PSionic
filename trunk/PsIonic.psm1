@@ -774,8 +774,10 @@ Function Get-ZipFile {
   process {  
     Foreach($Current in $Path){
      try {
+        $Logger.Debug("Traite Path $Current") #<%REMOVE%>
         foreach ($FileName in (GetArchivePath $Current)) 
         {
+          $Logger.Debug("Traite Filename $Filename") #<%REMOVE%>
           if ((TestZipArchive -Archive $FileName  -Password $Password -Passthru ) -ne $null)
           {   
             if ($PsCmdlet.ParameterSetName -eq "ManualOption")
@@ -792,6 +794,7 @@ Function Get-ZipFile {
             elseif ($ReadOptions -eq $null)
             {  $ReadOptions=New-ReadOptions -Verbose:$isVerbose  }              
             
+            $Logger.Debug("Read zipfile $FileName") #<%REMOVE%>
             $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
     
             $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
@@ -810,6 +813,7 @@ Function Get-ZipFile {
              #Les autres options sont renseignées avec les valeurs par défaut
             ,$ZipFile
          }
+         else { $Logger.Debug("N'est pas une archive $FileName")}  #<%REMOVE%>
         }#Foreach $FileName
        }
        catch [System.Management.Automation.ItemNotFoundException],
@@ -1279,6 +1283,7 @@ Function GetArchivePath {
                 (($Result.isFileSystemProvider -eq $true) -or ($Result.isUNC -eq $true))
     $Logger.Debug("isCandidat=$isCandidat") #<%REMOVE%>
     $TargetFile=$Result.GetFilename()
+    $Logger.Debug("TargetFile=$TargetFile") #<%REMOVE%>
     
     if (-not $isCandidat) 
     {
@@ -1750,7 +1755,7 @@ Function TestZipArchive {
                   (New-Object System.Management.Automation.ErrorRecord(
                     (New-Object Ionic.Zip.BadPasswordException($PsIonicMsgs.isBadPasswordWarning -F $Archive)), 
                     "InvalidPassword", 
-                    "AuthenticationError",
+                    "SecurityError",
                     ("[{0}]" -f 'Password')
                    )  
                   ) 
