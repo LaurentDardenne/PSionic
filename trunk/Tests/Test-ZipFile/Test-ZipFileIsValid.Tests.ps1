@@ -6,11 +6,10 @@ Describe "Test-ZipFile -IsValid" {
     It "Test an unknown archive file" {
         try{
             del $global:WorkDir\TestArchive.zip 
-            $result = $true 
-            Test-ZipFile -Path $global:WorkDir\TestArchive.zip -isvalid -ea Stop
+            $result =Test-ZipFile -Path $global:WorkDir\TestArchive.zip -isvalid -ea Stop
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
-            $result=$false
+            $result=$true
         }
         $result | should be ($false)
     }
@@ -61,11 +60,10 @@ Describe "Test-ZipFile -IsValid" {
     
     It "Test an unknown drive" {
         try{
-           $result = $true 
-           Test-ZipFile -Path A:\TestArchive.zip -isvalid -ea Stop 
+           $result = Test-ZipFile -Path A:\TestArchive.zip -isvalid -ea Stop 
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
-            $result=$false
+            $result=$true
         }
         $result | should be ($false)
     }    
@@ -92,8 +90,7 @@ Describe "Test-ZipFile -IsValid" {
 
     It "Test an invalid archive file (Directory)" {
         try{
-            $result = $true
-            Test-ZipFile -Path (Get-Item 'C:\temp') -isvalid -ea Stop
+            $result = Test-ZipFile -Path (Get-Item 'C:\temp') -isvalid -ea Stop
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
@@ -103,8 +100,7 @@ Describe "Test-ZipFile -IsValid" {
     
     It "Test an invalid archive file (..)" {
         try{
-            $result = $true
-            Test-ZipFile -Path '..' -isvalid -ea Stop 
+            $result = Test-ZipFile -Path '..' -isvalid -ea Stop 
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
@@ -119,12 +115,11 @@ Describe "Test-ZipFile -IsValid" {
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$true
         }
-        $result | should be ($true)
+        $result | should be ($false)
     }
     It "Test an invalid archive file (`$null)" {
         try{
-            $result = $true
-            Test-ZipFile -Path $null -isvalid -ea Stop
+            $result = Test-ZipFile -Path $null -isvalid -ea Stop
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
@@ -134,8 +129,7 @@ Describe "Test-ZipFile -IsValid" {
     
     It "Test an invalid archive file ([String]::Empty)" {
         try{
-            $result = $true
-            Test-ZipFile -Path ([String]::Empty) -isvalid -ea Stop 
+            $result = Test-ZipFile -Path ([String]::Empty) -isvalid -ea Stop 
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
@@ -145,8 +139,8 @@ Describe "Test-ZipFile -IsValid" {
 
     It "Test a lot of files (c:\temp\*.*)" {
         try{
-            $result = $true
-            Test-ZipFile -Path 'c:\temp\*.*' -isvalid -ea Stop 
+            $result =$true 
+            Test-ZipFile -Path 'c:\temp\*.*' -isvalid -ea Stop > $null
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
@@ -156,8 +150,8 @@ Describe "Test-ZipFile -IsValid" {
 
     It "Test an array of globbing ( 'c:\temp\*.*','c:\*.*' )" {
         try{
-            $result = $true
-            Test-ZipFile -Path 'c:\temp\*.*','c:\*.*' -isvalid -ea Stop 
+            $result =$true 
+            Test-ZipFile -Path 'c:\temp\*.*','c:\*.*' -isvalid -ea Stop > $null
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$false
