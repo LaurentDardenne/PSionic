@@ -1195,7 +1195,7 @@ Function AddEntry {
     elseif ($InputObject -is [Ionic.Zip.ZipEntry])
     {
       $Logger.Debug("Add ZipEntry")  #<%REMOVE%>
-      Write-Error "Under construction"
+      Write-Error "Under construction" #todo
     }
     else
     {
@@ -1257,7 +1257,7 @@ Function GetArchivePath {
 	if ($Object -is [System.IO.FileInfo])  
 	{ return $Object.FullName  }
     elseif ($Object -is [System.IO.DirectoryInfo])      
-    {  throw (New-Object PsionicTools.PsionicInvalidValueException($Object,$PsIonicMsgs.ExcludedObject)) }
+    {  throw (New-Object PsionicTools.PsionicInvalidValueException($Object,($PsIonicMsgs.ExcludedObject -F $Object))) }
 	elseif ($Object -is [String])
 	{ $ArchivePath = $Object  }
 	else
@@ -1286,7 +1286,10 @@ Function GetArchivePath {
       throw (New-Object PsionicTools.PsionicInvalidValueException($TargetFile,$Msg))
     }
 
-    if ($Result.ResolvedPSFiles.Count -eq 0) 
+    if (-not $Result.isItemExist -and -not $Result.isWildcard)
+    { throw (New-Object System.Management.Automation.ItemNotFoundException ($PsIonicMsgs.ItemNotFound -F $TargetFile)) }
+    
+    if ($Result.isWildcard -and $Result.ResolvedPSFiles.Count -eq 0) 
     { throw (New-Object PsionicTools.PsionicInvalidValueException($TargetFile,$PsIonicMsgs.EmptyResolve))}
     
     try {
@@ -1294,7 +1297,16 @@ Function GetArchivePath {
        #on reçoit au moins un fichier
        #on peut recevoir des fichiers et des répertoires, ex: 'C:\temp\*'
       $Result.ResolvedPSFiles|
-       Where {-not $ExecutionContext.InvokeProvider.Item.IsContainer($_)}|
+       Where {
+        try {
+         $Current=$_
+         -not $ExecutionContext.InvokeProvider.Item.IsContainer($Current)
+        } catch [System.Management.Automation.WildcardPatternException] {
+          #ResolvedPSFiles contient tous les fichiers trouvés
+          #Parmis ceux-ci on peut trouver des chemins devant être utilisés avec -LiteralPath          
+         -not $ExecutionContext.InvokeProvider.Item.IsContainer(([Management.Automation.WildcardPattern]::Escape($Current)))
+         }               
+       }|
        Foreach{ 
          $Logger.Debug("return $_") #<%REMOVE%> 
          Write-Output $_ 
@@ -1810,7 +1822,7 @@ Function Test-ZipFile{
               $Logger.Debug("isValid=$isValid") #<%REMOVE%>
               $Logger.Debug("$($_.Exception -is [PsionicTools.PsionicInvalidValueException])") #<%REMOVE%>
               $Logger.Debug("$($_.Exception.GetType().FullName)") #<%REMOVE%>
-              if (-not $isValid -and ($_.Exception -is [PsionicTools.PsionicInvalidValueException]))
+              if (-not $isValid)
               { Write-Error -Exception $_.Exception }
               $Logger.Error($_.Exception.Message)  #<%REMOVE%>
                # On émet dans le pipe que les noms des fichiers existant (-passthru) ou les noms des archives valides (-isValid -passthru) 
@@ -2179,7 +2191,7 @@ $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { OnRemovePsIonicZip }
 Reset-PsIonicSfxOptions                                                        
 If (Test-Path Function:Get-PsIonicDefaultSfxConfiguration)
 { 
-  #A ce stade, les fonctions de ce module ne sont pas encore accesssible à la fonction externe. 
+  #A ce stade, les fonctions de ce module ne sont pas encore accessible à la fonction externe. 
   #Même si ce code se trouvait après l'appel à Export-ModuleMember 
   $FunctionBounded=$MyInvocation.MyCommand.ScriptBlock.Module.NewBoundScriptBlock(${function:Get-PsIonicDefaultSfxConfiguration})
   &$FunctionBounded|Set-PsIonicSfxOptions
