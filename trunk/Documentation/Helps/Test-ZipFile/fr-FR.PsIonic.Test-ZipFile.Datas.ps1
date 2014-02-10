@@ -4,25 +4,32 @@ $Datas = @{
 	TestZipFileDescription = @'
 Teste si un fichier est une archive au format PkZip. 
 Lors de ce test, il est également possible de vérifier si l'archive est valide et de tenter dans ce cas de la réparer.
+Par défaut les erreurs simples sont déclenchées.
 '@
 	TestZipFileSetsDefault = ''
 	TestZipFileSetsFile = ''
 	TestZipFileParametersCheck = @"
 Vérifie si le catalogue de l'archive indiquée est correcte.
-Pour vérifier le contenu, vous devrez, sur la même ligne de commande, spécifier -isValid. 
-# On peut donc renvoyer true si on précise seulement -Check sur une archive invalide  todo
+Cette vérification est plus stricte que celle effectuée avec le paramétre -isValid.
+Elle peut donc renvoyer $false bien que le fichier soit considéré comme une archive valide.
+Si vous devez tester une archive avec un mot de passe utilisez ce paramètre avec ou sans le paramètre -Password. 
 "@
 	TestZipFileParametersPath = 'Nom du fichier de l''archive à tester.'
 	TestZipFileParametersisValid = @"
-Vérifie si le contenu de l'archive indiquée est valide. 
-Si un fichier n'est pas une archive et que le paramètre -isValid est précisé, alors une erreur sera émise.
+Indique si l'archive semble valide. Cette fonction peut donc renvoyer $true alors que le contenu de l'archive est erronée. 
+Si un fichier n'est pas une archive et que le paramètre -isValid est précisé, alors les erreurs simples ne sont pas générées.
+Si vous devez tester une archive avec un mot de passe n'utilisez pas ce paramètre, mais le paramètre -Password et/ou le paramètre -Check.
 "@
 	TestZipFileParametersPassthru = @'
  Emet le nom du fichier de l'archive dans le pipeline. 
- Si le paramètre -isValid est également précisé alors les fichiers considérés comme invalide ne seront pas émis dans le pipeline et aucune erreur ne sera émise.
+ Si le paramètre -isValid est également précisé, alors les fichiers considérés comme invalide ne seront pas émis dans le pipeline et aucune erreur simple ne sera déclenchée.
  Ce comportement est similaire à un filtre, où seul les fichiers valides seraient émit dans le pipeline.  
 '@
-	TestZipFileParametersPassword = 'Mot de passe, nécessaire si l''archive est protégée par un mot de passe.'
+	TestZipFileParametersPassword = @'
+Mot de passe, nécessaire si l'archive est protégée par un mot de passe.
+Si vous devez tester une archive avec un mot de passe n'utilisez pas le paramètre -IsValid, car dans ce cas le résultat renvoyé sera toujours faux.
+Utilisez uniquement le paramètre -Password et/ou le paramètre -Check. Si le password est faux le résultat renvoyé sera faux.  
+'@
 	TestZipFileParametersRepair = 'Tente une réparation si l''archive est corrompue.'
 	TestZipFileInputsDescription1 = 'String ou System.IO.FileInfo ou Object (transformé en un type String). Les objets de type répertoire ne sont pas traité.'
 	TestZipFileOutputsDescriptionSystemBoolean = ''
