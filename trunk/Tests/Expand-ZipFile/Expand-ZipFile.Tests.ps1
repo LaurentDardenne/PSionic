@@ -22,6 +22,7 @@ write-warning $global:here
            $global:path = $global:WorkDir+"\Archive"
            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath "${path}2" -ExtractAction overwritesilently -ErrorAction Stop
         }catch {
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$_.exception -is [PSIonicTools.PsionicException]
         }
         $result| should be ($true)
@@ -32,6 +33,7 @@ write-warning $global:here
            $global:notZipFile = $global:here+"\PerfCenterCpl.ico"
 		   Expand-ZipFile -Path $notZipFile -OutputPath $global:WorkDir -Create 
         }catch{
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$_.Exception.InnerException.InnerException.InnerException -is [Ionic.Zip.BadReadException]
         }
         $result | should be ($true)
@@ -40,11 +42,10 @@ write-warning $global:here
     It "Expand Archive.zip file return true" {
         try{
            md $global:WorkDir\Archive >$null
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ExtractAction overwritesilently -ErrorAction Stop
            if(-not (test-path $global:WorkDir\Archive\test\test1\test2\Log4Net.Config.xml)){
-             throw "Fichier provenant de l'archive non trouvé après extraction"
+             throw "Fichier provenant de l'archive introuvable après extraction"
            }
-           # rm $global:WorkDir\Archive -Recurse -Force : Pas de suppression, pour le test suivant
            $result=$true
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
@@ -57,7 +58,8 @@ write-warning $global:here
         try{
            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -ErrorAction Stop
         }catch{
-			$Exception = "« The file $($global:WorkDir)\Archive\directory\Ionic.Zip.dll already exists. »"
+			$Exception = "The file $($global:WorkDir)\Archive\directory\Ionic.Zip.dll already exists."
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
 			$result=$_.Exception.Message -match ([regex]::Escape($Exception))
         }
         $result | should be ($true)
@@ -67,7 +69,7 @@ write-warning $global:here
         try{
            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -ExtractAction OverwriteSilently -ErrorAction Stop
            if(-not (test-path $global:WorkDir\Archive\test\test1\test2\Log4Net.Config.xml)){
-             throw "Fichier provenant de l'archive non trouvé après extraction"
+             throw "Fichier provenant de l'archive introuvable après extraction"
            }
           # rm $global:WorkDir\Archive -Recurse -Force
            $result=$true
@@ -82,6 +84,7 @@ write-warning $global:here
         try{
            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath hklm:\software -create -ErrorAction Stop
         }catch{
+           Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
            $result=$_.Exception.Message -match '^Chemin invalide pour le provider FileSystem'
         }
         $result | should be ($true)
@@ -91,6 +94,7 @@ write-warning $global:here
         try{
            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath wsman:\localhost -create -ErrorAction Stop
         }catch{
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
             $result=$_.Exception.Message -match '^Chemin invalide pour le provider FileSystem'
         }
         $result | should be ($true)
@@ -171,7 +175,8 @@ write-warning $global:here
         try{
            Expand-ZipFile -Path $global:WorkDir\CryptedArchive.zip -OutputPath $global:WorkDir\CryptedArchive -create -Password BADpassword -ErrorAction Stop
         }catch{
-			$Exception = (&$PSionicModule {$PsIonicMsgs.ZipArchiveBadPassword -f ($global:WorkDir+"\CryptedArchive.zip")})
+			Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
+            $Exception = (&$PSionicModule {$PsIonicMsgs.ZipArchiveBadPassword -f ($global:WorkDir+"\CryptedArchive.zip")})
             $result= $_.Exception.Message -match ([regex]::Escape($Exception))
         }
         $result | should be ($true)
@@ -215,4 +220,3 @@ write-warning $global:here
         $result | should be ($true)
     }
 }
-
