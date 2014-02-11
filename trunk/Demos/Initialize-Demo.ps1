@@ -60,5 +60,5 @@ if (-not (test-path "$TestDirectory\DatasDemos.xml") )
     }
   }
   Write-Host "Files:"
-  dir 'C:\Users\Laurent\AppData\Local\Temp\TestPsIonic\[AMZ][123].*'|sort LastWriteTime,name
+  dir "$TestDirectory\[AMZ][123].*"|sort LastWriteTime,name
 }
