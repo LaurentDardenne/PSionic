@@ -37,7 +37,7 @@
 } #Test-UNCPath
 (Get-Item function:Test-UNCPath).Description='Test un chemin UNC IPv4'
 
-Function Resolve-PSPath{
+Function New-PSPathInfo{
 #Tente de résoudre un nom de chemin Powershell
  [CmdletBinding(DefaultParameterSetName = "Path")]          
  param(
@@ -54,7 +54,7 @@ Function Resolve-PSPath{
      Return "[{0}] {1}" -F $ErrorRecord.Exception.GetType().FullName,$ErrorRecord.Exception.Message
     }#New-PSPathInfoError
 
-    Function New-PSPathInfo{
+    Function NewPSPathInfo{
      #construit un objet portant les informations d'analyse d'un PSPath
      param(
         [Parameter(position=1)]
@@ -81,10 +81,13 @@ Function Resolve-PSPath{
               
                #Indique si le chemin résolu est un chemin Powershell valide (pour un provider)
                #On peut donc l'utiliser pour un accès disque.
+               #Un chemin comportant des jokers sera considéré comme invalide.
               isPSValid=$false
                
                #Liste des fichiers si le globbing est détecté. Les élements sont du type string.
-               #Le globbing peut être détecté sans pour autant que le chemin renvoit de fichier
+               #Le globbing peut être détecté sans pour autant que le chemin renvoit de fichier.
+               #Attention, parmis les les fichiers trouvés, on peut trouver des chemins devant 
+               #être utilisés avec -LiteralPath.  
               ResolvedPSFiles=@();
                
                #Texte de la dernière exception rencontrée (exceptions gérées uniquement)
@@ -108,7 +111,7 @@ Function Resolve-PSPath{
                
                #Indique si l'élément existe ou pas.
               isItemExist=$False;
-               
+
                #Précise si le provider indiqué par le nom de chemin $Name est celui du FileSystem
               isFileSystemProvider=$False;
                
@@ -159,7 +162,7 @@ Function Resolve-PSPath{
              }          
       $O.PsObject.TypeNames.Insert(0,"PSPathInfo")
       $O
-    }# New-PSPathInfo
+    }# NewPSPathInfo
  
    $pathHelper = $ExecutionContext.SessionState.Path
    
@@ -168,7 +171,7 @@ Function Resolve-PSPath{
    if ($_EA -ne $null) 
    { $ErrorActionPreference=$_EA}
    
-   Write-Debug "Resolve-PSPath.Begin `$ErrorActionPreference=$ErrorActionPreference" #<%REMOVE%> 
+   Write-Debug "New-PSPathInfo.Begin `$ErrorActionPreference=$ErrorActionPreference" #<%REMOVE%> 
  }#begin
   
  process {
@@ -180,7 +183,7 @@ Function Resolve-PSPath{
      { $CurrentPath=$Path }
 
      Write-Debug  "CurrentPath=$CurrentPath" #<%REMOVE%>
-     $Infos=New-PSPathInfo $CurrentPath -asLiteral:$isLiteral
+     $Infos=NewPSPathInfo $CurrentPath -asLiteral:$isLiteral
 
      $Infos.IsProviderQualified=$pathHelper.IsProviderQualified($CurrentPath)
      $ProviderInfo=$DriveInfo=$CurrentDriveName=$ursvPath=$null
@@ -301,7 +304,7 @@ Function Resolve-PSPath{
 
      #Implémente Path et LiteralPath
      try {
-       #Le globbing est pris en compte
+       #Le globbing n'est pas pris en compte
        if ($isLiteral)
        { $Infos.isItemExist= $ExecutionContext.InvokeProvider.Item.Exists(([Management.Automation.WildcardPattern]::Escape($Infos.ResolvedPSPath)),$false,$false) } 
        else 
@@ -309,10 +312,10 @@ Function Resolve-PSPath{
        Write-Debug "L'item existe-t-il ? $($Infos.isItemExist)" #<%REMOVE%>
        if ($Infos.isItemExist)
        {
-         try {
+        try {
            Write-Debug "Analyse le globbing." #<%REMOVE%>
            $provider=$null
-            #renvoi le nom du provider et le fichier ou les fichiers en cas de globbing
+            #renvoi le nom du provider et le fichier (-Literal) ou les fichiers en cas de globbing (-Path)
            if ($isLiteral)
            { $Infos.ResolvedPSFiles=@($pathHelper.GetResolvedProviderPathFromPSPath(([Management.Automation.WildcardPattern]::Escape($Infos.ResolvedPSPath)),[ref]$provider)) }
            else 
@@ -339,7 +342,7 @@ Function Resolve-PSPath{
 
               #Le lecteur physique existe, mais est amovible exemple A:\ ou un lecteur de CD-Rom
               #Avec : New-PSDrive -name ' Space' -root C:\Temp -psp FileSystem
-              #l'appel de    : ' Space:\Test'|Resolve-PSpath
+              #l'appel de    : ' Space:\Test'|New-PSPathInfo
               # le message d'erreur contiendra la référence à 'C:\Temp\Test' et pas ' Space:\Test' 
               #pour 'Registry::HKLM:\System' le message d'erreur référencera « HKLM:\System » 
           [System.Management.Automation.ItemNotFoundException],
@@ -355,7 +358,7 @@ Function Resolve-PSPath{
            #Les noms de chemin contenant un nom de périphérique Win32 tels que 
            # PRN, AUX, CLOCK,NUL,CON,COM1,LPT2...
            #sont testé en interne par le provider FileSystem. 
-           #Ces noms ne peuvent exister et seront considéré comme inconnus.
+           #Ces noms ne peuvent exister et seront considérés comme inconnus.
            #Pour d'autres provider ces caractères et noms peuvent être autorisés.
           [System.NotSupportedException] {
       Write-Debug  "Exception : $($_.Exception.GetType().Name)" #<%REMOVE%>
@@ -379,8 +382,8 @@ Function Resolve-PSPath{
 
       #Répond à la question : Le chemin est-il un répertoire valide ?
       $Infos| 
-        Add-Member -Membertype Scriptmethod -Name IsCandidateForExtraction {
-            #Pour utiliser un répertoire d'extraction on doit savoir s'il :
+        Add-Member -Membertype Scriptmethod -Name IsDirectoryExist{
+            #Pour utiliser un répertoire on doit savoir s'il :
             #  est valide (ne pas contenir de joker,ni de caractères interdits),
             #  existe,
             #  pointe sur le file systeme (s'il est relatif, la location courante doit être le FS)
@@ -395,7 +398,7 @@ Function Resolve-PSPath{
            }
 #<DEFINE %DEBUG%>           
            If ($result) 
-           { Write-Debug "Valide en tant que répertoire d'extraction : $($this.Win32PathName)" }
+           { Write-Debug "Valide en tant que répertoire : $($this.Win32PathName)" }
 #<UNDEF %DEBUG%>             
            $result     
         }  
@@ -403,7 +406,7 @@ Function Resolve-PSPath{
       #Répond à la question : Le chemin peut-il être crée ?
       $Infos| 
         Add-Member -Membertype Scriptmethod -Name IsCandidateForCreation {
-            # Pour créer un répertoire d'extraction on doit savoir s'il :
+            # Pour créer un répertoire on doit savoir s'il :
             #  est valide (ne pas contenir de joker, ni de caractères interdits),
             #  S'il n'existe pas déjà,
             #  pointe sur le file système (s'il est relatif, la location courante doit être le FS)
@@ -417,7 +420,7 @@ Function Resolve-PSPath{
            $result= ( $this.IsCandidate() -and ($this.isItemExist -eq $false) ) 
 #<DEFINE %DEBUG%>
            If ($result) 
-           { Write-Debug "Valide pour une création de répertoire d'extraction : $($this.Win32PathName)"} 
+           { Write-Debug "Valide pour une création de répertoire : $($this.Win32PathName)"} 
 #<UNDEF %DEBUG%>
            $result
         }  
@@ -439,7 +442,7 @@ Function Resolve-PSPath{
          try {
               #La validation doit se faire à l'aide du provider ciblé
              Push-Location $env:windir
-             $Infos.isPSValid=$pathHelper.isValid($Infos.ResolvedPSPath) 
+             $Infos.isPSValid=$pathHelper.isValid($Infos.ResolvedPSPath)
          } catch [System.Management.Automation.ProviderInvocationException]  {
              #Par exemple pour 'Registry::\\localhost\c$\temp' ou 'Registry::..\temp'
              Write-Debug  "isPSValid : $($_.Exception.GetType().Name)" #<%REMOVE%>
@@ -477,6 +480,6 @@ Function Resolve-PSPath{
       Write-Output $Infos
     }
  } #process
-} #Resolve-PSPath
-(Get-Item function:Resolve-PSPath).Description="Résout un nom de chemin et détermine s'il peut être utilisé sur le FileSystem"
-new-alias rvpspa Resolve-PSPath -description "Fonction Resolve-PSPath" -force 
+} #New-PSPathInfo
+(Get-Item function:New-PSPathInfo).Description="Résout un nom de chemin et détermine s'il peut être utilisé sur le FileSystem"
+new-alias npspa New-PSPathInfo -description "Fonction New-PSPathInfo" -force 
