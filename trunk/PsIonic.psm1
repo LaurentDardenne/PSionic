@@ -540,13 +540,14 @@ Function GetObjectByType {
  Param (
    [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
   $Object,
-  [boolean] $Recurse
+  [boolean] $Recurse,
+  [boolean] $isLiteral
   )
   
  begin {  
   function GetObject {  
    param ( $Object )
-     $Logger.Debug("GetObject : $($Object.FullName)") #<%REMOVE%> 
+     $Logger.Debug("GetObject : $Object") #<%REMOVE%> 
      if ($Object.GetType().IsSubclassOf([System.IO.FileSystemInfo]) -or ($Object -is [Ionic.Zip.ZipEntry]))
      { 
        $Logger.Debug("Object is FileSystemInfo or Zipentry") #<%REMOVE%>
@@ -561,26 +562,41 @@ Function GetObjectByType {
      } 
      
      if ([String]::IsNullOrEmpty($Object)) 
-      {
-        $Logger.Debug('Object is $null or empty.') #<%REMOVE%>
-        return $null
-      }
-       #Renvoi une exception en cas de pb sur le FilesSystem
-     if (Test-Path $Object -PathType Container)
-     { 
-       $Logger.Debug("Object is a directory : $Object") #<%REMOVE%> 
-       #renvoi les objets Directory  
-       Get-ChildItem $Object -Recurse:$Recurse  
-     }
-     else 
      {
-       $Logger.Debug("Object is not a directory, call Resolve-Path  : $Object") #<%REMOVE%> 
+       $Logger.Debug('Object is $null or empty.') #<%REMOVE%>
+       return $null
+     }
+     
+        #Validation du chemin qui doit référencer le FileSystem
+     if ($isLiteral)
+     { $PSPathInfo=New-PSPathInfo -LiteralPath $Object }
+     else
+     { $PSPathInfo=New-PSPathInfo -Path $Object }
+     
+     $Logger.Debug("Object : $Object") #<%REMOVE%> 
            #Récupère tous les fichiers si le nom comporte des jokers : 
            #     ?, *, [a], [abc], [a-c], Test*[a][0-9], etc.
-        #Renvoi une liste de Pathinfo
-       Resolve-Path $Object|Get-ChildItem  -Recurse:$Recurse
-       #todo ne renvoie pas tous les fichiers cf. 'literalPath'
-     }   
+      if (-not $PSPathInfo.IsCandidate()) 
+      {
+         $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
+         $Logger.Error($Msg) #<%REMOVE%>
+         Write-Error -Exception (New-Object PSIonicTools.PsionicException($Msg))  
+      }
+      else
+      {
+         if ($PSPathInfo.isWildcard)
+         {
+          if ($PSPathInfo.ResolvedPSFiles.Count -gt 0)       
+          {
+            if ($isLiteral)
+            { $PSPathInfo.ResolvedPSFiles|Get-ChildItem -LiteralPath {$_} -Recurse:$Recurse -verbose } 
+            else
+            { $PSPathInfo.ResolvedPSFiles|Get-ChildItem  -Recurse:$Recurse -verbose } 
+          }
+         }
+         else
+         { $PSPathInfo.Win32PathName|Get-ChildItem -Recurse:$Recurse }
+      }   
   } #GetObject
  }#begin 
   
@@ -892,7 +908,7 @@ Function Compress-ZipFile {
           $PSVW=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
       }
        #Validation du chemin qui doit référencer le FileSystem
-      $PSPathInfo=Resolve-PSPath -Path $OutputName 
+      $PSPathInfo=New-PSPathInfo -Path $OutputName 
       if (-not $PSPathInfo.IsCandidate()) 
       {
          $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
@@ -941,8 +957,19 @@ Function Compress-ZipFile {
 	} 
 
 	Process{   
-      GetObjectByType $Path -Recurse:$Recurse|
-       Add-ZipEntry $ZipFile
+      $isLiteral=$PsCmdlet.ParameterSetName -eq "LiteralPath"
+      if ($isLiteral)
+      {
+        $Logger.Debug("Compress-ZipFile Literalpath=$LiteralPath")  #<%REMOVE%>
+        GetObjectByType $LiteralPath -Recurse:$Recurse -isLiteral|
+         Add-ZipEntry $ZipFile
+      }
+      else
+      {
+        $Logger.Debug("Compress-ZipFile path=$Path")  #<%REMOVE%>
+        GetObjectByType $Path -Recurse:$Recurse|
+         Add-ZipEntry $ZipFile
+      }
 	} #Process
     
     End {
@@ -1038,7 +1065,7 @@ Function Compress-SfxFile {
           $PSVW=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
       }
        #Validation du chemin qui doit référencer le FileSystem
-      $PSPathInfo=Resolve-PSPath -Path $OutputName 
+      $PSPathInfo=New-PSPathInfo -Path $OutputName 
       if (-not $PSPathInfo.IsCandidate()) 
       {
          $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
@@ -1090,9 +1117,20 @@ Function Compress-SfxFile {
 	} 
 
 	Process{   
-      GetObjectByType $Path -Recurse:$Recurse|
-       Add-ZipEntry $ZipFile
-	} #Process
+      $isLiteral=$PsCmdlet.ParameterSetName -eq "LiteralPath"
+      if ($isLiteral)
+      {
+        $Logger.Debug("Compress-SfxFile Literalpath=$LiteralPath")  #<%REMOVE%>
+        GetObjectByType $LiteralPath -Recurse:$Recurse -isLiteral|
+         Add-ZipEntry $ZipFile
+      }
+      else
+      {
+        $Logger.Debug("Compress-SfxFile Path=$Path")  #<%REMOVE%>
+        GetObjectByType $Path -Recurse:$Recurse|
+         Add-ZipEntry $ZipFile
+      }
+	} #Process  
     
     End {
       try {
@@ -1128,8 +1166,9 @@ Function AddEntry {
      $InputObject,
        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
        [Alias('Key')]
-       [Alias('Name')]
+       [Alias('Name')]  #Si c'est un fichier ou un répertoire on lie le nom de l'entrée automatiquement
      [string] $KeyName, #Le nom d'entrée n'est pas obligatoire et peut provenir de la clé d'une entrée de hashtable
+     [string] $DirectoryPathInArchive,
      [switch] $Passthru
     )
  begin {
@@ -1138,18 +1177,18 @@ Function AddEntry {
  }
  process {
   try {
+   $Logger.Debug("AddEntry  InputObject=$InputObject `t KeyName=$KeyName")  #<%REMOVE%>
     if ($InputObject.GetType().Fullname -match "^System.Collections.Generic.KeyValuePair|^System.Collections.DictionaryEntry")
     {
-      if ($_.Value -eq $null)
+      if ($InputObject.Value -eq $null)
       {
         Write-Error ($PsIonicMsgs.EntryIsNull -F $KeyName)
         return 
       }
       else 
-      {$InputObject=$_.Value}
+      {$InputObject=$InputObject.Value}
     }
-    $Logger.Debug("Add $InputObject")  #<%REMOVE%>
-    $Logger.Debug("Add $KeyName")  #<%REMOVE%>
+    $Logger.Debug("AddEntry  InputObject=$InputObject `t KeyName=$KeyName")  #<%REMOVE%>
     
     $isCollection=isCollection $InputObject
     if ($isCollection -and ($InputObject -is [byte[]]))
@@ -1176,7 +1215,7 @@ Function AddEntry {
     }
     elseif ($InputObject -is [System.String])
     { 
-       $Logger.Debug("Add String")  #<%REMOVE%>
+       $Logger.Debug("Add type String")  #<%REMOVE%>
        if ([string]::IsNullOrEmpty($KeyName))
        { 
          Write-Error ($PsIonicMsgs.ParameterStringEmpty -F 'KeyName')
@@ -1186,19 +1225,19 @@ Function AddEntry {
     }
     elseif ($InputObject -is [System.IO.DirectoryInfo])
     { 
-      $Logger.Debug("Add Directory ")  #<%REMOVE%>
+      $Logger.Debug("Add type Directory ")  #<%REMOVE%>
       $ZipEntry=$ZipFile.AddDirectory($InputObject.FullName, $InputObject.Name)
     }
     elseif ($InputObject -is [System.IO.FileInfo])
     { 
-      $Logger.Debug("Add Fileinfo")  #<%REMOVE%>
+      $Logger.Debug("Add type Fileinfo")  #<%REMOVE%>
        #($DirectoryPath -eq [string]::Empty) add on the root
        # IOnic doit connaitre le chemin complet sinon il est considéré comme relatif
-     $ZipEntry=$ZipFile.AddFile($InputObject.FullName,$DirectoryPath)  
+     $ZipEntry=$ZipFile.AddFile($InputObject.FullName,$DirectoryPathInArchive)  
     }
     elseif ($InputObject -is [Ionic.Zip.ZipEntry])
     {
-      $Logger.Debug("Add ZipEntry")  #<%REMOVE%>
+      $Logger.Debug("Add type ZipEntry")  #<%REMOVE%>
       Write-Error "Under construction" #todo
     }
     else
@@ -1232,15 +1271,16 @@ Function Add-ZipEntry {
     [switch] $Passthru
   )
    process {
+     $Logger.Debug("Add-ZipEntry Object= $Object.")  #<%REMOVE%>
       $isCollection=isCollection $Object
       if ($isCollection -and ($Object -is [System.Collections.IDictionary]))
       {
         $Logger.Debug("Add entries from a hashtable.")  #<%REMOVE%>
         $Object.GetEnumerator()|
-         AddEntry  -Passthru:$Passthru
+         AddEntry -DirectoryPathInArchive $DirectoryPath -Passthru:$Passthru
       }
       else
-      { AddEntry $Object $Name }
+      { AddEntry -InputObject $Object -KeyName $Name  -DirectoryPathInArchive $DirectoryPath }
   }#process
 } #Add-ZipEntry
 
@@ -1275,9 +1315,9 @@ Function GetArchivePath {
     $Logger.Debug("The file name is '$ArchivePath'") #<%REMOVE%>
     
     if ($asLiteral)
-    { $Result=Resolve-PSPath -LiteralPath $ArchivePath -ea Stop }
+    { $Result=New-PSPathInfo -LiteralPath $ArchivePath -ea Stop }
     else 
-    { $Result=Resolve-PSPath -Path $ArchivePath -ea Stop }
+    { $Result=New-PSPathInfo -Path $ArchivePath -ea Stop }
     
     $isCandidat=($Result.LastError -eq $null)  -and 
                 (($Result.isFileSystemProvider -eq $true) -or ($Result.isUNC -eq $true))
@@ -1601,7 +1641,7 @@ Function Expand-ZipFile {
          #le chemin valide doit exister
          #Le chemin doit référencer le FileSystem
          #Comme on attend une seule entrée on n'interprète pas le globbing
-        $PSPathInfo=Resolve-PSPath -LiteralPath $OutputPath
+        $PSPathInfo=New-PSPathInfo -LiteralPath $OutputPath
         if (-not $PSPathInfo.IsCandidate()) 
         {
            $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName())+ "`r`n$($PSPathInfo.LastError)"
@@ -1620,7 +1660,7 @@ Function Expand-ZipFile {
               Md $OutputPath > $Null
             }
         }
-        elseif (-not $PSPathInfo.IsCandidateForExtraction())
+        elseif (-not $PSPathInfo.IsDirectoryExist())
         { throw (New-Object PSIonicTools.PsionicException(($PsIonicMsgs.PathMustExist -F $OutputPath ))) }            
       }
               
@@ -2174,7 +2214,7 @@ function New-ReadOptions {
 #     } #end
 # }#Rename-ZipEntry 
 
-#<INCLUDE %'PsIonic:\Tools\Resolve-PSPath.ps1'%>   
+#<INCLUDE %'PsIonic:\Tools\New-PSPathInfo.ps1'%>   
 
 # Suppression des objets du module 
 Function OnRemovePsIonicZip {
