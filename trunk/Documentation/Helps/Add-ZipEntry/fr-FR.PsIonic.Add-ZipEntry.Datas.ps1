@@ -16,7 +16,12 @@ Contenu associé à une entrée d'archive. Les types attendus sont :
    - ou un tableau d'octets.
 Tous les autres types d'objet seront transformés en chaîne de caractères via la méthode ToString().   
 "@
-	AddZipEntryParametersPassthru = 'Une fois l''entrée ajoutée au catalogue de l''archive, elle est émise dans le pipeline.'
+    AddZipEntryParametersOverwrite = @"
+Si une entrée existe déjà, elle est mise à jour. 
+La propriété LastModified est renseignée avec la date et l'heure courante.
+Par défaut l'ajout d'une entré existante déclenchera une exception.
+"@
+    AddZipEntryParametersPassthru = 'Une fois l''entrée ajoutée au catalogue de l''archive, elle est émise dans le pipeline.'
 	AddZipEntryParametersZipFile = 'Archive cible dans laquelle on ajoute l''entrée précisée. Ce paramètre attend un objet de type ZipFile et pas un nom de fichier.'
 	AddZipEntryInputsDescription1 = @"
 System.Byte[], System.String, System.IO.DirectoryInfo, System.IO.FileInfo, Ionic.Zip.ZipEntry.
