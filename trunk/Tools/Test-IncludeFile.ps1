@@ -1,5 +1,5 @@
 ﻿function Test-IncludeFile {
- #Valide les fichiers inséré via des 'include' cf. Remove-Conditonnal
+ #Valide les fichiers inséré via des 'include' cf. Remove-Conditionnal
  #Evite l'usage de svn:externals
  
  param(
