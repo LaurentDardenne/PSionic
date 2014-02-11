@@ -709,7 +709,7 @@ function AddMethodClose{
       catch [Ionic.Zip.BadStateException]
       {
         if  ($this.name.EndsWith(".exe"))
-        { Write-Error $PsIonicMsgs.SaveIsNotPermitted -Exception $_.Exception} 
+        { Write-Error -message $PsIonicMsgs.SaveIsNotPermitted -Exception $_.Exception} 
       } 
       finally {
        #On appelle la méthode Dispose() de l'instance en cours  
@@ -1250,7 +1250,7 @@ Function AddEntry {
     {$ZipEntry} 
    }
    catch { #ArgumentNullException or ArgumentException
-    Write-Error ($PsIonicMsgs.AddEntryError -F $InputObject,$ZipFile.Name,$_.Exception.Message) -Exception $_.Exception
+    Write-Error -Message ($PsIonicMsgs.AddEntryError -F $InputObject,$ZipFile.Name,$_.Exception.Message) -Exception $_.Exception
    }
   }#process
 }#AddEntry
@@ -1426,17 +1426,23 @@ Function Expand-ZipEntry {
           Continue 
         }
         $Stream.Position = 0;
-        $Reader = New-Object System.IO.StreamReader($Stream)
-        $Logger.Debug("Read data from the MemoryStream") #<%REMOVE%>
-        $Result= $Reader.ReadToEnd()
-        if ($XML)
-        { $Data=$Result -as [XML] }
-        elseif($Byte)
-          #Todo revoir le type de lecture des streams
-        { $Data=[byte[]][char[]]$Result }  
-        else 
-        { $Data=$Result -as [String] }
-
+        
+        if($Byte)
+        {   
+          [byte[]] $Data = new-object byte[] $Stream.Length
+          $Stream.Read($Data, 0, $Stream.Length) > $null       
+        }        
+        else
+        {
+          $Reader = New-Object System.IO.StreamReader($Stream)
+          $Logger.Debug("Read data from the MemoryStream") #<%REMOVE%>
+          $Result= $Reader.ReadToEnd()
+          if ($XML)
+          { $Data=$Result -as [XML] }
+          else 
+          { $Data=$Result -as [String] }
+        }
+        
         if ($AsHashTable) 
         { 
           $Logger.Debug("Add Hashtable") #<%REMOVE%>
