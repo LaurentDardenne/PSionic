@@ -1160,7 +1160,7 @@ Function Compress-SfxFile {
     }#End
 } #Compress-SfxFile
 
-Function AddEntry {
+Function AddEntry { 
    param (
        [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
      $InputObject,
@@ -1169,15 +1169,29 @@ Function AddEntry {
        [Alias('Name')]  #Si c'est un fichier ou un répertoire on lie le nom de l'entrée automatiquement
      [string] $KeyName, #Le nom d'entrée n'est pas obligatoire et peut provenir de la clé d'une entrée de hashtable
      [string] $DirectoryPathInArchive,
+     [switch] $Overwrite, 
      [switch] $Passthru
     )
  begin {
+   [type[]] $private:ParameterTypesOfUpdateEntryMethod=[string],[byte[]]
+   $private:AddEntryMethod=[Ionic.Zip.ZipFile].GetMethod("UpdateEntry",$private:ParameterTypesOfUpdateEntryMethod)
+
    [type[]] $private:ParameterTypesOfAddEntryMethod=[string],[byte[]]
-   $private:AddEntryMethod=[Ionic.Zip.ZipFile].GetMethod("AddEntry",$private:ParameterTypesOfAddEntryMethod) 
+   $private:AddEntryMethod=[Ionic.Zip.ZipFile].GetMethod("AddEntry",$private:ParameterTypesOfAddEntryMethod)
  }
+
  process {
   try {
-   $Logger.Debug("AddEntry  InputObject=$InputObject `t KeyName=$KeyName")  #<%REMOVE%>
+    $Logger.Debug("$($InputObject.Gettype().FullName)") 
+    $Logger.Debug("AddEntry  InputObject=$InputObject `t KeyName=$KeyName")  #<%REMOVE%>
+     #affecte $OldEntryInfo ET exécute le test
+    $isEntryExist=($OldEntryInfo=$Zipfile[$KeyName]) -ne $null
+    $Logger.Debug("isEntryExist=$isEntryExist")#<%REMOVE%>
+
+     #Valide localement de le mode Update
+    $CurrentOverwrite=$Overwrite -and $isEntryExist 
+    if ($CurrentOverwrite)  { $Logger.Debug("Update mode") } #<%REMOVE%>
+
     if ($InputObject.GetType().Fullname -match "^System.Collections.Generic.KeyValuePair|^System.Collections.DictionaryEntry")
     {
       if ($InputObject.Value -eq $null)
@@ -1204,14 +1218,17 @@ Function AddEntry {
         #  public ZipEntry AddEntry(string entryName, string content)  
         # public ZipEntry AddEntry(string entryName, byte[] byteContent)
       $params = @($KeyName, ($InputObject -as [byte[]]) )
-      $ZipEntry=$private:AddEntryMethod.Invoke($ZipFile, $params)
+      if ($CurrentOverwrite)
+      { $ZipEntry=$private:UpdateEntryMethod.Invoke($ZipFile, $params) }
+      else
+      { $ZipEntry=$private:AddEntryMethod.Invoke($ZipFile, $params) }
     }
     elseif ($isCollection)
     {
        $Logger.Debug("Recurse Add-ZipEntry")  #<%REMOVE%>
        $InputObject.GetEnumerator()|
         GetObjectByType |  
-        Add-ZipEntry $ZipFile -Passthru:$Passthru      
+        Add-ZipEntry $ZipFile -Passthru:$Passthru -Overwrite:$Overwrite #todo $DirectoryPathInArchive,    
     }
     elseif ($InputObject -is [System.String])
     { 
@@ -1221,19 +1238,28 @@ Function AddEntry {
          Write-Error ($PsIonicMsgs.ParameterStringEmpty -F 'KeyName')
          return  
        }
-       $ZipEntry=$ZipFile.AddEntry($KeyName, $InputObject -as [string]) 
+       if ($CurrentOverwrite)
+       {$ZipEntry=$ZipFile.UpdateEntry($KeyName, $InputObject -as [string]) }
+       else
+       {$ZipEntry=$ZipFile.AddEntry($KeyName, $InputObject -as [string]) } 
     }
     elseif ($InputObject -is [System.IO.DirectoryInfo])
     { 
       $Logger.Debug("Add type Directory ")  #<%REMOVE%>
-      $ZipEntry=$ZipFile.AddDirectory($InputObject.FullName, $InputObject.Name)
+      if ($CurrentOverwrite)
+      { $ZipEntry=$ZipFile.UpdateDirectory($InputObject.FullName, $InputObject.Name) } #todo verif date time
+      else 
+      { $ZipEntry=$ZipFile.AddDirectory($InputObject.FullName, $InputObject.Name) }
     }
     elseif ($InputObject -is [System.IO.FileInfo])
     { 
       $Logger.Debug("Add type Fileinfo")  #<%REMOVE%>
        #($DirectoryPath -eq [string]::Empty) add on the root
        # IOnic doit connaitre le chemin complet sinon il est considéré comme relatif
-     $ZipEntry=$ZipFile.AddFile($InputObject.FullName,$DirectoryPathInArchive)  
+      if ($CurrentOverwrite) 
+      { $ZipEntry=$ZipFile.UpdateFile($InputObject.FullName,$DirectoryPathInArchive) }
+      else 
+      { $ZipEntry=$ZipFile.AddFile($InputObject.FullName,$DirectoryPathInArchive) }  
     }
     elseif ($InputObject -is [Ionic.Zip.ZipEntry])
     {
@@ -1246,6 +1272,19 @@ Function AddEntry {
       $Logger.Debug($Msg)  #<%REMOVE%>
       Write-Warning $Msg   
     }
+    if ($CurrentOverwrite)
+    {
+      #todo delete      
+      #$ZipEntry.SetEntryTimes($OldEntryInfo.CreationTime,$OldEntryInfo.AccessedTime,$OldEntryInfo.ModifiedTime)
+      #$ZipEntry.SetEntryTimes([datetime]::Now,[datetime]::Now,[datetime]::Now)
+      #01/01/1601 01:00:00
+      
+      $ZipEntry.AccessedTime = $OldEntryInfo.AccessedTime
+      #$ZipEntry.ModifiedTime = $OldEntryInfo.ModifiedTime
+      #$ZipEntry.CreationTime = $OldEntryInfo.CreationTime
+      $ZipEntry.LastModified=[datetime]::Now
+    }
+    #TODO else si ce n'est pas un fichier MAJ de la date création ou accès
     if ($Passthru)
     {$ZipEntry} 
    }
@@ -1268,19 +1307,25 @@ Function Add-ZipEntry {
       [Parameter(Position=1,Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
     [string] $Name, 
     [string] $DirectoryPath=[string]::Empty,
+    [switch] $Overwrite, 
     [switch] $Passthru
   )
    process {
-     $Logger.Debug("Add-ZipEntry Object= $Object.")  #<%REMOVE%>
+     $Logger.Debug("Add-ZipEntry Object= $Object")  #<%REMOVE%>
       $isCollection=isCollection $Object
       if ($isCollection -and ($Object -is [System.Collections.IDictionary]))
       {
         $Logger.Debug("Add entries from a hashtable.")  #<%REMOVE%>
         $Object.GetEnumerator()|
-         AddEntry -DirectoryPathInArchive $DirectoryPath -Passthru:$Passthru
+         AddEntry -DirectoryPathInArchive $DirectoryPath -Passthru:$Passthru -Overwrite:$Overwrite 
       }
       else
-      { AddEntry -InputObject $Object -KeyName $Name  -DirectoryPathInArchive $DirectoryPath }
+      {
+        if ($Name -ne [string]::Empty)
+        { AddEntry -InputObject $Object -KeyName $Name -DirectoryPathInArchive $DirectoryPath -Overwrite:$Overwrite -Passthru:$Passthru}
+        else
+        { $Object|AddEntry -DirectoryPathInArchive $DirectoryPath -Overwrite:$Overwrite -Passthru:$Passthru}
+      }
   }#process
 } #Add-ZipEntry
 

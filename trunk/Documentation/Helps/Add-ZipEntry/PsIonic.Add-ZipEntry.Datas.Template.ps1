@@ -6,6 +6,7 @@ $Datas = @{
 	AddZipEntryParametersDirectoryPath = ''
 	AddZipEntryParametersName = ''
 	AddZipEntryParametersObject = ''
+    AddZipEntryParametersOverwrite = ''  
 	AddZipEntryParametersPassthru = ''
 	AddZipEntryParametersZipFile = ''
 	AddZipEntryInputsDescription1 = ''

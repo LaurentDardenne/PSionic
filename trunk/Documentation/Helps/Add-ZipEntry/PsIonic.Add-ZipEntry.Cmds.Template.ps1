@@ -7,6 +7,7 @@
 		DirectoryPath = $Datas.AddZipEntryParametersDirectoryPath
 		Name = $Datas.AddZipEntryParametersName
 		Object = $Datas.AddZipEntryParametersObject
+        Overwrite = $Datas.AddZipEntryParametersOverwrite
 		Passthru = $Datas.AddZipEntryParametersPassthru
 		ZipFile = $Datas.AddZipEntryParametersZipFile
 	}
