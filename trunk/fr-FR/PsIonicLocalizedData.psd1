@@ -11,14 +11,14 @@
  isBadPasswordWarning=Mot de passe invalide pour l'archive {0}
  ZipArchiveBadPassword=Mot de passe incorrect pour l'extraction de l'archive {0}
  InvalidPasswordForDataEncryptionValue=La valeur du paramètre Password ('{0}') est invalide pour la valeur de DataEncryption '{1}'.
- ZipArchiveCheckPasswordError=Erreur lors du contrôle de mot de passe sur l'archive {0] : {1}
+ ZipArchiveCheckPasswordError=Erreur lors du contrôle de mot de passe sur l'archive {0} : {1}
  
  ConvertingFile=Conversion de l'archive {0} en une archive autoextractible.
  ErrorSFX=Erreur lors de la création de l'archive autoextractible {0} : {1}
   
- AddEntryError=Impossible d'ajouter l'élement {0} dans l'archive '{1}' : {2}
+ AddEntryError=Impossible d'ajouter l'élement '{0}' dans l'archive '{1}' : {2}
  EntryIsNull=L'entrée '{0}' est `$null.
- ExpandZipEntryError=L'entrée nommée {0} n'existe pas dans l'archive '{1}'
+ ExpandZipEntryError=L'entrée nommée '{0}' n'existe pas dans l'archive '{1}'
  
  
  ZipArchiveReadError=Une erreur s'est produite lors de la lecture de l'archive {0} : {1}

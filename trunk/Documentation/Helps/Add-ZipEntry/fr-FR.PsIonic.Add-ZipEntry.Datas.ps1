@@ -3,6 +3,7 @@ $Datas = @{
 	AddZipEntrySynopsis = 'Ajoute une entrée dans le catalogue d''une archive Zip existante.'
 	AddZipEntryDescription = 'Ajoute une entrée dans le catalogue d''une archive Zip existante, cette entrée peut être un nom de fichier ou de répertoire, une chaîne de caractères ou un tableau d''octets.'
 	AddZipEntrySets__AllParameterSets = ''
+    AddZipEntryParametersComment = 'Commentaire associé à l''entrée. Pour les entrées de type string ou tableau, par défaut leur champ contiendra le nom de leur type : [String] ou [Byte[]].' 
 	AddZipEntryParametersDirectoryPath = 'La nouvelle entrée sera ajoutée dans un répertoire spécifique. Par défaut elle est ajoutée à la racine de l''arborescence contenue dans l''archive.'
 	AddZipEntryParametersName = @"
  Chaque entrée d'archive est associèe à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme nom d'entrée dans l'archive.
@@ -17,8 +18,8 @@ Contenu associé à une entrée d'archive. Les types attendus sont :
 Tous les autres types d'objet seront transformés en chaîne de caractères via la méthode ToString().   
 "@
     AddZipEntryParametersOverwrite = @"
-Si une entrée existe déjà, elle est mise à jour. 
-La propriété LastModified est renseignée avec la date et l'heure courante.
+Si une entrée existe déjà, elle est mise à jour.La propriété LastModified est renseignée avec la date et l'heure courante.
+La mise à jour d'une entré de type directory ne fait qu'ajouter les nouveaux éléments, mais ne supprime pas les entrées qui ne sont plus sur le filesSystem. Ce n'est pas une synchronisation.
 Par défaut l'ajout d'une entré existante déclenchera une exception.
 "@
     AddZipEntryParametersPassthru = 'Une fois l''entrée ajoutée au catalogue de l''archive, elle est émise dans le pipeline.'
@@ -28,7 +29,7 @@ System.Byte[], System.String, System.IO.DirectoryInfo, System.IO.FileInfo, Ionic
 Vous pouvez émettre n'importe quel objet des types précédents dans le pipeline.
 "@
 	AddZipEntryOutputsDescriptionIonicZipZipEntry = 'Ionic.Zip.ZipEntry'
-	AddZipEntryNotes = 'Cette fonction est couplée à la fonction nommée Expand-ZipEntry'
+	AddZipEntryNotes = 'Cette fonction est couplée à la fonction nommée Expand-ZipEntry.'
 	AddZipEntryExamplesRemarks1 = @"
 Ces commandes ajoutent une entrée dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
