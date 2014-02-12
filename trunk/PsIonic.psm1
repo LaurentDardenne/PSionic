@@ -112,6 +112,31 @@ Function New-ArrayReadOnly {
 
 $ZipFrmRO=New-ArrayReadOnly ([ref]$ZipFrm)
 
+function TruncateString{
+ param($Object,[int]$SizeMax=512)
+  $Msg= $Object.ToString()
+  $Msg.Substring(0,([Math]::Min(($Msg.Length),$Sizemax)))
+}#TruncateString
+
+function SetComment{
+ param(
+   $IonicObject, 
+  [string] $Default, 
+  [string] $Comment, 
+  [switch]$Overwrite
+ )
+  
+ if ($Overwrite)
+ { $IonicObject.Comment=$Comment }
+ else
+ {
+   if ($Comment -eq [string]::Empty)
+   { $IonicObject.Comment=$Default }
+   else
+   { $IonicObject.Comment=$Comment }           
+ }
+}#SetComment   
+
 function Format-ZipFile {
 # .ExternalHelp PsIonic-Help.xml   
   param(
@@ -346,82 +371,89 @@ Function UnRegisterEvent{
   { throw (New-Object PSIonicTools.PsionicException($EventException)) }  
 }#UnRegisterEvent
 
+
 function ConvertFrom-CliXml {
 # .ExternalHelp PsIonic-Help.xml 
-# http://poshcode.org/2302
-# by Joel Bennett, modification David Sjstrand
+# http://poshcode.org/4545
+# by Joel Bennett, modification David Sjstrand, Poshoholic
 
 #On récupère une string XML afin de désérialiser un objet Powershell.
-    param(
-        [Parameter(Position=0, Mandatory=$true, ValueFromPipeline=$true)]
-        [ValidateNotNullOrEmpty()]
-        [String[]]$InputObject
-    )
-    begin
-    {
-		$OFS = "`n"
-        [String]$xmlString = ""
+  param(
+      [Parameter(Position=0, Mandatory=$true, ValueFromPipeline=$true)]
+      [ValidateNotNullOrEmpty()]
+      [String[]]$InputObject
+  )
+  begin
+  {
+      $OFS = "`n"
+      [String]$xmlString = ""
+  }
+  process
+  {
+      $xmlString += $InputObject
+  }
+  end
+  {
+    try {
+      $type = [PSObject].Assembly.GetType('System.Management.Automation.Deserializer')
+      $ctor = $type.GetConstructor('instance,nonpublic', $null, @([xml.xmlreader]), $null)
+      $sr = New-Object System.IO.StringReader $xmlString
+      $xr = New-Object System.Xml.XmlTextReader $sr
+      $deserializer = $ctor.Invoke($xr)
+      $done = $type.GetMethod('Done', [System.Reflection.BindingFlags]'nonpublic,instance')
+      while (!$type.InvokeMember("Done", "InvokeMethod,NonPublic,Instance", $null, $deserializer, @()))
+      {
+          try {
+              $type.InvokeMember("Deserialize", "InvokeMethod,NonPublic,Instance", $null, $deserializer, @())
+          } catch {
+              #bug fix : 
+              # En cas d'exception, la version d'origine boucle en continue, 
+              #car dans ce cas Done ne sera jamais à $true
+              Write-Error "Could not deserialize '$(TruncateString $xmlstring)' : $_"  
+              break 
+          }
+      }
+    } 
+    Finally {
+      $xr.Close()
+      $sr.Dispose()
     }
-    process
-    {
-        $xmlString += $InputObject
-    }
-    end
-    {
-        $type = [PSObject].Assembly.GetType("System.Management.Automation.Deserializer")  #v2 & v3
-        $ctor = $type.getconstructor("instance,nonpublic", $null, @([xml.xmlreader]), $null)
-        $sr = new-object System.IO.StringReader $xmlString
-        $xr = new-object System.Xml.XmlTextReader $sr
-        $deserializer = $ctor.invoke($xr)
-        $method = @($type.getmethods("nonpublic,instance") | where-object {$_.name -like "Deserialize"})[1]
-        $done = $type.getmethod("Done", [System.Reflection.BindingFlags]"nonpublic,instance")
-        while (!$done.invoke($deserializer, @()))
-        {
-            try {
-                $method.invoke($deserializer, "")
-            } catch {
-                write-warning "Could not deserialize ${string}: $_"
-            }
-        }
-		$xr.Close()
-		$sr.Dispose()
-    }
-}
+  }
+}#ConvertFrom-CliXml
 
 function ConvertTo-CliXml {
 # .ExternalHelp PsIonic-Help.xml  
-#from http://poshcode.org/2301
-#by Joel Bennett
+#from http://poshcode.org/4544
+#by Joel Bennett,modification Poshoholic
 
 #Permet de sérialiser un objet PowerShell, on récupère une string XML
-    param(
-        [Parameter(Position=0, Mandatory=$true, ValueFromPipeline=$true)]
-        [ValidateNotNullOrEmpty()]
-        [PSObject[]]$InputObject
-    )
-    begin {
-        $type = [PSObject].Assembly.GetType("System.Management.Automation.Serializer") #v2 & v3
-        $ctor = $type.getconstructor("instance,nonpublic", $null, @([System.Xml.XmlWriter]), $null)
-        $sw = new-object System.IO.StringWriter
-        $xw = new-object System.Xml.XmlTextWriter $sw
-        $serializer = $ctor.invoke($xw)
-        $method = $type.getmethod("Serialize", "nonpublic,instance", $null, [type[]]@([object]), $null)
-        $done = $type.getmethod("Done", [System.Reflection.BindingFlags]"nonpublic,instance")
-    }
-    process {
-        try {
-            [void]$method.invoke($serializer, $InputObject)
-        } catch {
-            write-warning "Could not serialize $($InputObject.gettype()): $_"
-        }
-    }
-    end {    
-        [void]$done.invoke($serializer, @())
-        $sw.ToString()
-		$xw.Close()
-		$sw.Dispose()
-    }
-}
+  param(
+      [Parameter(Position=0, Mandatory=$true, ValueFromPipeline=$true)]
+      [ValidateNotNullOrEmpty()]
+      [PSObject[]]$InputObject
+  )
+  begin {
+      $type = [PSObject].Assembly.GetType('System.Management.Automation.Serializer')
+      $ctor = $type.GetConstructor('instance,nonpublic', $null, @([System.Xml.XmlWriter]), $null)
+      $sw = New-Object System.IO.StringWriter
+      $xw = New-Object System.Xml.XmlTextWriter $sw
+      $serializer = $ctor.Invoke($xw)
+      #$method = $type.GetMethod('Serialize', 'nonpublic,instance', $null, [type[]]@([object]), $null)
+  }
+  process {
+      try {
+          [void]$type.InvokeMember("Serialize", "InvokeMethod,NonPublic,Instance", $null, $serializer, [object[]]@($InputObject))
+      } catch {
+          Write-Warning "Could not serialize $($InputObject.GetType()): $_"
+      }
+  }
+  end {    
+      [void]$type.InvokeMember("Done", "InvokeMethod,NonPublic,Instance", $null, $serializer, @())
+      $sw.ToString()
+      $xw.Close()
+      $sw.Dispose()
+  }
+}#ConvertTo-CliXml
 
 #   Fonctions spécifiques à PsIonic
 function GetSFXname {
@@ -1168,13 +1200,14 @@ Function AddEntry {
        [Alias('Key')]
        [Alias('Name')]  #Si c'est un fichier ou un répertoire on lie le nom de l'entrée automatiquement
      [string] $KeyName, #Le nom d'entrée n'est pas obligatoire et peut provenir de la clé d'une entrée de hashtable
+     [string] $Comment, 
      [string] $DirectoryPathInArchive,
      [switch] $Overwrite, 
      [switch] $Passthru
     )
  begin {
    [type[]] $private:ParameterTypesOfUpdateEntryMethod=[string],[byte[]]
-   $private:AddEntryMethod=[Ionic.Zip.ZipFile].GetMethod("UpdateEntry",$private:ParameterTypesOfUpdateEntryMethod)
+   $private:UpdateEntryMethod=[Ionic.Zip.ZipFile].GetMethod("UpdateEntry",$private:ParameterTypesOfUpdateEntryMethod)
 
    [type[]] $private:ParameterTypesOfAddEntryMethod=[string],[byte[]]
    $private:AddEntryMethod=[Ionic.Zip.ZipFile].GetMethod("AddEntry",$private:ParameterTypesOfAddEntryMethod)
@@ -1183,14 +1216,24 @@ Function AddEntry {
  process {
   try {
     $Logger.Debug("$($InputObject.Gettype().FullName)") 
-    $Logger.Debug("AddEntry  InputObject=$InputObject `t KeyName=$KeyName")  #<%REMOVE%>
-     #affecte $OldEntryInfo ET exécute le test
-    $isEntryExist=($OldEntryInfo=$Zipfile[$KeyName]) -ne $null
+    $Logger.Debug("AddEntry  InputObject=$(TruncateString $InputObject) `t KeyName=$KeyName")  #<%REMOVE%>
+    
+    if ($InputObject -is [System.IO.DirectoryInfo])
+    { $OldEntryInfo=$Zipfile["$KeyName/"] }
+    else
+    { $OldEntryInfo=$Zipfile[$KeyName] }
+    
+    
+    $isEntryExist=$OldEntryInfo -ne $null
     $Logger.Debug("isEntryExist=$isEntryExist")#<%REMOVE%>
-
+    $isTypeSupported=$true
+    
      #Valide localement de le mode Update
-    $CurrentOverwrite=$Overwrite -and $isEntryExist 
+    $CurrentOverwrite=$Overwrite -and $isEntryExist
     if ($CurrentOverwrite)  { $Logger.Debug("Update mode") } #<%REMOVE%>
+
+    if ($CurrentOverwrite -and $Comment -eq [string]::Empty)
+    { $Comment= $OldEntryInfo.Comment }
 
     if ($InputObject.GetType().Fullname -match "^System.Collections.Generic.KeyValuePair|^System.Collections.DictionaryEntry")
     {
@@ -1202,7 +1245,7 @@ Function AddEntry {
       else 
       {$InputObject=$InputObject.Value}
     }
-    $Logger.Debug("AddEntry  InputObject=$InputObject `t KeyName=$KeyName")  #<%REMOVE%>
+    $Logger.Debug("AddEntry  InputObject=$(TruncateString $InputObject) `t KeyName=$KeyName")  #<%REMOVE%>
     
     $isCollection=isCollection $InputObject
     if ($isCollection -and ($InputObject -is [byte[]]))
@@ -1221,14 +1264,17 @@ Function AddEntry {
       if ($CurrentOverwrite)
       { $ZipEntry=$private:UpdateEntryMethod.Invoke($ZipFile, $params) }
       else
-      { $ZipEntry=$private:AddEntryMethod.Invoke($ZipFile, $params) }
+      { 
+        $ZipEntry=$private:AddEntryMethod.Invoke($ZipFile, $params)
+      }
+      SetComment $ZipEntry '[Byte[]]' $Comment -Overwrite:$CurrentOverwrite 
     }
     elseif ($isCollection)
     {
        $Logger.Debug("Recurse Add-ZipEntry")  #<%REMOVE%>
        $InputObject.GetEnumerator()|
         GetObjectByType |  
-        Add-ZipEntry $ZipFile -Passthru:$Passthru -Overwrite:$Overwrite #todo $DirectoryPathInArchive,    
+        Add-ZipEntry $ZipFile -Passthru:$Passthru -Overwrite:$Overwrite -DirectoryPathInArchive $DirectoryPathInArchive    
     }
     elseif ($InputObject -is [System.String])
     { 
@@ -1241,15 +1287,20 @@ Function AddEntry {
        if ($CurrentOverwrite)
        {$ZipEntry=$ZipFile.UpdateEntry($KeyName, $InputObject -as [string]) }
        else
-       {$ZipEntry=$ZipFile.AddEntry($KeyName, $InputObject -as [string]) } 
+       {
+        $ZipEntry=$ZipFile.AddEntry($KeyName, $InputObject -as [string])
+       }
+       SetComment $ZipEntry '[String]' $Comment -Overwrite:$CurrentOverwrite   
     }
     elseif ($InputObject -is [System.IO.DirectoryInfo])
     { 
       $Logger.Debug("Add type Directory ")  #<%REMOVE%>
+      #Ionic ne se fait récursivement la maj de la date ... 
       if ($CurrentOverwrite)
-      { $ZipEntry=$ZipFile.UpdateDirectory($InputObject.FullName, $InputObject.Name) } #todo verif date time
+      { $ZipEntry=$ZipFile.UpdateDirectory($InputObject.FullName, $InputObject.Name) } 
       else 
       { $ZipEntry=$ZipFile.AddDirectory($InputObject.FullName, $InputObject.Name) }
+      SetComment $ZipEntry -Comment $Comment -Overwrite:$CurrentOverwrite
     }
     elseif ($InputObject -is [System.IO.FileInfo])
     { 
@@ -1259,7 +1310,8 @@ Function AddEntry {
       if ($CurrentOverwrite) 
       { $ZipEntry=$ZipFile.UpdateFile($InputObject.FullName,$DirectoryPathInArchive) }
       else 
-      { $ZipEntry=$ZipFile.AddFile($InputObject.FullName,$DirectoryPathInArchive) }  
+      { $ZipEntry=$ZipFile.AddFile($InputObject.FullName,$DirectoryPathInArchive) } 
+      SetComment $ZipEntry -Comment $Comment -Overwrite:$CurrentOverwrite
     }
     elseif ($InputObject -is [Ionic.Zip.ZipEntry])
     {
@@ -1270,30 +1322,39 @@ Function AddEntry {
     {
       $Msg=$PsIonicMsgs.TypeNotSupported -F $MyInvocation.MyCommand.Name,$InputObject.GetType().FullName
       $Logger.Debug($Msg)  #<%REMOVE%>
-      Write-Warning $Msg   
+      Write-Warning $Msg
+      $isTypeSupported=$false   
     }
-    if ($CurrentOverwrite)
+    if ($isTypeSupported)
     {
-      #todo delete      
-      #$ZipEntry.SetEntryTimes($OldEntryInfo.CreationTime,$OldEntryInfo.AccessedTime,$OldEntryInfo.ModifiedTime)
-      #$ZipEntry.SetEntryTimes([datetime]::Now,[datetime]::Now,[datetime]::Now)
-      #01/01/1601 01:00:00
-      
-      $ZipEntry.AccessedTime = $OldEntryInfo.AccessedTime
-      #$ZipEntry.ModifiedTime = $OldEntryInfo.ModifiedTime
-      #$ZipEntry.CreationTime = $OldEntryInfo.CreationTime
-      $ZipEntry.LastModified=[datetime]::Now
+      if ($CurrentOverwrite)
+      {
+        $Logger.Debug("set LastModified NOW")  #<%REMOVE%>
+        $ZipEntry.LastModified=[datetime]::Now
+        $Logger.Debug("set CreationTime Old Value")  #<%REMOVE%>
+        $ZipEntry.CreationTime=$OldEntryInfo.CreationTime
+      }
+      elseif ($InputObject -isnot [System.IO.FileSystemInfo])
+      {
+        $Logger.Debug("set CreationTime NOW")  #<%REMOVE%>
+        $ZipEntry.CreationTime=[datetime]::Now
+      }
+      else
+      {
+        $Logger.Debug("set file time")  #<%REMOVE%>
+        $ZipEntry.SetEntryTimes($InputObject.CreationTime, $InputObject.LastWriteTime,$InputObject.LastAccessTime)
+      } 
+
+      if ($Passthru)
+      {$ZipEntry}
     }
-    #TODO else si ce n'est pas un fichier MAJ de la date création ou accès
-    if ($Passthru)
-    {$ZipEntry} 
    }
-   catch { #ArgumentNullException or ArgumentException
-    Write-Error -Message ($PsIonicMsgs.AddEntryError -F $InputObject,$ZipFile.Name,$_.Exception.Message) -Exception $_.Exception
+   catch [System.ArgumentNullException],[System.ArgumentException] {
+    Write-Error -Message ($PsIonicMsgs.AddEntryError -F (TruncateString $InputObject),$ZipFile.Name,$_.Exception.Message) -Exception $_.Exception
    }
   }#process
 }#AddEntry
-   
+
 Function Add-ZipEntry { 
 # .ExternalHelp PsIonic-Help.xml 
  [CmdletBinding()] 
@@ -1305,7 +1366,8 @@ Function Add-ZipEntry {
       [Parameter(Position=0,Mandatory=$true)]
     [Ionic.Zip.ZipFile] $ZipFile,
       [Parameter(Position=1,Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
-    [string] $Name, 
+    [string] $Name,
+    [string] $Comment=[string]::Empty, 
     [string] $DirectoryPath=[string]::Empty,
     [switch] $Overwrite, 
     [switch] $Passthru
@@ -1322,9 +1384,9 @@ Function Add-ZipEntry {
       else
       {
         if ($Name -ne [string]::Empty)
-        { AddEntry -InputObject $Object -KeyName $Name -DirectoryPathInArchive $DirectoryPath -Overwrite:$Overwrite -Passthru:$Passthru}
+        { AddEntry -InputObject $Object -KeyName $Name -Comment $Comment -DirectoryPathInArchive $DirectoryPath -Overwrite:$Overwrite -Passthru:$Passthru}
         else
-        { $Object|AddEntry -DirectoryPathInArchive $DirectoryPath -Overwrite:$Overwrite -Passthru:$Passthru}
+        { $Object|AddEntry -Comment $Comment  -DirectoryPathInArchive $DirectoryPath -Overwrite:$Overwrite -Passthru:$Passthru}
       }
   }#process
 } #Add-ZipEntry

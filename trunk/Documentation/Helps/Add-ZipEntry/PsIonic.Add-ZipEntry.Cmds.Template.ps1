@@ -4,7 +4,8 @@
 	synopsis = $Datas.AddZipEntrySynopsis
 	description = $Datas.AddZipEntryDescription
 	parameters = @{
-		DirectoryPath = $Datas.AddZipEntryParametersDirectoryPath
+		Comment= $Datas.AddZipEntryParametersComment
+        DirectoryPath = $Datas.AddZipEntryParametersDirectoryPath
 		Name = $Datas.AddZipEntryParametersName
 		Object = $Datas.AddZipEntryParametersObject
         Overwrite = $Datas.AddZipEntryParametersOverwrite

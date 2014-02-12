@@ -11,14 +11,14 @@
  isBadPasswordWarning=Bad password for the archive {0}
  ZipArchiveBadPassword=An invalid password was given to extract archive {0}.
  InvalidPasswordForDataEncryptionValue=The value provided for Password parameter ('{0}') is invalid for the given value of DataEncryption '{1}'.
- ZipArchiveCheckPasswordError=Error occured while checking password on the archive {0] : {1}.
+ ZipArchiveCheckPasswordError=Error occured while checking password on the archive {0} : {1}.
 
  ConvertingFile=Converting archive {0} to a self-extracting archive.
  ErrorSFX=Error occured while creating the self-extracting archive {0} : {1}
 
- AddEntryError=Can not add the entry {0} : {1}
+ AddEntryError=Can not add the entry '{0}' into the archive '{1}': {2}
  EntryIsNull=The entry '{0}' is `$null.
- ExpandZipEntryError=The entry named {0} do not exist in the archive '{1}'
+ ExpandZipEntryError=The entry named '{0}' do not exist in the archive '{1}'
  
 
  ZipArchiveReadError=Error occured while reading the archive {0} : {1}.
@@ -26,7 +26,7 @@
  ZipArchiveCheckIntegrityError=Error occured while checking the archive integrity {0} : {1}.
  isCorruptedZipArchiveWarning=Corrupted archive : {0}
 
- TestisArchiveError=Error occured while testing the archive {0] : {1}.
+ TestisArchiveError=Error occured while testing the archive {0} : {1}.
  isNotZipArchiveWarning=The file is not a zip archive : {0}
  
  ExcludedObject=The current object is not an instance of System.IO.FileInfo type : {0}
