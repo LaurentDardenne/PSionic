@@ -606,18 +606,19 @@ Function GetObjectByType {
      { $PSPathInfo=New-PSPathInfo -Path $Object }
      
      $Logger.Debug("Object : $Object") #<%REMOVE%> 
-           #Récupère tous les fichiers si le nom comporte des jokers : 
-           #     ?, *, [a], [abc], [a-c], Test*[a][0-9], etc.
-      if (-not $PSPathInfo.IsCandidate()) 
-      {
+
+     $isValide=($PSPathInfo.LastError -eq $null)  -and (($PSPathInfo.isFileSystemProvider -eq $true) -or ($PSPathInfo.isUNC -eq $true))
+     if ($isValide -eq $false) 
+     {
          $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
          $Logger.Error($Msg) #<%REMOVE%>
          Write-Error -Exception (New-Object PSIonicTools.PsionicException($Msg))  
-      }
-      else
-      {
+     }
+     else
+     {
          if ($PSPathInfo.isWildcard)
          {
+          $Logger.Debug("Renvoi les fichiers résolus") #<%REMOVE%> 
           if ($PSPathInfo.ResolvedPSFiles.Count -gt 0)       
           {
             if ($isLiteral)
@@ -627,8 +628,19 @@ Function GetObjectByType {
           }
          }
          else
-         { $PSPathInfo.Win32PathName|Get-ChildItem -Recurse:$Recurse }
-      }   
+         { 
+           $Logger.Debug("Renvoi le nom du fichier/répertoire trouvé") #<%REMOVE%>
+           if ($PSPathInfo.isItemExist)
+           { 
+             if ($isLiteral)
+             {Get-Item -Literal $PSPathInfo.Win32PathName }
+             else 
+             {Get-Item -Path $PSPathInfo.Win32PathName }
+           }
+           else
+           { $PSPathInfo.Win32PathName }
+         }
+      }
   } #GetObject
  }#begin 
   
@@ -641,6 +653,7 @@ Function GetObjectByType {
   } 
  }#process
 } #GetObjectByType
+
 
 function SaveSFXFile {
 #Enregistre une archive autoextractible
