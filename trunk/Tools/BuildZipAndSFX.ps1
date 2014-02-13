@@ -6,9 +6,11 @@
   }
   Task default -Depends BuildZipAndSFX 
 }
+include "$PsIonicTools\Show-BalloonTip.ps1"
 
 Task BuildZipAndSFX {
 #Construit une archive autoextractible
+Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
  
   Pop-Location
    Set-location "$PsIonicLivraison\PsIonic"

@@ -15,15 +15,33 @@ try {
 } catch {
  Throw "Module Psake is unavailable."
 }
- 
- Invoke-Psake .\Release.ps1 -parameters @{"Config"="$($PsCmdlet.ParameterSetName)"} -nologo
-
- if ($PSVersion -eq "3.0")
- {
-   Invoke-Expression @"
-Powershell -version 2.0 -noprofile -Command {."`$env:PsIonicProfile\Profile_DevCodePlex.Ps1";IPMO Psake; Set-Location $PsIonicTools; Invoke-Psake .\Common.ps1 -parameters @{"Config"="$($PsCmdlet.ParameterSetName)"} -nologo}
+try {
+    #Release utilise en interne Show-BalloonTip
+    #Une fois ses tâches terminée, la fonction Show-BalloonTip
+    #n'est plus disponible, on la recharge donc dans la portée courante. 
+   . "$PsIonicTools\Show-BalloonTip.ps1"
+   Invoke-Psake .\Release.ps1 -parameters @{"Config"="$($PsCmdlet.ParameterSetName)"} -nologo
+  
+   if ($PSVersion -eq "3.0")
+   {
+     Invoke-Expression @"
+  Powershell -version 2.0 -noprofile -Command {."`$env:PsIonicProfile\Profile_DevCodePlex.Ps1";IPMO Psake; Set-Location $PsIonicTools; Invoke-Psake .\Common.ps1 -parameters @{"Config"="$($PsCmdlet.ParameterSetName)"} -nologo}
 "@ 
+   }
+  
+  if ($psake.build_success)
+  { 
+   Show-BalloonTip –Text 'Construction terminée.' –Title 'Build Psionic' –Icon Info 
+   Invoke-Psake .\BuildZipAndSFX.ps1 -parameters @{"Config"="$($PsCmdlet.ParameterSetName)"} -nologo 
+  }
+  else
+  { 
+   Show-BalloonTip –Text 'Build Fail' –Title 'Build Psionic' –Icon Error   
+  }
+} finally {
+ if ($script:balloon -ne $null)
+ { 
+   $script:balloon.Dispose()
+   Remove-Variable -Scope script -Name Balloon
  }
-
-if ($psake.build_success)
-{ Invoke-Psake .\BuildZipAndSFX.ps1 -parameters @{"Config"="$($PsCmdlet.ParameterSetName)"} -nologo }
+}

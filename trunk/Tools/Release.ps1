@@ -3,11 +3,14 @@
 # La compilation doit se faire sous PS v3, ainsi on a les deux DLL pour les framework .Net v2 et 4.0
 
 Include "$PsIonicTools\Common.ps1"
+ #charge cette fonction dans la portée de PSake
+include "$PsIonicTools\Show-BalloonTip.ps1"
 
-Task default -Depends Delivery,CompilePsIonicTools,BuildXmlHelp,TestBomFinal
+Task default -Depends Delivery,CompilePsIonicTools,BuildXmlHelp,TestBomFinal,Finalize
 
 Task Delivery -Depends Clean,RemoveConditionnal,FindTodo {
 #Recopie les fichiers dans le répertoire de livraison  
+Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info 
   
 $VerbosePreference='Continue'
 
@@ -58,6 +61,8 @@ $VerbosePreference='Continue'
 
 Task RemoveConditionnal -Depend TestLocalizedData {
 #Traite les pseudo directives de parsing conditionnelle
+
+Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
    
    $VerbosePreference='Continue'
    ."$PsIonicTools\Remove-Conditionnal.ps1"
@@ -96,6 +101,7 @@ Task RemoveConditionnal -Depend TestLocalizedData {
 
 Task TestLocalizedData -ContinueOnError {
  ."$PsIonicTools\Test-LocalizedData.ps1"
+Show–BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
 
  $SearchDir="$PsionicTrunk"
  Foreach ($Culture in $Cultures)
@@ -119,6 +125,7 @@ Task TestLocalizedData -ContinueOnError {
 } #TestLocalizedData
 
 Task BuildXmlHelp {
+Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
   $Module=Import-Module "$PsIonicLivraison\PsIonic\PsIonic.psd1" -PassThru
  
   [string] $TempLocation ="$([System.IO.Path]::GetTempPath())PsIonic"
@@ -156,7 +163,8 @@ Task BuildXmlHelp {
 
 Task Clean -Depends Init {
 # Supprime, puis recrée le dossier de livraison   
-  
+Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
+
    $VerbosePreference='Continue'
    Remove-Item $PsIonicLivraison -Recurse -Force -ea SilentlyContinue
    "$PsIonicLivraison\PsIonic",
@@ -173,6 +181,7 @@ Task Clean -Depends Init {
 
 Task Init -Depends TestBOM {
 #validation à minima des prérequis
+Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
 
  Write-host "Mode $Configuration"
   if (-not (Test-Path Variable:Psionic))
@@ -185,7 +194,7 @@ Task Init -Depends TestBOM {
 
 Task TestBOM {
 #Validation de l'encodage des fichiers AVANT la génération  
-  
+Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info  
   Write-Host "Validation de l'encodage des fichiers du répertoire : $PsionicTrunk"
   
   Import-Module DTW.PS.FileSystem -Global
@@ -200,6 +209,8 @@ Task TestBOM {
 
 #On duplique la tâche, car PSake ne peut exécuter deux fois une même tâche
 Task TestBOMFinal {
+Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
+
 #Validation de l'encodage des fichiers APRES la génération  
   
   Write-Host "Validation de l'encodage des fichiers du répertoire : $PsionicLivraison"
@@ -213,6 +224,7 @@ Task TestBOMFinal {
 
 
 Task FindTodo {
+Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info    
 if ($Configuration -eq "Release") 
 {
    $Pattern='(?<=#).*?todo'
@@ -228,3 +240,8 @@ if ($Configuration -eq "Release")
 else
 {Write-Warning "Config DEBUG : tache inutile" } 
 } #FindTodo
+
+Task Finalize {
+ $script:balloon.Dispose()
+ Remove-Variable -Scope script -Name Balloon
+}

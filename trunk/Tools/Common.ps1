@@ -8,13 +8,14 @@ Properties {
    $Cultures= "fr-FR","en-US"
    $ProjectName=$PsIonic.ProjectName
 }
+include "$PsIonicTools\Show-BalloonTip.ps1"
 
 if (-not $currentContext.tasks.default)
 {Task default -Depends CompilePsionicTools}
  
 Task CompilePsionicTools -Depends TestPSSyntax {
 #Compile la dll psionic
- 
+Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info  
   $Files=@(
     "$PsIonicBin\PSIonicTools.cs",
     "$PsIonicBin\AssemblyInfo.cs"
