@@ -109,7 +109,9 @@ Function New-PSPathInfo{
                #Indique si le PSDrive existe ou pas
               isDriveExist=$false;
                
-               #Indique si l'élément existe ou pas.
+               #Indique si l'élément d'un provider existe ou pas. 
+               #Un chemin comportant des jokers et renvoyant au moins un élement
+               #positionne isItemExist à $true. 
               isItemExist=$False;
 
                #Précise si le provider indiqué par le nom de chemin $Name est celui du FileSystem
@@ -366,9 +368,9 @@ Function New-PSPathInfo{
     }
     finally {
 
-      #Répond à la question : Le chemin est-il valide ?
+      #Répond à la question : Le nom de chemin est-il un nom valide pour le FileSystem?
       $Infos| 
-        Add-Member -Membertype Scriptmethod -Name IsCandidate {
+        Add-Member -Membertype Scriptmethod -Name IsaValidNameForTheFileSystem{
            $result= $this.isPSValid  -and
                    ($this.LastError -eq $null)  -and 
                    (($this.isFileSystemProvider -eq $true) -or ($this.isUNC -eq $true)) -and 
@@ -380,51 +382,6 @@ Function New-PSPathInfo{
           $result                    
         }  
 
-      #Répond à la question : Le chemin est-il un répertoire valide ?
-      $Infos| 
-        Add-Member -Membertype Scriptmethod -Name IsDirectoryExist{
-            #Pour utiliser un répertoire on doit savoir s'il :
-            #  est valide (ne pas contenir de joker,ni de caractères interdits),
-            #  existe,
-            #  pointe sur le file systeme (s'il est relatif, la location courante doit être le FS)
-           $result= $false
-           if ($this.IsCandidate() -and $this.isItemExist)
-           { 
-             if ($this.asLiteral)
-             { $lpath=[Management.Automation.WildcardPattern]::Escape($this.Win32PathName) }
-             else 
-             { $lpath=$this.Win32PathName }
-             $result=$ExecutionContext.InvokeProvider.Item.IsContainer($lpath)
-           }
-#<DEFINE %DEBUG%>           
-           If ($result) 
-           { Write-Debug "Valide en tant que répertoire : $($this.Win32PathName)" }
-#<UNDEF %DEBUG%>             
-           $result     
-        }  
-
-      #Répond à la question : Le chemin peut-il être crée ?
-      $Infos| 
-        Add-Member -Membertype Scriptmethod -Name IsCandidateForCreation {
-            # Pour créer un répertoire on doit savoir s'il :
-            #  est valide (ne pas contenir de joker, ni de caractères interdits),
-            #  S'il n'existe pas déjà,
-            #  pointe sur le file système (s'il est relatif, la location courante doit être le FS)
-            #
-            # $this.ResolvedPSPath est un nom d'entrée du FileSystem, pas un Fichier ou un Répertoire, 
-            # c'est lors de la création de cette entrée que l'on détermine son type.
-            #
-            # AUCUN test d'accès en écriture n'est effectué. 
-            #Par exemple les chemin pointant sur un CDROM sont considérés comme valide, 
-            #ceux n'ayant pas la permision d'écriture également.
-           $result= ( $this.IsCandidate() -and ($this.isItemExist -eq $false) ) 
-#<DEFINE %DEBUG%>
-           If ($result) 
-           { Write-Debug "Valide pour une création de répertoire : $($this.Win32PathName)"} 
-#<UNDEF %DEBUG%>
-           $result
-        }  
-      
       $Infos| 
         Add-Member -Membertype Scriptmethod -Name GetFileName {
           If ($this.Win32PathName -ne $null) 
@@ -451,7 +408,7 @@ Function New-PSPathInfo{
              Pop-Location
            }
       }
-      if ($Infos.isCandidate())
+      if ($Infos.IsaValidNameForTheFileSystem())
       { 
         #Pour 'C:\Temp\MyTest[a' si on utilise -Path, alors Win32PathName n'est pas renseigné
         #Pour 'C:\Temp\MyTest[a' si on utilise -LiteralPath, alors Win32PathName est renseigné
@@ -477,9 +434,140 @@ Function New-PSPathInfo{
            "{0}\{1}-{2:$Format}{3}" -F $SF.Directory,$SF.BaseName,$Date,$SF.Extension
          }
       }
-      Write-Output $Infos
+      Write-Output $Infos 
     }
  } #process
 } #New-PSPathInfo
 (Get-Item function:New-PSPathInfo).Description="Résout un nom de chemin et détermine s'il peut être utilisé sur le FileSystem"
 new-alias npspa New-PSPathInfo -description "Fonction New-PSPathInfo" -force 
+
+function Add-FileSystemValidationMember {
+#Ajoute des méthodes de validation spécifique à un traitement
+ param(
+    [Parameter(Position=0, Mandatory=$true,ValueFromPipeline=$true)]
+    [ValidateNotNullOrEmpty()]
+    [ValidateScript({@($_.PsObject.TypeNames[0] -eq "PSPathInfo").Count -gt 0})]
+  $PSPathInfo
+ )
+ 
+ process {
+   #Le path est-il valide ? Concerne les fichiers et les répertoires avec ou sans jokers. 
+    $PSPathInfo| 
+      Add-Member -Membertype Scriptmethod -Name isaValidFileSystemPath {
+         $result=($this.LastError -eq $null)  -and 
+                 (($this.isFileSystemProvider -eq $true) -or ($this.isUNC -eq $true)) 
+                   
+        if (-not $result) { Write-Debug "Chemin invalide pour une utilisation sur le FileSystem : $($this.GetFileName())" } #<%REMOVE%>  
+        $result                    
+      }  -Passthru|
+        #Le chemin d'un répertoire existe-t-il ?
+      Add-Member -Membertype Scriptmethod -Name IsDirectoryExist{
+          #Pour utiliser un répertoire on doit savoir s'il :
+          #  est valide (ne pas contenir de joker,ni de caractères interdits),
+          #  existe,
+          #  pointe sur le file systeme (s'il est relatif, la location courante doit être le FS)
+         $result= $false
+         if ($this.isFileSystemItemFound())
+         { 
+           if ($this.asLiteral)
+           { $lpath=[Management.Automation.WildcardPattern]::Escape($this.Win32PathName) }
+           else 
+           { $lpath=$this.Win32PathName }
+           $result=$ExecutionContext.InvokeProvider.Item.IsContainer($lpath)
+         }
+          
+         If (-not $result) { Write-Debug "Le répertoire n'existe pas : $($this.Win32PathName)" } #<%REMOVE%>
+         $result     
+      }  -Passthru|  
+        #Le nom chemin est-il un nom valide pouvant être crée sur le FileSystem ?
+      Add-Member -Membertype Scriptmethod -Name IsCandidateForCreation {
+          # Pour créer un répertoire on doit savoir s'il :
+          #  est valide (ne pas contenir de joker, ni de caractères interdits),
+          #  S'il n'existe pas déjà,
+          #  pointe sur le file système (s'il est relatif, la location courante doit être le FS)
+          #
+          # $this.ResolvedPSPath est un nom d'entrée du FileSystem, pas un Fichier ou un Répertoire, 
+          # c'est lors de la création de cette entrée que l'on détermine son type.
+          #
+          # AUCUN test d'accès en écriture n'est effectué. 
+          #Par exemple les chemin pointant sur un CDROM sont considérés comme valide, 
+          #ceux n'ayant pas la permision d'écriture également.
+         $result= $this.IsaValidNameForTheFileSystem() -and ($this.isItemExist -eq $false)  
+         
+         If (-not $result) { Write-Debug "Path invalide pour une création de répertoire ou de fichier : $($this.Win32PathName)"} #<%REMOVE%> 
+         $result
+      } -Passthru | 
+        #Le nom de chemin valide renvoie-t-il un et un seul élément ?
+      Add-Member -Membertype Scriptmethod -Name isFileSystemItemFound {
+         $result= $this.isaValidFileSystemPath() -and $this.isItemExist -and $this.isWildcard -eq $false
+         if (-not $result) { Write-Debug "Le path pointe sur plusieurs éléments : $($this.GetFileName())" } #<%REMOVE%>
+         $result 
+      } -Passthru |
+        #Le nom de chemin valide existant et comportant des jokers, renvoie-t-il au moins un fichier/répertoire ?
+      Add-Member -Membertype Scriptmethod -Name isFileSystemItemContainsResolvedFiles {
+         $result=$this.isaValidFileSystemPath -and $this.isItemExist -and $this.isWildcard -and $this.ResolvedPSFiles.Count -gt 0
+         if (-not $result) { Write-Debug "La résolution du chemin valide ne renvoi pas de fichiers/répertoire : $($this.GetFileName())" } #<%REMOVE%>
+         $result          
+      } -Passthru   
+ }#process   
+}#Add-FileSystemValidationMember
+
+#Proxy de New-PSPathInfo 
+#Combine New-PSPathInfo et Add-FileSystemValidationMember
+#Pour un résultat identique on transforme les appels : 
+# $PSPathInfo=New-PSPathInfo -LiteralPath $Object |Add-FileSystemValidationMember
+#en
+# $PSPathInfo=New-PSPathInfo -LiteralPath $Object
+Function New-PsIonicPathInfo {
+  [CmdletBinding(DefaultParameterSetName='Path')]
+  param(
+      [Parameter(ParameterSetName='Path', Mandatory=$true, ValueFromPipeline=$true)]
+      [System.String]
+      ${Path},
+  
+      [Parameter(ParameterSetName='LiteralPath', Mandatory=$true, ValueFromPipeline=$true)]
+      [System.String]
+      ${LiteralPath})
+
+  begin
+  {
+      try {
+          $outBuffer = $null
+          if ($PSBoundParameters.TryGetValue('OutBuffer', [ref]$outBuffer))
+          {
+              $PSBoundParameters['OutBuffer'] = 1
+          }
+          $wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand('New-PSPathInfo', [System.Management.Automation.CommandTypes]::Function)
+           #Ajout
+          $scriptCmd = {& $wrappedCmd @PSBoundParameters |Add-FileSystemValidationMember}
+          $steppablePipeline = $scriptCmd.GetSteppablePipeline($myInvocation.CommandOrigin)
+          $steppablePipeline.Begin($PSCmdlet)
+      } catch {
+          throw
+      }
+  }
+  
+  process
+  {
+      try {
+          $steppablePipeline.Process($_)
+      } catch {
+          throw
+      }
+  }
+  
+  end
+  {
+      try {
+          $steppablePipeline.End()
+      } catch {
+          throw
+      }
+  }
+<#
+
+.ForwardHelpTargetName New-PSPathInfo
+.ForwardHelpCategory Function
+
+#>
+}#New-PsIonicPathInfo

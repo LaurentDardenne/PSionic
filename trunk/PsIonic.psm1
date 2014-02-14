@@ -601,14 +601,13 @@ Function GetObjectByType {
      
         #Validation du chemin qui doit référencer le FileSystem
      if ($isLiteral)
-     { $PSPathInfo=New-PSPathInfo -LiteralPath $Object }
+     { $PSPathInfo=New-PsIonicPathInfo -LiteralPath $Object}
      else
-     { $PSPathInfo=New-PSPathInfo -Path $Object }
+     { $PSPathInfo=New-PsIonicPathInfo -Path $Object }
      
      $Logger.Debug("Object : $Object") #<%REMOVE%> 
 
-     $isValide=($PSPathInfo.LastError -eq $null)  -and (($PSPathInfo.isFileSystemProvider -eq $true) -or ($PSPathInfo.isUNC -eq $true))
-     if ($isValide -eq $false) 
+     if (-not $PSPathInfo.isaValidFileSystemPath) 
      {
          $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
          $Logger.Error($Msg) #<%REMOVE%>
@@ -953,8 +952,8 @@ Function Compress-ZipFile {
           $PSVW=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
       }
        #Validation du chemin qui doit référencer le FileSystem
-      $PSPathInfo=New-PSPathInfo -Path $OutputName 
-      if (-not $PSPathInfo.IsCandidate()) 
+      $PSPathInfo=New-PsIonicPathInfo -Path $OutputName 
+      if (-not $PSPathInfo.IsaValidNameForTheFileSystem()) 
       {
          $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
          $Logger.Error($Msg) #<%REMOVE%>
@@ -1110,8 +1109,8 @@ Function Compress-SfxFile {
           $PSVW=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
       }
        #Validation du chemin qui doit référencer le FileSystem
-      $PSPathInfo=New-PSPathInfo -Path $OutputName 
-      if (-not $PSPathInfo.IsCandidate()) 
+      $PSPathInfo=New-PsIonicPathInfo -Path $OutputName 
+      if (-not $PSPathInfo.IsaValidNameForTheFileSystem()) 
       {
          $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
          $Logger.Error($Msg) #<%REMOVE%>
@@ -1435,24 +1434,21 @@ Function GetArchivePath {
     $Logger.Debug("The file name is '$ArchivePath'") #<%REMOVE%>
     
     if ($asLiteral)
-    { $Result=New-PSPathInfo -LiteralPath $ArchivePath -ea Stop }
+    { $Result=New-PsIonicPathInfo -LiteralPath $ArchivePath -ea Stop }
     else 
-    { $Result=New-PSPathInfo -Path $ArchivePath -ea Stop }
+    { $Result=New-PsIonicPathInfo-Path $ArchivePath -ea Stop }
     
-    $isCandidat=($Result.LastError -eq $null)  -and 
-                (($Result.isFileSystemProvider -eq $true) -or ($Result.isUNC -eq $true))
-    $Logger.Debug("isCandidat=$isCandidat") #<%REMOVE%>
     $TargetFile=$Result.GetFilename()
     $Logger.Debug("TargetFile=$TargetFile") #<%REMOVE%>
     
-    if (-not $isCandidat) 
+    if (-not $Result.isaValidFileSystemPath) 
     {
       $Msg=$PsIonicMsgs.PathIsNotAFile -F $TargetFile
       throw (New-Object PsionicTools.PsionicInvalidValueException($TargetFile,$Msg))
     }
 
     if (-not $Result.isItemExist -and -not $Result.isWildcard)
-    { throw (New-Object System.Management.Automation.ItemNotFoundException ($PsIonicMsgs.ItemNotFound -F $TargetFile)) }
+    { throw (New-Object System.Management.Automation.ItemNotFoundException($PsIonicMsgs.ItemNotFound -F $TargetFile)) }
     
     if ($Result.isWildcard -and $Result.ResolvedPSFiles.Count -eq 0) 
     { throw (New-Object PsionicTools.PsionicInvalidValueException($TargetFile,$PsIonicMsgs.EmptyResolve))}
@@ -1767,8 +1763,8 @@ Function Expand-ZipFile {
          #le chemin valide doit exister
          #Le chemin doit référencer le FileSystem
          #Comme on attend une seule entrée on n'interprète pas le globbing
-        $PSPathInfo=New-PSPathInfo -LiteralPath $OutputPath
-        if (-not $PSPathInfo.IsCandidate()) 
+        $PSPathInfo=New-PsIonicPathInfo -LiteralPath $OutputPath
+        if (-not $PSPathInfo.IsaValidNameForTheFileSystem()) 
         {
            $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName())+ "`r`n$($PSPathInfo.LastError)"
            $Logger.Error($Msg) #<%REMOVE%>
