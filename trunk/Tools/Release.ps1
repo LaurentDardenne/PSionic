@@ -101,7 +101,7 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
 
 Task TestLocalizedData -ContinueOnError {
  ."$PsIonicTools\Test-LocalizedData.ps1"
-Show–BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
+Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
 
  $SearchDir="$PsionicTrunk"
  Foreach ($Culture in $Cultures)
