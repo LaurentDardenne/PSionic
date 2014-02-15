@@ -87,7 +87,8 @@ Function New-PSPathInfo{
                #Liste des fichiers si le globbing est détecté. Les élements sont du type string.
                #Le globbing peut être détecté sans pour autant que le chemin renvoit de fichier.
                #Attention, parmis les les fichiers trouvés, on peut trouver des chemins devant 
-               #être utilisés avec -LiteralPath.  
+               #être utilisés avec -LiteralPath.
+               #*.* ne renvoi que les entrées contenant un point, pour tout sélectionner utiliser *  
               ResolvedPSFiles=@();
                
                #Texte de la dernière exception rencontrée (exceptions gérées uniquement)

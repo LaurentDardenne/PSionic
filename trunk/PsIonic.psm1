@@ -578,7 +578,7 @@ Function GetObjectByType {
   
  begin {  
   function GetObject {  
-   param ( $Object )
+   param ( $Object ) 
      $Logger.Debug("GetObject : $Object") #<%REMOVE%> 
      if ($Object.GetType().IsSubclassOf([System.IO.FileSystemInfo]) -or ($Object -is [Ionic.Zip.ZipEntry]))
      { 
@@ -607,7 +607,7 @@ Function GetObjectByType {
      
      $Logger.Debug("Object : $Object") #<%REMOVE%> 
 
-     if (-not $PSPathInfo.isaValidFileSystemPath) 
+     if (-not $PSPathInfo.isaValidFileSystemPath()) 
      {
          $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
          $Logger.Error($Msg) #<%REMOVE%>
@@ -615,29 +615,44 @@ Function GetObjectByType {
      }
      else
      {
+         if ($Recurse) ## si on utilise -Recurse avec GCI on duplique les noms d'entrée dans l'archive
+         { $FiltreDirectory={ $true } }
+         else
+         { $FiltreDirectory={ -not $_.PSIsContainer }}
+         
          if ($PSPathInfo.isWildcard)
          {
-          $Logger.Debug("Renvoi les fichiers résolus") #<%REMOVE%> 
-          if ($PSPathInfo.ResolvedPSFiles.Count -gt 0)       
+          if ($PSPathInfo.ResolvedPSFiles.Count -gt 0)            
           {
+            $Logger.Debug("Renvoi les fichiers résolus") #<%REMOVE%>
             if ($isLiteral)
-            { $PSPathInfo.ResolvedPSFiles|Get-ChildItem -LiteralPath {$_} -Recurse:$Recurse -verbose } 
+            {   
+              $PSPathInfo.ResolvedPSFiles|Get-Item -LiteralPath {$_}|Where $FiltreDirectory 
+            } 
             else
-            { $PSPathInfo.ResolvedPSFiles|Get-ChildItem  -Recurse:$Recurse -verbose } 
+            {   
+              $PSPathInfo.ResolvedPSFiles|Get-Item |Where $FiltreDirectory 
+            } 
           }
          }
          else
          { 
-           $Logger.Debug("Renvoi le nom du fichier/répertoire trouvé") #<%REMOVE%>
-           if ($PSPathInfo.isItemExist)
+           if ($PSPathInfo.IsDirectoryExist())
+           {
+              $Logger.Debug("Renvoi les fichiers du répertoire") #<%REMOVE%>
+              if ($isLiteral) 
+              { Get-ChildItem -LiteralPath $PSPathInfo.Win32PathName |Where $FiltreDirectory } 
+              else
+              { Get-ChildItem -path $PSPathInfo.Win32PathName |Where $FiltreDirectory}             
+           }
+           elseif ($PSPathInfo.isItemExist)
            { 
+             $Logger.Debug("Renvoi le nom du fichier") #<%REMOVE%>
              if ($isLiteral)
-             {Get-Item -Literal $PSPathInfo.Win32PathName }
+             {Get-Item -Literal $PSPathInfo.Win32PathName } 
              else 
              {Get-Item -Path $PSPathInfo.Win32PathName }
            }
-           else
-           { $PSPathInfo.Win32PathName }
          }
       }
   } #GetObject
@@ -1307,7 +1322,7 @@ Function AddEntry {
     elseif ($InputObject -is [System.IO.DirectoryInfo])
     { 
       $Logger.Debug("Add type Directory ")  #<%REMOVE%>
-      #Ionic ne se fait récursivement la maj de la date ... 
+      #Ionic ne fait pas récursivement la maj de la date ... 
       if ($CurrentOverwrite)
       { $ZipEntry=$ZipFile.UpdateDirectory($InputObject.FullName, $InputObject.Name) } 
       else 
@@ -1317,7 +1332,7 @@ Function AddEntry {
     elseif ($InputObject -is [System.IO.FileInfo])
     { 
       $Logger.Debug("Add type Fileinfo")  #<%REMOVE%>
-       #($DirectoryPath -eq [string]::Empty) add on the root
+       # si $DirectoryPath est vide , l'ajout de fait à la racine
        # IOnic doit connaitre le chemin complet sinon il est considéré comme relatif
       if ($CurrentOverwrite) 
       { $ZipEntry=$ZipFile.UpdateFile($InputObject.FullName,$DirectoryPathInArchive) }
@@ -1441,7 +1456,7 @@ Function GetArchivePath {
     $TargetFile=$Result.GetFilename()
     $Logger.Debug("TargetFile=$TargetFile") #<%REMOVE%>
     
-    if (-not $Result.isaValidFileSystemPath) 
+    if (-not $Result.isaValidFileSystemPath()) 
     {
       $Msg=$PsIonicMsgs.PathIsNotAFile -F $TargetFile
       throw (New-Object PsionicTools.PsionicInvalidValueException($TargetFile,$Msg))
@@ -2395,7 +2410,8 @@ Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         ConvertFrom-CliXml,
                                                         ConvertTo-CliXml,
                                                         Expand-ZipEntry,
-                                                        ConvertTo-PSZipEntryInfo
+                                                        ConvertTo-PSZipEntryInfo, 
+                                                        New-PsIonicPathInfo #todo 
                                                         #Update-ZipFile,
                                                         #Sync-ZipFile,
                                                         #Split-ZipFile,
