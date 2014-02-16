@@ -8,6 +8,7 @@ $Datas = @{
 	CompressZipFileParametersComment = ''
 	CompressZipFileParametersEncoding = ''
 	CompressZipFileParametersEncryption = ''
+	CompressZipFileParametersEntryPathRoot = ''
 	CompressZipFileParametersLiteralPath = ''
 	CompressZipFileParametersNotTraverseReparsePoints = ''
 	CompressZipFileParametersOutputName = ''
