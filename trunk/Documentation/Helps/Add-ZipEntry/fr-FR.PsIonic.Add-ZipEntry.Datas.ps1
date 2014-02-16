@@ -4,12 +4,14 @@ $Datas = @{
 	AddZipEntryDescription = 'Ajoute une entrée dans le catalogue d''une archive Zip existante, cette entrée peut être un nom de fichier ou de répertoire, une chaîne de caractères ou un tableau d''octets.'
 	AddZipEntrySets__AllParameterSets = ''
     AddZipEntryParametersComment = 'Commentaire associé à l''entrée. Pour les entrées de type string ou tableau, par défaut leur champ contiendra le nom de leur type : [String] ou [Byte[]].' 
-	AddZipEntryParametersDirectoryPath = 'La nouvelle entrée sera ajoutée dans un répertoire spécifique. Par défaut elle est ajoutée à la racine de l''arborescence contenue dans l''archive.'
+	AddZipEntryParametersEntryPathRoot = 'La nouvelle entrée sera ajoutée dans un répertoire spécifique. Par défaut elle est ajoutée à la racine de l''arborescence contenue dans l''archive.'
 	AddZipEntryParametersName = @"
- Chaque entrée d'archive est associèe à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme nom d'entrée dans l'archive.
- Pour les chaînes de caractères ou les tableaux d'octets, vous devez préciser un nom d'entrée.
+Chaque entrée d'archive est associèe à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme nom d'entrée dans l'archive.
+Mais l'usage du paramètre -EntryPathRoot ajoutera le nom du répertoire relatif au path du fichier ou répertoire courant TODO reformuler .
+.
+Pour les chaînes de caractères ou les tableaux d'octets, vous devez préciser un nom d'entrée. L'usage du paramètre -EntryPathRoot n'influencera pas ce nommage.
 "@	
-    AddZipEntryParametersObject = @"
+    AddZipEntryParametersInputObject = @"
 Contenu associé à une entrée d'archive. Les types attendus sont : 
    - Un ou des objets fichiers ou répertoires,
    - un nom ou des noms de fichier ou de répertoire,

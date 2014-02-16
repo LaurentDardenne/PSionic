@@ -5,9 +5,9 @@
 	description = $Datas.AddZipEntryDescription
 	parameters = @{
 		Comment= $Datas.AddZipEntryParametersComment
-        DirectoryPath = $Datas.AddZipEntryParametersDirectoryPath
+        EntryPathRoot = $Datas.AddZipEntryParametersEntryPathRoot
 		Name = $Datas.AddZipEntryParametersName
-		Object = $Datas.AddZipEntryParametersObject
+		InputObject = $Datas.AddZipEntryParametersInputObject
         Overwrite = $Datas.AddZipEntryParametersOverwrite    
 		Passthru = $Datas.AddZipEntryParametersPassthru
 		ZipFile = $Datas.AddZipEntryParametersZipFile
@@ -31,7 +31,7 @@
 try {         
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
   $File=Get-Item C:\Temp\Test.ps1 
-  Add-ZipEntry -Object $File -ZipFile $ZipFile
+  Add-ZipEntry -InputObject $File -ZipFile $ZipFile
 } finally {
   $ZipFile.Close()
 }
@@ -56,7 +56,7 @@ try {
 try {         
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
   [string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
-  Add-ZipEntry -Object $Text -Name MyText -ZipFile $ZipFile
+  Add-ZipEntry -InputObject $Text -Name MyText -ZipFile $ZipFile
 } finally {
   $ZipFile.Close()
 }
@@ -81,7 +81,7 @@ try {
 try {         
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
   [byte[]] $Array=@(1..20)
-  Add-ZipEntry -Object $Array -Name MyArray -ZipFile $ZipFile
+  Add-ZipEntry -InputObject $Array -Name MyArray -ZipFile $ZipFile
 } finally {
   $ZipFile.Close()
 }
