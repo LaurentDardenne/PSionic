@@ -5,9 +5,9 @@
 	description = $Datas.AddZipEntryDescription
 	parameters = @{
 		Comment= $Datas.AddZipEntryParametersComment
-        DirectoryPath = $Datas.AddZipEntryParametersDirectoryPath
+        EntryPathRoot = $Datas.AddZipEntryParametersEntryPathRoot
 		Name = $Datas.AddZipEntryParametersName
-		Object = $Datas.AddZipEntryParametersObject
+		InputObject = $Datas.AddZipEntryParametersInputObject
         Overwrite = $Datas.AddZipEntryParametersOverwrite
 		Passthru = $Datas.AddZipEntryParametersPassthru
 		ZipFile = $Datas.AddZipEntryParametersZipFile
