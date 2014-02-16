@@ -8,7 +8,8 @@ $Datas = @{
 	CompressZipFileParametersComment = 'Commentaire associé à l''archive.'
 	CompressZipFileParametersEncoding = 'Type d''encodage de l''archive. L''utilisation de la valeur par défaut est recommandé.'
 	CompressZipFileParametersEncryption = 'Type de cryptage utilisé lors de l''opération de compression. Nécessite de préciser un mot de passe (cf. le paramètre Password).'
-	CompressZipFileParametersLiteralPath = @"
+	CompressZipFileParametersEntryPathRoot = 'todo'
+    CompressZipFileParametersLiteralPath = @"
 Liste des nom de fichiers à compresser, ceux-ci sont traités tel quel, c'est-à-dire que les caractères génériques ne sont pas interprétés. 
 Peut être un objet fichier ou une chaîne de caractères.
 "@
