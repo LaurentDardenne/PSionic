@@ -139,7 +139,7 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
   ."$PSScripts\Helps\Helps.ps1"
   ."$PsIonicTools\HelpsAddon.ps1"
   
-  $Excludes='ConvertFrom-CliXml','ConvertTo-CliXml'
+  $Excludes='ConvertFrom-CliXml','ConvertTo-CliXml','New-PsIonicPathInfo','ConvertTo-EntryRootPath'
  
   Write-Warning "!!! Reste la doc de la culture en-US "
   #$Cultures |
