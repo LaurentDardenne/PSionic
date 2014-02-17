@@ -33,6 +33,7 @@
  IsNullOrEmptyArchivePath=Le nom de fichier est vide ou ToString() a renvoyée une chaîne vide.
  ItemNotFound=Impossible de trouver le chemin d'accès '{0}', car il n'existe pas.
  EmptyResolve=La résolution ne trouve pas de fichier.
+ PathNotInEntryPathRoot=Le chemin n'est pas dans l'arborescence racine : {0}
  
  SaveIsNotPermitted=Vous ne pouvez pas enregistrer une archive autoextratible via la méthode Save().
  
