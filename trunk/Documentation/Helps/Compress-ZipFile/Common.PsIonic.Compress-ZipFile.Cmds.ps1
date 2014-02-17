@@ -12,7 +12,7 @@
 		Comment = $Datas.CompressZipFileParametersComment
 		Encoding = $Datas.CompressZipFileParametersEncoding
 		Encryption = $Datas.CompressZipFileParametersEncryption
-		EntryPathRoot = CompressZipFileParametersEntryPathRoot
+		EntryPathRoot = $Datas.CompressZipFileParametersEntryPathRoot
 		LiteralPath = $Datas.CompressZipFileParametersLiteralPath
 		NotTraverseReparsePoints = $Datas.CompressZipFileParametersNotTraverseReparsePoints
 		OutputName = $Datas.CompressZipFileParametersOutputName

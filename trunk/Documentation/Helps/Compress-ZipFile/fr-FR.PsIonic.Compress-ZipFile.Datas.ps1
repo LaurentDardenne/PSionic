@@ -7,7 +7,16 @@ $Datas = @{
 	CompressZipFileParametersCodePageIdentifier = 'Nom de la page de code utilisée pour le nom de fichier. L''utilisation de la valeur par défaut est recommandée.'
 	CompressZipFileParametersComment = 'Commentaire associé à l''archive.'
 	CompressZipFileParametersEncoding = 'Type d''encodage de l''archive. L''utilisation de la valeur par défaut est recommandé.'
-	CompressZipFileParametersEncryption = 'Type de cryptage utilisé lors de l''opération de compression. Nécessite de préciser un mot de passe (cf. le paramètre Password).'
+	CompressZipFileParametersEncryption = @"
+Type de cryptage utilisé lors de l'opération de compression. Nécessite de préciser un mot de passe (cf. le paramètre Password).
+.
+Note sur la compatibilité: 
+Pour le paramètres -Encryption les valeurs de 'PkzipWeak' et 'None' précisées dans le cahier des charges de zip de PKWARE  sont considérés comme "standard". 
+Une archives Zip produite en utilisant ces options sera compatible avec de nombreux outils de zip et bibliothèques, y compris l'Explorateur Windows. 
+.
+Les valeurs de 'WinZipAes128' et 'WinZipAes256' ne font pas partie des spécification et implique l'usage d'une extension spécifique au fournisseur de WinZip. 
+Si vous voulez produire des archives Zip compatible, n'utilisez pas ces valeurs. 
+"@
 	CompressZipFileParametersEntryPathRoot = 'todo'
     CompressZipFileParametersLiteralPath = @"
 Liste des nom de fichiers à compresser, ceux-ci sont traités tel quel, c'est-à-dire que les caractères génériques ne sont pas interprétés. 
