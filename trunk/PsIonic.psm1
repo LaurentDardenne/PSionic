@@ -187,6 +187,27 @@ Function ConvertTo-PSZipEntryInfo {
   ,$Entries 
 }#ConvertTo-PSZipEntryInfo
 
+function ConvertTo-EntryRootPath{
+#Renvoi, à partir du chemin d'un répertoire existant, un nom d'entrée d'archive ou null en cas d'erreur
+#ex: 
+# pour -Root 'C\Temp\Test\Files' -path 'C\Temp\Test'
+# renvoie 'Files/'
+#
+#Suppose que $Root existe, car il tester avant cet appel
+#Suppose que $Path existe, car il provient d'un appel en amont à Dir ou Get-Item
+ param($Root,$Path)
+ 
+  $Logger.Debug("[ConvertTo-EntryRootPath]")  #<%REMOVE%>
+  $Logger.Debug("Root=$Root")  #<%REMOVE%>
+  $Logger.Debug("path=$Path")  #<%REMOVE%>
+  $Logger.Debug("ConvertEntryRootPath : '$path'") 
+  $Result=$Path.Remove(0, $Root.Length).`
+                Replace('\', [System.IO.Path]::AltDirectorySeparatorChar).`
+                TrimStart([System.IO.Path]::AltDirectorySeparatorChar)
+  $Logger.Debug("ConvertEntryRootPath result= '$Result'") 
+  $Result                 
+}#ConvertTo-EntryRootPath
+
 #------------
 
  #Liste des raccourcis de type
@@ -831,6 +852,7 @@ Function Get-ZipFile {
         [Parameter(ParameterSetName="ManualOption")]
       [int]$ProgressID,
       
+       #todo list
       [switch] $NotTraverseReparsePoints,
       [switch] $SortEntries,
         # N'est pas exclusif avec $WindowsTimeFormat 
@@ -935,6 +957,8 @@ Function Compress-ZipFile {
         [Alias('CP')]
       [string]$CodePageIdentifier=[String]::Empty,
 
+      [string] $EntryPathRoot,
+
       [scriptblock]$SetLastModifiedProperty,
 
       [switch] $Passthru,
@@ -1011,24 +1035,35 @@ Function Compress-ZipFile {
       { $Encryption="None"}            
       if (-not [string]::IsNullOrEmpty($Password) -or ($Encryption -ne "None"))
       { SetZipFileEncryption $ZipFile $Encryption $Password }
-    
+      
+       #Pas de delayed script block
+       #Ces paramètres seront tjr lié une seule fois
+      $CZFParam=@{}
+      $CZFParam.ZipFile=$ZipFile
+      if ( $PSBoundParameters.ContainsKey('EntryPathRoot') )
+      { $CZFParam.EntryPathRoot=$EntryPathRoot }   
+       
      #Les autres options sont renseignées avec les valeurs par défaut
 	} 
 
 	Process{   
+    try { 
       $isLiteral=$PsCmdlet.ParameterSetName -eq "LiteralPath"
       if ($isLiteral)
       {
         $Logger.Debug("Compress-ZipFile Literalpath=$LiteralPath")  #<%REMOVE%>
         GetObjectByType $LiteralPath -Recurse:$Recurse -isLiteral|
-         Add-ZipEntry $ZipFile
+          Add-ZipEntry @CZFParam 
       }
       else
       {
         $Logger.Debug("Compress-ZipFile path=$Path")  #<%REMOVE%>
         GetObjectByType $Path -Recurse:$Recurse|
-         Add-ZipEntry $ZipFile
+          Add-ZipEntry @CZFParam
       }
+     } catch [System.ArgumentException] {
+        Write-Error -Exception $_.Exception
+     }
 	} #Process
     
     End {
@@ -1060,7 +1095,7 @@ Function Compress-ZipFile {
 
 #Duplication de code en 
 #lieu et place d'un proxy
-Function Compress-SfxFile {
+Function Compress-SfxFile {  #todo même modif que compress-ZipFile 
 # .ExternalHelp PsIonic-Help.xml          
    [CmdletBinding(DefaultParameterSetName="Path")] 
    [OutputType([System.IO.FileInfo])]  #Emet une instance de fichier .exe
@@ -1227,37 +1262,115 @@ Function AddEntry {
        [Alias('Key')]
        [Alias('Name')]  #Si c'est un fichier ou un répertoire on lie le nom de l'entrée automatiquement
      [string] $KeyName, #Le nom d'entrée n'est pas obligatoire et peut provenir de la clé d'une entrée de hashtable
+     $Zipfile,
      [string] $Comment, 
-     [string] $DirectoryPathInArchive,
+     [string] $EntryPathRoot,
      [switch] $Overwrite, 
      [switch] $Passthru
     )
  begin {
+   Function AddOrUpdateString {
+     if ($CurrentOverwrite)
+     {$ZipEntry=$ZipFile.UpdateEntry($KeyName, $InputObject -as [string]) }
+     else
+     {
+      $ZipEntry=$ZipFile.AddEntry($KeyName, $InputObject -as [string])
+     }
+     SetComment $ZipEntry '[String]' $Comment -Overwrite:$CurrentOverwrite 
+     $ZipEntry
+   }#AddOrUpdateString
+
+   Function AddOrUpdateByteArray {
+      #Problem with 'distance algorithm' ?
+      # http://stackoverflow.com/questions/13084176/powershell-method-overload-resolution-bug  
+      #  public ZipEntry AddEntry(string entryName, string content)  
+      # public ZipEntry AddEntry(string entryName, byte[] byteContent)
+    $params = @($KeyName, ($InputObject -as [byte[]]) )
+    if ($CurrentOverwrite)
+    { $ZipEntry=$private:UpdateEntryMethod.Invoke($ZipFile, $params) }
+    else
+    { $ZipEntry=$private:AddEntryMethod.Invoke($ZipFile, $params)  }
+    SetComment $ZipEntry '[Byte[]]' $Comment -Overwrite:$CurrentOverwrite  
+    $ZipEntry                
+   }#AddOrUpdateByteArray
+   
+   Function AddOrUpdateFile {
+    $Logger.Debug("Add type Fileinfo.") #<%REMOVE%>
+    if ($isEntryPathRoot) 
+    {
+      $Logger.Debug("Root=$(split-path $InputObject.FullName -Parent) Path=$EntryPathRoot") #<%REMOVE%>
+      $EntryRoot=ConvertTo-EntryRootPath -Root $EntryPathRoot -Path (split-path $InputObject.FullName -Parent)
+      if ($EntryRoot -eq $null)  {write-error "erreur todo"; return}
+    }
+    else
+    { $EntryRoot=[string]::Empty }
+
+    $Logger.Debug("EntryRoot='$EntryRoot'")  #<%REMOVE%>
+     # si $EntryPathRoot est vide, l'ajout de fait à la racine
+     # IOnic doit connaitre le chemin complet sinon il est considéré comme relatif
+    if ($CurrentOverwrite) 
+    { $ZipEntry=$ZipFile.UpdateFile($InputObject.FullName,$EntryRoot) }
+    else 
+    { $ZipEntry=$ZipFile.AddFile($InputObject.FullName,$EntryRoot) } 
+    SetComment $ZipEntry -Comment $Comment -Overwrite:$CurrentOverwrite  
+    $ZipEntry          
+   }#AddOrUpdateFile
+   
+   Function AddOrUpdateDirectory {
+     $Logger.Debug("Add type Directory ")  #<%REMOVE%>
+      
+     #Ionic ne fait pas récursivement la maj de la date ... 
+     if ($CurrentOverwrite)
+     { $ZipEntry=$ZipFile.UpdateDirectory($InputObject.FullName, $InputObject.Name) } 
+     else 
+     { $ZipEntry=$ZipFile.AddDirectory($InputObject.FullName, $InputObject.Name) }
+     SetComment $ZipEntry -Comment $Comment -Overwrite:$CurrentOverwrite
+     $ZipEntry
+   }#AddOrUpdateDirectory
+  
+   function AddOrUpdateZipEntry {
+     $Logger.Debug("Add type ZipEntry")  #<%REMOVE%>
+     Write-Error "Under construction" #todo
+   }#AddOrUpdateZipEntry
+  
    [type[]] $private:ParameterTypesOfUpdateEntryMethod=[string],[byte[]]
    $private:UpdateEntryMethod=[Ionic.Zip.ZipFile].GetMethod("UpdateEntry",$private:ParameterTypesOfUpdateEntryMethod)
 
    [type[]] $private:ParameterTypesOfAddEntryMethod=[string],[byte[]]
    $private:AddEntryMethod=[Ionic.Zip.ZipFile].GetMethod("AddEntry",$private:ParameterTypesOfAddEntryMethod)
- }
+  
+   $isEntryPathRoot=$PSBoundParameters.ContainsKey('EntryPathRoot')
+   $Logger.Debug("is EntryPathRoot bound =$isEntryPathRoot") #<%REMOVE%>
+ }#begin
 
  process {
-  try {
     $Logger.Debug("$($InputObject.Gettype().FullName)") 
-    $Logger.Debug("AddEntry  InputObject=$(TruncateString $InputObject) `t KeyName=$KeyName")  #<%REMOVE%>
+    $Logger.Debug("AddEntry InputObject=$(TruncateString $InputObject) `t KeyName=$KeyName")  #<%REMOVE%>
     
+    #Le calcul du nom d'entrée doit tjr se faire à partir du même répertoire de base
+    #Par exemple on ne peut traiter des fichiers provenant de deux lecteurs.
+    if ($isEntryPathRoot -and 
+        ($InputObject -is [System.IO.FileSystemInfo]) -and
+        ($InputObject.FullName.Contains($EntryPathRoot) -eq $false)
+       ) 
+    {
+       $msg=$PsIonicMsgs.PathNotInEntryPathRoot -F $InputObject.FullName
+       $Exception=New-Object System.ArgumentException($Msg,'EntryPathRoot')
+       Throw $Exception 
+    }
+  try {
     if ($InputObject -is [System.IO.DirectoryInfo])
     { $OldEntryInfo=$Zipfile["$KeyName/"] }
     else
     { $OldEntryInfo=$Zipfile[$KeyName] }
     
-    
     $isEntryExist=$OldEntryInfo -ne $null
     $Logger.Debug("isEntryExist=$isEntryExist")#<%REMOVE%>
     $isTypeSupported=$true
     
-     #Valide localement de le mode Update
+     #Valide le mode Update pour l'objet courant
     $CurrentOverwrite=$Overwrite -and $isEntryExist
-    if ($CurrentOverwrite)  { $Logger.Debug("Update mode") } #<%REMOVE%>
+    if ($CurrentOverwrite)  { $Logger.Debug("Update mode") } else { $Logger.Debug("Add mode") }#<%REMOVE%>
 
     if ($CurrentOverwrite -and $Comment -eq [string]::Empty)
     { $Comment= $OldEntryInfo.Comment }
@@ -1265,86 +1378,37 @@ Function AddEntry {
     if ($InputObject.GetType().Fullname -match "^System.Collections.Generic.KeyValuePair|^System.Collections.DictionaryEntry")
     {
       if ($InputObject.Value -eq $null)
-      {
-        Write-Error ($PsIonicMsgs.EntryIsNull -F $KeyName)
-        return 
-      }
+      { Write-Error ($PsIonicMsgs.EntryIsNull -F $KeyName); Return }
       else 
       {$InputObject=$InputObject.Value}
     }
-    $Logger.Debug("AddEntry  InputObject=$(TruncateString $InputObject) `t KeyName=$KeyName")  #<%REMOVE%>
+    $Logger.Debug("AddEntry InputObject=$(TruncateString $InputObject) `t KeyName=$KeyName")  #<%REMOVE%>
     
     $isCollection=isCollection $InputObject
     if ($isCollection -and ($InputObject -is [byte[]]))
     { 
       $Logger.Debug("Add Byte[]")  #<%REMOVE%>
       if ([string]::IsNullOrEmpty($KeyName))
-      { 
-        Write-Error ($PsIonicMsgs.ParameterStringEmpty -F 'KeyName')
-        return
-      }
-        #Problem with 'distance algorithm' ?
-        # http://stackoverflow.com/questions/13084176/powershell-method-overload-resolution-bug  
-        #  public ZipEntry AddEntry(string entryName, string content)  
-        # public ZipEntry AddEntry(string entryName, byte[] byteContent)
-      $params = @($KeyName, ($InputObject -as [byte[]]) )
-      if ($CurrentOverwrite)
-      { $ZipEntry=$private:UpdateEntryMethod.Invoke($ZipFile, $params) }
-      else
-      { 
-        $ZipEntry=$private:AddEntryMethod.Invoke($ZipFile, $params)
-      }
-      SetComment $ZipEntry '[Byte[]]' $Comment -Overwrite:$CurrentOverwrite 
+      { Write-Error ($PsIonicMsgs.ParameterStringEmpty -F 'KeyName'); Return }
+     $ZipEntry=AddOrUpdateByteArray 
     }
     elseif ($isCollection)
     {
-       $Logger.Debug("Recurse Add-ZipEntry")  #<%REMOVE%>
+       $Logger.Debug("`tRecurse Add-ZipEntry")  #<%REMOVE%>
        $InputObject.GetEnumerator()|
         GetObjectByType |  
-        Add-ZipEntry $ZipFile -Passthru:$Passthru -Overwrite:$Overwrite -DirectoryPathInArchive $DirectoryPathInArchive    
+        Add-ZipEntry $ZipFile -Passthru:$Passthru -Overwrite:$Overwrite -EntryPathRoot $EntryPathRoot  #todo @params  
     }
     elseif ($InputObject -is [System.String])
     { 
        $Logger.Debug("Add type String")  #<%REMOVE%>
        if ([string]::IsNullOrEmpty($KeyName))
-       { 
-         Write-Error ($PsIonicMsgs.ParameterStringEmpty -F 'KeyName')
-         return  
-       }
-       if ($CurrentOverwrite)
-       {$ZipEntry=$ZipFile.UpdateEntry($KeyName, $InputObject -as [string]) }
-       else
-       {
-        $ZipEntry=$ZipFile.AddEntry($KeyName, $InputObject -as [string])
-       }
-       SetComment $ZipEntry '[String]' $Comment -Overwrite:$CurrentOverwrite   
+       { Write-Error ($PsIonicMsgs.ParameterStringEmpty -F 'KeyName'); Return }
+       $ZipEntry=AddOrUpdateString
     }
-    elseif ($InputObject -is [System.IO.DirectoryInfo])
-    { 
-      $Logger.Debug("Add type Directory ")  #<%REMOVE%>
-      #Ionic ne fait pas récursivement la maj de la date ... 
-      if ($CurrentOverwrite)
-      { $ZipEntry=$ZipFile.UpdateDirectory($InputObject.FullName, $InputObject.Name) } 
-      else 
-      { $ZipEntry=$ZipFile.AddDirectory($InputObject.FullName, $InputObject.Name) }
-      SetComment $ZipEntry -Comment $Comment -Overwrite:$CurrentOverwrite
-    }
-    elseif ($InputObject -is [System.IO.FileInfo])
-    { 
-      $Logger.Debug("Add type Fileinfo")  #<%REMOVE%>
-       # si $DirectoryPath est vide , l'ajout de fait à la racine
-       # IOnic doit connaitre le chemin complet sinon il est considéré comme relatif
-      if ($CurrentOverwrite) 
-      { $ZipEntry=$ZipFile.UpdateFile($InputObject.FullName,$DirectoryPathInArchive) }
-      else 
-      { $ZipEntry=$ZipFile.AddFile($InputObject.FullName,$DirectoryPathInArchive) } 
-      SetComment $ZipEntry -Comment $Comment -Overwrite:$CurrentOverwrite
-    }
-    elseif ($InputObject -is [Ionic.Zip.ZipEntry])
-    {
-      $Logger.Debug("Add type ZipEntry")  #<%REMOVE%>
-      Write-Error "Under construction" #todo
-    }
+    elseif ($InputObject -is [System.IO.DirectoryInfo])  { $ZipEntry=AddOrUpdateDirectory  }
+    elseif ($InputObject -is [System.IO.FileInfo]) { $ZipEntry=AddOrUpdateFile }
+    elseif ($InputObject -is [Ionic.Zip.ZipEntry]) { $ZipEntry=AddOrUpdateZipEntry }
     else
     {
       $Msg=$PsIonicMsgs.TypeNotSupported -F $MyInvocation.MyCommand.Name,$InputObject.GetType().FullName
@@ -1371,9 +1435,7 @@ Function AddEntry {
         $Logger.Debug("set file time")  #<%REMOVE%>
         $ZipEntry.SetEntryTimes($InputObject.CreationTime, $InputObject.LastWriteTime,$InputObject.LastAccessTime)
       } 
-
-      if ($Passthru)
-      {$ZipEntry}
+      if ($Passthru) {$ZipEntry}
     }
    }
    catch [System.ArgumentNullException],[System.ArgumentException] {
@@ -1388,35 +1450,106 @@ Function Add-ZipEntry {
  [OutputType([Ionic.Zip.ZipEntry])]
   param (
       [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
-    $Object,
+    $InputObject,
       [ValidateNotNull()]
       [Parameter(Position=0,Mandatory=$true)]
     [Ionic.Zip.ZipFile] $ZipFile,
       [Parameter(Position=1,Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
     [string] $Name,
     [string] $Comment=[string]::Empty, 
-    [string] $DirectoryPath=[string]::Empty,
+      [ValidateScript({(New-PsIonicPathInfo -path $_).IsDirectoryExist()})]
+    [string] $EntryPathRoot,
     [switch] $Overwrite, 
     [switch] $Passthru
   )
+   begin { 
+       #Ici les valeurs de ces paramètres seront tjrs les mêmes 
+      $AZEParam=@{} 
+      $AZEParam.EntryPathRoot=$EntryPathRoot
+      $AZEParam.Overwrite=$Overwrite
+      $AZEParam.Passthru=$Passthru
+      $AZEParam.ZipFile=$ZipFile
+     #[string] $Comment todo 
+   }
+
    process {
-     $Logger.Debug("Add-ZipEntry Object= $Object")  #<%REMOVE%>
-      $isCollection=isCollection $Object
+     try { 
+      $Logger.Debug("Add-ZipEntry InputObject= $InputObject")  #<%REMOVE%>
+      $isCollection=isCollection $InputObject
       if ($isCollection -and ($Object -is [System.Collections.IDictionary]))
       {
         $Logger.Debug("Add entries from a hashtable.")  #<%REMOVE%>
-        $Object.GetEnumerator()|
-         AddEntry -DirectoryPathInArchive $DirectoryPath -Passthru:$Passthru -Overwrite:$Overwrite 
+        $InputObject.GetEnumerator()|
+          AddEntry @AZEParam 
       }
       else
       {
         if ($Name -ne [string]::Empty)
-        { AddEntry -InputObject $Object -KeyName $Name -Comment $Comment -DirectoryPathInArchive $DirectoryPath -Overwrite:$Overwrite -Passthru:$Passthru}
+        { AddEntry @PSBoundParameters  }
         else
-        { $Object|AddEntry -Comment $Comment  -DirectoryPathInArchive $DirectoryPath -Overwrite:$Overwrite -Passthru:$Passthru}
+        { 
+           #ValueFromPipeline reconstruit à chaque appel
+          [Void]$PSBoundParameters.Remove("Name")
+          [Void]$PSBoundParameters.Remove("InputObject")
+          $InputObject|AddEntry @PSBoundParameters
+        }
       }
+     } catch [System.ArgumentException] {
+       Write-Error -Exception $_.Exception
+     }
   }#process
 } #Add-ZipEntry
+
+Function Update-ZipEntry {
+# .ExternalHelp PsIonic-Help.xml 
+ [CmdletBinding()] 
+ [OutputType([Ionic.Zip.ZipEntry])]
+  param (
+      [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
+    $InputObject,
+      [ValidateNotNull()]
+      [Parameter(Position=0,Mandatory=$true)]
+    [Ionic.Zip.ZipFile] $ZipFile,
+      [Parameter(Position=1,Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
+    [string] $Name,
+    [string] $Comment=[string]::Empty, 
+    [string] $EntryPathRoot,
+    [switch] $Passthru
+  )
+   begin { 
+       #Ici les valeurs de ces paramètres seront tjrs les mêmes 
+      $AZEParam=@{} 
+      $AZEParam.EntryPathRoot=$EntryPathRoot
+      $AZEParam.Passthru=$Passthru
+      $AZEParam.ZipFile=$ZipFile
+     #[string] $Comment todo 
+   }
+
+   process {
+     $Logger.Debug("Under construction")  #<%REMOVE%>      
+     return 
+     $Logger.Debug("Update-ZipEntry InputObject= $InputObject")  #<%REMOVE%>
+      $isCollection=isCollection $InputObject
+      if ($isCollection -and ($Object -is [System.Collections.IDictionary]))
+      {
+        $Logger.Debug("Update entries from a hashtable.")  #<%REMOVE%>
+        $InputObject.GetEnumerator()|
+          AddEntry @AZEParam 
+      }
+      else
+      {
+        if ($Name -ne [string]::Empty)
+        { AddEntry @PSBoundParameters  }
+        else
+        { 
+           #ValueFromPipeline reconstruit à chaque appel
+          [Void]$PSBoundParameters.Remove("Name")
+          [Void]$PSBoundParameters.Remove("InputObject")
+          $InputObject|AddEntry @PSBoundParameters
+        }
+      }
+  }#process
+}#Update-ZipEntry
 
 Function GetArchivePath {
 # Récupère une string et renvoie, si possible, un nom de chemin complet.
@@ -1451,7 +1584,7 @@ Function GetArchivePath {
     if ($asLiteral)
     { $Result=New-PsIonicPathInfo -LiteralPath $ArchivePath -ea Stop }
     else 
-    { $Result=New-PsIonicPathInfo-Path $ArchivePath -ea Stop }
+    { $Result=New-PsIonicPathInfo -Path $ArchivePath -ea Stop }
     
     $TargetFile=$Result.GetFilename()
     $Logger.Debug("TargetFile=$TargetFile") #<%REMOVE%>
@@ -2302,23 +2435,6 @@ function New-ReadOptions {
 # }#Merge-ZipFile
 #
 #
-# Function Update-ZipEntry {
-# # .ExternalHelp PsIonic-Help.xml         
-# 	[CmdletBinding()]
-# 	param(
-# 	)
-# 
-# 	Begin{
-# 	} #begin
-# 
-# 	Process{
-# 	} #process
-#     
-#     End {
-#     } #end
-# }#Update-ZipEntry
-# 
-# 
 # Function Remove-ZipEntry {
 # # .ExternalHelp PsIonic-Help.xml         
 # 	[CmdletBinding()]
@@ -2394,9 +2510,12 @@ Set-Alias -name szfo    -value Set-PsIonicSfxOptions
 Set-Alias -name gzfo    -value Get-PsIonicSfxOptions
 
 Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
+                                                        New-PsIonicPathInfo, #<%REMOVE%> test 
+                                                        ConvertTo-EntryRootPath, #<%REMOVE%> test
                                                         Compress-SfxFile,
                                                         ConvertTo-Sfx,
                                                         Add-ZipEntry,
+                                                        Update-ZipFile,                                                        
                                                         Expand-ZipFile,
                                                         New-ProgressBarInformations,
                                                         New-ReadOptions,
@@ -2410,9 +2529,7 @@ Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         ConvertFrom-CliXml,
                                                         ConvertTo-CliXml,
                                                         Expand-ZipEntry,
-                                                        ConvertTo-PSZipEntryInfo, 
-                                                        New-PsIonicPathInfo #todo 
-                                                        #Update-ZipFile,
+                                                        ConvertTo-PSZipEntryInfo 
                                                         #Sync-ZipFile,
                                                         #Split-ZipFile,
                                                         #Join-ZipFile,
