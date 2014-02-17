@@ -14,7 +14,7 @@ Describe "Compress-ZipFile" {
             if(-not (Test-Path $global:WorkDir\Archive.zip)){
                 throw "Archive introuvable"
             } 
-            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ErrorAction Stop
+            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create  -ExtractAction OverwriteSilently -ErrorAction Stop
             del $global:WorkDir\Archive.zip
             rm $global:WorkDir\Archive -Recurse -Force
             $result = $true
@@ -31,7 +31,7 @@ Describe "Compress-ZipFile" {
             if(-not (Test-Path $global:WorkDir\Archive.zip)){
                 throw "Archive introuvable"
             } 
-            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ErrorAction Stop
+            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ExtractAction OverwriteSilently -ErrorAction Stop
             del $global:WorkDir\Archive.zip
             rm $global:WorkDir\Archive -Recurse -Force
             $result = $true
