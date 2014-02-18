@@ -8,7 +8,6 @@ $Datas = @{
 	GetZipFileParametersEncryption = ''
 	GetZipFileParametersProgressID = ''
 	GetZipFileParametersPath = ''
-	GetZipFileParametersNotTraverseReparsePoints = ''
 	GetZipFileParametersOptions = ''
 	GetZipFileParametersPassword = ''
 	GetZipFileParametersReadOptions = ''
