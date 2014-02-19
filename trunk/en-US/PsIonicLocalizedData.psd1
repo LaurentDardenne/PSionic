@@ -33,6 +33,7 @@
  ItemNotFound=Can not find the path '{0}', because it does not exist.
  EmptyResolve=The resolve does not find file.
  PathNotInEntryPathRoot=The path is not in the root directory : {0}
+ UnableToConvertEntryRootPath=Unable to convert the root path : {0}
  
  SaveIsNotPermitted=You specified an EXE for a plain zip file.
  
