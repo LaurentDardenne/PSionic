@@ -17,7 +17,20 @@ Une archives Zip produite en utilisant ces options sera compatible avec de nombr
 Les valeurs de 'WinZipAes128' et 'WinZipAes256' ne font pas partie des spécification et implique l'usage d'une extension spécifique au fournisseur de WinZip. 
 Si vous voulez produire des archives Zip compatible, n'utilisez pas ces valeurs. 
 "@
-	CompressZipFileParametersEntryPathRoot = 'todo'
+	CompressZipFileParametersEntryPathRoot = @"
+La nouvelle entrée sera ajoutée dans un répertoire spécifique. Par défaut elle est ajoutée à la racine de l'arborescence contenue dans l'archive. 
+La valeur de ce paramètre doit référencer un répertoire existant.
+.
+Pour éviter les collisions de nom d'entrée lors de la compression récursive d'une arborescence vous devrez utiliser ce paramètre.
+Celui-ci permet de construire le nom de l'entrée relativement au nom de répertoire spécifié.
+. 
+Par exemple en précisant 'C:\Temp\Backup', lors de la compression récursive de 'C:\Temp\Backup' le traitement de construction du nom d'entrée retranchera 'C:\Temp\Backup' à chaque nom de fichier reçus.
+Donc, pour les fichiers 'C:\Temp\Backup\File1.ps1' et 'C:\Temp\Backup\Projet\File1.ps1' les entrées créées dans le catalogue seront respectivement:
+File1.ps1
+Projet/File.ps1   
+.
+De préciser un nom de répertoire différent de celui d'où débute l'archivage déclenchera une erreur et stoppera l'archivage du path en cours.
+"@
     CompressZipFileParametersLiteralPath = @"
 Liste des nom de fichiers à compresser, ceux-ci sont traités tel quel, c'est-à-dire que les caractères génériques ne sont pas interprétés. 
 Peut être un objet fichier ou une chaîne de caractères.
