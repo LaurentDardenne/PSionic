@@ -41,7 +41,6 @@ write-warning $global:here
   
     It "Expand Archive.zip file return true" {
         try{
-           md $global:WorkDir\Archive >$null
            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -ExtractAction overwritesilently -ErrorAction Stop
            if(-not (test-path $global:WorkDir\Archive\test\test1\test2\Log4Net.Config.xml)){
              throw "Fichier provenant de l'archive introuvable après extraction"
@@ -168,7 +167,7 @@ write-warning $global:here
         }
         $result | should be ($true)
     }
-
+ 
  # Tests for encrypted archive
 
      It "Expand encrypted zip file with BAD password return true (exception)" {
@@ -212,6 +211,72 @@ write-warning $global:here
              throw "Le fichier .ico n'a pas été extrait"
            }
            rm $global:WorkDir\CryptedArchive -Recurse -Force
+           $result=$true
+        }catch{
+            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
+            $result=$false
+        }
+        $result | should be ($true)
+    }
+
+    It "Compare the files name compressed by : Get-ChildItem $global:WorkDir\TestPsIonic -inc File*.txt -Rec" {
+        try{
+            $ExpectedFiles=@(
+              "$global:WorkDir\Archive1\Backup1\File.txt",
+              "$global:WorkDir\Archive1\Backup1\File1.txt",
+              "$global:WorkDir\Archive1\Backup1\File2.txt",
+              "$global:WorkDir\Archive1\Backup1\File[1].txt",
+              "$global:WorkDir\Archive1\Backup1\File[2].txt",
+              "$global:WorkDir\Archive1\Backup2\File.txt",
+              "$global:WorkDir\Archive1\Backup2\File1.txt",
+              "$global:WorkDir\Archive1\Backup2\File2.txt",
+              "$global:WorkDir\Archive1\Backup2\File[1].txt",
+              "$global:WorkDir\Archive1\Backup2\File[2].txt",
+              "$global:WorkDir\Archive1\Backup[1]\File.txt",
+              "$global:WorkDir\Archive1\Backup[1]\File1.txt",
+              "$global:WorkDir\Archive1\Backup[1]\File2.txt",
+              "$global:WorkDir\Archive1\Backup[1]\File[1].txt",
+              "$global:WorkDir\Archive1\Backup[1]\File[2].txt",
+              "$global:WorkDir\Archive1\Backup[2]\File.txt",
+              "$global:WorkDir\Archive1\Backup[2]\File1.txt",
+              "$global:WorkDir\Archive1\Backup[2]\File2.txt",
+              "$global:WorkDir\Archive1\Backup[2]\File[1].txt",
+              "$global:WorkDir\Archive1\Backup[2]\File[2].txt",
+              "$global:WorkDir\Archive1\Test[\File.txt",
+              "$global:WorkDir\Archive1\Test[\File1.txt",
+              "$global:WorkDir\Archive1\Test[\File2.txt",
+              "$global:WorkDir\Archive1\Test[\File[1].txt",
+              "$global:WorkDir\Archive1\Test[\File[2].txt",
+              "$global:WorkDir\Archive1\Test[zi]p\File.txt",
+              "$global:WorkDir\Archive1\Test[zi]p\File1.txt",
+              "$global:WorkDir\Archive1\Test[zi]p\File2.txt",
+              "$global:WorkDir\Archive1\Test[zi]p\File[1].txt",
+              "$global:WorkDir\Archive1\Test[zi]p\File[2].txt",
+              ("$global:WorkDir\Archive1"+'\Test`[\File.txt'),
+              ("$global:WorkDir\Archive1"+'\Test`[\File1.txt'),
+              ("$global:WorkDir\Archive1"+'\Test`[\File2.txt'),
+              ("$global:WorkDir\Archive1"+'\Test`[\File[1].txt'),
+              ("$global:WorkDir\Archive1"+'\Test`[\File[2].txt'),
+              "$global:WorkDir\Archive1\File.txt",
+              "$global:WorkDir\Archive1\File1.txt",
+              "$global:WorkDir\Archive1\File2.txt",
+              "$global:WorkDir\Archive1\File[1].txt",
+              "$global:WorkDir\Archive1\File[2].txt"
+            )          
+           Expand-ZipFile -Path $global:WorkDir\Archive1.zip -OutputPath $global:WorkDir\Archive1 -create -ExtractAction OverwriteSilently -ErrorAction Stop
+           $Files =  @(Get-ChildItem $global:WorkDir\Archive1 -Recurse|? {$_.PSisContainer -eq $false }|Select -expand FullName )
+           $Cmp=@(Compare-Object $ExpectedFiles $Files)
+           $Result=$Cmp.Count -eq 0
+           if ($Result -eq $false)
+           {
+             Write-host @"
+$($cmp|select *)
+=> Entrée supplémentaire dans le catalogue
+<= Entrée manquante dans le catalogue
+"@
+             throw "Les fichiers extraits ne correspondent pas à ceux compressés."
+           }
+           rm $global:WorkDir\Archive1 -Recurse -Force
            $result=$true
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
