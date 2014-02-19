@@ -27,6 +27,40 @@ Import-LocalizedData -BindingVariable PsIonicMsgs -Filename PsIonicLocalizedData
  "Strategy","Name","CompressionLevel","CompressionMethod","Comment","EmitTimesInWindowsFormatWhenSaving","EmitTimesInUnixFormatWhenSaving"
  )
 
+$PSZipEntryProperties =@(
+  'AccessedTime',
+  'AlternateEncoding',
+  'AlternateEncodingUsage',
+  'Attributes',
+  'Comment',
+  'CompressedSize',
+  'CompressionLevel',
+  'CompressionMethod',
+  'CompressionRatio',
+  'CreationTime',
+  'EmitTimesInUnixFormatWhenSaving',
+  'EmitTimesInWindowsFormatWhenSaving',
+  'Encryption',
+  'FileName',
+  'IncludedInMostRecentSave',
+  'IsDirectory',
+  'IsText',
+  'LastModified',
+  'ModifiedTime',
+  'OutputUsedZip64',
+  'ProvisionalAlternateEncoding',
+  'RequiresZip64',
+  'Source',
+  'Timestamp',
+  'UncompressedSize',
+  'UsesEncryption',
+  'UseUnicodeAsNecessary',
+  'VersionNeeded'
+)
+
+$AllPSZipEntryProperties =@('Info')
+$AllPSZipEntryProperties +=$PSZipEntryProperties  
+
 function New-Exception($Exception,$Message=$null) {
 #Crée et renvoi un objet exception
 
@@ -150,14 +184,14 @@ function Format-ZipFile {
 
 Function ConvertTo-PSZipEntryInfo {
 #Transforme chaque entrée d'un champ Info de type string en type PSObject
-#Les propriétés de chque objet sont en lecture seule 
+#Les propriétés de chaque objet sont en lecture seule 
  param([string]$Info)
  
   $TextHelper=(Get-Culture).TextInfo
   $Entries=New-Object System.Collections.Arraylist
   
   $Items=@($Info -split "`n`n")
-  if ($Items.count -eq 1)
+  if ($Items.count -eq 2)
   { $Borne=0 } #ZipEntry.Info
   else 
   { $Borne=1 } #ZipFile.Info
@@ -184,7 +218,10 @@ Function ConvertTo-PSZipEntryInfo {
       $Current.PSTypeNames.Insert(0, 'PSZipEntryInfo')
       $Entries.Add($Current) > $null
    }#for Items
-  ,$Entries 
+  if ($Borne -eq 0)
+  {$Current}
+  else 
+  { ,$Entries } 
 }#ConvertTo-PSZipEntryInfo
 
 function ConvertTo-EntryRootPath{
@@ -200,13 +237,39 @@ function ConvertTo-EntryRootPath{
   $Logger.Debug("[ConvertTo-EntryRootPath]")  #<%REMOVE%>
   $Logger.Debug("Root=$Root")  #<%REMOVE%>
   $Logger.Debug("path=$Path")  #<%REMOVE%>
-  $Logger.Debug("ConvertEntryRootPath : '$path'") 
   $Result=$Path.Remove(0, $Root.Length).`
                 Replace('\', [System.IO.Path]::AltDirectorySeparatorChar).`
                 TrimStart([System.IO.Path]::AltDirectorySeparatorChar)
   $Logger.Debug("ConvertEntryRootPath result= '$Result'") 
   $Result                 
 }#ConvertTo-EntryRootPath
+
+Function New-PSZipEntry{
+ param(
+	[ValidateNotNull()]
+    [parameter(Mandatory=$True,ValueFromPipeline=$True)]
+  [Ionic.Zip.ZipEntry] $Entry
+ )
+ process {
+   $Current=New-Object PSObject
+     
+   $PSZipEntryProperties|
+    Foreach {
+      $Name=$_
+      $Property=$Entry.PSObject.Properties.Match($Name,'Property')
+      #$Logger.Debug("(New-PSZipEntry] $($Property[0] -eq $null) '$Name'=$($Property[0].Value) ")
+      $Current.PSObject.Properties.Add( (New-PSVariableProperty $Name $Property[0].Value -ReadOnly) )
+    }
+    #Laisse la possibilité de transformer cette 
+    #propriété via ConvertTo-PSZipEntryInfo 
+   $Name='Info'
+   $Info=$Entry.PSObject.Properties.Match($Name,'Property')
+   $Current.PSObject.Properties.Add( (New-PSVariableProperty $Name $Info[0].Value) )
+
+   $Current.PSTypeNames.Insert(0, 'PSZipEntry')
+   $Current
+ }
+}#New-PSZipEntry
 
 #------------
 
@@ -799,7 +862,6 @@ function AddMethodClose{
   }            
 } #AddMethodClose
 
-
 function AddMethods{
  param ($ZipInstance)
 
@@ -843,17 +905,13 @@ Function Get-ZipFile {
       
       [String] $Password,
       
-       #Possible Security Exception
-      [string] $TempLocation =[System.IO.Path]::GetTempPath(), 
-      
         [Parameter(Position=0, Mandatory=$false, ParameterSetName="ManualOption")]
       [System.Text.Encoding] $Encoding,
       
         [Parameter(ParameterSetName="ManualOption")]
       [int]$ProgressID,
       
-       #todo list
-      [switch] $NotTraverseReparsePoints,
+      [switch] $List,
       [switch] $SortEntries,
         # N'est pas exclusif avec $WindowsTimeFormat 
       [switch] $UnixTimeFormat,    
@@ -901,14 +959,30 @@ Function Get-ZipFile {
             AddMethods $ZipFile
         
             $ZipFile.SortEntriesBeforeSaving=$SortEntries
-            $ZipFile.TempFileFolder=$TempLocation 
             $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
             $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat
             
             if (-not [string]::IsNullOrEmpty($Password) -or ($Encryption -ne "None"))
             { SetZipFileEncryption $ZipFile $Encryption $Password }
-             #Les autres options sont renseignées avec les valeurs par défaut
-            ,$ZipFile
+            
+            if ($List)
+            {
+               #todo formatting nullable -> ETS file 
+               #Renvoit des objets ayant des propriétés en lecteure seule 
+               #découplées de l'objet archive initiale.
+              try {
+                $Logger.Debug("Create New-PSZipEntry")  
+                $ZipFile.Entries|New-PSZipEntry
+              }
+              finally {
+                $ZipFile.PsDispose()
+              }
+            }
+            else 
+            {
+              #Les autres options sont renseignées avec les valeurs par défaut
+             ,$ZipFile
+            }
          }
          else { $Logger.Debug("N'est pas une archive $FileName")}  #<%REMOVE%>
         }#Foreach $FileName
@@ -1095,7 +1169,7 @@ Function Compress-ZipFile {
 
 #Duplication de code en 
 #lieu et place d'un proxy
-Function Compress-SfxFile {  #todo même modif que compress-ZipFile 
+Function Compress-SfxFile {   
 # .ExternalHelp PsIonic-Help.xml          
    [CmdletBinding(DefaultParameterSetName="Path")] 
    [OutputType([System.IO.FileInfo])]  #Emet une instance de fichier .exe
@@ -1126,6 +1200,8 @@ Function Compress-SfxFile {  #todo même modif que compress-ZipFile
 
         [Alias('CP')]
       [string]$CodePageIdentifier=[String]::Empty,
+      
+      [string] $EntryPathRoot,
       
       [scriptblock]$SetLastModifiedProperty,
       
@@ -1207,23 +1283,35 @@ Function Compress-SfxFile {  #todo même modif que compress-ZipFile
 
        #Configure la taille des segments 
       $ZipFile.MaxOutputSegmentSize=$Split
+
+       #Pas de delayed script block
+       #Ces paramètres seront tjr lié une seule fois
+      $CZFParam=@{}
+      $CZFParam.ZipFile=$ZipFile
+      if ( $PSBoundParameters.ContainsKey('EntryPathRoot') )
+      { $CZFParam.EntryPathRoot=$EntryPathRoot }   
+       
      #Les autres options sont renseignées avec les valeurs par défaut
 	} 
 
-	Process{   
+	Process{  
+     try{ 
       $isLiteral=$PsCmdlet.ParameterSetName -eq "LiteralPath"
       if ($isLiteral)
       {
         $Logger.Debug("Compress-SfxFile Literalpath=$LiteralPath")  #<%REMOVE%>
         GetObjectByType $LiteralPath -Recurse:$Recurse -isLiteral|
-         Add-ZipEntry $ZipFile
+         Add-ZipEntry @CZFParam
       }
       else
       {
         $Logger.Debug("Compress-SfxFile Path=$Path")  #<%REMOVE%>
         GetObjectByType $Path -Recurse:$Recurse|
-         Add-ZipEntry $ZipFile
+         Add-ZipEntry @CZFParam
       }
+     } catch [System.ArgumentException] {
+        Write-Error -Exception $_.Exception
+     }
 	} #Process  
     
     End {
@@ -1300,7 +1388,7 @@ Function AddEntry {
     {
       $Logger.Debug("Root=$(split-path $InputObject.FullName -Parent) Path=$EntryPathRoot") #<%REMOVE%>
       $EntryRoot=ConvertTo-EntryRootPath -Root $EntryPathRoot -Path (split-path $InputObject.FullName -Parent)
-      if ($EntryRoot -eq $null)  {write-error "erreur todo"; return}
+      if ($EntryRoot -eq $null)  {Write-Error $($PsIonicMsgs.UnableToConvertEntryRootPath -F $InputObject.FullName ); return}
     }
     else
     { $EntryRoot=[string]::Empty }
@@ -1395,9 +1483,15 @@ Function AddEntry {
     elseif ($isCollection)
     {
        $Logger.Debug("`tRecurse Add-ZipEntry")  #<%REMOVE%>
+       
+        #$PSBoundParameters n'est pas utilisé par la suite.
+        #$PSBoundParameters est reconstruit lors de la réception du prochain objet
+       [Void]$PSBoundParameters.Remove("KeyName")
+       [Void]$PSBoundParameters.Remove("InputObject")
+       
        $InputObject.GetEnumerator()|
         GetObjectByType |  
-        Add-ZipEntry $ZipFile -Passthru:$Passthru -Overwrite:$Overwrite -EntryPathRoot $EntryPathRoot  #todo @params  
+        Add-ZipEntry $ZipFile @PSBoundParameters  
     }
     elseif ($InputObject -is [System.String])
     { 
@@ -1469,7 +1563,7 @@ Function Add-ZipEntry {
       $AZEParam.Overwrite=$Overwrite
       $AZEParam.Passthru=$Passthru
       $AZEParam.ZipFile=$ZipFile
-     #[string] $Comment todo 
+      $AZEParam.Comment=$Comment 
    }
 
    process {
@@ -1522,7 +1616,7 @@ Function Update-ZipEntry {
       $AZEParam.EntryPathRoot=$EntryPathRoot
       $AZEParam.Passthru=$Passthru
       $AZEParam.ZipFile=$ZipFile
-     #[string] $Comment todo 
+      $AZEParam.Comment=$Comment 
    }
 
    process {
