@@ -21,11 +21,28 @@
 	notes = $Datas.ConvertToPSZipEntryInfoNotes
 	examples = @(
 		@{
-			#title = ''
-			#introduction = ''
 			code = {
+$PSEntries=Get-ZipFile -Path .\Test.zip -List 
+$PSEntries[0].Info=ConvertTo-PSZipEntryInfo $PSEntries[0].Info
+$PSEntries[0].Info.Zipentry       
 			}
 			remarks = $Datas.ConvertToPSZipEntryInfoExamplesRemarks1
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+try {
+  $Zip=Get-ZipFile -Path .\Test.zip         
+  Add-Member -Input $Zip -Force NoteProperty Info (ConvertTo-PSZipEntryInfo $Zip.Info)
+  $Zip.Info[0].ZipEntry
+  $File=Get-Item C:\Temp\Test.ps1
+  Add-ZipEntry -Object $File -ZipFile $Zip
+  Add-Member -Input $Zip -Force NoteProperty Info (ConvertTo-PSZipEntryInfo $Zip.psbase.Info)
+} finally {
+  $Zip.PSDispose()  
+}
+			}
+			remarks = $Datas.ConvertToPSZipEntryInfoExamplesRemarks2
 			test = { . $args[0] }
 		}
 	)
