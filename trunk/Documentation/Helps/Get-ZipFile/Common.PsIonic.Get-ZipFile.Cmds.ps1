@@ -10,13 +10,13 @@
 	parameters = @{
 		Encoding = $Datas.GetZipFileParametersEncoding
 		Encryption = $Datas.GetZipFileParametersEncryption
-		ProgressID = $Datas.GetZipFileParametersProgressID
+		List = $Datas.GetZipFileParametersList
+        ProgressID = $Datas.GetZipFileParametersProgressID
 		Path = $Datas.GetZipFileParametersPath
 		Options = $Datas.GetZipFileParametersOptions
 		Password = $Datas.GetZipFileParametersPassword
 		ReadOptions = $Datas.GetZipFileParametersReadOptions
 		SortEntries = $Datas.GetZipFileParametersSortEntries
-		TempLocation = $Datas.GetZipFileParametersTempLocation
 		UnixTimeFormat = $Datas.GetZipFileParametersUnixTimeFormat
 		WindowsTimeFormat = $Datas.GetZipFileParametersWindowsTimeFormat
 		ZipErrorAction = $Datas.GetZipFileParametersZipErrorAction
