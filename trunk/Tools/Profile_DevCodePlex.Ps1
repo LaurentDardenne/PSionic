@@ -1,7 +1,7 @@
 ﻿#requires -version 2.0
 
 #Write these line in the Windows PowerShell profile
-# ."$env:PsIonic\Tools\Profile_DevCodePlex.Ps1"
+# ."$env:PsIonicProfile\Tools\Profile_DevCodePlex.Ps1"
 #Créez une variable d'environnement système nommée PsIonic pointant sur votre répertoire de travail
 #Puis modifiez les lignes indiquées comme spécfiques au poste de  développement
 
