@@ -4,10 +4,22 @@ $Datas = @{
 	AddZipEntryDescription = 'Ajoute une entrée dans le catalogue d''une archive Zip existante, cette entrée peut être un nom de fichier ou de répertoire, une chaîne de caractères ou un tableau d''octets.'
 	AddZipEntrySets__AllParameterSets = ''
     AddZipEntryParametersComment = 'Commentaire associé à l''entrée. Pour les entrées de type string ou tableau, par défaut leur champ contiendra le nom de leur type : [String] ou [Byte[]].' 
-	AddZipEntryParametersEntryPathRoot = 'La nouvelle entrée sera ajoutée dans un répertoire spécifique. Par défaut elle est ajoutée à la racine de l''arborescence contenue dans l''archive.'
+	AddZipEntryParametersEntryPathRoot = @"
+La nouvelle entrée sera ajoutée dans un répertoire spécifique. Par défaut elle est ajoutée à la racine de l'arborescence contenue dans l'archive. 
+La valeur de ce paramètre doit référencer un répertoire existant.
+.
+Pour éviter les collisions de nom d'entrée lors de la compression récursive d'une arborescence vous devrez utiliser ce paramètre.
+Celui-ci permet de construire le nom de l'entrée relativement au nom de répertoire spécifié.
+. 
+Par exemple en précisant 'C:\Temp\Backup', lors de la compression récursive de 'C:\Temp\Backup' le traitement de construction du nom d'entrée retranchera 'C:\Temp\Backup' à chaque nom de fichier reçus.
+Donc, pour les fichiers 'C:\Temp\Backup\File1.ps1' et 'C:\Temp\Backup\Projet\File1.ps1' les entrées créées dans le catalogue seront respectivement:
+File1.ps1
+Projet/File.ps1   
+.
+De préciser un nom de répertoire différent de celui d'où débute l'archivage déclenchera une erreur et stoppera l'archivage du path en cours.
+"@
 	AddZipEntryParametersName = @"
-Chaque entrée d'archive est associèe à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme nom d'entrée dans l'archive.
-Mais l'usage du paramètre -EntryPathRoot ajoutera le nom du répertoire relatif au path du fichier ou répertoire courant TODO reformuler .
+Chaque entrée d'archive est associèe à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme nom d'entrée à la racine de l'archive.
 .
 Pour les chaînes de caractères ou les tableaux d'octets, vous devez préciser un nom d'entrée. L'usage du paramètre -EntryPathRoot n'influencera pas ce nommage.
 "@	

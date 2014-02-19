@@ -12,7 +12,8 @@
 		Comment = $Datas.CompressSfxFileParametersComment
 		Encoding = $Datas.CompressSfxFileParametersEncoding
 		Encryption = $Datas.CompressSfxFileParametersEncryption
-		LiteralPath = $Datas.CompressSfxFileParametersLiteralPath
+		EntryPathRoot = $Datas.CompressSfxFileParametersEntryPathRoot
+        LiteralPath = $Datas.CompressSfxFileParametersLiteralPath
 		NotTraverseReparsePoints = $Datas.CompressSfxFileParametersNotTraverseReparsePoints
 		Options = $Datas.CompressSfxFileParametersOptions
 		OutputName = $Datas.CompressSfxFileParametersOutputName

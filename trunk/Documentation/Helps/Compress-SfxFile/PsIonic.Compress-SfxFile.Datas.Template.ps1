@@ -8,6 +8,7 @@ $Datas = @{
 	CompressSfxFileParametersComment = ''
 	CompressSfxFileParametersEncoding = ''
 	CompressSfxFileParametersEncryption = ''
+	CompressSfxFileParametersEntryPathRoot = ''
 	CompressSfxFileParametersLiteralPath = ''
 	CompressSfxFileParametersNotTraverseReparsePoints = ''
 	CompressSfxFileParametersOptions = ''
