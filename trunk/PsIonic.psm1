@@ -221,7 +221,11 @@ Function ConvertTo-PSZipEntryInfo {
   if ($Borne -eq 0)
   {$Current}
   else 
-  { ,$Entries } 
+  { 
+    #todo : revoir l'élément vide en fin de collection  
+    $T=$Entries.ToArray()
+    New-ArrayReadOnly ([ref]$T) 
+  } 
 }#ConvertTo-PSZipEntryInfo
 
 function ConvertTo-EntryRootPath{
@@ -2609,7 +2613,7 @@ Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         Compress-SfxFile,
                                                         ConvertTo-Sfx,
                                                         Add-ZipEntry,
-                                                        Update-ZipFile,                                                        
+                                                        Update-ZipEntry,                                                        
                                                         Expand-ZipFile,
                                                         New-ProgressBarInformations,
                                                         New-ReadOptions,
@@ -2628,6 +2632,5 @@ Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         #Split-ZipFile,
                                                         #Join-ZipFile,
                                                         #Merge-ZipFile,
-                                                        #Update-ZipEntry,
                                                         #Remove-ZipEntry,
                                                         #Rename-ZipEntry,
