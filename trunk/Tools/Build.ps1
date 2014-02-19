@@ -11,7 +11,7 @@ Set-Location $PsIonicTools
 
 try {
  Import-Module Psake -EA stop -force
- Import-Module Log4Posh 
+ Import-Module "$PsIonicTrunk\Modules\Log4Posh\Log4Posh.psd1"
 } catch {
  Throw "Module Psake is unavailable."
 }
