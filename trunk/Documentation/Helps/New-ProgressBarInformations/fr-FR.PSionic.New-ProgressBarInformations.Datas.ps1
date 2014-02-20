@@ -15,7 +15,15 @@ Si les barres de progression n'ont pas d'identifiant différent, elles seront su
 	NewProgressBarInformationsInputsDescription1 = ''
 	NewProgressBarInformationsOutputsDescription1 = ''
 	NewProgressBarInformationsNotes = ''
-	NewProgressBarInformationsExamplesRemarks1 = ''
+	NewProgressBarInformationsExamplesRemarks1 = @"
+Cette exemple crée une barre de progression utilisée dans le paramètrage des options de lecture d'une archive.
+Dans ce contexte le nom des fichiers lus n'étant pas accesssible, la barre de progression affichera uniquement le nombre d'entrée lues.  
+"@
+	NewProgressBarInformationsExamplesRemarks2 = @"
+Cette exemple lit toutes les archives ZIP du répertoire C:\Temp, puis les extrait.
+On utilise directement le paramètre -ProgressID de la fonction Expand-ZipFile qui configure en interne une barre de progression.
+Dans ce cas lors de la lecture du catalogue, la valeur du paramètre Activity n'est pas modifiable, car elle est figé dans le code.
+"@
 }
 
 

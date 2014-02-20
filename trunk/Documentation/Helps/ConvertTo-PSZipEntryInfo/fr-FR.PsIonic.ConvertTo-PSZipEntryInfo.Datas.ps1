@@ -13,7 +13,7 @@ Soyez attentif au fait qu'une instance peut évoluer par l'ajout ou la supressio
 "@
 	ConvertToPSZipEntryInfoExamplesRemarks1 = @"
 Cet exemple récupère d'une archive la liste des entrées, celles-ci sont des objets personnalisé Powershell.
-Puis la propriété Info, qui est par défaut de type string, est transformée en un PSObjet et celuici est réaffecté au contenu de la propriété Info.
+Puis la propriété Info, qui est par défaut de type string, est transformée en un PSObjet et celui-ci est réaffecté au contenu de la propriété Info.
 L'information initiale de type string n'est plus accessible.    
 "@
 	ConvertToPSZipEntryInfoExamplesRemarks2 = @"

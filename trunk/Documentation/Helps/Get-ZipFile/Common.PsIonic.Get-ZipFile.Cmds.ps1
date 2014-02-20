@@ -94,6 +94,22 @@ try {
 			remarks = $Datas.GetZipFileExamplesRemarks4
 			test = { . $args[0] }
 		}
+		@{
+
+			code = {
+$PSZipEntries=Get-Zipfile -Path Test.zip -List
+try {
+ $Zip=Get-Zipfile -Path Test.zip
+ $Entry=$Zip.Entries|Where {$_.FileName -eq 'Test.ps1'}
+ $Entry.Extract('C:\Temp')
+} finally {
+ $ZipFile.Close()
+}
+ 
+			}
+			remarks = $Datas.GetZipFileExamplesRemarks5
+			test = { . $args[0] }
+		}
 	)
 	links = @(
 		@{ text = ''; URI = '' }
