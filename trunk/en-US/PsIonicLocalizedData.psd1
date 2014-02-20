@@ -1,9 +1,8 @@
 ﻿ConvertFrom-StringData @'
  ParameterStringEmpty=The parameter '{0}' can not be an empty string.
  PathMustExist=The path does not exist : {0}
- PathIsNotAFileSystemPath=Path is invalid for the FileSystem provider : {0}
- PathIsNotAFile=The path does not reference to a file or the path is invalid: {0}  
- ValueNotSupported=The value '{0}' is not supported.
+ PathIsNotAFile=The path does not reference to a file or the path is invalid : {0}  
+ ValueNotSupported=The value '{0}' is not supported by PSIonic.
  TypeNotSupported={0}: The type '{1}' is not supported.
  CommentMaxValue=The value of 'Comment' parameter must not exceeds 32767 characters.
 
