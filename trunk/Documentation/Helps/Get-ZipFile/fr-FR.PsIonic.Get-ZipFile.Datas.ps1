@@ -8,6 +8,7 @@ $Datas = @{
 	GetZipFileParametersEncryption = 'Type de cryptage utilisé lors de l''opération de compression. Nécessite de préciser un mot de passe (cf. le paramètre Password).'
 	GetZipFileParametersList = @"
 Obtient les entrées contenu dans le catalogue de l'archive. Les objets renvoyés sont des objets personnalisés dont le nom de type est PSZipEntry.
+Hormis sa propriété 'Info', toutes sont en lecture seule.
 "@
 	GetZipFileParametersProgressID =@"
 L'usage de ce paramètre crée un gestionnaire d'événements pour les opérations de lecture.
@@ -42,6 +43,12 @@ Cet exemple lit un fichier zip, lui ajoute une entrée à partir d'une chaine de
     GetZipFileExamplesRemarks4 =  @"
 Cet exemple lit un fichier zip, lui ajoute tous les fichiers txt d'un répertoire, puis l'enregistre en libérant ses ressources. 
 La méthode Close() appelle en interne la méthode Save() puis PSDispose(). 
+"@
+    GetZipFileExamplesRemarks5 =  @"
+la première instruction de cet exemple renvoit les entrées du catalogue d'une archive sous forme d'objet de type PSZipEntry.
+Les suivantes recherche dans le catalogue d'origine une entrée nommée 'Test.ps1' puis la décompresse dans le répertoire C:\Temp.
+.
+La différence entre les deux approches est que les objets de type PSZipEntry ne dispose pas des méthodes spécifiques aux objets de type ZipEntry. 
 "@
 }
 

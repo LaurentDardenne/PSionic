@@ -50,7 +50,7 @@ Permet, avant d'enregister l'archive, de modifier la propriété LastModified de
 Les entrées sont triées avant d'être enregistrées. Selon le nombre de fichiers traités, ce traitement peut ralentir l'opération de compression.
 "@ 
 	CompressZipFileParametersSplit = @"
-Découpe le fichier d'archive par segment de la taille spécifiée. La syntaxe '64Kb' est possible et le nombre maximum de segment est de 99.
+Scinde le fichier d'archive par segment de la taille spécifiée. La syntaxe '64Kb' est possible et le nombre maximum de segment est de 99.
 "@
 	CompressZipFileParametersTempLocation  = @"
 Nom du répertoire temporaire utilisé lors de la construction de l'archive. 
@@ -59,12 +59,24 @@ Sinon, le fichier temporaire de l'archive en cours de construction sera enregist
 "@
 	CompressZipFileParametersUnixTimeFormat = 'Le format de date des fichiers sera celui d''Unix'
 	CompressZipFileParametersWindowsTimeFormat = 'Le format de date des fichiers sera celui de Windows'
-	CompressZipFileParametersZipErrorAction = 'Précise le mode de gestion des erreurs.'
+	CompressZipFileParametersZipErrorAction = @"
+Précise le mode de gestion des erreurs.
+.
+La valeur 'Skip' passe outre les erreurs rencontrée, une erreur simple sera tout de même générée. 
+.
+La valeur 'InvokeErrorEvent' est utilisée uniquement lors de l'enregistrement de l'archive, les erreurs déclenchées lors de la construction du catalogue n'appelleront pas le gestionnaire d'erreur associé à cette valeur.
+Dasn ce ce derner cas, une erreur simple sera tout de même générée.
+.
+La valeur 'Throw' arrêtera le traitement dés la première erreur rencontrée.
+.
+Evitez d'utiliser la valeur 'Retry', car celle-ci pourrait tenter indéfiniment de résoudre une erreur persistente.
+"@
 	CompressZipFileInputsDescription1 = 'System.String,System.IO.FileInfo'
 	CompressZipFileOutputsDescriptionIonicZipZipFile = 'Ionic.Zip.ZipFile'
 	CompressZipFileNotes = @"
 Selon le contenu, votre archive peut être compressée en 64 bits, pour déterminer si l‘archive utilise les extensions Zip64 consultez le propriété ''OutputUsedZip64'' de l''archive.
 Aucun contrôle n'est effectué sur l'espace disponible lors de la création de l'archive.
+Si le catalogue est vide et qu'il n'y a pas eu d'exception, le fichier .Zip est tout de même créé.
 "@ 
 	CompressZipFileExamplesRemarks1 = @"
 Cet exemple ajoute, à partir du répertoire courant, tous les fichiers dont l'extension est '.TXT' dans l'archive 'C:\Temp\Test.zip'.
@@ -76,6 +88,45 @@ Ensuite ce fichier texte est lu ligne par ligne et chaque nom de fichier est ajo
 	CompressZipFileExamplesRemarks3 = @"
 Cet exemple construit un tableau de noms de fichier, certains comportant des jokers.
 Ensuite chaque nom de fichier est résolu, puis le résultat de la résolution est ajouté dans l'archive 'C:\Temp\Test.zip'.
+L'usage du paramètre verbose affiche sur la console la progression du traitement de compression. 
+Tous ces fichiers sont ajoutés à la racine de l'archive, la première collision de nom d'entrée déclenchera une exception, car le paramètre -ZipErrorAction a par défaut la valeur 'Throw'. 
 "@
-
+	CompressZipFileExamplesRemarks4 = @"
+Cet exemple construit un tableau de noms de fichier, certains comportant des jokers.
+Ensuite chaque nom de fichier est résolu, puis le résultat de la résolution est ajouté dans l'archive 'C:\Temp\Test.zip'.
+Tous ces fichiers sont ajoutés à la racine de l'archive, l'usage de la valeur 'Skip' pour le paramètre -ZipErrorAction déclenchera des erreurs simples lors des possibles collisions de nom d'entrée.
+"@
+	CompressZipFileExamplesRemarks5 = @"
+Cet exemple archive tous les fichiers du répertoire 'C:\Temp'.
+Le paramètre -SetLastModifiedProperty reçoit comme valeur un scriptblock, celui-ci est appelé en interne afin de modifier la propriété LastModified de chaque entrée de l'archive.
+La date sélectionnée sera la date de l'entrée ayant la propriété LastModified la plus ancienne de toutes.
+"@  
+	CompressZipFileExamplesRemarks6 = @"
+Cet exemple archive récursivement tous les fichiers et répertoire de 'C:\Temp'.
+En utilisant 'C:\Temp\*' comme valeur du paramètre -Path, on est assuré de ne pas avoir de collisions de nom dans le catalogue puisqu'on ne parcourt pas explicitement l'arborescence, mais uniquement les entrées contenues dans le répertoire courant. 
+En interne on récupère les noms de chemin renvoyés par l'appel au cmdlet Resolve-Path, attention les fichiers et répertoires cachés ne sont pas archivés.
+L'archive contient plusieurs entrées à la racine du catalogue.  
+"@
+	CompressZipFileExamplesRemarks7 = @"
+Cet exemple archive tous les fichiers du répertoire 'C:\Temp', les sous-répertoires ne sont pas pris en compte.
+L'archive contient plusieurs entrées à la racine du catalogue.  
+"@
+	CompressZipFileExamplesRemarks8 = @"
+Cet exemple archive l'intégralité du répertoire 'C:\Temp'.
+L'archive contient une seule entrées à la racine du catalogue, entrée nommée 'Temp' de type Directory.
+Les fichiers et répertoires cachés sont archivés.   
+"@
+	CompressZipFileExamplesRemarks9 = @"
+Cet exemple archive tous les fichiers du répertoire 'C:\'.
+Les fichiers cachés sont archivés.  
+"@
+	CompressZipFileExamplesRemarks10 = @"
+Cet exemple archive tous les fichiers '.TXT' du répertoire 'C:\Temp'.
+L'usage du paramètre -EntryPathRoot évite des collisons de nom dans le catalogue, en reconstruisant dans l'archive l'arborescence rencontrée. 
+Ici les fichiers et répertoires cachés ne sont pas archivés, mais pourraient l'être en déclarant le paramètre -Force sur la ligne d'appel du cmdlet Get-ChildItem.  
+"@
+	CompressZipFileExamplesRemarks11 = @"
+Cet exemple archive tous les fichiers du répertoire 'C:\Temp\Logs', tous les fichiers '.PS1' du répertoire 'C:\Temp' et le répertoire 'C:\Temp\Setup'.
+L'usage du paramètre -Split scinde l'archive en plusieurs fichiers et générera, selon le nombre de fichiers à archiver, les fichiers Archive.z01,Archive.z0N (où N ira de 2 à 99) et Archive.zip. 
+"@
 }
