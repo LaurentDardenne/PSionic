@@ -10,7 +10,7 @@ $TestLockFiles= @(
  (Lock-File "$TestDirectory\A3.txt")
  )
 try {
-  #Archive tous les ficheir demandé sauf les trois ficheirs lockés
+  #Archive tous les fichiers demandés sauf les trois fichiers lockés
   Dir  "$TestDirectory\[AMZ][123].*"|
    Compress-ZipFile -OutputName $zipFileToCreate -ZipErrorAction InvokeErrorEvent -Verbose 
    #Par défaut la présence d'un fichier verrouillé déclenche une exception, la valeur Skip pour -ZipErrorAction passe outre mais en silence.
