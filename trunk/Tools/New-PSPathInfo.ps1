@@ -88,7 +88,8 @@ Function New-PSPathInfo{
                #Le globbing peut être détecté sans pour autant que le chemin renvoit de fichier.
                #Attention, parmis les les fichiers trouvés, on peut trouver des chemins devant 
                #être utilisés avec -LiteralPath.
-               #*.* ne renvoi que les entrées contenant un point, pour tout sélectionner utiliser *  
+               #*.* ne renvoit que les entrées contenant un point, pour tout sélectionner utiliser * 
+               #Les fichiers ayant l'attribut 'hidden' ne sont pas renvoyés.   
               ResolvedPSFiles=@();
                
                #Texte de la dernière exception rencontrée (exceptions gérées uniquement)
@@ -334,7 +335,7 @@ Function New-PSPathInfo{
            #Path Invalide. 'C:\temp\t>\t.txt' -> "Caractères non conformes dans le chemin d'accès."
        Write-Debug  "$_" #<%REMOVE%>
        Write-Debug  "Exception Exists: $($_.Exception.GetType().Name)" #<%REMOVE%>
-       $Infos.LastError=New-PSPathInfoError $_        
+       $Infos.LastError=New-PSPathInfoError $_          
      }
 
     }#try
