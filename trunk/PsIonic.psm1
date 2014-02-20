@@ -191,18 +191,18 @@ Function ConvertTo-PSZipEntryInfo {
   $Entries=New-Object System.Collections.Arraylist
   
   $Items=@($Info -split "`n`n")
+  $Logger.Debug("Items.count: $($Items.count)") #<%REMOVE%>  
   if ($Items.count -eq 2)
   { $Borne=0 } #ZipEntry.Info
   else 
   { $Borne=1 } #ZipFile.Info
-
   $Items[$Borne..($Items.Count-1)]|
     Where {$_ -ne [string]::Empty}|
     foreach {
       $Properties=@{}
+      $Logger.Debug("Traite $_") #<%REMOVE%>   
       foreach ($Line in ($_ -split "`n"))
       {
-        $Logger.Debug("Traite $_") #<%REMOVE%>     
         if ($Line -match '(?<Name>.*?):\s*(?<Value>.*)')
         {
           $Logger.Debug("Name=$($Matches.Name) Value=$($Matches.Value)") #<%REMOVE%>
@@ -210,7 +210,7 @@ Function ConvertTo-PSZipEntryInfo {
           $Properties.$Name=$Matches.Value
         }
       }#for $Line
-      $Current=New-Object PSObject 
+      $Current=New-Object PSObject
       $Properties.GetEnumerator()|
        Foreach {
         $Current.PSObject.Properties.Add( (New-PSVariableProperty $_.Key $_.Value -ReadOnly) )
@@ -219,15 +219,26 @@ Function ConvertTo-PSZipEntryInfo {
       $Entries.Add($Current) > $null
    }#for Items
   if ($Borne -eq 0)
-  {$Current}
-  else 
-  { 
-    #todo : revoir l'élément vide en fin de collection  
-    $T=$Entries.ToArray()
-    New-ArrayReadOnly ([ref]$T) 
-  } 
-}#ConvertTo-PSZipEntryInfo
+  {
+    $Logger.Debug("Return one item") #<%REMOVE%>  
+    if ($Properties.Contains('ZipEntry') )
+    {
+     $Current
+     return
+    }
+    else 
+    {
+       #C'est une archive sans entrée
+       #On renvoi un tableau vide
+      $Logger.Debug("Return an emtpy array") #<%REMOVE%>
+      $Entries.RemoveAt(0)
+    }
+  }
 
+  $T=$Entries.ToArray()
+  $Logger.Debug("Return items :$($T.count) ") #<%REMOVE%>
+  New-ArrayReadOnly ([ref]$T) 
+}#ConvertTo-PSZipEntryInfo
 function ConvertTo-EntryRootPath{
 #Renvoi, à partir du chemin d'un répertoire existant, un nom d'entrée d'archive ou null en cas d'erreur
 #ex: 
@@ -697,19 +708,24 @@ Function GetObjectByType {
 
      if (-not $PSPathInfo.isaValidFileSystemPath()) 
      {
-         $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
+         $Msg=$PsIonicMsgs.PathIsNotAFile -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
          $Logger.Error($Msg) #<%REMOVE%>
          Write-Error -Exception (New-Object PSIonicTools.PsionicException($Msg))  
      }
      else
      {
+         $Logger.Debug("Path valide") #<%REMOVE%>
          if ($Recurse) ## si on utilise -Recurse avec GCI on duplique les noms d'entrée dans l'archive
-         { $FiltreDirectory={ $true } }
+         { 
+          $Logger.Debug("Pas de filtre sur les directory") #<%REMOVE%> 
+          $FiltreDirectory={ $true } 
+         }
          else
          { $FiltreDirectory={ -not $_.PSIsContainer }}
          
          if ($PSPathInfo.isWildcard)
          {
+          $Logger.Debug("Path isWildcard") #<%REMOVE%>
           if ($PSPathInfo.ResolvedPSFiles.Count -gt 0)            
           {
             $Logger.Debug("Renvoi les fichiers résolus") #<%REMOVE%>
@@ -725,6 +741,7 @@ Function GetObjectByType {
          }
          else
          { 
+           $Logger.Debug("Path is not Wildcard") #<%REMOVE%>
            if ($PSPathInfo.IsDirectoryExist())
            {
               $Logger.Debug("Renvoi les fichiers du répertoire") #<%REMOVE%>
@@ -740,6 +757,12 @@ Function GetObjectByType {
              {Get-Item -Literal $PSPathInfo.Win32PathName } 
              else 
              {Get-Item -Path $PSPathInfo.Win32PathName }
+           }
+           else
+           {         
+             $Msg=$PsIonicMsgs.ItemNotFound -F ($PSPathInfo.GetFileName())
+             $Logger.Error($Msg) #<%REMOVE%>
+             Write-Error -Exception (New-Object PSIonicTools.PsionicException($Msg))  
            }
          }
       }
@@ -1072,7 +1095,7 @@ Function Compress-ZipFile {
       $PSPathInfo=New-PsIonicPathInfo -Path $OutputName 
       if (-not $PSPathInfo.IsaValidNameForTheFileSystem()) 
       {
-         $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
+         $Msg=$PsIonicMsgs.PathIsNotAFile -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
          $Logger.Error($Msg) #<%REMOVE%>
          Write-Error -Exception (New-Object PSIonicTools.PsionicException($Msg))  
          continue 
@@ -1113,6 +1136,9 @@ Function Compress-ZipFile {
       { $Encryption="None"}            
       if (-not [string]::IsNullOrEmpty($Password) -or ($Encryption -ne "None"))
       { SetZipFileEncryption $ZipFile $Encryption $Password }
+
+       #Configure la taille des segments 
+      $ZipFile.MaxOutputSegmentSize=$Split
       
        #Pas de delayed script block
        #Ces paramètres seront tjr lié une seule fois
@@ -1140,7 +1166,10 @@ Function Compress-ZipFile {
           Add-ZipEntry @CZFParam
       }
      } catch [System.ArgumentException] {
-        Write-Error -Exception $_.Exception
+        if ($Zipfile.ZipErrorAction -ne 'Throw')
+        { Write-Error -Exception $_.Exception }
+        else
+        { Throw $_}
      }
 	} #Process
     
@@ -1154,6 +1183,7 @@ Function Compress-ZipFile {
             #Le scriptblock doit itérer sur chaque entrée de l'archive
            &$SbBounded 
         }
+         #Si le catalogue est vide on enregistre une archive de 22 octets
         $Logger.Debug("Save zip")  #<%REMOVE%>
         $ZipFile.Save()
       } 
@@ -1242,7 +1272,7 @@ Function Compress-SfxFile {
       $PSPathInfo=New-PsIonicPathInfo -Path $OutputName 
       if (-not $PSPathInfo.IsaValidNameForTheFileSystem()) 
       {
-         $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
+         $Msg=$PsIonicMsgs.PathIsNotAFile -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
          $Logger.Error($Msg) #<%REMOVE%>
          Write-Error -Exception (New-Object PSIonicTools.PsionicException($Msg))  
          continue 
@@ -1284,9 +1314,6 @@ Function Compress-SfxFile {
       { $Encryption="None"}            
       if (-not [string]::IsNullOrEmpty($Password) -or ($Encryption -ne "None"))
       { SetZipFileEncryption $ZipFile $Encryption $Password }
-
-       #Configure la taille des segments 
-      $ZipFile.MaxOutputSegmentSize=$Split
 
        #Pas de delayed script block
        #Ces paramètres seront tjr lié une seule fois
@@ -1537,7 +1564,10 @@ Function AddEntry {
     }
    }
    catch [System.ArgumentNullException],[System.ArgumentException] {
-    Write-Error -Message ($PsIonicMsgs.AddEntryError -F (TruncateString $InputObject),$ZipFile.Name,$_.Exception.Message) -Exception $_.Exception
+    if ($Zipfile.ZipErrorAction -ne 'Throw')
+    { Write-Error -Message ($PsIonicMsgs.AddEntryError -F (TruncateString $InputObject),$ZipFile.Name,$_.Exception.Message) -Exception $_.Exception }
+    else
+    { Throw $_}
    }
   }#process
 }#AddEntry
@@ -1593,7 +1623,10 @@ Function Add-ZipEntry {
         }
       }
      } catch [System.ArgumentException] {
-       Write-Error -Exception $_.Exception
+      if ($Zipfile.ZipErrorAction -ne 'Throw')
+      { Write-Error -Exception $_.Exception }
+      else
+      { Throw $_}
      }
   }#process
 } #Add-ZipEntry
@@ -2012,7 +2045,7 @@ Function Expand-ZipFile {
         $PSPathInfo=New-PsIonicPathInfo -LiteralPath $OutputPath
         if (-not $PSPathInfo.IsaValidNameForTheFileSystem()) 
         {
-           $Msg=$PsIonicMsgs.PathIsNotAFileSystemPath -F ($PSPathInfo.GetFileName())+ "`r`n$($PSPathInfo.LastError)"
+           $Msg=$PsIonicMsgs.PathIsNotAFile -F ($PSPathInfo.GetFileName())+ "`r`n$($PSPathInfo.LastError)"
            $Logger.Error($Msg) #<%REMOVE%>
            Write-Error $Msg
            continue 
@@ -2391,6 +2424,7 @@ Function New-ZipSfxOptions {
 }#New-ZipSfxOptions
 
 Function New-ProgressBarInformations{
+# .ExternalHelp PsIonic-Help.xml    
 param(
          [Parameter(Mandatory=$True,position=0)]
         [int] $activityId,
