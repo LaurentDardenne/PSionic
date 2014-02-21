@@ -27,7 +27,7 @@ Pour extraire des fichiers d'une archive utilisez Expand-ZipFile.
 Ces instructions enregistrent dans un premier temps du texte dans une entrée nommée MyText, puis dans un second temps la relit et l'affecte à la variable $Text. 
 '@
 	ExpandZipEntryExamplesRemarks2 =@'
-Ces instructions enregistrent dans un premier temps un objet sérialisé dans une entrée nommée 'PSVersiontable.climxl', puis dans un second temps la relit et l'affecte à la varabile $MaTableDeVersion. 
+Ces instructions enregistrent dans un premier temps un objet sérialisé dans une entrée nommée 'PSVersiontable.climxl', puis dans un second temps la relit et l'affecte à la variable $MaTableDeVersion. 
 '@
 	ExpandZipEntryExamplesRemarks3 =@'
 Ces instructions enregistrent dans un premier temps un tableau d'octets dans une entrée nommée MyArray, puis dans un second temps la relit et l'affecte à la variable $Array. 

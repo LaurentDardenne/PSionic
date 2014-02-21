@@ -10,7 +10,7 @@ Par défaut les erreurs simples sont déclenchées.
 	TestZipFileSetsFile = ''
 	TestZipFileParametersCheck = @"
 Vérifie si le catalogue de l'archive indiquée est correcte.
-Cette vérification est plus stricte que celle effectuée avec le paramétre -isValid.
+Cette vérification est plus stricte que celle effectuée avec le paramètre -isValid.
 Elle peut donc renvoyer $false bien que le fichier soit considéré comme une archive valide.
 Si vous devez tester une archive avec un mot de passe utilisez ce paramètre avec ou sans le paramètre -Password. 
 "@
@@ -23,10 +23,10 @@ Si vous devez tester une archive avec un mot de passe n'utilisez pas ce paramèt
 	TestZipFileParametersPassthru = @'
  Emet le nom du fichier de l'archive dans le pipeline. 
  Si le paramètre -isValid est également précisé, alors les fichiers considérés comme invalide ne seront pas émis dans le pipeline et aucune erreur simple ne sera déclenchée.
- Ce comportement est similaire à un filtre, où seul les fichiers valides seraient émit dans le pipeline.  
+ Ce comportement est similaire à un filtre, où seul les fichiers valides seraient émis dans le pipeline.  
 '@
 	TestZipFileParametersPassword = @'
-Mot de passe, nécessaire si l'archive est protégée par un mot de passe.
+Mot de passe, nécessaire si l'archive est protégé par un mot de passe.
 Si vous devez tester une archive avec un mot de passe n'utilisez pas le paramètre -IsValid, car dans ce cas le résultat renvoyé sera toujours faux.
 Utilisez uniquement le paramètre -Password et/ou le paramètre -Check. Si le password est faux le résultat renvoyé sera faux.  
 '@
@@ -36,6 +36,6 @@ Utilisez uniquement le paramètre -Password et/ou le paramètre -Check. Si le pa
 	TestZipFileOutputsDescriptionSystemString = ''
 	TestZipFileNotes = ''
 	TestZipFileExamplesRemarks1 = 'La première ligne crée une archive au format Zip, la seconde teste si le fichier est bien une archive au format PkZip. Le résultat de l''exécution vaut $true.'
-    TestZipFileExamplesRemarks2 = 'La première ligne crée une archive autoextractible, la seconde teste si le fichier est bien une archive au format PkZip. On constate qu''une archive autoextratible est considérée comme étant une archive valide. Le résultat de l''exécution vaut $true.'
+    TestZipFileExamplesRemarks2 = 'La première ligne crée une archive auto extractible, la seconde teste si le fichier est bien une archive au format PkZip. On constate qu''une archive auto extractible est considérée comme étant une archive valide. Le résultat de l''exécution vaut $true.'
     TestZipFileExamplesRemarks3 = 'Le résultat de l''exécution vaut $false, car l''objet reçu, transformé en string, ne référence pas un fichier d''archive .ZIP.'
 }

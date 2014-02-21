@@ -14,7 +14,7 @@ Note sur la compatibilité:
 Pour le paramètres -Encryption les valeurs de 'PkzipWeak' et 'None' précisées dans le cahier des charges de zip de PKWARE  sont considérés comme "standard". 
 Une archives Zip produite en utilisant ces options sera compatible avec de nombreux outils de zip et bibliothèques, y compris l'Explorateur Windows. 
 .
-Les valeurs de 'WinZipAes128' et 'WinZipAes256' ne font pas partie des spécification et implique l'usage d'une extension spécifique au fournisseur de WinZip. 
+Les valeurs de 'WinZipAes128' et 'WinZipAes256' ne font pas partie des spécifications et implique l'usage d'une extension spécifique au fournisseur de WinZip. 
 Si vous voulez produire des archives Zip compatible, n'utilisez pas ces valeurs. 
 "@
 	CompressZipFileParametersEntryPathRoot = @"
@@ -32,7 +32,7 @@ Projet/File.ps1
 De préciser un nom de répertoire différent de celui d'où débute l'archivage déclenchera une erreur et stoppera l'archivage du path en cours.
 "@
     CompressZipFileParametersLiteralPath = @"
-Liste des nom de fichiers à compresser, ceux-ci sont traités tel quel, c'est-à-dire que les caractères génériques ne sont pas interprétés. 
+Liste des noms de fichier à compresser, ceux-ci sont traités tel quel, c'est-à-dire que les caractères génériques ne sont pas interprétés. 
 Peut être un objet fichier ou une chaîne de caractères.
 "@
 	CompressZipFileParametersNotTraverseReparsePoints = 'Indique si les recherches traverseront les points d''analyse NTFS (Reparse Point), tels que les jonctions.'
@@ -44,13 +44,14 @@ Liste des noms de fichier à compresser. Peut être un objet fichier ou une cha�
 "@
 	CompressZipFileParametersRecurse = 'Parcourt récursif des arborescences définies par le paramètre Path ou LiteralPath.'
 	CompressZipFileParametersSetLastModifiedProperty = @"
-Permet, avant d'enregister l'archive, de modifier la propriété LastModified de chaque entrée de l'archive. La variable $Entry doit être utilisée dans le corps du scriptblock.
+Permet, avant d'enregistrer l'archive, de modifier la propriété LastModified de chaque entrée de l'archive. La variable $Entry doit être utilisée dans le corps du scriptblock.
 "@
 	CompressZipFileParametersSortEntries = @"
 Les entrées sont triées avant d'être enregistrées. Selon le nombre de fichiers traités, ce traitement peut ralentir l'opération de compression.
 "@ 
 	CompressZipFileParametersSplit = @"
 Scinde le fichier d'archive par segment de la taille spécifiée. La syntaxe '64Kb' est possible et le nombre maximum de segment est de 99.
+Dans le cas où la taille indiqué génèrerait plus de 99 segments, une exception est déclenchée. Les fichiers créés sur le disque lors de cette opération ne sont pas supprimés. 
 "@
 	CompressZipFileParametersTempLocation  = @"
 Nom du répertoire temporaire utilisé lors de la construction de l'archive. 
@@ -65,11 +66,11 @@ Précise le mode de gestion des erreurs.
 La valeur 'Skip' passe outre les erreurs rencontrée, une erreur simple sera tout de même générée. 
 .
 La valeur 'InvokeErrorEvent' est utilisée uniquement lors de l'enregistrement de l'archive, les erreurs déclenchées lors de la construction du catalogue n'appelleront pas le gestionnaire d'erreur associé à cette valeur.
-Dasn ce ce derner cas, une erreur simple sera tout de même générée.
+Dans ce dernier cas, une erreur simple sera tout de même générée.
 .
-La valeur 'Throw' arrêtera le traitement dés la première erreur rencontrée.
+La valeur 'Throw' arrêtera le traitement dès la première erreur rencontrée.
 .
-Evitez d'utiliser la valeur 'Retry', car celle-ci pourrait tenter indéfiniment de résoudre une erreur persistente.
+Evitez d'utiliser la valeur 'Retry', car celle-ci pourrait tenter indéfiniment de résoudre une erreur persistante.
 "@
 	CompressZipFileInputsDescription1 = 'System.String,System.IO.FileInfo'
 	CompressZipFileOutputsDescriptionIonicZipZipFile = 'Ionic.Zip.ZipFile'
@@ -122,11 +123,11 @@ Les fichiers cachés sont archivés.
 "@
 	CompressZipFileExamplesRemarks10 = @"
 Cet exemple archive tous les fichiers '.TXT' du répertoire 'C:\Temp'.
-L'usage du paramètre -EntryPathRoot évite des collisons de nom dans le catalogue, en reconstruisant dans l'archive l'arborescence rencontrée. 
+L'usage du paramètre -EntryPathRoot évite des collisions de nom dans le catalogue, en reconstruisant dans l'archive l'arborescence rencontrée. 
 Ici les fichiers et répertoires cachés ne sont pas archivés, mais pourraient l'être en déclarant le paramètre -Force sur la ligne d'appel du cmdlet Get-ChildItem.  
 "@
 	CompressZipFileExamplesRemarks11 = @"
 Cet exemple archive tous les fichiers du répertoire 'C:\Temp\Logs', tous les fichiers '.PS1' du répertoire 'C:\Temp' et le répertoire 'C:\Temp\Setup'.
-L'usage du paramètre -Split scinde l'archive en plusieurs fichiers et générera, selon le nombre de fichiers à archiver, les fichiers Archive.z01,Archive.z0N (où N ira de 2 à 99) et Archive.zip. 
+L'usage du paramètre -Split scinde l'archive en plusieurs fichiers et générera, selon le nombre de fichiers à archiver, les fichiers Archive.z01, Archive.z0N (où N ira de 2 à 99) et Archive.zip. 
 "@
 }

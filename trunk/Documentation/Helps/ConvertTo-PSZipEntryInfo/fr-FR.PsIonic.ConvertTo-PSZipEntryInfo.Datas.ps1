@@ -7,7 +7,7 @@ $Datas = @{
 	ConvertToPSZipEntryInfoInputsDescription1 = ''
 	ConvertToPSZipEntryInfoOutputsDescription1 = ''
 	ConvertToPSZipEntryInfoNotes = @"
-La transformation de la propriété Info de type texte en plusieurs objets prend un certains temps.
+La transformation de la propriété Info de type texte en plusieurs objets prend un certain temps.
 Eviter de transformer plusieurs fois cette propriété au sein d'une boucle.
 Soyez attentif au fait qu'une instance peut évoluer par l'ajout ou la supression d'entrée, dans ce cas vous devrez mettre à jour ce champ(ZipEntry/PSZipEntry) ou reconstruire la liste (ZipFile).
 "@
@@ -17,7 +17,7 @@ Puis la propriété Info, qui est par défaut de type string, est transformée e
 L'information initiale de type string n'est plus accessible.    
 "@
 	ConvertToPSZipEntryInfoExamplesRemarks2 = @"
-Cet exemple récupère une archive, puis sa propriété Info est transformée en une liste indéxé d'objets de type PSZipEntryInfo.
+Cet exemple récupère une archive, puis sa propriété Info est transformée en une liste indexé d'objets de type PSZipEntryInfo.
 Puis on ajoute une nouvelle entrée à l'archive et on reconstruit la liste de PSZipEntryInfo, cette fois à partir de l'information initiale accessible via $Zip.psbase.Info.
 "@
 }

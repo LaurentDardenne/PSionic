@@ -39,7 +39,8 @@ try {
   Add-ZipEntry -Object $File -ZipFile $Zip
   Add-Member -Input $Zip -Force NoteProperty Info (ConvertTo-PSZipEntryInfo $Zip.psbase.Info)
 } finally {
-  $Zip.PSDispose()  
+  if ($Zip -ne $null )
+  { $Zip.PSDispose() } 
 }
 			}
 			remarks = $Datas.ConvertToPSZipEntryInfoExamplesRemarks2

@@ -8,7 +8,6 @@
         EntryPathRoot = $Datas.AddZipEntryParametersEntryPathRoot
 		Name = $Datas.AddZipEntryParametersName
 		InputObject = $Datas.AddZipEntryParametersInputObject
-        Overwrite = $Datas.AddZipEntryParametersOverwrite
 		Passthru = $Datas.AddZipEntryParametersPassthru
 		ZipFile = $Datas.AddZipEntryParametersZipFile
 	}
