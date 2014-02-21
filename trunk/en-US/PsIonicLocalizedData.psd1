@@ -33,9 +33,10 @@
  EmptyResolve=The resolve does not find file.
  PathNotInEntryPathRoot=The path is not in the root directory : {0}
  UnableToConvertEntryRootPath=Unable to convert the root path : {0}
+ FromPathEntryNotFound=Can not find the path '{0}' in the archive '{1}', because it does not exist.
  
  SaveIsNotPermitted=You specified an EXE for a plain zip file.
- 
+ ParameterFromNeedQueryParameter=The 'From' parameter requires to declare the 'Query' parameter. 
  ProgressBarExtract=Extract in progress
 '@ 
 
