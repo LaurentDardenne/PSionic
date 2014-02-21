@@ -7,6 +7,9 @@
 #bugs PS v2 :
 #parameters-initialization : https://connect.microsoft.com/PowerShell/feedback/details/578341/parameters-initialization
 
+#bug Ionic 1.9.8:
+# NumberOfSegmentsForMostRecentSave : la valeur est fausse 
+
 Add-Type -Path "$psScriptRoot\$($PSVersionTable.PSVersion)\PSIonicTools.dll"
  
 Start-Log4Net "$psScriptRoot\Log4Net.Config.xml"
@@ -314,6 +317,25 @@ Try {
  } 
 } Catch [System.Management.Automation.RuntimeException] {
    Write-Error -Exception $_.Exception
+}
+
+function isNumberOfSegmentValid {
+#Suppose que le fichier existe.
+ param (
+  [ValidatNotNullOrEmpty()]
+  [Parameter(Position=0, Mandatory=$true)]
+  [Ionic.Zip.ZipFile] $ZipFile
+ )
+
+  $NumberOfDisk=0
+  
+  $ZipFile.Entries|% { 
+    $_.Info -match 'Disk Number: (?<DiskNumber>\d{1,2})' > $null 
+    $NumberOfDisk= [Math]::Max($Matches.DiskNumber,$NumberOfDisk)
+  }
+  $Search=$Zipfile.FileNameArchive -Replace '\.Zip$','.Z??'
+  #L'ajout de 1 est pour le fichier .ZIP
+ (Dir $Search).Count -eq $NumberOfDisk+1
 }
 
 Function CloneSfxOptions { 
@@ -1137,8 +1159,11 @@ Function Compress-ZipFile {
       if (-not [string]::IsNullOrEmpty($Password) -or ($Encryption -ne "None"))
       { SetZipFileEncryption $ZipFile $Encryption $Password }
 
-       #Configure la taille des segments 
-      $ZipFile.MaxOutputSegmentSize=$Split
+      if ($Split -ge 64Kb)
+      {
+        #Configure la taille des segments 
+        $ZipFile.MaxOutputSegmentSize=$Split
+      }
       
        #Pas de delayed script block
        #Ces paramètres seront tjr lié une seule fois
@@ -1377,14 +1402,20 @@ Function AddEntry {
    param (
        [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
      $InputObject,
+
        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
        [Alias('Key')]
        [Alias('Name')]  #Si c'est un fichier ou un répertoire on lie le nom de l'entrée automatiquement
      [string] $KeyName, #Le nom d'entrée n'est pas obligatoire et peut provenir de la clé d'une entrée de hashtable
+
      $Zipfile,
+
      [string] $Comment, 
+
      [string] $EntryPathRoot,
+
      [switch] $Overwrite, 
+
      [switch] $Passthru
     )
  begin {
@@ -1579,22 +1610,26 @@ Function Add-ZipEntry {
   param (
       [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
     $InputObject,
+
       [ValidateNotNull()]
       [Parameter(Position=0,Mandatory=$true)]
     [Ionic.Zip.ZipFile] $ZipFile,
+
       [Parameter(Position=1,Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
     [string] $Name,
+
     [string] $Comment=[string]::Empty, 
+
       [ValidateScript({(New-PsIonicPathInfo -path $_).IsDirectoryExist()})]
     [string] $EntryPathRoot,
-    [switch] $Overwrite, 
+
     [switch] $Passthru
   )
    begin { 
+      $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
        #Ici les valeurs de ces paramètres seront tjrs les mêmes 
       $AZEParam=@{} 
       $AZEParam.EntryPathRoot=$EntryPathRoot
-      $AZEParam.Overwrite=$Overwrite
       $AZEParam.Passthru=$Passthru
       $AZEParam.ZipFile=$ZipFile
       $AZEParam.Comment=$Comment 
@@ -1604,7 +1639,7 @@ Function Add-ZipEntry {
      try { 
       $Logger.Debug("Add-ZipEntry InputObject= $InputObject")  #<%REMOVE%>
       $isCollection=isCollection $InputObject
-      if ($isCollection -and ($Object -is [System.Collections.IDictionary]))
+      if ($isCollection -and ($InputObject -is [System.Collections.IDictionary]))
       {
         $Logger.Debug("Add entries from a hashtable.")  #<%REMOVE%>
         $InputObject.GetEnumerator()|
@@ -1638,30 +1673,37 @@ Function Update-ZipEntry {
   param (
       [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
     $InputObject,
+     
       [ValidateNotNull()]
       [Parameter(Position=0,Mandatory=$true)]
     [Ionic.Zip.ZipFile] $ZipFile,
+  
       [Parameter(Position=1,Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
     [string] $Name,
+   
     [string] $Comment=[string]::Empty, 
+
+      [ValidateScript({(New-PsIonicPathInfo -path $_).IsDirectoryExist()})]
     [string] $EntryPathRoot,
+    
     [switch] $Passthru
   )
    begin { 
+      $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
        #Ici les valeurs de ces paramètres seront tjrs les mêmes 
       $AZEParam=@{} 
       $AZEParam.EntryPathRoot=$EntryPathRoot
       $AZEParam.Passthru=$Passthru
+      $AZEParam.Overwrite=$True
       $AZEParam.ZipFile=$ZipFile
       $AZEParam.Comment=$Comment 
    }
 
    process {
-     $Logger.Debug("Under construction")  #<%REMOVE%>      
-     return 
-     $Logger.Debug("Update-ZipEntry InputObject= $InputObject")  #<%REMOVE%>
+    try {            
+      $Logger.Debug("Update-ZipEntry InputObject= $InputObject")  #<%REMOVE%>
       $isCollection=isCollection $InputObject
-      if ($isCollection -and ($Object -is [System.Collections.IDictionary]))
+      if ($isCollection -and ($InputObject -is [System.Collections.IDictionary]))
       {
         $Logger.Debug("Update entries from a hashtable.")  #<%REMOVE%>
         $InputObject.GetEnumerator()|
@@ -1669,6 +1711,7 @@ Function Update-ZipEntry {
       }
       else
       {
+        [Void]$PSBoundParameters.Add("Overwrite",$True)
         if ($Name -ne [string]::Empty)
         { AddEntry @PSBoundParameters  }
         else
@@ -1679,8 +1722,76 @@ Function Update-ZipEntry {
           $InputObject|AddEntry @PSBoundParameters
         }
       }
+     } catch [System.ArgumentException] {
+      if ($Zipfile.ZipErrorAction -ne 'Throw')
+      { Write-Error -Exception $_.Exception }
+      else
+      { Throw $_}
+     }
   }#process
 }#Update-ZipEntry
+
+Function Remove-ZipEntry {
+# .ExternalHelp PsIonic-Help.xml         
+  [CmdletBinding(DefaultParameterSetName="Name")] 
+  [OutputType([PSObject])] 
+  param (
+      [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
+    $InputObject,
+     
+      [ValidateNotNull()]
+      [Parameter(Position=0,Mandatory=$true)]
+    [Ionic.Zip.ZipFile] $ZipFile,
+     
+      [Parameter(Position=1,Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName="Name")]
+    [string] $Name,
+      
+      [Parameter(Mandatory=$false,ParameterSetName="Query")]
+    [String] $Query,
+    
+       [Parameter(Mandatory=$false,ParameterSetName="Query")]
+    [String] $From
+  )
+   begin {
+    $isFrom=$PSBoundParameters.ContainsKey('From')   
+    $isQuery=$PSBoundParameters.ContainsKey('Query')   
+    if ($isFrom -and -Not $isQuery)
+     { throw  (New-Object PSIonicTools.PsionicException($PsIonicMsgs.ParameterFromNeedQueryParameter)) }
+   }
+
+   process {
+    try {            
+      $Logger.Debug("InputObject= $InputObject")  #<%REMOVE%>
+      $Logger.Debug("InputObject type = $($InputObject.GetType())")  #<%REMOVE%>
+      $isCollection=isCollection $InputObject
+      if ($isCollection) 
+      {
+       $Logger.Debug("InputObject is a collection")  #<%REMOVE%>
+        if ($InputObject -is [System.Collections.IDictionary])
+        {
+          $Logger.Debug("Update entries from a hashtable.")  #<%REMOVE%>
+          $InputObject.GetEnumerator()|
+            Foreach {
+             $ZipFile.RemoveSelectedEntries($_.Key) 
+            }
+        }
+        elseif ($InputObject -is [ZipEntry[]])  { $ZipFile.RemoveEntries( (,$InputObject) )}
+        elseif ($InputObject -is [Object[]])    { $ZipFile.RemoveEntries( (,($InputObject -as [String[]])) ) }
+        elseif ($InputObject -is [String[]])    { $ZipFile.RemoveEntries( (,$InputObject) ) }
+        else { Write-Error ($PsIonicMsgs.TypeNotSupported -F 'Inputobject',$InputObject.GetType().FullName) } 
+      }    
+      elseif ($PsCmdlet.ParameterSetName -eq 'Name') { $ZipFile.RemoveSelectedEntries($Name) } 
+      else  { $ZipFile.RemoveSelectedEntries($Query, $From) }
+     } catch [System.ArgumentException] {
+      if ($Zipfile.ZipErrorAction -ne 'Throw')
+      { Write-Error -Exception $_.Exception }
+      else
+      { Throw $_}
+     } finally {
+       $ZipFile.Save() #todo sur de grand fichier pb !!
+     } 
+  }#process
+}#Remove-ZipEntry 
 
 Function GetArchivePath {
 # Récupère une string et renvoie, si possible, un nom de chemin complet.
@@ -1914,6 +2025,13 @@ Function Expand-ZipFile {
 	)
 
   Begin{
+      #Une fois déclaré les jeux 'Path' et 'LiteralPath'
+      #l'usage de ParameterSetName est difficile pour ce cas.
+    $isFrom=$PSBoundParameters.ContainsKey('From')   
+    $isQuery=$PSBoundParameters.ContainsKey('Query')   
+    if ($isFrom -and -Not $isQuery)
+     { throw  (New-Object PSIonicTools.PsionicException($PsIonicMsgs.ParameterFromNeedQueryParameter)) }
+   
     [Switch] $isVerbose= $null
     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
     $isProgressID=$PSBoundParameters.ContainsKey('ProgressID')   
@@ -1950,13 +2068,22 @@ Function Expand-ZipFile {
       }
     }#ZipFileRead
     
+    function TestPassthru { 
+      if ($Passthru)
+      {
+        $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
+        Set-Variable -Name isDispose -Value $false -Scope 1
+        return ,$ZipFile
+      }
+    }
+    
     function ExtractEntries {
       try{
         $isDispose=$true 
-        if ($Passthru)
+        if ($Passthru -and $isQuery)
         { 
           $Logger.Debug("Preserve the query by Add-Member") #<%REMOVE%>
-          Add-Member -Input ($ZipFile -as[PSobject]) -MemberType NoteProperty -name Query -Value $Query 
+          Add-Member -Input ($ZipFile -as [PSobject]) -MemberType NoteProperty -name Query -Value $Query 
         }
 
         if(-not [String]::IsNullOrEmpty($Password))
@@ -1968,7 +2095,8 @@ Function Expand-ZipFile {
         if (-not [String]::IsNullOrEmpty($Query)) 
         {  
             $Logger.Debug("Extraction using a query : $Query") #<%REMOVE%> 
-            if( [String]::IsNullOrEmpty($From)){
+            if( [String]::IsNullOrEmpty($From))
+            {
                 $Logger.Debug("From = null") #<%REMOVE%>
                 $Logger.Debug("OutputPath=$OutputPath") #<%REMOVE%>
                 $Logger.Debug("ExtractAction=$ExtractAction") #<%REMOVE%>
@@ -1978,24 +2106,18 @@ Function Expand-ZipFile {
                 $ExtractSelectedEntriesMethod=[Ionic.Zip.ZipFile].GetMethod("ExtractSelectedEntries",$private:ParameterTypesOfExtractSelectedEntriesMethod)
                 $params = @($Query,$Null,($OutputPath.ToString()),$ExtractAction)
                 $ZipEntry=$ExtractSelectedEntriesMethod.Invoke($ZipFile, $params)  
-                if ($Passthru){
-                  $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
-                  $isDispose=$false 
-                  return ,$ZipFile
-                }                                            
+                TestPassthru
             }
-            else{
+            else
+            {
                 $ZipFile.ExtractSelectedEntries($Query,$From,$OutputPath,$ExtractAction)  
+                TestPassthru                  
             }
         }
         else{ 
             $Logger.Debug("Extraction without query.") #<%REMOVE%>
             $ZipFile.ExtractAll($OutputPath,$ExtractAction)
-            if ($Passthru){
-              $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
-              $isDispose=$false 
-              return ,$ZipFile
-            }              
+            TestPassthru
         }#else isnotnul $Query
 
       }#try
@@ -2057,7 +2179,7 @@ Function Expand-ZipFile {
             #On le crée si possible
             if ($PSPathInfo.IsCandidateForCreation())
             {              
-              $Logger.Debug("Create `$OutputPath directory") #<%REMOVE%>
+              $Logger.Debug("Create -OutputPath directory: $OutputPath") #<%REMOVE%>
               Md $OutputPath > $Null
             }
         }
@@ -2085,6 +2207,22 @@ Function Expand-ZipFile {
           $Logger.Debug("zipfile is null: $($zipfile.psbase -eq $null)") #<%REMOVE%>
           if ($isEvent) 
           { $RegEvent=RegisterEventExtractProgress $zipFile $ProgressID }
+          
+          if ($isFrom -and $ZipFile[$From] -eq $null)
+          { 
+             $Msg=$PsIonicMsgs.FromPathEntryNotFound -F $From,$Zipfile.Name
+             $PSCmdlet.WriteError(
+                (New-Object System.Management.Automation.ErrorRecord(
+                  (New-Object PSIonicTools.PsionicException($Msg)), 
+                  "PathNotFound", 
+                  "ObjectNotFound",
+                  ("[{0}]" -f $From)
+                 )  
+                ) 
+             )             
+           DisposeZip 
+           return
+          } 
           ExtractEntries
         }
         finally {
@@ -2312,6 +2450,7 @@ Function ConvertTo-Sfx {
  process {  
   try{
       $zipFile = [Ionic.Zip.ZipFile]::Read($Path, $ReadOptions)
+      $zipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
       $zipFile.Comment =$Comment
       SaveSFXFile $ZipFile $SaveOptions 
       if ($Passthru)
@@ -2484,22 +2623,6 @@ function New-ReadOptions {
   $ReadOptions
 }#New-ReadOptions
 
-# Function Update-ZipFile {
-# # .ExternalHelp PsIonic-Help.xml         
-# 	[CmdletBinding()]
-# 	param(
-# 	)
-# 
-# 	Begin{
-# 	} #begin
-# 
-# 	Process{
-# 	} #process
-#     
-#     End {
-#     } #end
-# }#Update-ZipFile
-# 
 # Function Sync-ZipFile {
 # # .ExternalHelp PsIonic-Help.xml         
 # 	[CmdletBinding()]
@@ -2566,38 +2689,6 @@ function New-ReadOptions {
 #     } #end
 # }#Merge-ZipFile
 #
-#
-# Function Remove-ZipEntry {
-# # .ExternalHelp PsIonic-Help.xml         
-# 	[CmdletBinding()]
-# 	param(
-# 	)
-# 	Begin{
-# 	} #begin
-# 
-# 	Process{
-# 	} #process
-#     
-#     End {
-#     } #end
-# }#Remove-ZipEntry 
-# 
-# 
-# Function Rename-ZipEntry {
-# # .ExternalHelp PsIonic-Help.xml         
-# 	[CmdletBinding()]
-# 	param(
-# 	)
-#  
-# 	Begin{
-# 	} #begin
-# 
-# 	Process{
-# 	} #process
-#     
-#     End {
-#     } #end
-# }#Rename-ZipEntry 
 
 #<INCLUDE %'PsIonic:\Tools\New-PSPathInfo.ps1'%>   
 
@@ -2647,7 +2738,8 @@ Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         Compress-SfxFile,
                                                         ConvertTo-Sfx,
                                                         Add-ZipEntry,
-                                                        Update-ZipEntry,                                                        
+                                                        Update-ZipEntry,
+                                                        Remove-ZipEntry,                                                        
                                                         Expand-ZipFile,
                                                         New-ProgressBarInformations,
                                                         New-ReadOptions,
@@ -2665,6 +2757,4 @@ Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         #Sync-ZipFile,
                                                         #Split-ZipFile,
                                                         #Join-ZipFile,
-                                                        #Merge-ZipFile,
-                                                        #Remove-ZipEntry,
-                                                        #Rename-ZipEntry,
+                                                        #Merge-ZipFile

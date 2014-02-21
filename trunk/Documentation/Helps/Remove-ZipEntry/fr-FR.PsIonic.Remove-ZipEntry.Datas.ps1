@@ -1,7 +1,7 @@
 ﻿# Remove-ZipEntry command data
 $Datas = @{
 	RemoveZipEntrySynopsis = 'Supprime une ou des entrées d''une archive'
-	RemoveZipEntryDescription = 'Supprime une ou des entrées d''une archive''
+	RemoveZipEntryDescription = 'Supprime une ou des entrées d''une archive'
 	RemoveZipEntrySetsName = ''
 	RemoveZipEntrySetsQuery = ''
 	RemoveZipEntryParametersFrom = @"
