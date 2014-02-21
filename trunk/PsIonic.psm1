@@ -1736,6 +1736,7 @@ Function Remove-ZipEntry {
   [CmdletBinding(DefaultParameterSetName="Name")] 
   [OutputType([PSObject])] 
   param (
+      [ValidateNotNull()]
       [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
     $InputObject,
      
@@ -1769,28 +1770,61 @@ Function Remove-ZipEntry {
        $Logger.Debug("InputObject is a collection")  #<%REMOVE%>
         if ($InputObject -is [System.Collections.IDictionary])
         {
-          $Logger.Debug("Update entries from a hashtable.")  #<%REMOVE%>
+          $Logger.Debug("Remove entries from a hashtable.")  #<%REMOVE%>
           $InputObject.GetEnumerator()|
             Foreach {
-             $ZipFile.RemoveSelectedEntries($_.Key) 
+             $ZipFile.RemoveEntry($_.Key) 
             }
         }
-        elseif ($InputObject -is [ZipEntry[]])  { $ZipFile.RemoveEntries( (,$InputObject) )}
-        elseif ($InputObject -is [Object[]])    { $ZipFile.RemoveEntries( (,($InputObject -as [String[]])) ) }
-        elseif ($InputObject -is [String[]])    { $ZipFile.RemoveEntries( (,$InputObject) ) }
-        else { Write-Error ($PsIonicMsgs.TypeNotSupported -F 'Inputobject',$InputObject.GetType().FullName) } 
+        elseif ($InputObject -is [ZipEntry[]])  
+        { 
+          $Logger.Debug("Remove [ZipEntry[]]")  #<%REMOVE%>
+          $ZipFile.RemoveEntries( ($InputObject -as [System.Collections.Generic.ICollection[ZipEntry]])) 
+        }
+        elseif ( ($InputObject -is [Object[]]) -or $InputObject -is [String[]])
+        { 
+          $Logger.Debug("Remove [object[]] or [string[]]")  #<%REMOVE%>
+           #Array covariance 
+          $ZipFile.RemoveEntries( ($InputObject -as [System.Collections.Generic.ICollection[string]]))
+          #todo test avec tableau vide, le tableau ne doit pas être vide 
+        }  
+        else 
+        { 
+          Write-Error ($PsIonicMsgs.TypeNotSupported -F 'Inputobject',$InputObject.GetType().FullName) 
+        } 
       }    
-      elseif ($PsCmdlet.ParameterSetName -eq 'Name') { $ZipFile.RemoveSelectedEntries($Name) } 
-      else  { $ZipFile.RemoveSelectedEntries($Query, $From) }
+      elseif ($PsCmdlet.ParameterSetName -eq 'Name') 
+      { 
+         $Logger.Debug("Remove by Name")  #<%REMOVE%> 
+         $ZipFile.RemoveEntry($Name) > $null
+         # todo ArgumentException si inexiste, idem pour $null, ou ''  
+      } 
+      #todo  RemoveEntry(ZipEntry) # ArgumentNullException 
+      elseif ($isFrom) 
+      { 
+        $Logger.Debug("Remove Selected Entries('$Query', '$From')")  #<%REMOVE%>
+         #call RemoveEntrie(Icollection[ZipEntry[]])
+        $ZipFile.RemoveSelectedEntries($Query, $From) > $null 
+      }
+      else
+      { 
+        $Logger.Debug("Remove Selected Entries('$Query')")  #<%REMOVE%>
+         #call RemoveEntrie(Icollection[ZipEntry[]])
+        $ZipFile.RemoveSelectedEntries($Query) > $null  
+      }
+
      } catch [System.ArgumentException] {
       if ($Zipfile.ZipErrorAction -ne 'Throw')
       { Write-Error -Exception $_.Exception }
       else
       { Throw $_}
-     } finally {
-       $ZipFile.Save() #todo sur de grand fichier pb !!
      } 
   }#process
+  
+  end {
+    if ($ZipFile -ne $null)
+    { $ZipFile.Save() }
+  }#end
 }#Remove-ZipEntry 
 
 Function GetArchivePath {
