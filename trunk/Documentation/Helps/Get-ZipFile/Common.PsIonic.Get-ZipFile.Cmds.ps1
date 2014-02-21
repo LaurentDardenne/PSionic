@@ -42,7 +42,8 @@ try {
  $ZipFile=Get-Zipfile -Path Test.zip
  $ZipFile
 } finally {
- $ZipFile.PSDispose()
+  if ($ZipFile -ne $null )
+  { $ZipFile.PSDispose() }
 }
 			}
 			remarks = $Datas.GetZipFileExamplesRemarks1
@@ -57,7 +58,8 @@ try {
  Add-ZipEntry -Object $File -ZipFile $ZipFile
  $ZipFile.Save()
 } finally {
- $ZipFile.PSDispose()
+  if ($ZipFile -ne $null )
+  { $ZipFile.PSDispose() }
 }
 			}
 			remarks = $Datas.GetZipFileExamplesRemarks2
@@ -73,7 +75,8 @@ try {
  Add-ZipEntry -Object $Text -EntryName MyText -ZipFile $ZipFile
  $ZipFile.Save()
 } finally {
- $ZipFile.PSDispose()
+  if ($ZipFile -ne $null )
+  { $ZipFile.PSDispose() }
 }
          
 			}

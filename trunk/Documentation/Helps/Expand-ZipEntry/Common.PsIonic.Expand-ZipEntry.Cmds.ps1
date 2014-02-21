@@ -55,7 +55,8 @@ try {
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
   [string]$Text =Expand-ZipEntry -Zip $ZipFile MyText   
 } finally {
-  $ZipFile.PSDispose()
+  if ($ZipFile -ne $null )
+  { $ZipFile.PSDispose() }
 }
 			}
 			remarks = $Datas.AddZipEntryExamplesRemarks1
@@ -74,7 +75,8 @@ try {
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
   $MaTableDeVersion=Expand-ZipEntry -Zip $ZipFile 'PSVersiontable.climxl'|ConvertFrom-CliXml   
 } finally {
-  $ZipFile.PSDispose()
+  if ($ZipFile -ne $null )
+  { $ZipFile.PSDispose() }
 }
 $MaTableDeVersion
 
@@ -96,7 +98,8 @@ try {
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
   $Array=Expand-ZipEntry -Zip $ZipFile MyArray -Byte   
 } finally {
-  $ZipFile.PSDispose()
+  if ($ZipFile -ne $null )
+  { $ZipFile.PSDispose() }
 }
 			}
 			remarks = $Datas.AddZipEntryExamplesRemarks3

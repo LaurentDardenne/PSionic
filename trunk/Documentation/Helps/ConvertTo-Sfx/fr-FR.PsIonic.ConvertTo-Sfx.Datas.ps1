@@ -1,8 +1,8 @@
 ﻿# ConvertTo-Sfx command data
 $Datas = @{
-	ConvertToSfxSynopsis = 'Convertit une archive .ZIP en une archive autoextractible.'
+	ConvertToSfxSynopsis = 'Convertit une archive .ZIP en une archive auto extractible.'
 	ConvertToSfxDescription = @"
-La conversion d'une archive .ZIP en une archive autoextractible intégre dans le fichier généré le traitement de décompression.
+La conversion d'une archive .ZIP en une archive auto extractible intégre dans le fichier généré le traitement de décompression.
 Vous pouvez également préciser une ligne de commande à exécuter une fois la décompression de tous les fichiers terminée.     
 "@
 	ConvertToSfxSets__AllParameterSets = ''
@@ -19,18 +19,18 @@ Vous pouvez émettre n'importe quel objet dans le pipeline, sous réserve que sa
 	ConvertToSfxOutputsDescriptionSystemIOFileInfo = @"
 Aucun ou System.IO.FileInfo
  
-Lorsque vous utilisez le paramètre PassThru, ConvertTo-Sfx renvoi l'objet fichier de l'archive autoextractible. Sinon cette fonction ne génére aucune sortie.
+Lorsque vous utilisez le paramètre PassThru, ConvertTo-Sfx renvoi l'objet fichier de l'archive auto extractible. Sinon cette fonction ne génére aucune sortie.
 "@ 
 	ConvertToSfxNotes = @"
-La présence du framework dotnet 2.0 est nécessaire sur le poste exécutant la décompression de l’archive autoextractible.
-Le répertoire précisé par la paramètre 'ExtractDirectory' (cf. New-ZipSfxOptions) peut contenir des références de variable système.
-Par exemple %UserProfile%, celles-ci seront substituées lors de l'exécution de l’archive autoextractible.
+La présence du framework dotnet 2.0 est nécessaire sur le poste exécutant la décompression de l’archive auto extractible.
+Le répertoire précisé par le paramètre 'ExtractDirectory' (cf. New-ZipSfxOptions) peut contenir des références de variable système.
+Par exemple %UserProfile%, celles-ci seront substituées lors de l'exécution de l’archive auto extractible.
 
-Attention, il n'est pas possible d'enregistrer une archive splittée dans une archive autoextractible.
+Attention, il n'est pas possible d'enregistrer une archive splittée dans une archive auto extractible.
 "@
 	ConvertToSfxExamplesRemarks1 = @'
-Ces instructions crée, à l'aide de la fonction New-ZipSfxOptions, le paramètrage qui sera utilisé lors de la construction de l'archive autoextractible.
-Enfin, on convertit un fichier d'archive .Zip en un fichier d'archive autoextractible .Exe.
+Ces instructions crée, à l'aide de la fonction New-ZipSfxOptions, le paramétrage qui sera utilisé lors de la construction de l'archive auto extractible.
+Enfin, on convertit un fichier d'archive .Zip en un fichier d'archive auto extractible .Exe.
 La variable $ReadOption paramètre l'affichage de la progression du traitement sur la console. 
 '@ 
 }

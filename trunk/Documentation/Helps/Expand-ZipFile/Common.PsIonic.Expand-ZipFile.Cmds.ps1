@@ -44,24 +44,81 @@
 		}
 		@{
 			code = {
-              Get-ChildItem D:\*.zip -recurse | 
-               Expand-ZipFile C:\Temp\
+              Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\Archive -Create
 			}
 			remarks = $Datas.ExpandZipFileExamplesRemarks2
 			test = { . $args[0] }
 		}
 		@{
 			code = {
-              Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\ -Query 'name = *.jpg'
+              Get-ChildItem D:\*.zip -recurse | 
+               Expand-ZipFile C:\Temp\
 			}
 			remarks = $Datas.ExpandZipFileExamplesRemarks3
 			test = { . $args[0] }
 		}
 		@{
 			code = {
-              Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\ -Query 'type = D'
+              Get-ChildItem D:\*.zip -recurse | 
+               Expand-ZipFile C:\Temp\ -ExtractAction OverwriteSilently
 			}
 			remarks = $Datas.ExpandZipFileExamplesRemarks4
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+              Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\ -Query 'name = *.jpg'
+			}
+			remarks = $Datas.ExpandZipFileExamplesRemarks5
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+              Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\ -Query 'type = D'
+			}
+			remarks = $Datas.ExpandZipFileExamplesRemarks6
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+              Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\Test -Create -ProgressID 1
+			}
+			remarks = $Datas.ExpandZipFileExamplesRemarks7
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+'C:\Temp\Archive.zip'|
+ Expand-ZipFile -OutputPath {"C:\Temp\TestZip\$($_.BaseName)"} -Create
+
+Get-Childitem 'C:\Temp\Archive.zip'|
+ Expand-ZipFile -OutputPath {"C:\Temp\TestZip\$($_.BaseName)"} -Create -ExtractAction OverwriteSilently
+			}
+			remarks = $Datas.ExpandZipFileExamplesRemarks8
+			test = { . $args[0] }
+		}
+		@{
+			code = {
+try {
+ $Splatting=@{
+  Path='C:\Temp\Archive.zip'
+  OutputPath='C:\Temp\ExtractArchive'
+  Query='*.DLL' 
+  From='Bin/V2/'
+  Create=$True
+  Flatten=$True 
+  Passthru=$True              
+ }            
+ $ZipFile= Expand-ZipFile @Splatting
+ $ZipFile.Query
+} finally {
+  if ($ZipFile -ne $null )
+  { $ZipFile.PSDispose() }
+}  
+        
+           
+			}
+			remarks = $Datas.ExpandZipFileExamplesRemarks9
 			test = { . $args[0] }
 		}
 	)

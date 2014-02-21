@@ -31,11 +31,6 @@ Contenu associé à une entrée d'archive. Les types attendus sont :
    - ou un tableau d'octets.
 Tous les autres types d'objet seront transformés en chaîne de caractères via la méthode ToString().   
 "@
-    AddZipEntryParametersOverwrite = @"
-Si une entrée existe déjà, elle est mise à jour.La propriété LastModified est renseignée avec la date et l'heure courante.
-La mise à jour d'une entré de type directory ne fait qu'ajouter les nouveaux éléments, mais ne supprime pas les entrées qui ne sont plus sur le filesSystem. Ce n'est pas une synchronisation.
-Par défaut l'ajout d'une entré existante déclenchera une exception.
-"@
     AddZipEntryParametersPassthru = 'Une fois l''entrée ajoutée au catalogue de l''archive, elle est émise dans le pipeline.'
 	AddZipEntryParametersZipFile = 'Archive cible dans laquelle on ajoute l''entrée précisée. Ce paramètre attend un objet de type ZipFile et pas un nom de fichier.'
 	AddZipEntryInputsDescription1 = @"
@@ -43,38 +38,41 @@ System.Byte[], System.String, System.IO.DirectoryInfo, System.IO.FileInfo, Ionic
 Vous pouvez émettre n'importe quel objet des types précédents dans le pipeline.
 "@
 	AddZipEntryOutputsDescriptionIonicZipZipEntry = 'Ionic.Zip.ZipEntry'
-	AddZipEntryNotes = 'Cette fonction est couplée à la fonction nommée Expand-ZipEntry.'
+	AddZipEntryNotes = @"
+Par défaut l'ajout d'une entrée existante déclenchera une exception.
+Cette fonction est couplée à la fonction nommée Expand-ZipEntry.
+"@
 	AddZipEntryExamplesRemarks1 = @"
 Ces commandes ajoutent une entrée dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
   -la seconde crée un objet fichier à partir d'un nom de fichier, 
   -la troisième ajoute le fichier dans l'archive, 
-  -la quatrième enregistre l'archive sur le disque et libére les ressources systèmes.  
+  -la quatrième enregistre l'archive sur le disque et libère les ressources systèmes.  
 "@
     AddZipEntryExamplesRemarks2 = @"
 Ces commandes ajoutent des entrées dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
   -la seconde, depuis le répertoire courant, ajoute dans l'archive tous les fichiers portant l'extension .txt, 
-  -la troisième enregistre l'archive sur le disque et libére les ressources systèmes.
+  -la troisième enregistre l'archive sur le disque et libère les ressources systèmes.
 "@        
     AddZipEntryExamplesRemarks3 = @"
 Ces commandes ajoutent, à partir d'une chaîne de caractères, une entrée nommée dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
   -la seconde lit un fichier texte et récupère le résultat dans une chaîne de caractères,
   -la troisième crée une entrée dont le contenu est renseigné à partir d'une chaîne de caractères, 
-  -la quatrième enregistre l'archive sur le disque et libére les ressources systèmes.
+  -la quatrième enregistre l'archive sur le disque et libère les ressources systèmes.
 "@  
     AddZipEntryExamplesRemarks4 = @'
 Ces commandes ajoutent, à partir d'un objet sérialisé, une entrée nommée dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
   -la seconde sérialise l'objet contenu dans la variable $PSVersiontable et l'ajoute en tant qu'entrée nommée dans l'archive, 
-  -la troisième enregistre l'archive sur le disque et libére les ressources systèmes.
+  -la troisième enregistre l'archive sur le disque et libère les ressources systèmes.
 '@  
     AddZipEntryExamplesRemarks5 =@'
 Ces commandes ajoutent une entrée nommée MyArray dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
   -la seconde ajoute l'objet contenu dans la variable $Array et l'ajoute dans l'archive en tant qu'entrée nommée MyArray, 
-  -la troisième enregistre l'archive sur le disque et libére les ressources systèmes.  
+  -la troisième enregistre l'archive sur le disque et libère les ressources systèmes.  
 '@
 }
 
