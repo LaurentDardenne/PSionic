@@ -1,7 +1,10 @@
 ﻿# Get-ZipFile command data
 $Datas = @{
-	GetZipFileSynopsis = 'Obtient un objet archive à partir d''un fichier Zip.'
-	GetZipFileDescription = 'Obtient un objet archive à partir d''un fichier Zip. L''objet archive ne contient que le catalogue, une liste d''objets de type ZipEntry, pour récupérer le contenu d''une entrée du catalogue vous devez l''extraire sur un lecteur du système de fichier.'
+	GetZipFileSynopsis = 'Obtient et paramètre un objet archive à partir d''un fichier Zip.'
+	GetZipFileDescription = @"
+Obtient un objet archive à partir d'un fichier Zip. L'objet archive ne contient que le catalogue, une liste d'objets de type ZipEntry, pour récupérer le contenu d'une entrée du catalogue vous devez l'extraire sur un lecteur du système de fichier.
+Cette fonction paramètre également les propriétés les plus usuelles de l'objet archive.
+"@
 	GetZipFileSetsManualOption = ''
 	GetZipFileSetsReadOption = ''
 	GetZipFileParametersEncoding = 'Type d''encodage de l''archive. L''utilisation de la valeur par défaut est recommandée.'
