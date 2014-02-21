@@ -26,7 +26,7 @@ Attention, il n’y a pas de contrôle de cohérence sur le contenu de la query,
 Si vous précisez également le paramètre -Passthru, une propriété personnalisé nommée 'Query' sera ajouté à l'objet renvoyé. 
 "@
 	ExpandZipFileParametersFrom = @"
-Précise le répertoire de travail au sein du fichier Zip. 
+Précise le répertoire de l'archive à partir duquel seront extrait les entrées. 
 Un nom de répertoire dans une archive à la syntaxe suivante : 'NomRépertoire/' ou 'NomRépertoire/NomDeSousRépertoire/'.
 .
 L'usage de ce paramètre nécessite de préciser le paramètre -Query, sinon une exception sera déclenchée.
