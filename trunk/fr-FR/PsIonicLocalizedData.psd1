@@ -19,7 +19,6 @@
  EntryIsNull=L'entrée '{0}' est `$null.
  ExpandZipEntryError=L'entrée nommée '{0}' n'existe pas dans l'archive '{1}'
  
- 
  ZipArchiveReadError=Une erreur s'est produite lors de la lecture de l'archive {0} : {1}
  ZipArchiveExtractError=Une erreur s'est produite lors de l'extraction de l'archive {0} : {1}
  ZipArchiveCheckIntegrityError=Erreur lors du contrôle d'intégrité de l'archive {0} : {1}
@@ -34,8 +33,10 @@
  EmptyResolve=La résolution ne trouve pas de fichier.
  PathNotInEntryPathRoot=Le chemin n'est pas dans l'arborescence racine : {0}
  UnableToConvertEntryRootPath=Impossible de convertir le chemin racine : {0}
+ FromPathEntryNotFound=Impossible de trouver le chemin d'accès '{0}' dans l'archive '{1}', car il n'existe pas.
  
  SaveIsNotPermitted=Vous ne pouvez pas enregistrer une archive autoextratible via la méthode Save().
+ ParameterFromNeedQueryParameter=Le paramètre 'From' nécessite de déclarer le paramètre 'Query'.
  
  ProgressBarExtract=Extraction en cours
 '@ 
