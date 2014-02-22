@@ -19,6 +19,9 @@
  EntryIsNull=The entry '{0}' is `$null.
  ExpandZipEntryError=The entry named '{0}' do not exist in the archive '{1}'
  
+ RemoveEntryError=Impossible to delete the entry  '{0}' into archive '{1}', because it does not exist.
+ RemoveEntryNullError=The argument is null.Archive concerned '{0}'
+ 
  ZipArchiveReadError=Error occured while reading the archive {0} : {1}.
  ZipArchiveExtractError=Error occured while extracting the archive {0} : {1}.
  ZipArchiveCheckIntegrityError=Error occured while checking the archive integrity {0} : {1}.
