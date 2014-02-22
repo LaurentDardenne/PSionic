@@ -1,7 +1,7 @@
 ﻿# Expand-ZipFile command data
 $Datas = @{
 	ExpandZipFileSynopsis = 'Extrait des fichiers et/ou des répertoires depuis une archive compressée au format Zip.'
-	ExpandZipFileDescription = 'La cmdlet Expand-ZipFile permet d''extraire des fichiers et/ou des répertoires depuis une archive compressée au format Zip.'
+	ExpandZipFileDescription = 'Extrait des fichiers et/ou des répertoires depuis une archive compressée .ZIP ou d''une archive auto extractible .EXE.'
 	ExpandZipFileSetsPath = 'Les noms de fichiers peuvent contenir des caractères jokers.'
 	ExpandZipFileSetsLiteralPath = 'Les noms de fichiers ne doivent pas contenir de caractère joker.'
     ExpandZipFileParametersPath = @"
@@ -43,7 +43,10 @@ Si le paramètre -Query est précisé, alors la barre de progression d'extractio
 .
 Note : bien évidement la durée de la présence de la barre de progression à l'écran dépendra du nombre d'entrées présente dans l'archive.
 "@
-	ExpandZipFileParametersPassthru = 'Emet dans le pipeline les entrées contenues dans l''archive zip. Attention, dans ce cas la libération des ressources par l''appel à la méthode Close() est à votre charge.'
+	ExpandZipFileParametersPassthru = @"
+Emet le fichier d'archive dans le pipeline. Attention, dans ce cas la libération des ressources par l'appel à la méthode Close() est à votre charge.
+L'objet archive renvoyé n'étant pas verrouillé, soyez également attentif à vos scénarios d'usage de cet objet.    
+"@
     ExpandZipFileParametersCreate = 'Crée le répertoire de destination si celui-ci n''existe pas.'	
 	ExpandZipFileInputsDescription1 = 'En entrée des objets de type [String] ou des [Fileinfo]'
 	ExpandZipFileOutputsDescription1 = ''

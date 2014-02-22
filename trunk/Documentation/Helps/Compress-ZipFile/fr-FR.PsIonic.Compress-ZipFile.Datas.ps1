@@ -37,7 +37,10 @@ Peut être un objet fichier ou une chaîne de caractères.
 "@
 	CompressZipFileParametersNotTraverseReparsePoints = 'Indique si les recherches traverseront les points d''analyse NTFS (Reparse Point), tels que les jonctions.'
 	CompressZipFileParametersOutputName = 'Nom du fichier de l''archive à construire. Le nom du lecteur utilisé doit pointer sur un lecteur du provider FileSystem.'
-	CompressZipFileParametersPassthru = 'Emet le fichier d''archive dans le pipeline. Attention, dans ce cas la libération des ressources par l''appel à la méthode Close() est à votre charge.'
+	CompressZipFileParametersPassthru = @"
+Emet le fichier d'archive dans le pipeline. Attention, dans ce cas la libération des ressources par l'appel à la méthode Close() est à votre charge.
+L'objet archive renvoyé n'étant pas verrouillé, soyez attentif à vos scénarios d'usage de cet objet.    
+"@
 	CompressZipFileParametersPassword = 'Mot de passe utilisé lors du cryptage. Nécessite de préciser un mode de cryptage (cf. le paramètre Encryption).'
 	CompressZipFileParametersPath = @"
 Liste des noms de fichier à compresser. Peut être un objet fichier ou une chaîne de caractères, dans ce cas celle-ci peut contenir des caractères génériques (* , ? , [A-D] ou [1CZ]).

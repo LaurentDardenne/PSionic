@@ -4,14 +4,16 @@ $Datas = @{
 	GetZipFileDescription = @"
 Obtient un objet archive à partir d'un fichier Zip. L'objet archive ne contient que le catalogue, une liste d'objets de type ZipEntry, pour récupérer le contenu d'une entrée du catalogue vous devez l'extraire sur un lecteur du système de fichier.
 Cette fonction paramètre également les propriétés les plus usuelles de l'objet archive.
+L'objet archive renvoyé est verrouillé tant que vous n'appellez pas sa méthode Close(). Par contre, l'usage du paramètre -List ne verrouille pas l'archive.
 "@
 	GetZipFileSetsManualOption = ''
 	GetZipFileSetsReadOption = ''
 	GetZipFileParametersEncoding = 'Type d''encodage de l''archive. L''utilisation de la valeur par défaut est recommandée.'
 	GetZipFileParametersEncryption = 'Type de cryptage utilisé lors de l''opération de compression. Nécessite de préciser un mot de passe (cf. le paramètre Password).'
 	GetZipFileParametersList = @"
-Obtient les entrées contenu dans le catalogue de l'archive. Les objets renvoyés sont des objets personnalisés dont le nom de type est PSZipEntry.
+Obtient les entrées contenues dans le catalogue de l'archive. Les objets renvoyés sont des objets personnalisés dont le nom de type est PSZipEntry.
 Hormis sa propriété 'Info', toutes sont en lecture seule.
+L'archive n'est pas verrouillé.
 "@
 	GetZipFileParametersProgressID =@"
 L'usage de ce paramètre crée un gestionnaire d'événements pour les opérations de lecture.
@@ -32,7 +34,7 @@ Cette ID permet de distinguer la barre de progression interne des autres. Utilis
 Cette fonction renvoyant seulement un objet archive Zip à partir de son nom complet, la plupart des paramètres servent à configurer les propriétes de l'archive si vous souhaitez la modifier.
 Par exemple, le paramètre 'Encryption' n’influe pas sur la lecture du Zip, seul le paramètre Password est nécessaire, car ce sont les entrées de l'archive Zip qui portent l’information de cryptage, et pas l'objet de type [ZipFile].
 Une archive Zip peut donc en théorie contenir plusieurs entrées dont chacune a un mode de compression différente des autres.
-ATTENTION, pour chaque objet renvoyé vous devrez appeler la méthode PSDispose() afin de libérer correctement les ressources de l'archive.
+ATTENTION, pour chaque objet renvoyé vous devrez appeler la méthode Close() afin de libérer correctement les ressources de l'archive.
 "@
 	GetZipFileExamplesRemarks1 = @"
 Cet exemple lit un fichier zip, affiche son contenu puis libére ses ressources. 

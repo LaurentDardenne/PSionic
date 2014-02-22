@@ -1,7 +1,7 @@
 ﻿# Add-ZipEntry command data
 $Datas = @{
 	AddZipEntrySynopsis = 'Ajoute une entrée dans le catalogue d''une archive Zip existante.'
-	AddZipEntryDescription = 'Ajoute une entrée dans le catalogue d''une archive Zip existante, cette entrée peut être un nom de fichier ou de répertoire, une chaîne de caractères ou un tableau d''octets.'
+	AddZipEntryDescription = 'Ajoute une entrée dans le catalogue d''une archive .ZIP ou d''une archive auto extractible .EXE, cette entrée peut être un nom de fichier ou de répertoire, une chaîne de caractères ou un tableau d''octets.'
 	AddZipEntrySets__AllParameterSets = ''
     AddZipEntryParametersComment = 'Commentaire associé à l''entrée. Pour les entrées de type string ou tableau, par défaut leur champ contiendra le nom de leur type : [String] ou [Byte[]].' 
 	AddZipEntryParametersEntryPathRoot = @"
