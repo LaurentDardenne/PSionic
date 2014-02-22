@@ -21,9 +21,10 @@ Si un fichier n'est pas une archive et que le paramètre -isValid est précisé,
 Si vous devez tester une archive avec un mot de passe n'utilisez pas ce paramètre, mais le paramètre -Password et/ou le paramètre -Check.
 "@
 	TestZipFileParametersPassthru = @'
- Emet le nom du fichier de l'archive dans le pipeline. 
- Si le paramètre -isValid est également précisé, alors les fichiers considérés comme invalide ne seront pas émis dans le pipeline et aucune erreur simple ne sera déclenchée.
- Ce comportement est similaire à un filtre, où seul les fichiers valides seraient émis dans le pipeline.  
+Emet le nom du fichier de l'archive dans le pipeline. 
+Si le paramètre -isValid est également précisé, alors les fichiers considérés comme invalide ne seront pas émis dans le pipeline et aucune erreur simple ne sera déclenchée.
+Ce comportement est similaire à un filtre, où seul les fichiers valides seraient émis dans le pipeline.
+Les objets archive renvoyés n'étant pas verrouillés, soyez attentif à vos scénarios d'usage de ces objets.    
 '@
 	TestZipFileParametersPassword = @'
 Mot de passe, nécessaire si l'archive est protégé par un mot de passe.

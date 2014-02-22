@@ -14,9 +14,9 @@ L'objet passé en paramètre est construit à l'aide de fonction New-ProgressBar
 	NewReadOptionsNotes = @"
 Concernant l'usage de l'encodage, consultez l'aide de la dll Ionic.
  
-Si le paramètre -Verbose est précisé alors cette objet d'option est configurée avec une instance de la classe PSIonicTools.PSVerboseTextWriter.
-La dll Ionic l'utilise pour afficher des messages supplémentaires lors d'opérations sur une archive zip. 
-La présence du paramètre -Verbose impose donc sa libération implicite via un appel à la méthode PSDispose() sur l'archive ciblée par cet objet d'options.
+Si le paramètre -Verbose est précisé, alors cette objet d'options est configurée avec une instance de la classe PSIonicTools.PSVerboseTextWriter.
+La DLL Ionic l'utilise pour afficher des messages supplémentaires lors d'opérations sur une archive zip. 
+La présence du paramètre -Verbose impose donc la libération implicite de cette instance via un appel à la méthode Close() sur l'archive ciblée par cet objet d'options.
 "@
 	NewReadOptionsExamplesRemarks1 = 'Cet exemple crée un objet option de lecture avec les valeurs par défaut.'
     NewReadOptionsExamplesRemarks2 = 'Cet exemple crée un objet option de lecture avec une valeur d''encodage par défaut et un PSVerboseTextWriter pour des affichages supplémentaires.'

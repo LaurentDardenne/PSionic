@@ -1,7 +1,7 @@
 ﻿# Update-ZipEntry command data
 $Datas = @{
-	UpdateZipEntrySynopsis = 'Met à jour une archive Zip en modifiant ses entrées existantes ou en lui en ajoutant de nouvelles.'
-	UpdateZipEntryDescription = ''
+	UpdateZipEntrySynopsis = 'Met à jour une archive .ZIP ou une archive auto extractible .EXE.'
+	UpdateZipEntryDescription = 'Met à jour une archive .ZIP, ou une archive auto extractible .EXE, en modifiant ses entrées ou en lui en ajoutant de nouvelles.'
 	UpdateZipEntrySets__AllParameterSets = ''
 	UpdateZipEntryParametersComment =  'todo à vérifier. Commentaire associé à l''entrée. Pour les entrées de type string ou tableau, par défaut leur champ contiendra le nom de leur type : [String] ou [Byte[]].'
 	UpdateZipEntryParametersEntryPathRoot = @"
