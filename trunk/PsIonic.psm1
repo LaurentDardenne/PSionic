@@ -615,10 +615,20 @@ Function NewZipFile{
 	[Encoding] $Encoding
   )
 
-  Write-Verbose "Delete $Filename" 
+  Write-Verbose "PSionic try to delete '$Filename'" 
   if (Test-Path $Filename)
-  { Remove-Item $Filename -ea SilentlyContinue } #Retarde la gestion lors du Save()
-  
+    #Le fichier peut déjà être ouvert dans PS ou à l'extérieur.
+    #Pour Compresser, par exemple, on s'attend à supprimer le fichier et à reconstruire l'archive
+    #Si le fichier est ouvert, l'ajout peut provoquer des erreurs d'entrée dupliquée.
+    #De plus le Ssave() ne pouvant se faire, on stop le traitement. 
+  { 
+    try {
+     Remove-Item $Filename -ea Stop 
+    } catch [System.Management.Automation.ActionPreferenceStopException]{
+      throw (New-Object PsionicTools.PsionicException($_,$_.Exception))
+    }  
+  }
+
   $Parameters=@($Filename)
   
   if ($statusMessageWriter -ne $null) 
@@ -1017,7 +1027,7 @@ Function Get-ZipFile {
             if ($List)
             {
                #todo formatting nullable -> ETS file 
-               #Renvoit des objets ayant des propriétés en lecteure seule 
+               #Renvoit des objets ayant des propriétés en lecture seule 
                #découplées de l'objet archive initiale.
               try {
                 $Logger.Debug("Create New-PSZipEntry")  
@@ -1029,8 +1039,10 @@ Function Get-ZipFile {
             }
             else 
             {
-              #Les autres options sont renseignées avec les valeurs par défaut
-             ,$ZipFile
+               #Les autres options sont renseignées avec les valeurs par défaut
+               #Renvoi l'objet en tant PSObject, sinon PSDispose() n'est accessible
+               #qu'une fois l'instance accédée dans PS
+              ,$ZipFile -as [PSObject]
             }
          }
          else { $Logger.Debug("N'est pas une archive $FileName")}  #<%REMOVE%>
@@ -1194,7 +1206,7 @@ Function Compress-ZipFile {
         if ($Zipfile.ZipErrorAction -ne 'Throw')
         { Write-Error -Exception $_.Exception }
         else
-        { Throw $_}
+        { throw (New-Object PsionicTools.PsionicException($_,$_.Exception))}
      }
 	} #Process
     
@@ -1598,7 +1610,7 @@ Function AddEntry {
     if ($Zipfile.ZipErrorAction -ne 'Throw')
     { Write-Error -Message ($PsIonicMsgs.AddEntryError -F (TruncateString $InputObject),$ZipFile.Name,$_.Exception.Message) -Exception $_.Exception }
     else
-    { Throw $_}
+    { throw (New-Object PsionicTools.PsionicException($_,$_.Exception))}
    }
   }#process
 }#AddEntry
@@ -1661,7 +1673,7 @@ Function Add-ZipEntry {
       if ($Zipfile.ZipErrorAction -ne 'Throw')
       { Write-Error -Exception $_.Exception }
       else
-      { Throw $_}
+      { throw (New-Object PsionicTools.PsionicException($_,$_.Exception)) } 
      }
   }#process
 } #Add-ZipEntry
@@ -1726,7 +1738,7 @@ Function Update-ZipEntry {
       if ($Zipfile.ZipErrorAction -ne 'Throw')
       { Write-Error -Exception $_.Exception }
       else
-      { Throw $_}
+      { throw (New-Object PsionicTools.PsionicException($_,$_.Exception)) }
      }
   }#process
 }#Update-ZipEntry
@@ -1736,7 +1748,7 @@ Function Remove-ZipEntry {
   [CmdletBinding(DefaultParameterSetName="Name")] 
   [OutputType([PSObject])] 
   param (
-      [ValidateNotNull()]
+      [ValidateNotNullOrEmpty()]
       [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
     $InputObject,
      
@@ -1744,12 +1756,15 @@ Function Remove-ZipEntry {
       [Parameter(Position=0,Mandatory=$true)]
     [Ionic.Zip.ZipFile] $ZipFile,
      
+      [ValidateNotNullOrEmpty()]
       [Parameter(Position=1,Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName="Name")]
     [string] $Name,
       
+      [ValidateNotNullOrEmpty()]
       [Parameter(Mandatory=$false,ParameterSetName="Query")]
     [String] $Query,
     
+       [ValidateNotNullOrEmpty()]
        [Parameter(Mandatory=$false,ParameterSetName="Query")]
     [String] $From
   )
@@ -1767,7 +1782,7 @@ Function Remove-ZipEntry {
       $isCollection=isCollection $InputObject
       if ($isCollection) 
       {
-       $Logger.Debug("InputObject is a collection")  #<%REMOVE%>
+        $Logger.Debug("InputObject is a collection")  #<%REMOVE%>
         if ($InputObject -is [System.Collections.IDictionary])
         {
           $Logger.Debug("Remove entries from a hashtable.")  #<%REMOVE%>
@@ -1786,7 +1801,6 @@ Function Remove-ZipEntry {
           $Logger.Debug("Remove [object[]] or [string[]]")  #<%REMOVE%>
            #Array covariance 
           $ZipFile.RemoveEntries( ($InputObject -as [System.Collections.Generic.ICollection[string]]))
-          #todo test avec tableau vide, le tableau ne doit pas être vide 
         }  
         else 
         { 
@@ -1797,33 +1811,41 @@ Function Remove-ZipEntry {
       { 
          $Logger.Debug("Remove by Name")  #<%REMOVE%> 
          $ZipFile.RemoveEntry($Name) > $null
-         # todo ArgumentException si inexiste, idem pour $null, ou ''  
       } 
-      #todo  RemoveEntry(ZipEntry) # ArgumentNullException 
       elseif ($isFrom) 
       { 
-        $Logger.Debug("Remove Selected Entries('$Query', '$From')")  #<%REMOVE%>
-         #call RemoveEntrie(Icollection[ZipEntry[]])
+        $Logger.Debug("Remove selected entries('$Query', '$From')")  #<%REMOVE%>
+         #Boucvle en interne sur RemoveEntrie(ICollection[ZipEntry[]])
         $ZipFile.RemoveSelectedEntries($Query, $From) > $null 
       }
       else
       { 
-        $Logger.Debug("Remove Selected Entries('$Query')")  #<%REMOVE%>
-         #call RemoveEntrie(Icollection[ZipEntry[]])
+        $Logger.Debug("Remove selected entries('$Query')")  #<%REMOVE%>
         $ZipFile.RemoveSelectedEntries($Query) > $null  
       }
 
-     } catch [System.ArgumentException] {
-      if ($Zipfile.ZipErrorAction -ne 'Throw')
-      { Write-Error -Exception $_.Exception }
-      else
-      { Throw $_}
+     } catch [System.ArgumentNullException],[System.ArgumentException] { 
+        if ($_.Exception -is [System.ArgumentException])
+        { $Message=$PsIonicMsgs.RemoveEntryError -F (TruncateString $InputObject),$ZipFile.Name }
+        else 
+        { $Message=$PsIonicMsgs.RemoveEntryNullError -F $ZipFile.Name }
+       if ($Zipfile.ZipErrorAction -ne 'Throw')
+       { 
+         Write-Error -Message $Message -Exception $_.Exception  
+       }
+       else
+       { 
+         throw (New-Object PsionicTools.PsionicInvalidValueException($ZipFile.Name,$Message,$_.Exception)) 
+       }
      } 
   }#process
   
   end {
     if ($ZipFile -ne $null)
-    { $ZipFile.Save() }
+    { 
+      $Logger.Debug("Enregistre l'archive)")  #<%REMOVE%>
+      $ZipFile.Save() 
+    }
   }#end
 }#Remove-ZipEntry 
 
@@ -2466,7 +2488,7 @@ Function ConvertTo-Sfx {
   	[Ionic.Zip.SelfExtractorSaveOptions] $SaveOptions =$Script:DefaultSfxConfiguration,
    
      [Parameter(Position=2, Mandatory=$false)]
-    [Ionic.Zip.ReadOptions]$ReadOptions=$null,
+    [Ionic.Zip.ReadOptions]$ReadOptions=$(New-Object Ionic.Zip.ReadOptions),
      
 	 [Parameter(Position=3, Mandatory=$false)]
     [string] $Comment,
@@ -2474,15 +2496,15 @@ Function ConvertTo-Sfx {
     [switch] $Passthru
   )
  begin {
-   if ($ReadOptions -eq $null)
-   { $ReadOptions = New-Object Ionic.Zip.ReadOptions}
-
    if ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
    { Throw (New-Object PSIonicTools.PsionicException($PsIonicMsgs.CommentMaxValue)) }
  }
 
  process {  
   try{
+      $Logger.Debug("Path=$Path") #<%REMOVE%>
+      $Logger.Debug("ReadOptions=$ReadOptions") #<%REMOVE%>  
+      $Logger.Debug("SaveOptions=$SaveOptions") #<%REMOVE%>    
       $zipFile = [Ionic.Zip.ZipFile]::Read($Path, $ReadOptions)
       $zipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
       $zipFile.Comment =$Comment
