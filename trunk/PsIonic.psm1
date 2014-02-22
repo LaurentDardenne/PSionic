@@ -1779,6 +1779,7 @@ Function Remove-ZipEntry {
     try {            
       $Logger.Debug("InputObject= $InputObject")  #<%REMOVE%>
       $Logger.Debug("InputObject type = $($InputObject.GetType())")  #<%REMOVE%>
+      if ($PSBoundParameters.ContainsKey('Name')) { $Logger.Debug("Name=$Name") }  #<%REMOVE%>       
       $isCollection=isCollection $InputObject
       if ($isCollection) 
       {
@@ -1809,13 +1810,26 @@ Function Remove-ZipEntry {
       }    
       elseif ($PsCmdlet.ParameterSetName -eq 'Name') 
       { 
-         $Logger.Debug("Remove by Name")  #<%REMOVE%> 
-         $ZipFile.RemoveEntry($Name) > $null
+         if ($PSBoundParameters.ContainsKey('Name')) 
+         {
+            $Logger.Debug("Remove entry by Name")  #<%REMOVE%>
+            $ZipFile.RemoveEntry($Name) > $null
+         }
+         elseif ($InputObject -is [ZipEntry]) 
+         {
+            $Logger.Debug("Remove entry by [ZipEntry]")  #<%REMOVE%>
+            $ZipFile.RemoveEntry($InputObject) > $null
+         }
+         else  
+         {
+            $Logger.Debug("Remove entry by [string]")  #<%REMOVE%>
+            $ZipFile.RemoveEntry($InputObject -as [string]) > $null
+         }
       } 
       elseif ($isFrom) 
       { 
         $Logger.Debug("Remove selected entries('$Query', '$From')")  #<%REMOVE%>
-         #Boucvle en interne sur RemoveEntrie(ICollection[ZipEntry[]])
+         #Boucle en interne sur RemoveEntrie(ICollection[ZipEntry[]])
         $ZipFile.RemoveSelectedEntries($Query, $From) > $null 
       }
       else
