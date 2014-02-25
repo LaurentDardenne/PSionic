@@ -584,6 +584,54 @@ function GetSFXname {
  $FileName -Replace '\.zip$',".exe"
 } #GetSFXname
 
+function NewSfxCmdline{
+#Construit selon le contenu de $OptionsSfx
+#une ligne d'appel pour le programme ConvertZipToSfx.exe 
+   param(
+  	 [Parameter(Position=0)]
+  	[string] $Path, 
+       
+  	 [Parameter(Position=1)]
+  	[Ionic.Zip.SelfExtractorSaveOptions] $OptionsSfx,
+   
+	 [Parameter(Position=2)]
+    [string] $Comment
+  )
+
+ $OptionsSfx.PSObject.Properties|
+   Foreach {
+     $Property=$_
+     $Name=$Property.Name
+     Write-debug "Traite = $Name"  
+     if ($Property.Value -ne $null -and (($Property.Value -is [boolean]) -or ($Property.Value -ne [string]::Empty) ))       
+     {
+       Switch ($Name)
+       {
+         'Quiet'                           {' -quiet';break}
+         'RemoveUnpackedFilesAfterExecute' {' -remove';break}
+         'AdditionalCompilerSwitches'      {" -compiler `"$($Property.Value)`"";break}
+         'NameOfProduct'                   {" -name `"$($Property.Value)`"";break}
+         'VersionOfProduct'                {" -version `"$($Property.Value)`"";break}
+         'PostExtractCommandLine'          {" -exeonunpack `"$($Property.Value)`"";break}
+         'DefaultExtractDirectory'         {" -extractdir `"$($Property.Value)`"";break}
+         'ExtractExistingFile'             {" -action `"$($Property.Value)`"";break}
+         'ProductName'                     {" -name `"$($Property.Value)`"";break}
+         'ProductVersion'                  {" -version `"$($Property.Value)`"";break}
+         'SfxExeWindowTitle'               {" -title `"$($Property.Value)`"";break}
+         'Flavor'                          { if ($Property.Value -eq 'ConsoleApplication') {" -Cmdline "};break} 
+         default                           {" -$Name `"$($Property.Value)`""}
+        }#switch
+     }#if
+     else
+     { write-debug "$Name :  Not bind or string empty." }
+   }#foreach
+   
+   if ($Comment -ne [string]::Empty) 
+   {" -comment `"$Comment`""}
+   
+   " `"$Path`""
+}#NewSfxCmdline
+
 Function IsValueSupported {
 #Utilisée dans un attribut ValidateScript
   [CmdletBinding(DefaultParameterSetName = "Extract")]
@@ -810,27 +858,6 @@ Function GetObjectByType {
   } 
  }#process
 } #GetObjectByType
-
-
-function SaveSFXFile {
-#Enregistre une archive autoextractible
- param (
-  $Zip,
-  $Options
- )
-  $Logger.Debug("Save sfx")  #<%REMOVE%>
-  $TargetName = GetSFXname $Zip.Name
-  $Logger.DebugFormat($PsIonicMsgs.ConvertingFile, $Zip.Name)  #<%REMOVE%>
-  Write-Verbose ($PsIonicMsgs.ConvertingFile -F $Zip.Name)
-  try{
-      $Zip.SaveSelfExtractor($TargetName, $Options)  
-  }
-  catch{
-     $Msg=$PsIonicMsgs.ErrorSFX -F $TargetName,$_
-     $Logger.Fatal($Msg,$_.Exception)  #<%REMOVE%>
-     Throw (New-Object PSIonicTools.PsionicException($Msg,$_.Exception))
-  }
-} #SaveSFXFile
 
 function SetZipErrorHandler {
 #S'abonne à l'event ZipError
@@ -1238,178 +1265,6 @@ Function Compress-ZipFile {
     }#End
 } #Compress-ZipFile
 
-#Duplication de code en 
-#lieu et place d'un proxy
-Function Compress-SfxFile {   
-# .ExternalHelp PsIonic-Help.xml          
-   [CmdletBinding(DefaultParameterSetName="Path")] 
-   [OutputType([System.IO.FileInfo])]  #Emet une instance de fichier .exe
-	param( 
-       	[parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="Path")]
-	  $Path,
-
-	    [parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="LiteralPath")]
-	  $LiteralPath,
-
-        [ValidateNotNullOrEmpty()]
-        [Parameter(Position=0, Mandatory=$true)]
-      [string] $OutputName,
-
-      [Ionic.Zip.SelfExtractorSaveOptions] $Options =$Script:DefaultSfxConfiguration,
-
-      [Ionic.Zip.ZipErrorAction] $ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw,
-
-      [string] $Comment,
-
-      [Ionic.Zip.EncryptionAlgorithm] $Encryption="None",
-
-      [String] $Password,
-       #Possible Security Exception
-      [string] $TempLocation,
-
-      [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
-
-        [Alias('CP')]
-      [string]$CodePageIdentifier=[String]::Empty,
-      
-      [string] $EntryPathRoot,
-      
-      [scriptblock]$SetLastModifiedProperty,
-      
-      [switch] $Passthru,
-      [switch] $NotTraverseReparsePoints, 
-      [switch] $SortEntries,
-        # N'est pas exclusif avec $WindowsTimeFormat 
-      [switch] $UnixTimeFormat,
-        # N'est pas exclusif avec $UnixTimeFormat
-      [switch] $WindowsTimeFormat,
-      [switch] $Recurse
-      )
- 
-	Begin{
-      [Switch] $isVerbose= $null
-      [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
-      $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>          
-          
-      if (-not $PSBoundParameters.ContainsKey('Comment')) 
-      { $Comment=[String]::Empty} #bug : parameters-initialization
-      elseif ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
-      { Throw (New-Object PSIonicTools.PsionicException($PsIonicMsgs.CommentMaxValue)) }
-
-      $psZipErrorHandler=$null
-      $PSVW=$null
-      if ($isverbose)
-      {
-          $Logger.Debug("Configure PSVerboseTextWriter") #<%REMOVE%>
-           #On récupère le contexte d'exécution de la session, pas celui du module. 
-          $Context=$PSCmdlet.SessionState.PSVariable.Get("ExecutionContext").Value            
-          $PSVW=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
-      }
-       #Validation du chemin qui doit référencer le FileSystem
-      $PSPathInfo=New-PsIonicPathInfo -Path $OutputName 
-      if (-not $PSPathInfo.IsaValidNameForTheFileSystem()) 
-      {
-         $Msg=$PsIonicMsgs.PathIsNotAFile -F ($PSPathInfo.GetFileName()) + "`r`n$($PSPathInfo.LastError)"
-         $Logger.Error($Msg) #<%REMOVE%>
-         Write-Error -Exception (New-Object PSIonicTools.PsionicException($Msg))  
-         continue 
-      }
-      $OutputName=$PSPathInfo.Win32PathName
-
-      $ZipFile= NewZipFile $OutputName $PSVW $Encoding
-      if ( $CodePageIdentifier -ne [String]::Empty)
-      { 
-        $ZipFile.AlternateEncoding = [System.Text.Encoding]::GetEncoding($CodePageIdentifier)
-        $ZipFile.AlternateEncodingUsage = [Ionic.Zip.ZipOption]::Always
-      }
-      
-       #Archive avec + de 0xffff entrées
-      $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
-     
-      if ($ZipErrorAction -eq $null)  #bug : parameters-initialization
-      {$ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw}      
-      $ZipFile.ZipErrorAction=$ZipErrorAction
-
-      SetZipErrorHandler $ZipFile
-      AddMethods $ZipFile
-        
-      $ZipFile.Name=$OutputName
-      $ZipFile.Comment=$Comment
-      $ZipFile.SortEntriesBeforeSaving=$SortEntries
-      if ($PSBoundParameters.ContainsKey('TempLocation'))
-      { $ZipFile.TempFileFolder=$TempLocation } 
-
-      $ZipFile.EmitTimesInUnixFormatWhenSaving=$UnixTimeFormat
-       #Par défaut sauvegarde au format de date Windows
-       #WindowsTimeFormat existe pour porter la cas WindowsTimeFormat:$False 
-      if ( -not $PSBoundParameters.ContainsKey('UnixTimeFormat') -and -not $PSBoundParameters.ContainsKey('WindowsTimeFormat') )
-      { $ZipFile.EmitTimesInWindowsFormatWhenSaving=$true }
-      else
-      { $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat }
-      
-      if ($Encryption -eq $null)  #bug : parameters-initialization
-      { $Encryption="None"}            
-      if (-not [string]::IsNullOrEmpty($Password) -or ($Encryption -ne "None"))
-      { SetZipFileEncryption $ZipFile $Encryption $Password }
-
-       #Pas de delayed script block
-       #Ces paramètres seront tjr lié une seule fois
-      $CZFParam=@{}
-      $CZFParam.ZipFile=$ZipFile
-      if ( $PSBoundParameters.ContainsKey('EntryPathRoot') )
-      { $CZFParam.EntryPathRoot=$EntryPathRoot }   
-       
-     #Les autres options sont renseignées avec les valeurs par défaut
-	} 
-
-	Process{  
-     try{ 
-      $isLiteral=$PsCmdlet.ParameterSetName -eq "LiteralPath"
-      if ($isLiteral)
-      {
-        $Logger.Debug("Compress-SfxFile Literalpath=$LiteralPath")  #<%REMOVE%>
-        GetObjectByType $LiteralPath -Recurse:$Recurse -isLiteral|
-         Add-ZipEntry @CZFParam
-      }
-      else
-      {
-        $Logger.Debug("Compress-SfxFile Path=$Path")  #<%REMOVE%>
-        GetObjectByType $Path -Recurse:$Recurse|
-         Add-ZipEntry @CZFParam
-      }
-     } catch [System.ArgumentException] {
-        Write-Error -Exception $_.Exception
-     }
-	} #Process  
-    
-    End {
-      try {
-        if ($SetLastModifiedProperty -ne $null)
-        {
-           $Logger.Debug("Call SetLastModifiedProperty scriptblock")  #<%REMOVE%>
-            #on s'assure de référencer la variable ZipFile de la fonction
-           $SbBounded=$MyInvocation.MyCommand.ScriptBlock.Module.NewBoundScriptBlock($SetLastModifiedProperty)
-            #Le scriptblock doit itérer sur chaque entrée de l'archive
-           &$SbBounded 
-        }
-
-        $Logger.Debug("Save sfx zip")  #<%REMOVE%>
-        SaveSFXFile $ZipFile $Options 
-      } 
-      catch [System.IO.IOException] 
-      {
-        $Logger.Fatal("Save Sfx",$_.Exception) #<%REMOVE%>
-        DisposeZip
-        Throw (New-Object PSIonicTools.PsionicException($_,$_.Exception))
-      }
-      
-      if ($Passthru)
-      { Get-Item (GetSFXname $ZipFile.Name) } # Renvoi un fichier .exe
-      else  
-      { DisposeZip }
-    }#End
-} #Compress-SfxFile
-
 Function AddEntry { 
    param (
        [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
@@ -1448,10 +1303,14 @@ Function AddEntry {
       #  public ZipEntry AddEntry(string entryName, string content)  
       # public ZipEntry AddEntry(string entryName, byte[] byteContent)
     $params = @($KeyName, ($InputObject -as [byte[]]) )
+    $Logger.Debug("KeyName=$KeyName") #<%REMOVE%>
+    $Logger.Debug("InputObject=$InputObject") #<%REMOVE%>
+    $Logger.Debug("UpdateEntryMethod='$UpdateEntryMethod'") #<%REMOVE%>
+    $Logger.Debug("AddEntryMethod = '$AddEntryMethod'") #<%REMOVE%>
     if ($CurrentOverwrite)
-    { $ZipEntry=$private:UpdateEntryMethod.Invoke($ZipFile, $params) }
+    { $ZipEntry=$UpdateEntryMethod.Invoke($ZipFile, $params) }
     else
-    { $ZipEntry=$private:AddEntryMethod.Invoke($ZipFile, $params)  }
+    { $ZipEntry=$AddEntryMethod.Invoke($ZipFile, $params)  }
     SetComment $ZipEntry '[Byte[]]' $Comment -Overwrite:$CurrentOverwrite  
     $ZipEntry                
    }#AddOrUpdateByteArray
@@ -1496,10 +1355,10 @@ Function AddEntry {
    }#AddOrUpdateZipEntry
   
    [type[]] $private:ParameterTypesOfUpdateEntryMethod=[string],[byte[]]
-   $private:UpdateEntryMethod=[Ionic.Zip.ZipFile].GetMethod("UpdateEntry",$private:ParameterTypesOfUpdateEntryMethod)
+   $UpdateEntryMethod=[Ionic.Zip.ZipFile].GetMethod("UpdateEntry",$private:ParameterTypesOfUpdateEntryMethod)
 
    [type[]] $private:ParameterTypesOfAddEntryMethod=[string],[byte[]]
-   $private:AddEntryMethod=[Ionic.Zip.ZipFile].GetMethod("AddEntry",$private:ParameterTypesOfAddEntryMethod)
+   $AddEntryMethod=[Ionic.Zip.ZipFile].GetMethod("AddEntry",$private:ParameterTypesOfAddEntryMethod)
   
    $isEntryPathRoot=$PSBoundParameters.ContainsKey('EntryPathRoot')
    $Logger.Debug("is EntryPathRoot bound =$isEntryPathRoot") #<%REMOVE%>
@@ -1749,7 +1608,7 @@ Function Remove-ZipEntry {
   [OutputType([PSObject])] 
   param (
       [ValidateNotNullOrEmpty()]
-      [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
+      [Parameter(Mandatory=$true,ValueFromPipeline = $true,ParameterSetName="Name")]
     $InputObject,
      
       [ValidateNotNull()]
@@ -1776,58 +1635,65 @@ Function Remove-ZipEntry {
    }
 
    process {
-    try {            
-      $Logger.Debug("InputObject= $InputObject")  #<%REMOVE%>
-      $Logger.Debug("InputObject type = $($InputObject.GetType())")  #<%REMOVE%>
-      if ($PSBoundParameters.ContainsKey('Name')) { $Logger.Debug("Name=$Name") }  #<%REMOVE%>       
-      $isCollection=isCollection $InputObject
-      if ($isCollection) 
-      {
-        $Logger.Debug("InputObject is a collection")  #<%REMOVE%>
-        if ($InputObject -is [System.Collections.IDictionary])
+    try { 
+     if ($PsCmdlet.ParameterSetName -eq 'Name')
+     {            
+#<DEFINE %DEBUG%>
+       $Logger.Debug("InputObject= $InputObject") 
+       $Logger.Debug("InputObject type = $($InputObject.GetType())")
+       if ($PSBoundParameters.ContainsKey('Name')) 
+        { $Logger.Debug("Name=$Name") } 
+#<UNDEF %DEBUG%>   
+        $isCollection=isCollection $InputObject
+        if ($isCollection) 
         {
-          $Logger.Debug("Remove entries from a hashtable.")  #<%REMOVE%>
-          $InputObject.GetEnumerator()|
-            Foreach {
-             $ZipFile.RemoveEntry($_.Key) 
-            }
+          $Logger.Debug("InputObject is a collection")  #<%REMOVE%>
+          if ($InputObject -is [System.Collections.IDictionary])
+          {
+            $Logger.Debug("Remove entries from a hashtable.")  #<%REMOVE%>
+            $InputObject.GetEnumerator()|
+              Foreach {
+               $ZipFile.RemoveEntry($_.Key) 
+              }
+          }
+          elseif ($InputObject -is [ZipEntry[]])  
+          { 
+            $Logger.Debug("Remove [ZipEntry[]]")  #<%REMOVE%>
+            $ZipFile.RemoveEntries( ($InputObject -as [System.Collections.Generic.ICollection[ZipEntry]])) 
+          }
+          elseif ( ($InputObject -is [Object[]]) -or $InputObject -is [String[]])
+          { 
+            $Logger.Debug("Remove [object[]] or [string[]]")  #<%REMOVE%>
+             #Array covariance 
+            $ZipFile.RemoveEntries( ($InputObject -as [System.Collections.Generic.ICollection[string]]))
+          }  
+          else 
+          { 
+            Write-Error ($PsIonicMsgs.TypeNotSupported -F 'Inputobject',$InputObject.GetType().FullName) 
+          } 
         }
-        elseif ($InputObject -is [ZipEntry[]])  
-        { 
-          $Logger.Debug("Remove [ZipEntry[]]")  #<%REMOVE%>
-          $ZipFile.RemoveEntries( ($InputObject -as [System.Collections.Generic.ICollection[ZipEntry]])) 
+        elseif ($PSBoundParameters.ContainsKey('Name')) 
+        {
+           #todo si $input est un directory ajout /
+          $Logger.Debug("Remove entry by Name")  #<%REMOVE%>
+          $ZipFile.RemoveEntry($Name) > $null
         }
-        elseif ( ($InputObject -is [Object[]]) -or $InputObject -is [String[]])
-        { 
-          $Logger.Debug("Remove [object[]] or [string[]]")  #<%REMOVE%>
-           #Array covariance 
-          $ZipFile.RemoveEntries( ($InputObject -as [System.Collections.Generic.ICollection[string]]))
-        }  
-        else 
-        { 
-          Write-Error ($PsIonicMsgs.TypeNotSupported -F 'Inputobject',$InputObject.GetType().FullName) 
-        } 
-      }    
-      elseif ($PsCmdlet.ParameterSetName -eq 'Name') 
-      { 
-         if ($PSBoundParameters.ContainsKey('Name')) 
-         {
-            $Logger.Debug("Remove entry by Name")  #<%REMOVE%>
-            $ZipFile.RemoveEntry($Name) > $null
-         }
-         elseif ($InputObject -is [ZipEntry]) 
-         {
-            $Logger.Debug("Remove entry by [ZipEntry]")  #<%REMOVE%>
-            $ZipFile.RemoveEntry($InputObject) > $null
-         }
-         else  
-         {
-            $Logger.Debug("Remove entry by [string]")  #<%REMOVE%>
-            $ZipFile.RemoveEntry($InputObject -as [string]) > $null
-         }
-      } 
+        elseif ($InputObject -is [ZipEntry]) 
+        {
+          $Logger.Debug("Remove entry by [ZipEntry]")  #<%REMOVE%>
+          $ZipFile.RemoveEntry($InputObject) > $null
+        }
+        else  
+        {
+          $Logger.Debug("Remove entry by [string]")  #<%REMOVE%>
+          $ZipFile.RemoveEntry($InputObject -as [string]) > $null
+        }
+      }      
       elseif ($isFrom) 
       { 
+        #todo
+        # read selected + Boucle sur RemoveEntrie(ICollection[ZipEntry[]])
+        #+ verbose  
         $Logger.Debug("Remove selected entries('$Query', '$From')")  #<%REMOVE%>
          #Boucle en interne sur RemoveEntrie(ICollection[ZipEntry[]])
         $ZipFile.RemoveSelectedEntries($Query, $From) > $null 
@@ -1861,7 +1727,7 @@ Function Remove-ZipEntry {
       $ZipFile.Save() 
     }
   }#end
-}#Remove-ZipEntry 
+}#Remove-ZipEntry
 
 Function GetArchivePath {
 # Récupère une string et renvoie, si possible, un nom de chemin complet.
@@ -2508,7 +2374,8 @@ Function ConvertTo-Sfx {
     [string] $Comment,
     
     [switch] $Passthru
-  )
+  )     
+#       
  begin {
    if ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
    { Throw (New-Object PSIonicTools.PsionicException($PsIonicMsgs.CommentMaxValue)) }
@@ -2518,16 +2385,21 @@ Function ConvertTo-Sfx {
   try{
       $Logger.Debug("Path=$Path") #<%REMOVE%>
       $Logger.Debug("ReadOptions=$ReadOptions") #<%REMOVE%>  
-      $Logger.Debug("SaveOptions=$SaveOptions") #<%REMOVE%>    
-      $zipFile = [Ionic.Zip.ZipFile]::Read($Path, $ReadOptions)
-      $zipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
-      $zipFile.Comment =$Comment
-      SaveSFXFile $ZipFile $SaveOptions 
+      $Logger.Debug("SaveOptions=$SaveOptions") #<%REMOVE%>
+      
+      $Parameters=NewSfxCmdline $Path  $SaveOptions $Comment
+      $code=@"
+&'$psScriptRoot\ConvertZipToSfx.exe' $Parameters
+"@    
+      $Logger.Debug("Invoke code : $Code") #<%REMOVE%>
+      #todo search Test-RedirectedOutput
+      # validation du code retour + usage de stdout dans le .exe ?
+      Invoke-Expression $code
       if ($Passthru)
-      { Get-Item (GetSFXname $ZipFile.Name)} # renvoi un fichier .exe      
+      { Get-Item (GetSFXname $Path)} # renvoi un objet fichier      
   }
   finally{
-      DisposeZip
+      Write-debug "todo"
   }
  }#process
 }#ConvertTo-Sfx
@@ -2805,7 +2677,6 @@ Set-Alias -name gzfo    -value Get-PsIonicSfxOptions
 Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
                                                         New-PsIonicPathInfo, #<%REMOVE%> test 
                                                         ConvertTo-EntryRootPath, #<%REMOVE%> test
-                                                        Compress-SfxFile,
                                                         ConvertTo-Sfx,
                                                         Add-ZipEntry,
                                                         Update-ZipEntry,
