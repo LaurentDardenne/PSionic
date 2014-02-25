@@ -12,19 +12,17 @@ L'usage de ce paramètre nécessite de préciser le paramètre -Query, sinon une
 "@
  
 	RemoveZipEntryParametersInputObject = @"
-todo  en cours de dev
 Contenu associé à une entrée d'archive. Les types attendus sont : 
-   - Un ou des objets fichiers ou répertoires,
-   - un nom ou des noms de fichier ou de répertoire,
-   - une chaîne de caractères,
-   - ou un tableau d'octets.
-Tous les autres types d'objet seront transformés en chaîne de caractères via la méthode ToString().   
+   - Un ou des objets de type fichiers ou de type répertoires,
+   - une chaîne de caractères référençant une entrée, si celle-ci référence un nom de répertoire, elle doit se terminer par le caractére '/',
+   - un objet de type ZipEntry,
+   - un tableau d'objet de type ZipEntry,
+   - un tableau de String ou d'Object, dans ce dernier cas son contenu sera transformé en String.
+Tous les autres type de tableaux, autres que ceux indiqué ci-dessus, déclencheront une erreur.
+Pour tous les autres types d'objet, ils seront transformés convertis en chaîne de caractères.   
 "@
 	RemoveZipEntryParametersName = @"
-todo  en cours de dev
 Chaque entrée d'archive est associèe à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme nom d'entrée à la racine de l'archive.
-.
-Pour les chaînes de caractères ou les tableaux d'octets, vous devez préciser un nom d'entrée. L'usage du paramètre -EntryPathRoot n'influencera pas ce nommage.
 "@	
 	RemoveZipEntryParametersQuery = @"
 Précise un critère de recherche pour les données à supprimer de l'archive Zip.
@@ -34,8 +32,23 @@ Attention, il n’y a pas de contrôle de cohérence sur le contenu de la query,
 	RemoveZipEntryParametersZipFile = 'Archive cible dans laquelle on supprime la ou les entrées précisées. Ce paramètre attend un objet de type ZipFile et pas un nom de fichier.'
 	RemoveZipEntryInputsDescription1 = ''
 	RemoveZipEntryOutputsDescriptionSystemManagementAutomationPSObject = ''
-	RemoveZipEntryNotes = 'todo  en cours de dev'
-	RemoveZipEntryExamplesRemarks1 = 'todo  en cours de dev'
+	RemoveZipEntryNotes = ''
+	RemoveZipEntryExamplesRemarks1 = 'Ces instructions suppriment, si elle existe, l''entrée ''Test.ps1'' à la racine du fichier Test.zip'
+    RemoveZipEntryExamplesRemarks2 = 'Ces instructions suppriment, si elle existe, l''entrée ''Test.ps1'' à la racine du fichier Test.zip'
+    RemoveZipEntryExamplesRemarks3 = 'Ces instructions suppriment, si elles existent, les entrées ''Test.ps1'' et ''Setup.ps1'', contenues dans le tableau de chaîne de caractères $Tab, à la racine du fichier Test.zip'
+    RemoveZipEntryExamplesRemarks4 = @"
+ Ces instructions suppriment à la racine du fichier Test.zip et si elles existent :
+ - l'entrée 'Test.ps1',
+ - toutes les entrées se terminant par '.XML' et
+ - tous les noms d'entrée contenus dans le fichier 'C:\Temp\ListeFileName.txt'.
+"@
+    RemoveZipEntryExamplesRemarks5 =@"
+Ces instructions, à l'aide d'une requête, suppriment toutes les entrées se terminant par '.TXT' à la racine du fichier Test.zip'    
+"@
+    RemoveZipEntryExamplesRemarks6 =@"
+Ces instructions, à l'aide d'une requête, suppriment toutes les entrées se terminant par '.TXT' dans le répertoire 'Doc/' du fichier Test.zip'    
+"@ 
+    
 }
 
 
