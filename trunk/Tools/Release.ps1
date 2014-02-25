@@ -27,6 +27,8 @@ $VerbosePreference='Continue'
 # PSIonicTools.dll est compilé d'aprés la version PS courante
    
    Copy "$PsIonicBin\Debug\Ionic.Zip.pdb" "$PsIonicLivraison\PsIonic"
+    #VisualStudio n'est pas un prérequis au projet 
+   Copy "$PsIonicTrunk\ConvertZipToSfx.exe" "$PsIonicLivraison\PsIonic"
 
 #Doc xml localisée
    Copy "$PsIonicTrunk\en-US\PsIonicLocalizedData.psd1" "$PsIonicLivraison\PsIonic\en-US\PsIonicLocalizedData.psd1" 
