@@ -24,6 +24,6 @@
     Remove=$false #switch parameter
   }
  New-ZipSfxOptions @SfxOptions  -Cmdline # -Cmdline or -GUI
-}#Get-DefaultSfxConfiguration
+}#Get-PsionicDefaultSfxConfiguration
 
 
