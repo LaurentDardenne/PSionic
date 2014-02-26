@@ -185,7 +185,7 @@ $T|Compress-ZipFile -OutputName C:\Temp\Archive.zip -ZipErrorAction Skip -Split 
 		}
 	)
 	links = @(
-		@{ text = 'Test online'; URI = 'http://psionic.codeplex.com/wikipage?title=Compress-ZipFile_FR' }
+		@{ text = ''; URI = '' }
 	)
 }
 
