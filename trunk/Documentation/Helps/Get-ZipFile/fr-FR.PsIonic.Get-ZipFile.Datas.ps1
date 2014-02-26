@@ -8,7 +8,18 @@ L'objet archive renvoyé est verrouillé tant que vous n'appellez pas sa méthod
 "@
 	GetZipFileSetsManualOption = ''
 	GetZipFileSetsReadOption = ''
-	GetZipFileParametersEncoding = 'Type d''encodage de l''archive. L''utilisation de la valeur par défaut est recommandée.'
+	GetZipFileParametersEncoding = @"
+Type d'encodage de l'archive. Les valeurs possibles sont :
+-ASCII	          : encodage pour le jeu de caractères ASCII (7 bits).
+-BigEndianUnicode : encodage pour le format UTF-16 qui utilise l'ordre d'octet avec primauté des octets de poids fort (big-endian).
+-Default	      : encodage pour la page de codes ANSI actuelle du système d'exploitation.
+-Unicode	      : encodage pour le format UTF-16 avec primauté des octets de poids faible (little-endian).
+-UTF32	          : encodage pour le format UTF-32 avec primauté des octets de poids faible (little-endian).
+-UTF7	          : encodage pour le format UTF-7.
+-UTF8	          : encodage pour le format UTF-8.
+.
+A moins d'être assuré que celui sélectionné corresponde à celui utilisé lors de la compression de l'archive, l'utilisation de la valeur par défaut ('DefaultEncoding') est recommandé, 
+"@
 	GetZipFileParametersEncryption = 'Type de cryptage utilisé lors de l''opération de compression. Nécessite de préciser un mot de passe (cf. le paramètre Password).'
 	GetZipFileParametersList = @"
 Obtient les entrées contenues dans le catalogue de l'archive. Les objets renvoyés sont des objets personnalisés dont le nom de type est PSZipEntry.
@@ -21,7 +32,7 @@ Lors de l'ouverture d'une archive zip de grande taille, vous pouvez choisir d'af
 Cette ID permet de distinguer la barre de progression interne des autres. Utilisez ce paramètre lorsque vous créez plus d'une barre de progression.
 "@
 	GetZipFileParametersPath = 'Nom du ou des fichiers ZIP à lire. Vous pouvez préciser des noms de fichier comportant des jokers.'
-	GetZipFileParametersOptions = 'Options utilisées lors de la création d''un archive auto extractible (cf. New-ZipSfxOptions).'
+	GetZipFileParametersOptions = 'Options utilisées lors de la création d''une archive auto extractible (cf. New-ZipSfxOptions).'
 	GetZipFileParametersPassword = 'Précise le mot de passe nécessaire à la lecture d''une archive encryptée.'
 	GetZipFileParametersReadOptions = 'Objet d''option de lecture créé à l''aide de la fonction New-ReadOptions.'
 	GetZipFileParametersSortEntries = 'Tri les entrées avant de les envoyer dans le pipeline.'

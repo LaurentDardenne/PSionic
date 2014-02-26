@@ -4,9 +4,23 @@ $Datas = @{
 	CompressZipFileDescription = 'Le cmdlet Compress-ZipFile compresse des fichiers et/ou des répertoires dans une archive au format Zip.'
 	CompressZipFileSetsLiteralPath = ''
 	CompressZipFileSetsPath = ''
-	CompressZipFileParametersCodePageIdentifier = 'Nom de la page de code utilisée pour le nom de fichier. L''utilisation de la valeur par défaut est recommandée.'
+	CompressZipFileParametersCodePageIdentifier = @"
+Nom de la page de code utilisée pour le nom de fichier. 
+L'utilisation de la valeur par défaut ('IBM437') est recommandée.
+"@
 	CompressZipFileParametersComment = 'Commentaire associé à l''archive.'
-	CompressZipFileParametersEncoding = 'Type d''encodage de l''archive. L''utilisation de la valeur par défaut est recommandé.'
+	CompressZipFileParametersEncoding = @"
+Type d'encodage de l'archive. Les valeurs possibles sont :
+-ASCII	          : encodage pour le jeu de caractères ASCII (7 bits).
+-BigEndianUnicode : encodage pour le format UTF-16 qui utilise l'ordre d'octet avec primauté des octets de poids fort (big-endian).
+-Default	      : encodage pour la page de codes ANSI actuelle du système d'exploitation.
+-Unicode	      : encodage pour le format UTF-16 avec primauté des octets de poids faible (little-endian).
+-UTF32	          : encodage pour le format UTF-32 avec primauté des octets de poids faible (little-endian).
+-UTF7	          : encodage pour le format UTF-7.
+-UTF8	          : encodage pour le format UTF-8.
+.
+Pour une meilleure portabilité, l'utilisation de la valeur par défaut ('DefaultEncoding') est recommandé.
+"@
 	CompressZipFileParametersEncryption = @"
 Type de cryptage utilisé lors de l'opération de compression. Nécessite de préciser un mot de passe (cf. le paramètre Password).
 .
@@ -78,7 +92,7 @@ Evitez d'utiliser la valeur 'Retry', car celle-ci pourrait tenter indéfiniment 
 	CompressZipFileInputsDescription1 = 'System.String,System.IO.FileInfo'
 	CompressZipFileOutputsDescriptionIonicZipZipFile = 'Ionic.Zip.ZipFile'
 	CompressZipFileNotes = @"
-Selon le contenu, votre archive peut être compressée en 64 bits, pour déterminer si l‘archive utilise les extensions Zip64 consultez le propriété ''OutputUsedZip64'' de l''archive.
+Selon le contenu, votre archive peut être compressée en 64 bits, pour déterminer si l‘archive utilise les extensions Zip64 consultez la propriété ''OutputUsedZip64'' de l''archive.
 Aucun contrôle n'est effectué sur l'espace disponible lors de la création de l'archive.
 Si le catalogue est vide et qu'il n'y a pas eu d'exception, le fichier .Zip est tout de même créé.
 "@ 

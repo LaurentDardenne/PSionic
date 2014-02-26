@@ -24,7 +24,16 @@ Celles-ci seront substituées lors de l'exécution de l’archive auto extractib
 	NewZipSfxOptionsParametersWindowTitle = 'Titre de la Winform.'
 	NewZipSfxOptionsInputsDescription1 = 'Aucune'
 	NewZipSfxOptionsOutputsDescriptionIonicZipSelfExtractorSaveOptions = 'Ionic.Zip.SelfExtractorSaveOptions'
-	NewZipSfxOptionsNotes = 'Pour les paramètres de type string tous les caractères espaces sont supprimés en début ou en fin de chaîne.'
+	NewZipSfxOptionsNotes = @"
+Pour tous les paramètres de type string renseignées, les caractères espaces sont supprimés en début ou en fin de chaîne.
+.
+Voici la liste des propriétées ayant des valeurs par défaut :
+Flavor                          : ConsoleApplication
+Quiet                           : False
+ExtractExistingFile             : Throw
+RemoveUnpackedFilesAfterExecute : False
+FileVersion                     : 1.0.0.0 
+"@
 	NewZipSfxOptionsExamplesRemarks1 = 'Cette instruction crée une configuration SFX avec les valeurs par défaut sauf pour le champ Copyright.'
 	NewZipSfxOptionsExamplesRemarks2 = 'Cette instruction crée une configuration SFX et l''affecte à la configuration par défaut.'
 }

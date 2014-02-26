@@ -11,7 +11,7 @@ La valeur de ce paramètre doit référencer un répertoire existant.
 Pour éviter les collisions de nom d'entrée lors de la compression récursive d'une arborescence vous devrez utiliser ce paramètre.
 Celui-ci permet de construire le nom de l'entrée relativement au nom de répertoire spécifié.
 . 
-Par exemple en précisant 'C:\Temp\Backup', lors de la compression récursive de 'C:\Temp\Backup' le traitement de construction du nom d'entrée retranchera 'C:\Temp\Backup' à chaque nom de fichier reçus.
+Par exemple en précisant 'C:\Temp\Backup', lors de la compression récursive de 'C:\Temp\Backup' le traitement de construction du nom d'entrée retranchera 'C:\Temp\Backup' à chaque nom de fichier reçu.
 Donc, pour les fichiers 'C:\Temp\Backup\File1.ps1' et 'C:\Temp\Backup\Projet\File1.ps1' les entrées créées dans le catalogue seront respectivement:
 File1.ps1
 Projet/File.ps1   
@@ -19,9 +19,11 @@ Projet/File.ps1
 De préciser un nom de répertoire différent de celui d'où débute l'archivage déclenchera une erreur et stoppera l'archivage du path en cours.
 "@
 	AddZipEntryParametersName = @"
-Chaque entrée d'archive est associèe à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme nom d'entrée à la racine de l'archive.
+Chaque entrée d'archive est associèe à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme nom d'entrées à la racine de l'archive.
 .
 Pour les chaînes de caractères ou les tableaux d'octets, vous devez préciser un nom d'entrée. L'usage du paramètre -EntryPathRoot n'influencera pas ce nommage.
+.
+Lors d'un appel à la fonction Expand-ZipFile les entrées de type string et tableau seront décompressées tout comme les fichiers.
 "@	
     AddZipEntryParametersInputObject = @"
 Contenu associé à une entrée d'archive. Les types attendus sont : 
@@ -29,6 +31,7 @@ Contenu associé à une entrée d'archive. Les types attendus sont :
    - un nom ou des noms de fichier ou de répertoire,
    - une chaîne de caractères,
    - ou un tableau d'octets.
+.
 Tous les autres types d'objet seront transformés en chaîne de caractères via la méthode ToString().   
 "@
     AddZipEntryParametersPassthru = 'Une fois l''entrée ajoutée au catalogue de l''archive, elle est émise dans le pipeline.'
