@@ -21,7 +21,7 @@ Type d'encodage de l'archive. Les valeurs possibles sont :
 -UTF8	          : encodage pour le format UTF-8.
 .
 Pour une meilleure portabilité, l'utilisation de la valeur par défaut ('DefaultEncoding') est recommandé.    
- "@
+"@
 	ExpandZipEntryParametersExtractAction = 'Précise le comportement à adopter lorsque des données sont déjà présentes dans le répertoire de destination.'
 	ExpandZipEntryParametersName = 'Nom des entrées à extraire.'
 	ExpandZipEntryParametersPassword =  'Précise le mot de passe nécessaire à l''extraction des entrées contenues dans une archive encryptée.'
