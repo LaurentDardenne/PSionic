@@ -35,7 +35,6 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
    $Save=@{
 		ExeOnUnpack="Powershell -noprofile -File .\PsIonicSetup.ps1";  
         Description="Setup for the PsIonic Powershell module"; 
-		ExtractExistingFile=[Ionic.Zip.ExtractExistingFileAction]::OverwriteSilently;
         NameOfProduct="PSIonic";
         VersionOfProduct="1.0.0";
         Copyright='This module is free for non-commercial purposes. Ce module est libre de droits pour tout usages non commercial'

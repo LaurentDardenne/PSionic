@@ -614,12 +614,12 @@ function NewSfxCmdline{
          'VersionOfProduct'                {" -version `"$($Property.Value)`"";break}
          'PostExtractCommandLine'          {" -exeonunpack `"$($Property.Value)`"";break}
          'DefaultExtractDirectory'         {" -extractdir `"$($Property.Value)`"";break}
-         'ExtractExistingFile'             {" -action `"$($Property.Value)`"";break}
          'ProductName'                     {" -name `"$($Property.Value)`"";break}
          'ProductVersion'                  {" -version `"$($Property.Value)`"";break}
          'SfxExeWindowTitle'               {" -title `"$($Property.Value)`"";break}
-         'Flavor'                          { if ($Property.Value -eq 'ConsoleApplication') {" -Cmdline "};break} 
-         default                           {" -$Name `"$($Property.Value)`""}
+         'Flavor'                          { if ($Property.Value -eq 'ConsoleApplication') {" -Cmdline "};break}
+          #ExtractExistingFile doit tjr être à Throw  
+         default                           { if ($Name -ne 'ExtractExistingFile' ) {" -$Name `"$($Property.Value)`""} }
         }#switch
      }#if
      else
@@ -1632,6 +1632,9 @@ Function Remove-ZipEntry {
     $isQuery=$PSBoundParameters.ContainsKey('Query')   
     if ($isFrom -and -Not $isQuery)
      { throw  (New-Object PSIonicTools.PsionicException($PsIonicMsgs.ParameterFromNeedQueryParameter)) }
+     #Verbose du Zipfile, pas de la fonction
+    $isVerbose=$ZipFile.StatusMessageTextWriter -ne $null
+    $Logger.Debug("isVerbose=$isVerbose") #<%REMOVE%> 
    }
 
    process {
@@ -1674,7 +1677,6 @@ Function Remove-ZipEntry {
         }
         elseif ($PSBoundParameters.ContainsKey('Name')) 
         {
-           #todo si $input est un directory ajout /
           $Logger.Debug("Remove entry by Name")  #<%REMOVE%>
           $ZipFile.RemoveEntry($Name) > $null
         }
@@ -1689,21 +1691,29 @@ Function Remove-ZipEntry {
           $ZipFile.RemoveEntry($InputObject -as [string]) > $null
         }
       }      
-      elseif ($isFrom) 
+      else 
       { 
-        #todo
-        # read selected + Boucle sur RemoveEntrie(ICollection[ZipEntry[]])
-        #+ verbose  
         $Logger.Debug("Remove selected entries('$Query', '$From')")  #<%REMOVE%>
-         #Boucle en interne sur RemoveEntrie(ICollection[ZipEntry[]])
-        $ZipFile.RemoveSelectedEntries($Query, $From) > $null 
+         #On parcourt la sélection afin d'afficher le verbose
+         #ce que ne fait pas la méthode RemoveSelectedEntries
+        if ( $isFrom) 
+        { $Selection = $ZipFile.SelectEntries($Query, $From) }
+        else
+        { $Selection = $ZipFile.SelectEntries($Query) }
+        $Logger.Debug("Entries to remove : $($Selection.count)")  #<%REMOVE%>
+        foreach ($Ze in $Selection)
+        {
+          try {
+            $ZipFile.RemoveEntry($Ze)
+            $Logger.Debug("Removing '$($Ze.FileName)'")  #<%REMOVE%>
+            if ($isVerbose) 
+            { $ZipFile.StatusMessageTextWriter.WriteLine("removing '{0}'...", $Ze.FileName)}
+          } catch [ArgumentNullException] {
+              #Selon ce contexte, ne devrait pas avoir lieu.
+             Write-Error "Error with th key $($Ze.FileName)" 
+          }
+        }         
       }
-      else
-      { 
-        $Logger.Debug("Remove selected entries('$Query')")  #<%REMOVE%>
-        $ZipFile.RemoveSelectedEntries($Query) > $null  
-      }
-
      } catch [System.ArgumentNullException],[System.ArgumentException] { 
         if ($_.Exception -is [System.ArgumentException])
         { $Message=$PsIonicMsgs.RemoveEntryError -F (TruncateString $InputObject),$ZipFile.Name }
@@ -1719,14 +1729,6 @@ Function Remove-ZipEntry {
        }
      } 
   }#process
-  
-  end {
-    if ($ZipFile -ne $null)
-    { 
-      $Logger.Debug("Enregistre l'archive)")  #<%REMOVE%>
-      $ZipFile.Save() 
-    }
-  }#end
 }#Remove-ZipEntry
 
 Function GetArchivePath {
@@ -2108,7 +2110,7 @@ Function Expand-ZipFile {
            Write-Error $Msg
            continue 
         }
-        $Logger.DebugFormat("validation de OutputPath=$($PSPathInfo.Win32PathName)")
+        $Logger.DebugFormat("validation de OutputPath=$($PSPathInfo.Win32PathName)") #<%REMOVE%>
         $OutputPath=$PSPathInfo.Win32PathName
         if ($Create)
         {
@@ -2382,25 +2384,18 @@ Function ConvertTo-Sfx {
  }
 
  process {  
-  try{
-      $Logger.Debug("Path=$Path") #<%REMOVE%>
-      $Logger.Debug("ReadOptions=$ReadOptions") #<%REMOVE%>  
-      $Logger.Debug("SaveOptions=$SaveOptions") #<%REMOVE%>
-      
-      $Parameters=NewSfxCmdline $Path  $SaveOptions $Comment
-      $code=@"
+    $Logger.Debug("Path=$Path") #<%REMOVE%>
+    
+    $Parameters=NewSfxCmdline $Path  $SaveOptions $Comment
+    $code=@"
 &'$psScriptRoot\ConvertZipToSfx.exe' $Parameters
 "@    
-      $Logger.Debug("Invoke code : $Code") #<%REMOVE%>
-      #todo search Test-RedirectedOutput
-      # validation du code retour + usage de stdout dans le .exe ?
-      Invoke-Expression $code
-      if ($Passthru)
-      { Get-Item (GetSFXname $Path)} # renvoi un objet fichier      
-  }
-  finally{
-      Write-debug "todo"
-  }
+    $Logger.Debug("Invoke code : $Code") #<%REMOVE%>
+    #todo search Test-RedirectedOutput
+    # validation du code retour + usage de stdout dans le .exe ?
+    Invoke-Expression $code
+    if ($Passthru)
+    { Get-Item (GetSFXname $Path)} # renvoi un objet fichier      
  }#process
 }#ConvertTo-Sfx
 
@@ -2429,9 +2424,6 @@ Function New-ZipSfxOptions {
           [ValidateScript( { IsIconImage $_.Trim() } )]
 		[string] $IconFile,
     
-         [ValidateScript( { IsValueSupported $_ -Extract } )]
-		[Ionic.Zip.ExtractExistingFileAction] $ExtractExistingFile=[Ionic.Zip.ExtractExistingFileAction]::Throw,
-        
           [ValidateNotNullOrEmpty()]
         [string]$NameOfProduct,
        
@@ -2473,7 +2465,8 @@ Function New-ZipSfxOptions {
       # http://www.techtalkz.com/microsoft-windows-powershell/150495-gotcha-null-string-not-null-2.html     
 	$SfxOptions=New-Object ZipSfxOptions -Property @{
                           AdditionalCompilerSwitches=$AdditionalCompilerSwitches;
-                          ExtractExistingFile=$ExtractExistingFile;
+                           #Evite l'erreur 'Inconsistent options' dans le Sfx
+                          ExtractExistingFile=[Ionic.Zip.ExtractExistingFileAction]::Throw; 
                           Flavor = $Flavor;
                           FileVersion=$FileVersion;
                           RemoveUnpackedFilesAfterExecute=$Remove;
@@ -2541,7 +2534,7 @@ function New-ReadOptions {
    #  ZipFile.PSDispose supprimera bien les ressources allouées ici
    if ($isVerbose)
    {
-      $Logger.Debug("Configure PSVerboseTextWriter") 
+      $Logger.Debug("Configure PSVerboseTextWriter") #<%REMOVE%>
       $Context=$PSCmdlet.SessionState.PSVariable.Get("ExecutionContext").Value            
       $ReadOptions.StatusMessageWriter=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
    }    
@@ -2550,7 +2543,7 @@ function New-ReadOptions {
 
    if ($isProgressBar)
    { 
-    $Logger.Debug("Gestion du ReadProgress via PSIonicTools.PSZipReadProgress")  
+    $Logger.Debug("Gestion du ReadProgress via PSIonicTools.PSZipReadProgress")  #<%REMOVE%>
     $Context=$PSCmdlet.SessionState.PSVariable.Get("ExecutionContext").Value  
     $PSZipReadProgress=New-Object PSIonicTools.PSZipReadProgress($Context,
                                                                  $ProgressBarInformations.activityId,

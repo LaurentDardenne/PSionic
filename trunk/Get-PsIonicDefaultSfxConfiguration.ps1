@@ -10,7 +10,6 @@
     Description='Archive autoextractible exécutant un script Powershell en fin d''extraction.'
     FileVersion='1.0'
     IconFile="$(($env:PSModulePath -split ';')[0])\PsIonic\PsIonic.ico"
-    ExtractExistingFile='OverwriteSilently'
     NameOfProduct='Test'
     VersionOfProduct='1.0'
     Copyright='Auteur Laurent Dardenne.'
@@ -23,7 +22,7 @@
     Quiet=$false #switch parameter
     Remove=$false #switch parameter
   }
- New-ZipSfxOptions @SfxOptions  -Cmdline # -Cmdline or -GUI
+ New-ZipSfxOptions @SfxOptions -Cmdline # -Cmdline or -GUI
 }#Get-PsionicDefaultSfxConfiguration
 
 
