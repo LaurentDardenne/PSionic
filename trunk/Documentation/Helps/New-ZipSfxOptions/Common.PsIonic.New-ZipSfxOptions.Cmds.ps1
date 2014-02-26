@@ -14,7 +14,6 @@
 		Description = $Datas.NewZipSfxOptionsParametersDescription
 		ExeOnUnpack = $Datas.NewZipSfxOptionsParametersExeOnUnpack
 		ExtractDirectory = $Datas.NewZipSfxOptionsParametersExtractDirectory
-		ExtractExistingFile = $Datas.NewZipSfxOptionsParametersExtractExistingFile
 		FileVersion = $Datas.NewZipSfxOptionsParametersFileVersion
 		GUI = $Datas.NewZipSfxOptionsParametersGUI
 		IconFile = $Datas.NewZipSfxOptionsParametersIconFile
