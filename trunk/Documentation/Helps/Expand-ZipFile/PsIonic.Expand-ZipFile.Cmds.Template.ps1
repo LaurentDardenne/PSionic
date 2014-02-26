@@ -1,4 +1,4 @@
-# Expand-ZipFile command help
+﻿# Expand-ZipFile command help
 @{
 	command = 'Expand-ZipFile'
 	synopsis = $Datas.ExpandZipFileSynopsis
@@ -45,7 +45,7 @@
 		}
 	)
 	links = @(
-		@{ text = ''; URI = '' }
+		@{ text = 'about_Query_Selection_Criteria'; URI = '' }
 	)
 }
 

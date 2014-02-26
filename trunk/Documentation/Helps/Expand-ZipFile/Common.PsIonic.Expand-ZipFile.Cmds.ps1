@@ -123,7 +123,7 @@ try {
 		}
 	)
 	links = @(
-		@{ text = ''; URI = '' }
+		@{ text = 'about_Query_Selection_Criteria'; URI = '' }
 	)
 }
 
