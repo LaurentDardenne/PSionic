@@ -13,7 +13,6 @@ $Datas = @{
 Indique le répertoire de décompression par défaut. Il peut contenir des références de variable système, par exemple %UserProfile%. 
 Celles-ci seront substituées lors de l'exécution de l’archive auto extractible.
 "@
-	NewZipSfxOptionsParametersExtractExistingFile = 'Indication de comportement en cas d''existence des fichiers dans le répertoire ciblé.'
 	NewZipSfxOptionsParametersFileVersion = 'Numéro de version du fichier auto extractible.'
 	NewZipSfxOptionsParametersGUI = 'Précise que l''archive auto extractible est basée sur un programme Winform (GUI).'
 	NewZipSfxOptionsParametersIconFile = 'Nom d''un fichier contenant un icon à associer à la Winform.'
@@ -32,7 +31,9 @@ Flavor                          : ConsoleApplication
 Quiet                           : False
 ExtractExistingFile             : Throw
 RemoveUnpackedFilesAfterExecute : False
-FileVersion                     : 1.0.0.0 
+FileVersion                     : 1.0.0.0
+.
+Attention, la propriété 'ExtractExistingFile' doit toujours avoir la valeur 'Throw'. Ce comportement doit géré via les options de l'exécutable généré.  
 "@
 	NewZipSfxOptionsExamplesRemarks1 = 'Cette instruction crée une configuration SFX avec les valeurs par défaut sauf pour le champ Copyright.'
 	NewZipSfxOptionsExamplesRemarks2 = 'Cette instruction crée une configuration SFX et l''affecte à la configuration par défaut.'

@@ -1,4 +1,4 @@
-# New-ZipSfxOptions command data
+﻿# New-ZipSfxOptions command data
 $Datas = @{
 	NewZipSfxOptionsSynopsis = ''
 	NewZipSfxOptionsDescription = ''
@@ -10,7 +10,6 @@ $Datas = @{
 	NewZipSfxOptionsParametersDescription = ''
 	NewZipSfxOptionsParametersExeOnUnpack = ''
 	NewZipSfxOptionsParametersExtractDirectory = ''
-	NewZipSfxOptionsParametersExtractExistingFile = ''
 	NewZipSfxOptionsParametersFileVersion = ''
 	NewZipSfxOptionsParametersGUI = ''
 	NewZipSfxOptionsParametersIconFile = ''
