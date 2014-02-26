@@ -3,7 +3,7 @@ $Datas = @{
 	UpdateZipEntrySynopsis = 'Met à jour une archive .ZIP ou une archive auto extractible .EXE.'
 	UpdateZipEntryDescription = 'Met à jour une archive .ZIP, ou une archive auto extractible .EXE, en modifiant ses entrées ou en lui en ajoutant de nouvelles.'
 	UpdateZipEntrySets__AllParameterSets = ''
-	UpdateZipEntryParametersComment =  'todo à vérifier. Commentaire associé à l''entrée. Pour les entrées de type string ou tableau, par défaut leur champ contiendra le nom de leur type : [String] ou [Byte[]].'
+	UpdateZipEntryParametersComment =  'Commentaire associé à l''entrée. Pour les entrées de type string ou tableau, par défaut leur champ contiendra le nom de leur type : [String] ou [Byte[]].'
 	UpdateZipEntryParametersEntryPathRoot = @"
 La nouvelle entrée sera ajoutée dans un répertoire spécifique. Par défaut elle est ajoutée à la racine de l'arborescence contenue dans l'archive. 
 La valeur de ce paramètre doit référencer un répertoire existant.
@@ -41,36 +41,37 @@ La mise à jour d'une entrée de type directory ne fait qu'ajouter les nouveaux 
 Par défaut l'ajout d'une entrée existante déclenchera une exception.
 "@
 	UpdateZipEntryExamplesRemarks1 = @"
- todo revoir les tous exemples 
-Ces commandes ajoutent une entrée dans l'archive C:\Temp\Test.zip. 
+Ces commandes mettent à jour une entrée dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
   -la seconde crée un objet fichier à partir d'un nom de fichier, 
-  -la troisième ajoute le fichier dans l'archive, 
+  -la troisième met à jour le fichier dans l'archive, 
   -la quatrième enregistre l'archive sur le disque et libère les ressources systèmes.  
 "@
     UpdateZipEntryExamplesRemarks2 = @"
-Ces commandes ajoutent des entrées dans l'archive C:\Temp\Test.zip. 
+Ces commandes mettent à jour des entrées dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
-  -la seconde, depuis le répertoire courant, ajoute dans l'archive tous les fichiers portant l'extension .txt, 
+  -la seconde, depuis le répertoire courant, met à jour toutes les entrées de l'archive correspondant aux noms de fichier *.txt, 
   -la troisième enregistre l'archive sur le disque et libère les ressources systèmes.
 "@        
     UpdateZipEntryExamplesRemarks3 = @"
-Ces commandes ajoutent, à partir d'une chaîne de caractères, une entrée nommée dans l'archive C:\Temp\Test.zip. 
+Ces commandes mettent à jour, à partir d'une chaîne de caractères, une entrée nommée dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
   -la seconde lit un fichier texte et récupère le résultat dans une chaîne de caractères,
-  -la troisième crée une entrée dont le contenu est renseigné à partir d'une chaîne de caractères, 
+  -la troisième met à jour ou crée une entrée dont le contenu est renseigné à partir d'une chaîne de caractères, 
   -la quatrième enregistre l'archive sur le disque et libère les ressources systèmes.
 "@  
     UpdateZipEntryExamplesRemarks4 = @'
-Ces commandes ajoutent, à partir d'un objet sérialisé, une entrée nommée dans l'archive C:\Temp\Test.zip. 
+Ces commandes mettent à jour, à partir d'un objet sérialisé, une entrée nommée dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
-  -la seconde sérialise l'objet contenu dans la variable $PSVersiontable et l'ajoute en tant qu'entrée nommée dans l'archive, 
+  -la seconde sérialise l'objet contenu dans la variable $PSVersiontable, puis met à jour ou crée l'entrée nommée dans l'archive, 
   -la troisième enregistre l'archive sur le disque et libère les ressources systèmes.
+.
+Par convention, vous pouvez postfixer vos noms d'entrée sérialisé par '.climxl'.
 '@  
     UpdateZipEntryExamplesRemarks5 =@'
-Ces commandes ajoutent une entrée nommée MyArray dans l'archive C:\Temp\Test.zip. 
+Ces commandes mettent à jour une entrée nommée MyArray dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
-  -la seconde ajoute l'objet contenu dans la variable $Array et l'ajoute dans l'archive en tant qu'entrée nommée MyArray, 
+  -la seconde ajoute l'objet contenu dans la variable $Array, puis met à jour ou crée l'entrée nommée MyArray, 
   -la troisième enregistre l'archive sur le disque et libère les ressources systèmes.  
 '@
 }

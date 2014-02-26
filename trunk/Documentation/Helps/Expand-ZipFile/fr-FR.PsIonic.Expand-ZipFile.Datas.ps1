@@ -33,7 +33,18 @@ L'usage de ce paramètre nécessite de préciser le paramètre -Query, sinon une
 "@
 	ExpandZipFileParametersExtractAction = 'Précise le comportement à adopter lorsque des données sont déjà présentes dans le répertoire de destination.'
     ExpandZipFileParametersPassword = 'Précise le mot de passe nécessaire à l''extraction d''une archive encryptée.'	
-	ExpandZipFileParametersEncoding = 'Type d''encodage de l''archive. L''utilisation de la valeur par défaut est recommandée.'
+	ExpandZipFileParametersEncoding =@"
+Type d'encodage de l'archive. Les valeurs possibles sont :
+-ASCII	          : encodage pour le jeu de caractères ASCII (7 bits).
+-BigEndianUnicode : encodage pour le format UTF-16 qui utilise l'ordre d'octet avec primauté des octets de poids fort (big-endian).
+-Default	      : encodage pour la page de codes ANSI actuelle du système d'exploitation.
+-Unicode	      : encodage pour le format UTF-16 avec primauté des octets de poids faible (little-endian).
+-UTF32	          : encodage pour le format UTF-32 avec primauté des octets de poids faible (little-endian).
+-UTF7	          : encodage pour le format UTF-7.
+-UTF8	          : encodage pour le format UTF-8.
+.
+Pour une meilleure portabilité, l'utilisation de la valeur par défaut ('DefaultEncoding') est recommandé.
+"@
 	ExpandZipFileParametersFlatten = 'Les fichiers sont extrait sans arborescence.'
 	ExpandZipFileParametersProgressID = @"
 Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression.

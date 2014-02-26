@@ -58,7 +58,7 @@ try {
 try {         
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
   $Tab=@('Test.ps1','Setu1.ps1')
-  ,$Tab|Remove-ZipEntry -ZipFile $Z
+  ,$Tab|Remove-ZipEntry -ZipFile $ZipFile
 } finally {
   $ZipFile.Close()
 }         
@@ -71,7 +71,7 @@ try {
 try {         
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
   $Tab=@('Test1.ps1';Get-ChildItem *.XML;Get-Content C:\Temp\ListeFileName.txt)
-  ,$Tab|Remove-ZipEntry -ZipFile $Z
+  ,$Tab|Remove-ZipEntry -ZipFile $ZipFile
 } finally {
   $ZipFile.Close()
 }
@@ -84,7 +84,7 @@ try {
 try
 {          
   $ZipFile=Get-ZipFile -path C:\Temp\archive.zip -ZipErrorAction Skip -Verbose 
-  Remove-ZipEntry -ZipFile $Z -Query 'name = *.txt'
+  Remove-ZipEntry -ZipFile $ZipFile -Query 'name = *.txt'
 } finally {
   $ZipFile.Close()
 } 
@@ -97,7 +97,7 @@ try
 try
 {          
   $ZipFile=Get-ZipFile -path C:\Temp\archive.zip -ZipErrorAction Skip -Verbose 
-  Remove-ZipEntry -ZipFile $Z -Query 'name = *.txt' -From 'Doc/'  #todo vérifier 
+  Remove-ZipEntry -ZipFile $ZipFile -Query 'name = *.txt' -From 'Doc/' 
 } finally {
   $ZipFile.Close()
 }      
