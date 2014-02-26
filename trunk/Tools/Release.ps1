@@ -31,8 +31,16 @@ $VerbosePreference='Continue'
    Copy "$PsIonicTrunk\ConvertZipToSfx.exe" "$PsIonicLivraison\PsIonic"
 
 #Doc xml localisée
+   #US
    Copy "$PsIonicTrunk\en-US\PsIonicLocalizedData.psd1" "$PsIonicLivraison\PsIonic\en-US\PsIonicLocalizedData.psd1" 
-   Copy "$PsIonicTrunk\fr-FR\PsIonicLocalizedData.psd1" "$PsIonicLivraison\PsIonic\fr-FR\PsIonicLocalizedData.psd1" 
+   Copy "$PsIonicTrunk\en-US\about_Psionic.help.txt" "$PsIonicLivraison\PsIonic\en-US\about_Psionic.help.txt"
+   Copy "$PsIonicTrunk\en-US\about_Query_Selection_Criteria.help.txt" "$PsIonicLivraison\PsIonic\en-US\about_Query_Selection_Criteria.help.txt"
+
+  #Fr 
+   Copy "$PsIonicTrunk\fr-FR\PsIonicLocalizedData.psd1" "$PsIonicLivraison\PsIonic\fr-FR\PsIonicLocalizedData.psd1"
+   Copy "$PsIonicTrunk\fr-FR\about_Psionic.help.txt" "$PsIonicLivraison\PsIonic\fr-FR\about_Psionic.help.txt"
+   Copy "$PsIonicTrunk\fr-FR\about_Query_Selection_Criteria.help.txt" "$PsIonicLivraison\PsIonic\fr-FR\about_Query_Selection_Criteria.help.txt"
+ 
 
 #Demos
    Copy "$PsIonicTrunk\Demos" "$PsIonicLivraison\PsIonic\Demos" -Recurse
