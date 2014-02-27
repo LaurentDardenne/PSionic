@@ -68,7 +68,7 @@ Les entrées sont triées avant d'être enregistrées. Selon le nombre de fichie
 "@ 
 	CompressZipFileParametersSplit = @"
 Scinde le fichier d'archive par segment de la taille spécifiée. La syntaxe '64Kb' est possible et le nombre maximum de segment est de 99.
-Dans le cas où la taille indiqué génèrerait plus de 99 segments, une exception est déclenchée. Les fichiers créés sur le disque lors de cette opération ne sont pas supprimés. 
+Dans le cas où la taille indiquée génèrerait plus de 99 segments, une exception est déclenchée. Les fichiers créés sur le disque lors de cette opération ne sont pas supprimés. 
 "@
 	CompressZipFileParametersTempLocation  = @"
 Nom du répertoire temporaire utilisé lors de la construction de l'archive. 
@@ -121,7 +121,7 @@ La date sélectionnée sera la date de l'entrée ayant la propriété LastModifi
 "@  
 	CompressZipFileExamplesRemarks6 = @"
 Cet exemple archive récursivement tous les fichiers et répertoire de 'C:\Temp'.
-En utilisant 'C:\Temp\*' comme valeur du paramètre -Path, on est assuré de ne pas avoir de collisions de nom dans le catalogue puisqu'on ne parcourt pas explicitement l'arborescence, mais uniquement les entrées contenues dans le répertoire courant. 
+En utilisant 'C:\Temp\*' comme valeur du paramètre -Path, on est assuré de ne pas avoir de collision de nom dans le catalogue puisqu'on ne parcourt pas explicitement l'arborescence, mais uniquement les entrées contenues dans le répertoire courant. 
 En interne on récupère les noms de chemin renvoyés par l'appel au cmdlet Resolve-Path, attention les fichiers et répertoires cachés ne sont pas archivés.
 L'archive contient plusieurs entrées à la racine du catalogue.  
 "@
@@ -135,7 +135,7 @@ L'archive contient une seule entrées à la racine du catalogue, entrée nommée
 Les fichiers et répertoires cachés sont archivés.   
 "@
 	CompressZipFileExamplesRemarks9 = @"
-Cet exemple archive tous les fichiers du répertoire 'C:\'.
+Cet exemple archive tous les fichiers du répertoire 'C:\Temp'.
 Les fichiers cachés sont archivés.  
 "@
 	CompressZipFileExamplesRemarks10 = @"
