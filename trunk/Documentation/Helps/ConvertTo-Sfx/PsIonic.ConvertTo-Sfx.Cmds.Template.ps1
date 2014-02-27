@@ -12,7 +12,7 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'System.Management.Automation.PSObject'
 			description = $Datas.ConvertToSfxInputsDescription1
 		}
 	)
