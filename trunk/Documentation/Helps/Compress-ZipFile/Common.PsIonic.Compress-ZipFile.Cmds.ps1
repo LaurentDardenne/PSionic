@@ -159,7 +159,7 @@ Get-Item 'C:\Temp'|
 
 		@{
 			code = {
-Get-ChildItem C:\* -Force|
+Get-ChildItem C:\Temp\* -Force|
  Where {!$_.psiscontainer}| 
  Compress-ZipFile -OutputName C:\Temp\Archive.zip -Recurse -ZipErrorAction Skip
 			}
