@@ -2,7 +2,7 @@
 $Datas = @{
 	ExpandZipEntrySynopsis = 'Extrait des entrées d''une archive compressée au format Zip.'
 	ExpandZipEntryDescription = @"
-Extrait des entrées d'une archive compressée au format Zip, les données extraites sont soit des données sérialisées, soit un tableau d'octets soit une chaîne de caractère et permettent de reconstruire un objet.
+Extrait des entrées d'une archive compressée au format Zip. Les données extraites sont soit des données sérialisées, soit un tableau d'octets, soit une chaîne de caractère et ils permettent de reconstruire un objet.
 Pour extraire des fichiers d'une archive utilisez Expand-ZipFile.
 "@
 	ExpandZipEntrySetsByteArray = ''
