@@ -1,11 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Configuration>
+  <SelectionSets>
+    <SelectionSet>
+      <Name>ZipEntryTypes</Name>
+      <Types>
+			   <TypeName>Ionic.Zip.ZipEntry</TypeName>
+         <TypeName>PSZipEntry</TypeName>
+      </Types>
+    </SelectionSet>
+  </SelectionSets>
 	<ViewDefinitions>
 		<View>
 			<Name>ZipEntry</Name>
-			<ViewSelectedBy>
-			   <TypeName>Ionic.Zip.ZipEntry</TypeName>
-			</ViewSelectedBy>
+      <ViewSelectedBy>
+        <SelectionSetName>ZipEntryTypes</SelectionSetName>
+      </ViewSelectedBy>
 			<TableControl>
 	    	<TableHeaders>
           <TableColumnHeader>
