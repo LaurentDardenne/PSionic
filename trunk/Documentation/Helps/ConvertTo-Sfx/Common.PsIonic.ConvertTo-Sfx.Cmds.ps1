@@ -34,7 +34,6 @@ $ReadOptions = New-Object Ionic.Zip.ReadOptions -Property @{
 $Save=@{
     ExeOnUnpack="Powershell -noprofile -File .\MySetup.ps1";  
     Description="Setup for the my module"; 
-    ExtractExistingFile=[Ionic.Zip.ExtractExistingFileAction]::OverwriteSilently;
     NameOfProduct="MyProjectName";
     VersionOfProduct="1.0.0";
     Copyright='This module is free for non-commercial purposes.'

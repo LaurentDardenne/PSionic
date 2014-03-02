@@ -113,6 +113,20 @@ try {
 			remarks = $Datas.GetZipFileExamplesRemarks5
 			test = { . $args[0] }
 		}
+		@{
+
+			code = {
+try
+{          
+  $ZipFile=Get-ZipFile -path C:\Temp\archive.zip -ZipErrorAction Skip -Verbose 
+   Remove-ZipEntry -ZipFile $ZipFile -Query 'name = *.txt'
+   Get-ChildItem C:\Temp\*.log|Add-ZipEntry -ZipFile $ZipFile
+} finally {
+  $ZipFile.Close()
+} 			}
+			remarks = $Datas.GetZipFileExamplesRemarks6
+			test = { . $args[0] }
+		}
 	)
 	links = @(
 		@{ text = ''; URI = '' }
