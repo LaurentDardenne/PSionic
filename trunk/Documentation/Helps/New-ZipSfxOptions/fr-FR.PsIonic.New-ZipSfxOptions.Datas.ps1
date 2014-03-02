@@ -33,7 +33,7 @@ ExtractExistingFile             : Throw
 RemoveUnpackedFilesAfterExecute : False
 FileVersion                     : 1.0.0.0
 .
-Attention, la propriété 'ExtractExistingFile' doit toujours avoir la valeur 'Throw'. Ce comportement doit géré via les options de l'exécutable généré.  
+Attention, la propriété 'ExtractExistingFile' doit toujours avoir la valeur 'Throw'. Ce comportement est géré à l'aide des options de l'exécutable généré.  
 "@
 	NewZipSfxOptionsExamplesRemarks1 = 'Cette instruction crée une configuration SFX avec les valeurs par défaut sauf pour le champ Copyright.'
 	NewZipSfxOptionsExamplesRemarks2 = 'Cette instruction crée une configuration SFX et l''affecte à la configuration par défaut.'

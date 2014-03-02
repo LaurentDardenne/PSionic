@@ -35,7 +35,7 @@ Cette ID permet de distinguer la barre de progression interne des autres. Utilis
 	GetZipFileParametersOptions = 'Options utilisées lors de la création d''une archive auto extractible (cf. New-ZipSfxOptions).'
 	GetZipFileParametersPassword = 'Précise le mot de passe nécessaire à la lecture d''une archive encryptée.'
 	GetZipFileParametersReadOptions = 'Objet d''option de lecture créé à l''aide de la fonction New-ReadOptions.'
-	GetZipFileParametersSortEntries = 'Tri les entrées avant de les envoyer dans le pipeline.'
+	GetZipFileParametersSortEntries = 'Tri les entrées avant de les enregistrer dans l''archive.'
 	GetZipFileParametersUnixTimeFormat = 'Le format de date des fichiers sera celui d''Unix'
 	GetZipFileParametersWindowsTimeFormat = 'Le format de date des fichiers sera celui de Windows'
 	GetZipFileParametersZipErrorAction = 'Précise le mode de gestion des erreurs.'
@@ -61,10 +61,14 @@ Cet exemple lit un fichier zip, lui ajoute tous les fichiers txt d'un répertoir
 La méthode Close() appelle en interne la méthode Save() puis PSDispose(). 
 "@
     GetZipFileExamplesRemarks5 =  @"
-la première instruction de cet exemple renvoi les entrées du catalogue d'une archive sous forme d'objet de type PSZipEntry.
+La première instruction de cet exemple renvoi les entrées du catalogue d'une archive sous forme d'objet de type PSZipEntry.
 Les suivantes recherche dans le catalogue d'origine une entrée nommée 'Test.ps1' puis la décompresse dans le répertoire C:\Temp.
 .
 La différence entre les deux approches est que les objets de type PSZipEntry ne dispose pas des méthodes spécifiques aux objets de type ZipEntry. 
+"@
+    GetZipFileExamplesRemarks5 =  @"
+Cet exemple ouvre une archive, y supprime tous les fichiers .TXT et y ajoute tous les fichiers .LOG du répertoire C:\Temp.
+Notez que chaque modification est enregistrée dans le catalogue de l'archive, mais seul l'appel à la méthode Close() enregistrera les modifications dans l'archive. 
 "@
 }
 
