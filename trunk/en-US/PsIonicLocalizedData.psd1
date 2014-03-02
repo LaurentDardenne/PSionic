@@ -39,7 +39,8 @@
  FromPathEntryNotFound=Can not find the path '{0}' in the archive '{1}', because it does not exist.
  
  SaveIsNotPermitted=You specified an EXE for a plain zip file.
- ParameterFromNeedQueryParameter=The 'From' parameter requires to declare the 'Query' parameter. 
+ ThisParameterRequiresThisParameter=The '{0}' parameter requires to declare the '{1}' parameter. 
+ 
  ProgressBarExtract=Extract in progress
 '@ 
 

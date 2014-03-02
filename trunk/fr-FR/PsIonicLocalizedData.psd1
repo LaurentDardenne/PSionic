@@ -39,7 +39,7 @@
  FromPathEntryNotFound=Impossible de trouver le chemin d'accès '{0}' dans l'archive '{1}', car il n'existe pas.
  
  SaveIsNotPermitted=Vous ne pouvez pas enregistrer une archive auto extratible via la méthode Save().
- ParameterFromNeedQueryParameter=Le paramètre 'From' nécessite de déclarer le paramètre 'Query'.
+ ThisParameterRequiresThisParameter=Le paramètre '{0}' nécessite de déclarer le paramètre '{1}'.
  
  ProgressBarExtract=Extraction en cours
 '@ 
