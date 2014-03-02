@@ -21,6 +21,7 @@ Liste des propriétés affichées par défaut :
   StatusMessageTextWriter
   TempFileFolder
   Password
+  ExtractExistingFile
   ZipErrorAction
   Encryption
   SetCompression
