@@ -90,8 +90,5 @@ LONG DESCRIPTION
   
   The caller is responsible for insuring the criteria are sensible. 
   
-  Examples :
-  todo
-
 SEE ALSO
     about_Assignment_Operators
