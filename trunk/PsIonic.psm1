@@ -58,11 +58,9 @@ $PSZipEntryProperties =@(
   'UncompressedSize',
   'UsesEncryption',
   'UseUnicodeAsNecessary',
-  'VersionNeeded'
+  'VersionNeeded',
+  'Info'
 )
-
-$AllPSZipEntryProperties =@('Info')
-$AllPSZipEntryProperties +=$PSZipEntryProperties  
 
 function New-Exception($Exception,$Message=$null) {
 #Crée et renvoi un objet exception
@@ -218,7 +216,7 @@ Function ConvertTo-PSZipEntryInfo {
        Foreach {
         $Current.PSObject.Properties.Add( (New-PSVariableProperty $_.Key $_.Value -ReadOnly) )
        } #for $Properties
-      $Current.PSTypeNames.Insert(0, 'PSZipEntryInfo')
+      $Current.TypeNames.Insert(0, 'PSZipEntryInfo')
       $Entries.Add($Current) > $null
    }#for Items
   if ($Borne -eq 0)
@@ -242,6 +240,7 @@ Function ConvertTo-PSZipEntryInfo {
   $Logger.Debug("Return items :$($T.count) ") #<%REMOVE%>
   New-ArrayReadOnly ([ref]$T) 
 }#ConvertTo-PSZipEntryInfo
+
 function ConvertTo-EntryRootPath{
 #Renvoi, à partir du chemin d'un répertoire existant, un nom d'entrée d'archive ou null en cas d'erreur
 #ex: 
@@ -261,33 +260,6 @@ function ConvertTo-EntryRootPath{
   $Logger.Debug("ConvertEntryRootPath result= '$Result'") 
   $Result                 
 }#ConvertTo-EntryRootPath
-
-Function New-PSZipEntry{
- param(
-	[ValidateNotNull()]
-    [parameter(Mandatory=$True,ValueFromPipeline=$True)]
-  [Ionic.Zip.ZipEntry] $Entry
- )
- process {
-   $Current=New-Object PSObject
-     
-   $PSZipEntryProperties|
-    Foreach {
-      $Name=$_
-      $Property=$Entry.PSObject.Properties.Match($Name,'Property')
-      #$Logger.Debug("(New-PSZipEntry] $($Property[0] -eq $null) '$Name'=$($Property[0].Value) ")
-      $Current.PSObject.Properties.Add( (New-PSVariableProperty $Name $Property[0].Value -ReadOnly) )
-    }
-    #Laisse la possibilité de transformer cette 
-    #propriété via ConvertTo-PSZipEntryInfo 
-   $Name='Info'
-   $Info=$Entry.PSObject.Properties.Match($Name,'Property')
-   $Current.PSObject.Properties.Add( (New-PSVariableProperty $Name $Info[0].Value) )
-
-   $Current.PSTypeNames.Insert(0, 'PSZipEntry')
-   $Current
- }
-}#New-PSZipEntry
 
 #------------
 
@@ -1053,15 +1025,20 @@ Function Get-ZipFile {
             
             if ($List)
             {
-               #todo formatting nullable -> ETS file 
-               #Renvoit des objets ayant des propriétés en lecture seule 
+               #Renvoit des objets ayant des propriétés  
                #découplées de l'objet archive initiale.
               try {
-                $Logger.Debug("Create New-PSZipEntry")  
-                $ZipFile.Entries|New-PSZipEntry
+                $Logger.Debug("Create PSZipEntry")  
+                $ZipFile.Entries|
+                 Select $PSZipEntryProperties|
+                 Foreach {
+                   $_.PSObject.TypeNames.Insert(0, 'PSZipEntry')
+                   $_ 
+                 }
               }
               finally {
-                $ZipFile.PsDispose()
+                if ($ZipFile -ne $null)
+                { $ZipFile.PsDispose() }
               }
             }
             else 
@@ -1631,7 +1608,7 @@ Function Remove-ZipEntry {
     $isFrom=$PSBoundParameters.ContainsKey('From')   
     $isQuery=$PSBoundParameters.ContainsKey('Query')   
     if ($isFrom -and -Not $isQuery)
-     { throw  (New-Object PSIonicTools.PsionicException($PsIonicMsgs.ParameterFromNeedQueryParameter)) }
+    { throw  (New-Object PSIonicTools.PsionicException(( $PsIonicMsgs.ThisParameterRequiresThisParameter -f 'From', 'Query'))) }
      #Verbose du Zipfile, pas de la fonction
     $isVerbose=$ZipFile.StatusMessageTextWriter -ne $null
     $Logger.Debug("isVerbose=$isVerbose") #<%REMOVE%> 
@@ -1968,7 +1945,7 @@ Function Expand-ZipFile {
     $isFrom=$PSBoundParameters.ContainsKey('From')   
     $isQuery=$PSBoundParameters.ContainsKey('Query')   
     if ($isFrom -and -Not $isQuery)
-     { throw  (New-Object PSIonicTools.PsionicException($PsIonicMsgs.ParameterFromNeedQueryParameter)) }
+     { throw  (New-Object PSIonicTools.PsionicException(( $PsIonicMsgs.ThisParameterRequiresThisParameter -f 'From', 'Query'))) }
    
     [Switch] $isVerbose= $null
     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
@@ -2382,18 +2359,23 @@ Function ConvertTo-Sfx {
    if ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
    { Throw (New-Object PSIonicTools.PsionicException($PsIonicMsgs.CommentMaxValue)) }
  }
-
+ 
  process {  
     $Logger.Debug("Path=$Path") #<%REMOVE%>
     
     $Parameters=NewSfxCmdline $Path  $SaveOptions $Comment
+    
     $code=@"
-&'$psScriptRoot\ConvertZipToSfx.exe' $Parameters
+&'$psScriptRoot\ConvertZipToSfx.exe' $Parameters 2>&1
 "@    
     $Logger.Debug("Invoke code : $Code") #<%REMOVE%>
-    #todo search Test-RedirectedOutput
-    # validation du code retour + usage de stdout dans le .exe ?
-    Invoke-Expression $code
+    $sb=$ExecutionContext.InvokeCommand.NewScriptBlock($code) 
+    try {
+      $ErrorActionPreference="Stop"
+      &$sb
+    } catch {
+      throw (New-Object PsionicTools.PsionicException("[ConvertZipToSfx.exe]$($_.Exception.Message)",$_.Exception))
+    }
     if ($Passthru)
     { Get-Item (GetSFXname $Path)} # renvoi un objet fichier      
  }#process
@@ -2465,7 +2447,7 @@ Function New-ZipSfxOptions {
       # http://www.techtalkz.com/microsoft-windows-powershell/150495-gotcha-null-string-not-null-2.html     
 	$SfxOptions=New-Object ZipSfxOptions -Property @{
                           AdditionalCompilerSwitches=$AdditionalCompilerSwitches;
-                           #Evite l'erreur 'Inconsistent options' dans le Sfx
+                           #Evite l'erreur 'Inconsistent options' dans le Sfx généré
                           ExtractExistingFile=[Ionic.Zip.ExtractExistingFileAction]::Throw; 
                           Flavor = $Flavor;
                           FileVersion=$FileVersion;
