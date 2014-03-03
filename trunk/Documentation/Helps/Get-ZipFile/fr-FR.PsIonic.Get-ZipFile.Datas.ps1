@@ -66,7 +66,7 @@ Les suivantes recherche dans le catalogue d'origine une entrée nommée 'Test.ps
 .
 La différence entre les deux approches est que les objets de type PSZipEntry ne dispose pas des méthodes spécifiques aux objets de type ZipEntry. 
 "@
-    GetZipFileExamplesRemarks5 =  @"
+    GetZipFileExamplesRemarks6 =  @"
 Cet exemple ouvre une archive, y supprime tous les fichiers .TXT et y ajoute tous les fichiers .LOG du répertoire C:\Temp.
 Notez que chaque modification est enregistrée dans le catalogue de l'archive, mais seul l'appel à la méthode Close() enregistrera les modifications dans l'archive. 
 "@
