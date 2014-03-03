@@ -252,6 +252,9 @@ else
 } #FindTodo
 
 Task Finalize {
- $script:balloon.Dispose()
- Remove-Variable -Scope script -Name Balloon
+ if ($script:balloon -ne $null)
+ {
+   $script:balloon.Dispose()
+   Remove-Variable -Scope script -Name Balloon
+ }
 }

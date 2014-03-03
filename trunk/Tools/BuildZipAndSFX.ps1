@@ -48,5 +48,15 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
    ConvertTo-Sfx -Path $ZipFileName -Save $SaveOptions -Read $ReadOptions  
 
   #Remove-Module PsIonic
-  Push-Location   
+  Push-Location  
+      
+  # si default et buildzipandsfx uniquement
+  if ($psake.Context.tasks.Count -eq 2)
+  {
+   if ($script:balloon -ne $null)
+   {
+     $script:balloon.Dispose()
+     Remove-Variable -Scope script -Name Balloon
+   }
+  }  
 } #BuildZipAndSFX
