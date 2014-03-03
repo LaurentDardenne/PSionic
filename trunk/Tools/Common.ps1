@@ -32,6 +32,16 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
      #see to http://msdn.microsoft.com/en-us/library/6ds95cz0(v=vs.80).aspx
   Add-Type -Path $Files -CompilerParameters $cp
   Write-Host "Compilation réussie de $($cp.OutputAssembly) version $PSVersion"
+  
+  # si default,CompilePsionicTools  et TestPSSyntax uniquement
+  if ($psake.Context.tasks.Count -eq 3)
+  {
+   if ($script:balloon -ne $null)
+   {
+     $script:balloon.Dispose()
+     Remove-Variable -Scope script -Name Balloon
+   }
+  }   
 } #CompilePsionicTools
 
 Task TestPSSyntax {

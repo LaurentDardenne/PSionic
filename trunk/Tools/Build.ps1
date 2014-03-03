@@ -33,6 +33,11 @@ try {
   { 
    Show-BalloonTip –Text 'Construction terminée.' –Title 'Build Psionic' –Icon Info 
    Invoke-Psake .\BuildZipAndSFX.ps1 -parameters @{"Config"="$($PsCmdlet.ParameterSetName)"} -nologo 
+   if ($script:balloon -ne $null)
+   {
+     $script:balloon.Dispose()
+     Remove-Variable -Scope script -Name Balloon
+   }
   }
   else
   { 
