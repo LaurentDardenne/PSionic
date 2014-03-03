@@ -45,7 +45,7 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
    dir $Files|
      Compress-ZipFile $ZipFileName
    Write-host "Puis crée une archive autoextractible"
-   ConvertTo-Sfx $ZipFileName -Save $SaveOptions -Read $ReadOptions  
+   ConvertTo-Sfx -Path $ZipFileName -Save $SaveOptions -Read $ReadOptions  
 
   #Remove-Module PsIonic
   Push-Location   

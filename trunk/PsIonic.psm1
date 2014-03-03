@@ -4,7 +4,7 @@
 # copyright (c) 2008 by Dino Chiesa
 # ------------------------------------------------------------------
 
-#bugs PS v2 :
+#bugs PS v2 ( corrigé dans la v3) :
 #parameters-initialization : https://connect.microsoft.com/PowerShell/feedback/details/578341/parameters-initialization
 
 #bug Ionic 1.9.8:
@@ -1116,7 +1116,7 @@ Function Compress-ZipFile {
       $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>          
       
       if (-not $PSBoundParameters.ContainsKey('Comment')) 
-      { $Comment=[String]::Empty} #bug : parameters-initialization
+      { $Comment=[String]::Empty} #bug v2 : parameters-initialization
       elseif ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
       { Throw (New-Object PSIonicTools.PsionicException($PsIonicMsgs.CommentMaxValue)) }
 
@@ -1149,7 +1149,7 @@ Function Compress-ZipFile {
       
        #Archive avec + de 0xffff entrées
       $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
-      if ($ZipErrorAction -eq $null)  #bug : parameters-initialization
+      if ($ZipErrorAction -eq $null)  #bug v2 : parameters-initialization
       {$ZipErrorAction=[Ionic.Zip.ZipErrorAction]::Throw}
       $ZipFile.ZipErrorAction=$ZipErrorAction
 
@@ -1170,7 +1170,7 @@ Function Compress-ZipFile {
       else
       { $ZipFile.EmitTimesInWindowsFormatWhenSaving=$WindowsTimeFormat }
 
-      if ($Encryption -eq $null)  #bug : parameters-initialization
+      if ($Encryption -eq $null)  #bug v2 : parameters-initialization
       { $Encryption="None"}            
       if (-not [string]::IsNullOrEmpty($Password) -or ($Encryption -ne "None"))
       { SetZipFileEncryption $ZipFile $Encryption $Password }
@@ -2335,21 +2335,22 @@ Function Test-ZipFile{
 
 Function ConvertTo-Sfx {
 # .ExternalHelp PsIonic-Help.xml         
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName="Path")]
   [OutputType([System.IO.FileInfo])]
   Param (
-  	 [ValidateNotNullOrEmpty()]
-  	 [ValidateScript( {Test-Path $_})]
-  	 [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
-  	[string] $Path, 
+      [parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="Path")]
+    $Path,
+  
+      [parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="LiteralPath")]
+    $LiteralPath,       
        
-  	 [Parameter(Position=1, Mandatory=$false)]
+  	  [Parameter(Position=1, Mandatory=$false)]
   	[Ionic.Zip.SelfExtractorSaveOptions] $SaveOptions =$Script:DefaultSfxConfiguration,
    
-     [Parameter(Position=2, Mandatory=$false)]
-    [Ionic.Zip.ReadOptions]$ReadOptions=$(New-Object Ionic.Zip.ReadOptions),
+      [Parameter(Position=2, Mandatory=$false)]
+    [Ionic.Zip.ReadOptions] $ReadOptions=$(New-Object Ionic.Zip.ReadOptions),
      
-	 [Parameter(Position=3, Mandatory=$false)]
+	  [Parameter(Position=3, Mandatory=$false)]
     [string] $Comment,
     
     [switch] $Passthru
@@ -2358,12 +2359,34 @@ Function ConvertTo-Sfx {
  begin {
    if ($PSBoundParameters.ContainsKey('Comment') -And ($Comment.Length -gt 32767))
    { Throw (New-Object PSIonicTools.PsionicException($PsIonicMsgs.CommentMaxValue)) }
+  
+   if (-not $PSBoundParameters.ContainsKey("SaveOptions") )
+   { $SaveOptions=$Script:DefaultSfxConfiguration } #bug v2 : parameters-initialization
+   
+   if (-not $PSBoundParameters.ContainsKey("ReadOptions")) 
+   { $ReadOptions=New-Object Ionic.Zip.ReadOptions } #bug v2 : parameters-initialization   
  }
  
  process {  
     $Logger.Debug("Path=$Path") #<%REMOVE%>
-    
-    $Parameters=NewSfxCmdline $Path  $SaveOptions $Comment
+
+     #Validation du chemin qui doit référencer le FileSystem
+    if ($isLiteral)
+    { $PSPathInfo=New-PsIonicPathInfo -LiteralPath $Path}
+    else
+    { $PSPathInfo=New-PsIonicPathInfo -Path $path }
+   
+    $Path=$PSPathInfo.GetFileName()
+    $Logger.Debug("PathInfo=$Path") #<%REMOVE%>
+    if (-not $PSPathInfo.isaValidFileSystemPath()) 
+    {
+       $Msg=$PsIonicMsgs.PathIsNotAFile -F ($Path + "`r`n$($PSPathInfo.LastError)")
+       $Logger.Error($Msg) #<%REMOVE%>
+       Write-Error -Exception (New-Object PSIonicTools.PsionicException($Msg))
+       return  
+    }
+    #le prg externe teste l'existence du fichier .zip
+    $Parameters=NewSfxCmdline $Path $SaveOptions $Comment
     
     $code=@"
 &'$psScriptRoot\ConvertZipToSfx.exe' $Parameters 2>&1
