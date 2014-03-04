@@ -24,7 +24,7 @@ A moins d'être assuré que celui sélectionné corresponde à celui utilisé lo
 	GetZipFileParametersList = @"
 Obtient les entrées contenues dans le catalogue de l'archive. Les objets renvoyés sont des objets personnalisés dont le nom de type est PSZipEntry.
 Hormis sa propriété 'Info', toutes sont en lecture seule.
-L'archive n'est pas verrouillé.
+L'archive n'est pas verrouillée.
 "@
 	GetZipFileParametersProgressID =@"
 L'usage de ce paramètre crée un gestionnaire d'événements pour les opérations de lecture.
@@ -32,7 +32,7 @@ Lors de l'ouverture d'une archive zip de grande taille, vous pouvez choisir d'af
 Cette ID permet de distinguer la barre de progression interne des autres. Utilisez ce paramètre lorsque vous créez plus d'une barre de progression.
 "@
 	GetZipFileParametersPath = 'Nom du ou des fichiers ZIP à lire. Vous pouvez préciser des noms de fichier comportant des jokers.'
-	GetZipFileParametersOptions = 'Options utilisées lors de la création d''une archive auto extractible (cf. New-ZipSfxOptions).'
+	GetZipFileFParametersOptions = 'Options utilisées lors de la création d''une archive auto extractible (cf. New-ZipSfxOptions).'
 	GetZipFileParametersPassword = 'Précise le mot de passe nécessaire à la lecture d''une archive encryptée.'
 	GetZipFileParametersReadOptions = 'Objet d''option de lecture créé à l''aide de la fonction New-ReadOptions.'
 	GetZipFileParametersSortEntries = 'Tri les entrées avant de les enregistrer dans l''archive.'
@@ -63,7 +63,7 @@ La méthode Close() appelle en interne la méthode Save() puis PSDispose().
     GetZipFileExamplesRemarks5 =  @"
 La première instruction de cet exemple renvoi les entrées du catalogue d'une archive sous forme d'objet de type PSZipEntry.
 Les suivantes recherche dans le catalogue d'origine une entrée nommée 'Test.ps1' puis la décompresse dans le répertoire C:\Temp.
-.
+
 La différence entre les deux approches est que les objets de type PSZipEntry ne dispose pas des méthodes spécifiques aux objets de type ZipEntry. 
 "@
     GetZipFileExamplesRemarks6 =  @"
