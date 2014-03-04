@@ -4,7 +4,7 @@ $Datas = @{
 	GetZipFileDescription = @"
 Obtient un objet archive à partir d'un fichier Zip. L'objet archive ne contient que le catalogue, une liste d'objets de type ZipEntry, pour récupérer le contenu d'une entrée du catalogue vous devez l'extraire sur un lecteur du système de fichier.
 Cette fonction paramètre également les propriétés les plus usuelles de l'objet archive.
-L'objet archive renvoyé est verrouillé tant que vous n'appellez pas sa méthode Close(). Par contre, l'usage du paramètre -List ne verrouille pas l'archive.
+L'objet archive renvoyé est verrouillé tant que vous n'appelez pas sa méthode Close(). Par contre, l'usage du paramètre -List ne verrouille pas l'archive.
 "@
 	GetZipFileSetsManualOption = ''
 	GetZipFileSetsReadOption = ''
@@ -42,13 +42,13 @@ Cette ID permet de distinguer la barre de progression interne des autres. Utilis
 	GetZipFileInputsDescription1 = 'String'
 	GetZipFileOutputsDescriptionIonicZipZipFile = 'Ionic.Zip.ZipFile'
 	GetZipFileNotes = @"
-Cette fonction renvoyant seulement un objet archive Zip à partir de son nom complet, la plupart des paramètres servent à configurer les propriétes de l'archive si vous souhaitez la modifier.
+Cette fonction renvoyant seulement un objet archive Zip à partir de son nom complet, la plupart des paramètres servent à configurer les propriétés de l'archive si vous souhaitez la modifier.
 Par exemple, le paramètre 'Encryption' n’influe pas sur la lecture du Zip, seul le paramètre Password est nécessaire, car ce sont les entrées de l'archive Zip qui portent l’information de cryptage, et pas l'objet de type [ZipFile].
 Une archive Zip peut donc en théorie contenir plusieurs entrées dont chacune a un mode de compression différente des autres.
 ATTENTION, pour chaque objet renvoyé vous devrez appeler la méthode Close() afin de libérer correctement les ressources de l'archive.
 "@
 	GetZipFileExamplesRemarks1 = @"
-Cet exemple lit un fichier zip, affiche son contenu puis libére ses ressources. 
+Cet exemple lit un fichier zip, affiche son contenu puis libère ses ressources. 
 "@
     GetZipFileExamplesRemarks2 = @"
 Cet exemple lit un fichier zip, lui ajoute une entrée à partir d'un fichier, puis l'enregistre et enfin libère ses ressources. 
@@ -57,7 +57,7 @@ Cet exemple lit un fichier zip, lui ajoute une entrée à partir d'un fichier, p
 Cet exemple lit un fichier zip, lui ajoute une entrée à partir d'une chaine de caractères, puis l'enregistre et enfin libère ses ressources. 
 "@
     GetZipFileExamplesRemarks4 =  @"
-Cet exemple lit un fichier zip, lui ajoute tous les fichiers txt d'un répertoire, puis l'enregistre en libérant ses ressources. 
+Cet exemple lit un fichier zip, lui ajoute tous les fichiers .txt d'un répertoire, puis l'enregistre en libérant ses ressources. 
 La méthode Close() appelle en interne la méthode Save() puis PSDispose(). 
 "@
     GetZipFileExamplesRemarks5 =  @"
