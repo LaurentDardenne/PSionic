@@ -54,6 +54,7 @@ New-ZipSfxOptions -Copyright "This module is free for non-commercial purposes."|
 		}
 	)
 	links = @(
+        @{ text = ''; URI = 'https://psionic.codeplex.com/wikipage?title=New-ZipSfxOptions-FR'}
 		@{ text = 'AdditionalCompilerSwitches'; URI = 'http://msdn.microsoft.com/en-us/library/system.codedom.compiler.compilerparameters(v=vs.80).aspx' }
 	)
 }
