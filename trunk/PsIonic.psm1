@@ -10,6 +10,12 @@
 #bug Ionic 1.9.8:
 # NumberOfSegmentsForMostRecentSave : la valeur est fausse 
 
+if (-not (Test-Path env:PSIONICLOGPATH)) 
+{ 
+ Write-Warning "The environment variable %PSIONICLOGPATH% is not declared, the logs are stored in: : $psScriptRoot\Logs" 
+ $env:PSIONICLOGPATH="$psScriptRoot\Logs"
+}
+
 Add-Type -Path "$psScriptRoot\$($PSVersionTable.PSVersion)\PSIonicTools.dll"
  
 Start-Log4Net "$psScriptRoot\Log4Net.Config.xml"
