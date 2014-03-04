@@ -22,13 +22,12 @@ Ce paramètre peut utiliser la liaison retardée (delayed script block).
 Précise un critère de recherche pour les données à extraire de l'archive Zip.
 Pour plus d'informations sur l'écriture et la syntaxe de la requête, consultez le fichier d'aide about_Query_Selection_Criteria ou la documentation de la dll Ionic (fichier d'aide .chm).
 Attention, il n’y a pas de contrôle de cohérence sur le contenu de la query, par exemple celle-ci 'size <100 byte AND Size>1000 byte' ne provoquera pas d'erreur, mais aucun fichier ne sera sélectionné.
-.
-Si vous précisez également le paramètre -Passthru, une propriété personnalisé nommée 'Query' sera ajouté à l'objet renvoyé. 
+Si vous précisez également le paramètre -Passthru, une propriété personnalisée et nommée 'Query' sera ajoutée à l'objet renvoyé. 
 "@
 	ExpandZipFileParametersFrom = @"
-Précise le répertoire de l'archive à partir duquel seront extrait les entrées. 
+Précise le répertoire de l'archive à partir duquel seront extraites les entrées. 
 Un nom de répertoire dans une archive à la syntaxe suivante : 'NomRépertoire/' ou 'NomRépertoire/NomDeSousRépertoire/'.
-.
+
 L'usage de ce paramètre nécessite de préciser le paramètre -Query, sinon une exception sera déclenchée.
 "@
 	ExpandZipFileParametersExtractAction = 'Précise le comportement à adopter lorsque des données sont déjà présentes dans le répertoire de destination.'
@@ -45,14 +44,14 @@ Type d'encodage de l'archive. Les valeurs possibles sont :
 .
 Pour une meilleure portabilité, l'utilisation de la valeur par défaut ('DefaultEncoding') est recommandé.
 "@
-	ExpandZipFileParametersFlatten = 'Les fichiers sont extrait sans arborescence.'
+	ExpandZipFileParametersFlatten = 'Les fichiers sont extraits sans arborescence.'
 	ExpandZipFileParametersProgressID = @"
 Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression.
 L'usage de ce paramètre crée une barre de progression pour les opérations de lecture, celle-ci sera remplacée lors des opérations d'extraction. 
 La barre de progression pour les opérations de lecture n'affiche que le nombre d'entrées lues.
 Si le paramètre -Query est précisé, alors la barre de progression d'extraction affichera uniquement les noms des fichiers extraits, sinon elle affichera le nom et le pourcentage de la progression.
 .
-Note : bien évidement la durée de la présence de la barre de progression à l'écran dépendra du nombre d'entrées présente dans l'archive.
+Note : bien évidement la durée de la présence de la barre de progression à l'écran dépendra du nombre d'entrées présentes dans l'archive.
 "@
 	ExpandZipFileParametersPassthru = @"
 Emet le fichier d'archive dans le pipeline. Attention, dans ce cas la libération des ressources par l'appel à la méthode Close() est à votre charge.
@@ -100,7 +99,7 @@ Ainsi ces instructions créeront les répertoires 'C:\Temp\TestZip\Archive1','C:
     ExpandZipFileExamplesRemarks9 = @"
 Cet exemple extrait tous les fichiers '.dll' contenu dans le répertoire 'Bin/V2/' de l'archive, dans le répertoire 'C:\Temp\ExtractArchive'.
 Le paramètre -Flatten indique d'extraire tous les fichiers à la racine du répertoire indiqué, l'arborescence existante dans l'archive n'est pas recréé.  
-Le paramètre -Verbose affiche les toutes entrées lues, puis celles extraites.
+Le paramètre -Verbose affiche toutes les entrées lues, puis celles extraites.
 Le paramètre -passthru récupère l'instance de l'archive, ce qui permet de continuer de travailler sur l'archive. 
 Une fois les traitements terminés, on libère explicitement l'instance de l'objet archive, ce qui déverrouillera le fichier.
 "@
