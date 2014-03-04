@@ -1,7 +1,7 @@
 ﻿# New-ZipSfxOptions command data
 $Datas = @{
-	NewZipSfxOptionsSynopsis = 'Crée un objet configuration utilisée lors de la construction d''une archive auto extractible.'
-	NewZipSfxOptionsDescription = 'Crée un objet configuration utilisée lors de la construction d''une archive auto extractible.'
+	NewZipSfxOptionsSynopsis = 'Crée un objet configuration utilisé lors de la construction d''une archive auto extractible.'
+	NewZipSfxOptionsDescription = 'Crée un objet configuration utilisé lors de la construction d''une archive auto extractible.'
 	NewZipSfxOptionsSetsCmdLine = 'L''archive auto extractible est encapsulée dans un programme console (CLI).'
 	NewZipSfxOptionsSetsGUI = 'L''archive auto extractible est encapsulée dans un programme Winform (GUI).'
 	NewZipSfxOptionsParametersAdditionalCompilerSwitches = 'Options supplémentaires utilisées lors de la génération de l''exécutable dotNET.'
@@ -24,8 +24,8 @@ Celles-ci seront substituées lors de l'exécution de l’archive auto extractib
 	NewZipSfxOptionsInputsDescription1 = 'Aucune'
 	NewZipSfxOptionsOutputsDescriptionIonicZipSelfExtractorSaveOptions = 'Ionic.Zip.SelfExtractorSaveOptions'
 	NewZipSfxOptionsNotes = @"
-Pour tous les paramètres de type string renseignées, les caractères espaces sont supprimés en début ou en fin de chaîne.
-.
+Pour tous les paramètres de type string renseignés, les caractères espaces sont supprimés en début ou en fin de chaîne.
+
 Voici la liste des propriétées ayant des valeurs par défaut :
 Flavor                          : ConsoleApplication
 Quiet                           : False
