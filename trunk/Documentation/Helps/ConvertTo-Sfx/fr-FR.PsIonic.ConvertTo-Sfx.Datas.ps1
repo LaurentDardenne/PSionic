@@ -2,7 +2,7 @@
 $Datas = @{
 	ConvertToSfxSynopsis = 'Convertit une archive .ZIP en une archive auto extractible.'
 	ConvertToSfxDescription = @"
-La conversion d'une archive .ZIP en une archive auto extractible intégre dans le fichier généré le traitement de décompression.
+La conversion d'une archive .ZIP en une archive auto extractible intègre dans le fichier généré le traitement de décompression.
 Vous pouvez également préciser une ligne de commande à exécuter une fois la décompression de tous les fichiers terminée.     
 "@
 	ConvertToSfxSets__AllParameterSets = ''
@@ -12,7 +12,7 @@ Vous pouvez également préciser une ligne de commande à exécuter une fois la 
 Nom du fichier .zip à convertir. Celui-ci est traité tel quel, c'est-à-dire que les caractères génériques ne sont pas interprétés. 
 "@
 	ConvertToSfxParametersSaveOptions = 'Options de génération créées via la fonction New-ZipSfxOptions.'
-    ConvertToSfxParametersReadOptions = 'Options appliquées lors de la lecture de l''archive (.zip) à partir de laquelle on génére une archive autoexetractible (.exe). Options créées via la fonction New-ReadOptions.'
+    ConvertToSfxParametersReadOptions = 'Options appliquées lors de la lecture de l''archive (.zip) à partir de laquelle on génère une archive auto extractible (.exe). Options créées via la fonction New-ReadOptions.'
 	ConvertToSfxParametersPassthru = @"
 Renvoi le fichier généré sous forme d'objet et pas seulement son nom. 
 L'objet archive renvoyé n'étant pas verrouillé, soyez attentif à vos scénarios d'usage de cet objet.    
