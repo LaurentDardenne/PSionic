@@ -2,8 +2,8 @@
 $Datas = @{
 	NewZipSfxOptionsSynopsis = 'Crée un objet configuration utilisé lors de la construction d''une archive auto extractible.'
 	NewZipSfxOptionsDescription = 'Crée un objet configuration utilisé lors de la construction d''une archive auto extractible.'
-	NewZipSfxOptionsSetsCmdLine = 'L''archive auto extractible est encapsulée dans un programme console (CLI).'
-	NewZipSfxOptionsSetsGUI = 'L''archive auto extractible est encapsulée dans un programme Winform (GUI).'
+	NewZipSfxOptionsSetsCmdLine = ''
+	NewZipSfxOptionsSetsGUI = ''
 	NewZipSfxOptionsParametersAdditionalCompilerSwitches = 'Options supplémentaires utilisées lors de la génération de l''exécutable dotNET.'
 	NewZipSfxOptionsParametersCmdLine = 'Précise que l''archive auto extractible est basée sur un programme console (CLI).'
 	NewZipSfxOptionsParametersCopyright = 'Notice de copyright ou de copyleft.'
@@ -26,7 +26,7 @@ Celles-ci seront substituées lors de l'exécution de l’archive auto extractib
 	NewZipSfxOptionsNotes = @"
 Pour tous les paramètres de type string renseignés, les caractères espaces sont supprimés en début ou en fin de chaîne.
 
-Voici la liste des propriétées ayant des valeurs par défaut :
+Voici la liste despropriétés ayant des valeurs par défaut :
 Flavor                          : ConsoleApplication
 Quiet                           : False
 ExtractExistingFile             : Throw
