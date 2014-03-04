@@ -32,7 +32,7 @@ Lors de l'ouverture d'une archive zip de grande taille, vous pouvez choisir d'af
 Cette ID permet de distinguer la barre de progression interne des autres. Utilisez ce paramètre lorsque vous créez plus d'une barre de progression.
 "@
 	GetZipFileParametersPath = 'Nom du ou des fichiers ZIP à lire. Vous pouvez préciser des noms de fichier comportant des jokers.'
-	GetZipFileFParametersOptions = 'Options utilisées lors de la création d''une archive auto extractible (cf. New-ZipSfxOptions).'
+	GetZipFileParametersOptions = 'Options utilisées lors de la création d''une archive auto extractible (cf. New-ZipSfxOptions).'
 	GetZipFileParametersPassword = 'Précise le mot de passe nécessaire à la lecture d''une archive encryptée.'
 	GetZipFileParametersReadOptions = 'Objet d''option de lecture créé à l''aide de la fonction New-ReadOptions.'
 	GetZipFileParametersSortEntries = 'Tri les entrées avant de les enregistrer dans l''archive.'
