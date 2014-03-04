@@ -7,7 +7,7 @@ $Datas = @{
 	RemoveZipEntryParametersFrom = @"
 Précise le répertoire de l'archive dans lequel seront supprimé les entrées. 
 Un nom de répertoire dans une archive à la syntaxe suivante : 'NomRépertoire/' ou 'NomRépertoire/NomDeSousRépertoire/'.
-.
+
 L'usage de ce paramètre nécessite de préciser le paramètre -Query, sinon une exception sera déclenchée.
 "@
  
@@ -19,10 +19,10 @@ Contenu associé à une entrée d'archive. Les types attendus sont :
    - un tableau d'objet de type ZipEntry,
    - un tableau de String ou d'Object, dans ce dernier cas son contenu sera transformé en String.
 Tous les autres type de tableaux, autres que ceux indiqué ci-dessus, déclencheront une erreur.
-Pour tous les autres types d'objet, ils seront transformés convertis en chaîne de caractères.   
+Pour tous les autres types d'objet, ils seront convertis en chaîne de caractères.   
 "@
 	RemoveZipEntryParametersName = @"
-Chaque entrée d'archive est associèe à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme nom d'entrée à la racine de l'archive.
+Chaque entrée d'archive est associèe à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs noms sont automatiquement utilisés comme nom d'entrée à la racine de l'archive.
 "@	
 	RemoveZipEntryParametersQuery = @"
 Précise un critère de recherche pour les données à supprimer de l'archive Zip.
