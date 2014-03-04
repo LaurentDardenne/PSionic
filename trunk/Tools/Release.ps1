@@ -183,7 +183,8 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
    "$PsIonicLivraison\PsIonic\en-US", 
    "$PsIonicLivraison\PsIonic\fr-FR", 
    "$PsIonicLivraison\PsIonic\FormatData",
-   "$PsIonicLivraison\PsIonic\TypeData"|
+   "$PsIonicLivraison\PsIonic\TypeData",
+   "$PsIonicLivraison\PsIonic\Logs"|
    Foreach {
     md $_ -Verbose -ea SilentlyContinue > $null
    } 
