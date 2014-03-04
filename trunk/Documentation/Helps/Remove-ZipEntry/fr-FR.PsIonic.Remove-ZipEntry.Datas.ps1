@@ -14,7 +14,7 @@ L'usage de ce paramètre nécessite de préciser le paramètre -Query, sinon une
 	RemoveZipEntryParametersInputObject = @"
 Contenu associé à une entrée d'archive. Les types attendus sont : 
    - Un ou des objets de type fichiers ou de type répertoires,
-   - une chaîne de caractères référençant une entrée, si celle-ci référence un nom de répertoire, elle doit se terminer par le caractére '/',
+   - une chaîne de caractères référençant une entrée, si celle-ci référence un nom de répertoire, elle doit se terminer par le caractère '/',
    - un objet de type ZipEntry,
    - un tableau d'objet de type ZipEntry,
    - un tableau de String ou d'Object, dans ce dernier cas son contenu sera transformé en String.
