@@ -3,9 +3,14 @@
 	command = 'ConvertTo-Sfx'
 	synopsis = $Datas.ConvertToSfxSynopsis
 	description = $Datas.ConvertToSfxDescription
+ 	sets = @{
+		LiteralPath = $Datas.ConvertToSfxSetsLiteralPath
+		Path = $Datas.ConvertToSfxSetsPath
+	}
 	parameters = @{
 		Comment = $Datas.ConvertToSfxParametersComment
 		Path = $Datas.ConvertToSfxParametersPath
+        LiteralPath = $Datas.ConvertToSfxParametersLiteralPath
 		Passthru = $Datas.ConvertToSfxParametersPassthru
 		ReadOptions = $Datas.ConvertToSfxParametersReadOptions
 		SaveOptions = $Datas.ConvertToSfxParametersSaveOptions

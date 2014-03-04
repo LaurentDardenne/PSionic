@@ -4,6 +4,7 @@ $Datas = @{
 	ConvertToSfxDescription = ''
 	ConvertToSfxSets__AllParameterSets = ''
 	ConvertToSfxParametersComment = ''
+	ConvertToSfxParametersLiteralPath = ''
 	ConvertToSfxParametersPath = ''
 	ConvertToSfxParametersPassthru = ''
 	ConvertToSfxParametersReadOptions = ''
