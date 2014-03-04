@@ -8,6 +8,9 @@ Vous pouvez également préciser une ligne de commande à exécuter une fois la 
 	ConvertToSfxSets__AllParameterSets = ''
 	ConvertToSfxParametersComment = 'Commentaire associé à l''archive.'
 	ConvertToSfxParametersPath = 'Nom du fichier .zip à convertir.'
+	ConvertToSfxParametersLiteralPath = @"
+Nom du fichier .zip à convertir. Celui-ci est traité tel quel, c'est-à-dire que les caractères génériques ne sont pas interprétés. 
+"@
 	ConvertToSfxParametersSaveOptions = 'Options de génération créées via la fonction New-ZipSfxOptions.'
     ConvertToSfxParametersReadOptions = 'Options appliquées lors de la lecture de l''archive (.zip) à partir de laquelle on génére une archive autoexetractible (.exe). Options créées via la fonction New-ReadOptions.'
 	ConvertToSfxParametersPassthru = @"
