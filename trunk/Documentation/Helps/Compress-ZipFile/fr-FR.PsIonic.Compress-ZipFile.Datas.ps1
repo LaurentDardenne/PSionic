@@ -92,7 +92,7 @@ Evitez d'utiliser la valeur 'Retry', car celle-ci pourrait tenter indéfiniment 
 	CompressZipFileInputsDescription1 = 'System.String,System.IO.FileInfo'
 	CompressZipFileOutputsDescriptionIonicZipZipFile = 'Ionic.Zip.ZipFile'
 	CompressZipFileNotes = @"
-Selon le contenu, votre archive peut être compressée en 64 bits, pour déterminer si l‘archive utilise les extensions Zip64 consultez la propriété ''OutputUsedZip64'' de l''archive.
+Selon le contenu, votre archive peut être compressée en 64 bits, pour déterminer si l'archive utilise les extensions Zip64 consultez la propriété 'OutputUsedZip64' de l'archive.
 Aucun contrôle n'est effectué sur l'espace disponible lors de la création de l'archive.
 Si le catalogue est vide et qu'il n'y a pas eu d'exception, le fichier .Zip est tout de même créé.
 "@ 
