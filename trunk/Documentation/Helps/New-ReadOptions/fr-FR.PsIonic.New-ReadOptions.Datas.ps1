@@ -33,7 +33,7 @@ La présence du paramètre -Verbose impose donc la libération implicite de cett
     NewReadOptionsExamplesRemarks2 = 'Cet exemple crée un objet option de lecture avec une valeur d''encodage par défaut et un PSVerboseTextWriter pour des affichages supplémentaires.'
     NewReadOptionsExamplesRemarks3 = 'Cet exemple crée un objet option de lecture avec une valeur d''encodage par défaut et une barre de progression.'
     NewReadOptionsExamplesRemarks4 = @"
-Cet exemple crée un objet option de lecture avec une valeur d''encodage par défaut et une barre de progression. 
+Cet exemple crée un objet option de lecture avec une valeur d'encodage par défaut et une barre de progression. 
 Puis on modifie directement sa propriété StatusMessageWriter afin d'afficher le suivi de l'opération sur la console et plus sur le flux verbose. 
 "@
 }

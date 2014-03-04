@@ -1,9 +1,11 @@
 ﻿# Expand-ZipFile command data
 $Datas = @{
 	ExpandZipFileSynopsis = 'Extrait des fichiers et/ou des répertoires depuis une archive compressée au format Zip.'
-	ExpandZipFileDescription = 'Extrait des fichiers et/ou des répertoires depuis une archive compressée .ZIP ou d''une archive auto extractible .EXE.'
-	ExpandZipFileSetsPath = 'Les noms de fichiers peuvent contenir des caractères jokers.'
-	ExpandZipFileSetsLiteralPath = 'Les noms de fichiers ne doivent pas contenir de caractère joker.'
+	ExpandZipFileDescription = @" 
+Extrait des fichiers et/ou des répertoires depuis une archive compressée .ZIP ou d'une archive auto extractible '.EXE'.
+"@
+    ExpandZipFileSetsPath = ''
+	ExpandZipFileSetsLiteralPath = ''
     ExpandZipFileParametersPath = @"
 Nom du fichier Zip sous la forme d'un objet de type String ou System.IO.FileInfo.
 Dans le cas où c'est un type String et si celle-ci contient des jokers, alors la liaison retardée (delayed script block) sur le paramètre -OutputPath 
@@ -77,7 +79,7 @@ Lors de l'extraction, l'usage de la valeur 'OverwriteSilently' pour le paramètr
     ExpandZipFileExamplesRemarks5 = @"
 Extrait les données contenues dans une archive Zip vers un répertoire de destination.
 Seules les données correspondantes à la requête sont extraites, ici les fichiers dont l'extension est '.jpg'.
- "@
+"@
     ExpandZipFileExamplesRemarks6 = @"
 Extrait les données contenues dans une archive Zip vers un répertoire de destination.
 Seules les données correspondantes à la requête sont extraites, ici uniquement les répertoires.

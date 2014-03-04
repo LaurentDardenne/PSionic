@@ -1,7 +1,7 @@
 ﻿# Format-ZipFile command data
 $Datas = @{
 	FormatZipFileSynopsis = 'Formate le contenu des propriétés d''un objet archive.'
-	FormatZipFileDescription = 'Formate le contenu des propriétés d''une archive Zip. Consultez la rubrique Notes pour le détail des propriètés affichées par défaut.'
+	FormatZipFileDescription = 'Formate le contenu des propriétés d''une archive Zip. Consultez la rubrique Notes pour le détail des propriétés affichées par défaut.'
 	FormatZipFileSets__AllParameterSets = ''
 	FormatZipFileParametersProperties = 'Tableau de nom de propriété à afficher lors de l''appel interne à Format-List'
 	FormatZipFileParametersZip = 'Objet archive sur lequel appliquer le formatage.'
