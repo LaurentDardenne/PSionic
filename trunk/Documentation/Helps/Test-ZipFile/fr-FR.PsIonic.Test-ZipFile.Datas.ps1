@@ -27,12 +27,12 @@ Ce comportement est similaire à un filtre, où seul les fichiers valides seraie
 Les objets archive renvoyés n'étant pas verrouillés, soyez attentif à vos scénarios d'usage de ces objets.    
 '@
 	TestZipFileParametersPassword = @'
-Mot de passe, nécessaire si l'archive est protégé par un mot de passe.
+Mot de passe, nécessaire si l'archive est protégée par un mot de passe.
 Si vous devez tester une archive avec un mot de passe n'utilisez pas le paramètre -IsValid, car dans ce cas le résultat renvoyé sera toujours faux.
 Utilisez uniquement le paramètre -Password et/ou le paramètre -Check. Si le password est faux le résultat renvoyé sera faux.  
 '@
 	TestZipFileParametersRepair = 'Tente une réparation si l''archive est corrompue.'
-	TestZipFileInputsDescription1 = 'String ou System.IO.FileInfo ou Object (transformé en un type String). Les objets de type répertoire ne sont pas traité.'
+	TestZipFileInputsDescription1 = 'String ou System.IO.FileInfo ou Object (transformé en un type String). Les objets de type répertoire ne sont pas traités.'
 	TestZipFileOutputsDescriptionSystemBoolean = ''
 	TestZipFileOutputsDescriptionSystemString = ''
 	TestZipFileNotes = ''
