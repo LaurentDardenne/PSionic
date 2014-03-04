@@ -7,10 +7,10 @@ $Datas = @{
 	UpdateZipEntryParametersEntryPathRoot = @"
 La nouvelle entrée sera ajoutée dans un répertoire spécifique. Par défaut elle est ajoutée à la racine de l'arborescence contenue dans l'archive. 
 La valeur de ce paramètre doit référencer un répertoire existant.
-.
+
 Pour éviter les collisions de nom d'entrée lors de la compression récursive d'une arborescence vous devrez utiliser ce paramètre.
 Celui-ci permet de construire le nom de l'entrée relativement au nom de répertoire spécifié.
-. 
+
 Par exemple en précisant 'C:\Temp\Backup', lors de la compression récursive de 'C:\Temp\Backup' le traitement de construction du nom d'entrée retranchera 'C:\Temp\Backup' à chaque nom de fichier reçus.
 Donc, pour les fichiers 'C:\Temp\Backup\File1.ps1' et 'C:\Temp\Backup\Projet\File1.ps1' les entrées créées dans le catalogue seront respectivement:
 File1.ps1
@@ -27,8 +27,8 @@ Contenu associé à une entrée d'archive. Les types attendus sont :
 Tous les autres types d'objet seront transformés en chaîne de caractères via la méthode ToString().   
 "@
 	UpdateZipEntryParametersName = @"
-Chaque entrée d'archive est associée à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme nom d'entrée à la racine de l'archive.
-.
+Chaque entrée d'archive est associée à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs noms sont automatiquement utilisés comme nom d'entrée à la racine de l'archive.
+
 Pour les chaînes de caractères ou les tableaux d'octets, vous devez préciser un nom d'entrée. L'usage du paramètre -EntryPathRoot n'influencera pas ce nommage.
 "@	
 	UpdateZipEntryParametersPassthru =  'Une fois l''entrée mise à jour dans le catalogue de l''archive, elle est émise dans le pipeline.'
