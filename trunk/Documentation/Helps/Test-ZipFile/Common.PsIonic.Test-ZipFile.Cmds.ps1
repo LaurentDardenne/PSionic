@@ -43,7 +43,8 @@ Test-Zipfile "C:\Temp\Test.zip"
 		},
 		@{
 			code = {
-"C:\Temp\*.*"|Compress-SfxFile -OutputName "C:\Temp\Test.zip" 
+"C:\Temp\*.*"|Compress-ZipFile "C:\Temp\Test.zip"
+ConvertTo-Sfx  -path "C:\Temp\Test.zip" 
 Test-Zipfile "C:\Temp\Test.exe"
 			}
 			remarks = $Datas.TestZipFileExamplesRemarks2

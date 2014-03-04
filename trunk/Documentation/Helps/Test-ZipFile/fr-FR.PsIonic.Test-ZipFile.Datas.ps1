@@ -37,6 +37,9 @@ Utilisez uniquement le paramètre -Password et/ou le paramètre -Check. Si le pa
 	TestZipFileOutputsDescriptionSystemString = ''
 	TestZipFileNotes = ''
 	TestZipFileExamplesRemarks1 = 'La première ligne crée une archive au format Zip, la seconde teste si le fichier est bien une archive au format PkZip. Le résultat de l''exécution vaut $true.'
-    TestZipFileExamplesRemarks2 = 'La première ligne crée une archive auto extractible, la seconde teste si le fichier est bien une archive au format PkZip. On constate qu''une archive auto extractible est considérée comme étant une archive valide. Le résultat de l''exécution vaut $true.'
+    TestZipFileExamplesRemarks2 = @"
+La première ligne crée une archive au format Zip, la seconde crée une archive auto extractible, la troisième teste si le fichier est bien une archive au format PkZip. 
+On constate qu'une archive auto extractible est considérée comme étant une archive valide. Le résultat de l'exécution vaut $true.
+"@
     TestZipFileExamplesRemarks3 = 'Le résultat de l''exécution vaut $false, car l''objet reçu, transformé en string, ne référence pas un fichier d''archive .ZIP.'
 }
