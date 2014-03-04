@@ -59,7 +59,7 @@ try {
   { $ZipFile.PSDispose() }
 }
 			}
-			remarks = $Datas.AddZipEntryExamplesRemarks1
+			remarks = $Datas.ExpandZipEntryExamplesRemarks1
 			test = { . $args[0] }
 		}
 		@{
@@ -81,7 +81,7 @@ try {
 $MaTableDeVersion
 
 			}
-			remarks = $Datas.AddZipEntryExamplesRemarks2
+			remarks = $Datas.ExpandZipEntryExamplesRemarks2
 			test = { . $args[0] }
 		}
 		@{
@@ -102,7 +102,7 @@ try {
   { $ZipFile.PSDispose() }
 }
 			}
-			remarks = $Datas.AddZipEntryExamplesRemarks3
+			remarks = $Datas.ExpandZipEntryExamplesRemarks3
 			test = { . $args[0] }
 		}
 	)
