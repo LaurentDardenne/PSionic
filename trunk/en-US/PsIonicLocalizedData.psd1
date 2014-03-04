@@ -12,9 +12,6 @@
  InvalidPasswordForDataEncryptionValue=The value provided for Password parameter ('{0}') is invalid for the given value of DataEncryption '{1}'.
  ZipArchiveCheckPasswordError=Error occured while checking password on the archive {0} : {1}.
 
- ConvertingFile=Converting archive {0} to a self-extracting archive.
- ErrorSFX=Error occured while creating the self-extracting archive {0} : {1}
-
  AddEntryError=Can not add the entry '{0}' into the archive '{1}': {2}
  EntryIsNull=The entry '{0}' is `$null.
  ExpandZipEntryError=The entry named '{0}' do not exist in the archive '{1}'
