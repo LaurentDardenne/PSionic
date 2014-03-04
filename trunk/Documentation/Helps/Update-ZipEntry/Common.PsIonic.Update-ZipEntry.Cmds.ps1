@@ -35,7 +35,7 @@ try {
   $ZipFile.Close()
 }
 			}
-			remarks = $Datas.AddZipEntryExamplesRemarks1
+			remarks = $Datas.UpdateZipEntryExamplesRemarks1
 			test = { . $args[0] }
 		}
 		@{
@@ -47,7 +47,7 @@ try {
   $ZipFile.Close()
 }
 			}
-			remarks = $Datas.AddZipEntryExamplesRemarks2
+			remarks = $Datas.UpdateZipEntryExamplesRemarks2
 			test = { . $args[0] }
 		}
 		@{
@@ -60,7 +60,7 @@ try {
   $ZipFile.Close()
 }
 			}
-			remarks = $Datas.AddZipEntryExamplesRemarks3
+			remarks = $Datas.UpdateZipEntryExamplesRemarks3
 			test = { . $args[0] }
 		}
 		@{
@@ -72,7 +72,7 @@ try {
   $ZipFile.Close()
 }
 			}
-			remarks = $Datas.AddZipEntryExamplesRemarks4
+			remarks = $Datas.UpdateZipEntryExamplesRemarks4
 			test = { . $args[0] }
 		}
 		@{
@@ -85,7 +85,7 @@ try {
   $ZipFile.Close()
 }
 			}
-			remarks = $Datas.AddZipEntryExamplesRemarks5
+			remarks = $Datas.UpdateZipEntryExamplesRemarks5
 			test = { . $args[0] }
 		}
 	)
@@ -93,4 +93,3 @@ try {
 		@{ text = ''; URI = '' }
 	)
 }
-

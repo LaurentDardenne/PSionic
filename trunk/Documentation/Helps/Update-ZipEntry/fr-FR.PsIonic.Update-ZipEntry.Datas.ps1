@@ -37,7 +37,7 @@ Pour les chaînes de caractères ou les tableaux d'octets, vous devez préciser 
 	UpdateZipEntryOutputsDescriptionIonicZipZipEntry = ''
 	UpdateZipEntryNotes =  @"
 Si une entrée existe déjà, elle est mise à jour. La propriété LastModified est renseignée avec la date et l'heure courante.
-La mise à jour d'une entrée de type directory ne fait qu'ajouter les nouveaux éléments, mais ne supprime pas les entrées qui ne sont plus sur le FilesSystem. Ce n'est pas une synchronisation.
+La mise à jour d'une entrée de type directory ne fait qu'ajouter les nouveaux éléments, mais ne supprime pas les entrées qui ne sont plus sur le FileSystem. Ce n'est pas une synchronisation.
 Par défaut l'ajout d'une entrée existante déclenchera une exception.
 "@
 	UpdateZipEntryExamplesRemarks1 = @"
