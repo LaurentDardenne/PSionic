@@ -9,11 +9,11 @@ $Datas = @{
 	ConvertToPSZipEntryInfoNotes = @"
 La transformation de la propriété Info de type texte en plusieurs objets prend un certain temps.
 Eviter de transformer plusieurs fois cette propriété au sein d'une boucle.
-Soyez attentif au fait qu'une instance peut évoluer par l'ajout ou la supression d'entrée, dans ce cas vous devrez mettre à jour ce champ(ZipEntry/PSZipEntry) ou reconstruire la liste (ZipFile).
+Soyez attentif au fait qu'une instance peut évoluer par l'ajout ou la suppression d'entrée, dans ce cas vous devrez mettre à jour ce champ(ZipEntry/PSZipEntry) ou reconstruire la liste (ZipFile).
 "@
 	ConvertToPSZipEntryInfoExamplesRemarks1 = @"
 Cet exemple récupère d'une archive la liste des entrées, celles-ci sont des objets personnalisé Powershell.
-Puis la propriété Info, qui est par défaut de type string, est transformée en un PSObjet et celui-ci est réaffecté au contenu de la propriété Info.
+Puis la propriété Info, qui est par défaut de type string, est transformée en un PSObject et celui-ci est réaffecté au contenu de la propriété Info.
 L'information initiale de type string n'est plus accessible.    
 "@
 	ConvertToPSZipEntryInfoExamplesRemarks2 = @"
