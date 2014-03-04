@@ -1355,7 +1355,7 @@ Function AddEntry {
     #Par exemple on ne peut traiter des fichiers provenant de deux lecteurs.
     if ($isEntryPathRoot -and 
         ($InputObject -is [System.IO.FileSystemInfo]) -and
-        ($InputObject.FullName.Contains($EntryPathRoot) -eq $false)
+        ($InputObject.FullName.StartsWith($EntryPathRoot,$true,[System.Globalization.CultureInfo]::InvariantCulture) -eq $false)
        ) 
     {
        $msg=$PsIonicMsgs.PathNotInEntryPathRoot -F $InputObject.FullName
