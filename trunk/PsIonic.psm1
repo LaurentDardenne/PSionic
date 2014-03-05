@@ -729,8 +729,8 @@ Function GetObjectByType {
  Param (
    [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
   $Object,
-  [boolean] $Recurse,
-  [boolean] $isLiteral
+  [switch] $Recurse,
+  [switch] $isLiteral
   )
   
  begin {  
