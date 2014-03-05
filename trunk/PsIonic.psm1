@@ -955,10 +955,10 @@ Function Get-ZipFile {
    [OutputType([Ionic.Zip.ZipFile])] #Emet une instance de ZipFile
 	param( 
         [ValidateNotNullOrEmpty()]
-        [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
+        [Parameter(Position=1, Mandatory=$true,ValueFromPipeline = $true)]
       [string[]]$Path, 
         
-        [Parameter(Position=0, Mandatory=$false, ParameterSetName="ReadOption")]
+        [Parameter(Mandatory=$false, ParameterSetName="ReadOption")]
       [Ionic.Zip.ReadOptions]$ReadOptions=$null,
          
       [Ionic.Zip.SelfExtractorSaveOptions] $Options =$Script:DefaultSfxConfiguration,
@@ -969,7 +969,7 @@ Function Get-ZipFile {
       
       [String] $Password,
       
-        [Parameter(Position=0, Mandatory=$false, ParameterSetName="ManualOption")]
+        [Parameter(Mandatory=$false, ParameterSetName="ManualOption")]
       [System.Text.Encoding] $Encoding,
       
         [Parameter(ParameterSetName="ManualOption")]
