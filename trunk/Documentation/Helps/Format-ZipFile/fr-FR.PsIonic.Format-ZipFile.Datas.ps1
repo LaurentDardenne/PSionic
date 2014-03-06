@@ -43,7 +43,7 @@ Liste des propriétés affichées par défaut :
   Comment
   EmitTimesInWindowsFormatWhenSaving
 .
-La présence de cette fonction est due à un bug dans le système d'extension de type et de foramtage qui ne peut à ce jout gérer une classe possédant un indexeur.
+La présence de cette fonction est due à un bug dans le système d'extension de type et de formatage qui ne peut à ce jour gérer une classe possédant un indexeur.
 "@
     FormatZipFileExamplesRemarks1 = 'Cet exemple récupère un objet archive à partir d''un nom de fichier, puis formate son contenu avant de libérer les ressources systèmes.'
 }  

@@ -26,7 +26,7 @@ Celles-ci seront substituées lors de l'exécution de l’archive auto extractib
 	NewZipSfxOptionsNotes = @"
 Pour tous les paramètres de type string renseignés, les caractères espaces sont supprimés en début ou en fin de chaîne.
 
-Voici la liste despropriétés ayant des valeurs par défaut :
+Voici la liste des propriétés ayant des valeurs par défaut :
 Flavor                          : ConsoleApplication
 Quiet                           : False
 ExtractExistingFile             : Throw
