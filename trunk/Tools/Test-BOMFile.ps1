@@ -6,7 +6,7 @@ function ql{ $args }
 
 $Params=@{
  Include=$(ql *.ps1,*.psm1,*.psd1,*.ps1xml,*.xml,*.txt);
- Exclude=$(ql *.bak,*.exe,*.dll,*.Cmds.Template.ps1,*.Datas.Template.ps1)
+ Exclude=$(ql *.bak,*.exe,*.dll,*.Cmds.Template.ps1,*.Datas.Template.ps1,*.csproj.FileListAbsolute.txt)
 }
           
 Get-ChildItem -Path $Path -Recurse @Params |
