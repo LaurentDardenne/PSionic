@@ -1075,10 +1075,10 @@ Function Compress-ZipFile {
    [OutputType([Ionic.Zip.ZipFile])] #Emet une instance de ZipFile
 	param( 
        	[parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="Path")]
-	  $Path,
+	  [PSObject]$Path,
 
 	    [parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="LiteralPath")]
-	  $LiteralPath,
+	  [PSObject]$LiteralPath,
 
         [ValidateNotNullOrEmpty()]
         [Parameter(Position=0, Mandatory=$true)]
@@ -1914,10 +1914,10 @@ Function Expand-ZipFile {
 	param(
 		#Utilisé par des API PS et Win32
        	[parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="Path")]
-	  $Path, 
+	  [PSObject]$Path, 
 	
 	    [parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="LiteralPath")]
-	  $LiteralPath,  
+	  [PSObject]$LiteralPath,  
  
          #Utilisé par des API Win32 
         [ValidateNotNullOrEmpty()] 
@@ -2345,10 +2345,10 @@ Function ConvertTo-Sfx {
   [OutputType([System.IO.FileInfo])]
   Param (
       [parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="Path")]
-    $Path,
+    [PSObject]$Path,
   
       [parameter(Mandatory=$True,ValueFromPipeline=$True, ParameterSetName="LiteralPath")]
-    $LiteralPath,       
+    [PSObject]$LiteralPath,       
        
   	  [Parameter(Position=1, Mandatory=$false)]
   	[Ionic.Zip.SelfExtractorSaveOptions] $SaveOptions =$Script:DefaultSfxConfiguration,
