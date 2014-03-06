@@ -75,8 +75,8 @@ Nom du répertoire temporaire utilisé lors de la construction de l'archive.
 Par défaut la fonction récupère le contenu de la variable d'environnement %TEMP%.
 Sinon, le fichier temporaire de l'archive en cours de construction sera enregistré dans le répertoire spécifié par le paramètre 'OutputName'.
 "@
-	CompressZipFileParametersUnixTimeFormat = 'Le format de date des fichiers sera celui d''Unix'
-	CompressZipFileParametersWindowsTimeFormat = 'Le format de date des fichiers sera celui de Windows'
+	CompressZipFileParametersUnixTimeFormat = 'Le format de date des fichiers sera celui d''Unix.'
+	CompressZipFileParametersWindowsTimeFormat = 'Le format de date des fichiers sera celui de Windows.'
 	CompressZipFileParametersZipErrorAction = @"
 Précise le mode de gestion des erreurs.
 .

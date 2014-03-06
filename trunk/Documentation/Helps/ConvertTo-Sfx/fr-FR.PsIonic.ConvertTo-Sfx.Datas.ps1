@@ -35,6 +35,6 @@ Attention, il n'est pas possible d'enregistrer une archive splittée dans une ar
 	ConvertToSfxExamplesRemarks1 = @'
 Ces instructions créent, à l'aide de la fonction New-ZipSfxOptions, le paramétrage qui sera utilisé lors de la construction de l'archive auto extractible.
 Enfin, on convertit un fichier d'archive .Zip en un fichier d'archive auto extractible .Exe.
-La variable $ReadOption paramètre l'affichage de la progression du traitement sur la console. 
+La variable $ReadOptions paramètre l'affichage de la progression du traitement sur la console. 
 '@ 
 }
