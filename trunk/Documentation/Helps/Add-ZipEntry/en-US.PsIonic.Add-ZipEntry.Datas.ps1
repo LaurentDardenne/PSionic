@@ -39,8 +39,7 @@ All other types of object will be processed to string from ToString() method.
 	AddZipEntryParametersZipFile = 'Target archive in which specified entry is added. This parameter waits for a ZipFile object and not a file name.'
 	AddZipEntryInputsDescription1 = @"
 System.Byte[], System.String, System.IO.DirectoryInfo, System.IO.FileInfo, Ionic.Zip.ZipEntry.
-You can send 
-Vous pouvez émettre any object of the above types in the pipeline.
+You can send any object of the above types in the pipeline.
 "@
 	AddZipEntryOutputsDescriptionIonicZipZipEntry = ''
 	AddZipEntryNotes = @"
