@@ -30,8 +30,8 @@ Function Search-ETSPs1xmlIndex {
 
 Function Remove-ETSPs1XMLData {
 #Supprime des entrées indexées dans $RunspaceCollection
-#$ItemsIndex contient la liste des entrés à supprimés.
-#Les numéro d'index sont déceémernté à chaque suppression
+#$ItemsIndex contient la liste des entrées à supprimer.
+#Les numéros d'index sont décrémentés à chaque suppression
  param (
   $RunspaceCollection,
   $ItemsIndex
