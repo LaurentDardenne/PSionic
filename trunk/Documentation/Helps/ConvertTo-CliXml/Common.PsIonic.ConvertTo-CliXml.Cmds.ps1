@@ -22,16 +22,22 @@
 	notes = $Datas.ConvertToCliXmlNotes
 	examples = @(
 		@{
-			#title = ''
-			#introduction = ''
 			code = {
+try {
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
+  ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Name 'PSVersiontable.climxl' -ZipFile $ZipFile
+} finally {
+  $ZipFile.Close()
+}
 			}
 			remarks = $Datas.ConvertToCliXmlExamplesRemarks1
 			test = { . $args[0] }
 		}
 	)
 	links = @(
-		@{ text = ''; URI = '' }
+       @{ text = ''; URI = '' }
+       @{ text = 'Add-ZipEntry'; URI = ''} 
+       @{ text = 'Update-ZipEntry'; URI = ''}
 	)
 }
 
