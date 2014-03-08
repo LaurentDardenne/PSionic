@@ -478,6 +478,7 @@ Function UnRegisterEvent{
 
 function ConvertFrom-CliXml {
 # .ExternalHelp PsIonic-Help.xml 
+
 # http://poshcode.org/4545
 # by Joel Bennett, modification David Sjstrand, Poshoholic
 
@@ -527,6 +528,7 @@ function ConvertFrom-CliXml {
 
 function ConvertTo-CliXml {
 # .ExternalHelp PsIonic-Help.xml  
+
 #from http://poshcode.org/4544
 #by Joel Bennett,modification Poshoholic
 
