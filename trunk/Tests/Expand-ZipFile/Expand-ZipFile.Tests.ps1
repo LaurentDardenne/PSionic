@@ -1,9 +1,16 @@
 $global:here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$global:WorkDir = $env:TEMP
+
+if (Test-Path $Env:Temp)
+{ $global:WorkDir=$Env:Temp }
+else
+{ $global:WorkDir=[System.IO.Path]::GetTempPath() }
+
+$TestDirectory=Join-Path $global:WorkDir TestPsIonic
+
+&"$(Split-Path $global:here)\Initialize-FilesTest.ps1"
 
 $PSionicModule=Get-Module PsIonic
 
-write-warning $global:here 
 &$global:here\init.ps1 | out-null
 
   Describe "Expand-ZipFile" {
@@ -84,7 +91,7 @@ write-warning $global:here
            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath hklm:\software -create -ErrorAction Stop
         }catch{
            Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
-           $result=$_.Exception.Message -match '^Chemin invalide pour le provider FileSystem'
+           $result=$_.Exception.Message -match '^Le chemin ne référence pas un fichier ou le chemin est invalide'
         }
         $result | should be ($true)
     }
@@ -94,7 +101,7 @@ write-warning $global:here
            Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath wsman:\localhost -create -ErrorAction Stop
         }catch{
             Write-host "Error : $($_.Exception.Message)" -ForegroundColor Yellow
-            $result=$_.Exception.Message -match '^Chemin invalide pour le provider FileSystem'
+            $result=$_.Exception.Message -match '^Le chemin ne référence pas un fichier ou le chemin est invalide'
         }
         $result | should be ($true)
     }
@@ -120,8 +127,9 @@ write-warning $global:here
  
     It "Expand one dll file from a subdirectory in zip file return true" {
         try{
+           rm $global:WorkDir\Archive -rec -force -ea silentlyContinue > $null
            md $global:WorkDir\Archive >$null
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -Query '*.dll' -From 'directory' -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -Query '*.dll' -From 'directory/' -ErrorAction Stop
            $Dllfiles = @(Get-ChildItem $global:WorkDir\Archive -filter *.dll -recurse|Where  { !$_.PSIsContainer})
            if($Dllfiles.count -ne 1){
              throw "Le fichier .dll n'a pas été extrait"
@@ -138,7 +146,7 @@ write-warning $global:here
     It "Expand one dll file from a subdirectory in zip file with flatten return true" {
         try{
            md $global:WorkDir\Archive >$null
-           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -Query '*.dll' -From 'directory' -Flatten -ErrorAction Stop
+           Expand-ZipFile -Path $global:WorkDir\Archive.zip -OutputPath $global:WorkDir\Archive -create -Query '*.dll' -From 'directory/' -Flatten -ErrorAction Stop
            $Dllfiles = @(Get-ChildItem $global:WorkDir\Archive -filter *.dll -recurse|Where  { !$_.PSIsContainer})
            if($Dllfiles.count -ne 1){
              throw "Le fichier .dll n'a pas été extrait"
@@ -187,7 +195,7 @@ write-warning $global:here
            if(-not (test-path $global:WorkDir\CryptedArchive\Archive\PerfCenterCpl.ico)){
              throw "Fichier provenant de l'archive inexistant après extraction"
            }
-           if(-not (test-path $global:WorkDir\CryptedArchive\about_Pester.help.txt)){
+           if(-not (test-path $global:WorkDir\CryptedArchive\init.ps1)){
              throw "Fichier provenant de l'archive inexistant après extraction"
            }
            rm $global:WorkDir\CryptedArchive -Recurse -Force
@@ -263,6 +271,7 @@ write-warning $global:here
               "$global:WorkDir\Archive1\File[1].txt",
               "$global:WorkDir\Archive1\File[2].txt"
             )          
+           rm $global:WorkDir\Archive1 -Recurse -Force -ea SilentlyContinue 
            Expand-ZipFile -Path $global:WorkDir\Archive1.zip -OutputPath $global:WorkDir\Archive1 -create -ExtractAction OverwriteSilently -ErrorAction Stop
            $Files =  @(Get-ChildItem $global:WorkDir\Archive1 -Recurse|? {$_.PSisContainer -eq $false }|Select -expand FullName )
            $Cmp=@(Compare-Object $ExpectedFiles $Files)
@@ -283,5 +292,16 @@ $($cmp|select *)
             $result=$false
         }
         $result | should be ($true)
+    }
+
+    It "Expand each zip file in a dedicated directory" {
+        "$TestDirectory\File1.txt"|Compress-ZipFile -OutputName "$TestDirectory\File1.zip"
+        "$TestDirectory\File2.txt"|Compress-ZipFile -OutputName "$TestDirectory\File2.zip"
+        
+        "$TestDirectory\File1.zip","$TestDirectory\File2.zip"|
+        Dir |
+         Expand-ZipFile -OutputPath {"$TestDirectory\$($_.BaseName)"} -Create -ExtractAction OverwriteSilently
+        $result =("$TestDirectory\file1\File1.txt","$TestDirectory\file2\File2.txt"|Test-Path) -contains $false
+        $result | should be ($false)
     }
 }

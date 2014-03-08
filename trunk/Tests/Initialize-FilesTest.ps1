@@ -7,6 +7,7 @@ else
 
 $TestDirectory=Join-Path $Temp TestPsIonic
 Write-host "Test in $TestDirectory"
+rm $TestDirectory -rec -force -ea SilentlyContinue >$null
 md $TestDirectory -ea SilentlyContinue >$null
 
 $Directories=@(
@@ -49,4 +50,4 @@ foreach ($Directory in $Directories)
 }
 $verbosePreference='SilentlyContinue'
 Write-Host "Files:"
-dir $TestDirectory\* -Recuse |Select FullName
+dir $TestDirectory\* -Recurse |Select FullName
