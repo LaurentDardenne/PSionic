@@ -8,18 +8,18 @@ Par défaut les erreurs simples sont déclenchées.
 '@
 	TestZipFileSetsDefault = ''
 	TestZipFileSetsFile = ''
-	TestZipFileParametersCheck = @"
+	TestZipFileParametersCheck = @'
 Vérifie si le catalogue de l'archive indiquée est correcte.
 Cette vérification est plus stricte que celle effectuée avec le paramètre -isValid.
 Elle peut donc renvoyer $false bien que le fichier soit considéré comme une archive valide.
 Si vous devez tester une archive avec un mot de passe utilisez ce paramètre avec ou sans le paramètre -Password. 
-"@
+'@
 	TestZipFileParametersPath = 'Nom du fichier de l''archive à tester.'
-	TestZipFileParametersisValid = @"
+	TestZipFileParametersisValid = @'
 Indique si l'archive semble valide. Cette fonction peut donc renvoyer $true alors que le contenu de l'archive est erronée. 
 Si un fichier n'est pas une archive et que le paramètre -isValid est précisé, alors les erreurs simples ne sont pas générées.
 Si vous devez tester une archive avec un mot de passe n'utilisez pas ce paramètre, mais le paramètre -Password et/ou le paramètre -Check.
-"@
+'@
 	TestZipFileParametersPassthru = @'
 Emet le nom du fichier de l'archive dans le pipeline. 
 Si le paramètre -isValid est également précisé, alors les noms des fichiers considérés comme invalide ne seront pas émis dans le pipeline et aucune erreur simple ne sera déclenchée.
@@ -37,9 +37,9 @@ Utilisez uniquement le paramètre -Password et/ou le paramètre -Check. Si le pa
 	TestZipFileOutputsDescriptionSystemString = ''
 	TestZipFileNotes = ''
 	TestZipFileExamplesRemarks1 = 'La première ligne crée une archive au format Zip, la seconde teste si le fichier est bien une archive au format PkZip. Le résultat de l''exécution vaut $true.'
-    TestZipFileExamplesRemarks2 = @"
+    TestZipFileExamplesRemarks2 = @'
 La première ligne crée une archive au format Zip, la seconde crée une archive auto extractible, la troisième teste si le fichier est bien une archive au format PkZip. 
 On constate qu'une archive auto extractible est considérée comme étant une archive valide. Le résultat de l'exécution vaut $true.
-"@
+'@
     TestZipFileExamplesRemarks3 = 'Le résultat de l''exécution vaut $false, car l''objet reçu, transformé en string, ne référence pas un fichier d''archive .ZIP.'
 }

@@ -61,7 +61,7 @@ Liste des noms de fichier à compresser. Peut être un objet fichier ou une cha�
 "@
 	CompressZipFileParametersRecurse = 'Parcourt récursif des arborescences définies par le paramètre Path ou LiteralPath.'
 	CompressZipFileParametersSetLastModifiedProperty = @"
-Permet, avant d'enregistrer l'archive, de modifier la propriété LastModified de chaque entrée de l'archive. La variable $Entry doit être utilisée dans le corps du scriptblock.
+Permet, avant d'enregistrer l'archive, de modifier la propriété LastModified de chaque entrée de l'archive. La variable `$Entry doit être utilisée dans le corps du scriptblock.
 "@
 	CompressZipFileParametersSortEntries = @"
 Les entrées sont triées avant d'être enregistrées. Selon le nombre de fichiers traités, ce traitement peut ralentir l'opération de compression.
