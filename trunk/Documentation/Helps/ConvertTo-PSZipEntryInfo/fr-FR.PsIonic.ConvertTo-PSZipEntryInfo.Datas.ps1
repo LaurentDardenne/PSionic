@@ -16,10 +16,10 @@ Cet exemple récupère d'une archive la liste des entrées, celles-ci sont des o
 Puis la propriété Info, qui est par défaut de type string, est transformée en un PSObject et celui-ci est réaffecté au contenu de la propriété Info.
 L'information initiale de type string n'est plus accessible.    
 "@
-	ConvertToPSZipEntryInfoExamplesRemarks2 = @"
+	ConvertToPSZipEntryInfoExamplesRemarks2 = @'
 Cet exemple récupère une archive, puis sa propriété Info est transformée en une liste indexé d'objets de type PSZipEntryInfo.
 Puis on ajoute une nouvelle entrée à l'archive et on reconstruit la liste de PSZipEntryInfo, cette fois à partir de l'information initiale accessible via $Zip.psbase.Info.
-"@
+'@
 }
 
 
