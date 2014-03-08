@@ -912,16 +912,13 @@ function AddMethodClose{
       try {
         $Logger.Debug("Close : save $($this.Name)") #<%REMOVE%>
         $this.Save()
+        # PS v2, un bug de Write-Error oblige à propager l'exception afin d'avertir l'appelant 
+        # https://connect.microsoft.com/PowerShell/feedback/details/458886/write-error-doesnt-write-anyting
       }
-      catch [Ionic.Zip.BadStateException]
-      {
-        if  ($this.name.EndsWith(".exe"))
-        { Write-Error -message $PsIonicMsgs.SaveIsNotPermitted -Exception $_.Exception} 
-      } 
       finally {
-       #On appelle la méthode Dispose() de l'instance en cours  
+        #On appelle la méthode Dispose() de l'instance en cours  
        $Logger.Debug("Close : PSDispose $($this.Name)") #<%REMOVE%>             
-      $this.PSDispose()
+       $this.PSDispose()
      }
   }            
 } #AddMethodClose
@@ -2563,9 +2560,8 @@ function New-ReadOptions {
     $PSZipReadProgress.SetZipReadProgressHandler($ReadOptions)
    }   
 
-   #Si on crée un ReadOptions c'est pour l'associer à un ZipFile ( cf. ::Read() )
+   #Si on crée un objet ReadOptions c'est pour l'associer à un ZipFile ( cf. ::Read() )
    #C'est donc l'instance du zip qui libérera les ressources
-
   $ReadOptions
 }#New-ReadOptions
 
@@ -2654,7 +2650,7 @@ Function OnRemovePsIonicZip {
 # Section  Initialization
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { OnRemovePsIonicZip }
                                                         
-#Crée la variable
+#Crée la variable $DefaultSfxConfiguration
 Reset-PsIonicSfxOptions                                                        
 If (Test-Path Function:Get-PsIonicDefaultSfxConfiguration)
 { 
@@ -2665,22 +2661,25 @@ If (Test-Path Function:Get-PsIonicDefaultSfxConfiguration)
 }
 
  
-Set-Alias -name cmpzf   -value Compress-ZiFile
-Set-Alias -name expzf   -value Expand-ZiFile
-Set-Alias -name cnvsfx  -value ConvertTo-Sfx
+Set-Alias -name czf     -value Compress-ZipFile
+Set-Alias -name ezf     -value Expand-ZipFile
 Set-Alias -name fzf     -value Format-ZipFile
 Set-Alias -name tstzf   -value Test-ZipFile
 Set-Alias -name gzf     -value Get-ZipFile
-Set-Alias -name adze    -value Add-ZipEntry
 
-Set-Alias -name nzfo    -value New-ZipSfxOptions
-Set-Alias -name rzfo    -value Reset-PsIonicSfxOptions
-Set-Alias -name szfo    -value Set-PsIonicSfxOptions
-Set-Alias -name gzfo    -value Get-PsIonicSfxOptions
+Set-Alias -name adze    -value Add-ZipEntry
+Set-Alias -name udze    -value Update-ZipEntry
+Set-Alias -name rdze    -value Remove-ZipEntry
+Set-Alias -name edze    -value Expand-ZipEntry
+Set-Alias -name cnvzei  -value ConvertTo-PSZipEntryInfo 
+
+Set-Alias -name cnvzxo  -value ConvertTo-Sfx
+Set-Alias -name nzxo    -value New-ZipSfxOptions
+Set-Alias -name rzxo    -value Reset-PsIonicSfxOptions
+Set-Alias -name szxo    -value Set-PsIonicSfxOptions
+Set-Alias -name gzxo    -value Get-PsIonicSfxOptions
 
 Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
-                                                        New-PsIonicPathInfo, #<%REMOVE%> test 
-                                                        ConvertTo-EntryRootPath, #<%REMOVE%> test
                                                         ConvertTo-Sfx,
                                                         Add-ZipEntry,
                                                         Update-ZipEntry,
