@@ -24,7 +24,7 @@
 		@{
 			code = {
 try {         
-  ($ZipFile=Get-Zipfile -Path Test.zip)|Format-ZipFile
+  ,($ZipFile=Get-Zipfile -Path Test.zip)|Format-ZipFile
 } finally {
   $ZipFile.PSDispose()
 }  
