@@ -182,11 +182,16 @@ function Format-ZipFile {
 # .ExternalHelp PsIonic-Help.xml   
   param(
      [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
-    [Ionic.Zip.ZipFile] $Zip,
+    [PSObject] $Zip,
       [Parameter(Position=0,Mandatory=$false)]
-    $Properties=$ZipFrmRO
+    $Properties=$script:ZipFrmRO
   )
-  $Zip.PSbase|Format-List $Properties
+ process {  
+  if ($Zip -is [Ionic.Zip.ZipFile])
+  { $Zip.PSbase|Format-List $Properties  }
+  else
+  {Write-Error "`$Zip is not a Ionic.Zip.ZipFile object. Try ,`$Zip|Format-ZipFile" }
+ }
 }
 
 Function ConvertTo-PSZipEntryInfo {
