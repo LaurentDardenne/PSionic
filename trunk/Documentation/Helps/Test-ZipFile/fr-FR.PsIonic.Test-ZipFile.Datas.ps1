@@ -22,8 +22,8 @@ Si vous devez tester une archive avec un mot de passe n'utilisez pas ce paramèt
 "@
 	TestZipFileParametersPassthru = @'
 Emet le nom du fichier de l'archive dans le pipeline. 
-Si le paramètre -isValid est également précisé, alors les fichiers considérés comme invalide ne seront pas émis dans le pipeline et aucune erreur simple ne sera déclenchée.
-Ce comportement est similaire à un filtre, où seul les fichiers valides seraient émis dans le pipeline.
+Si le paramètre -isValid est également précisé, alors les noms des fichiers considérés comme invalide ne seront pas émis dans le pipeline et aucune erreur simple ne sera déclenchée.
+Ce comportement est similaire à un filtre, où seul les noms des fichiers valides seraient émis dans le pipeline.
 Les objets archive renvoyés n'étant pas verrouillés, soyez attentif à vos scénarios d'usage de ces objets.    
 '@
 	TestZipFileParametersPassword = @'
