@@ -10,7 +10,7 @@ md $global:WorkDir\Archive\directory  >$null
 md $global:WorkDir\Archive\test\test1\test2  >$null
 cp "$PsIonicTests\Expand-ZipFile\PerfCenterCpl.ico" $global:WorkDir\Archive
 cp $PsIonicLivraison\PsIonicSetup.exe $global:WorkDir\Archive\test
-cp "$PsIonicTests\Expand-ZipFile\about_Pester.help.txt" $global:WorkDir\Archive\test\test1
+cp "$PsIonicTests\Expand-ZipFile\Init.ps1" $global:WorkDir\Archive\test\test1
 cp $PsIonicLivraison\PsIonic\3.0\PSIonicTools.dll $global:WorkDir\Archive\test\test1
 cp $PsIonicLivraison\PsIonic\Log4Net.Config.xml $global:WorkDir\Archive\test\test1\test2
 cp $PsIonicLivraison\PsIonic\Ionic.Zip.dll $global:WorkDir\Archive\directory
@@ -22,7 +22,7 @@ rm $global:WorkDir\Archive -Recurse -force
 
 # Création de CryptedArchive.zip dans le répertoire temporaire de l'utilisateur courant
 md $global:WorkDir\CryptedArchive\Archive > $null
-cp "$PsIonicTests\Expand-ZipFile\about_Pester.help.txt" $global:WorkDir\CryptedArchive
+cp "$PsIonicTests\Expand-ZipFile\Init.ps1" $global:WorkDir\CryptedArchive
 cp "$PsIonicTests\Expand-ZipFile\PerfCenterCpl.ico" $global:WorkDir\CryptedArchive\Archive
 Compress-ZipFile -Path $global:WorkDir\CryptedArchive -Output $global:WorkDir\CryptedArchive.zip -Password password -Recurse
 

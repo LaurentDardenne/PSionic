@@ -6,7 +6,7 @@ Describe "Get-ZipFile" {
     It "Get an archive file" {
         try{
             Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\TestArchive.zip -ErrorAction Stop
-            if(-not (Test-Path $global:WorkDir\Archive.zip)){
+            if(-not (Test-Path $global:WorkDir\TestArchive.zip)){
                 throw "Archive introuvable"
             }
             $Z=Get-ZipFile -Path $global:WorkDir\TestArchive.zip
@@ -26,7 +26,7 @@ Describe "Get-ZipFile" {
             $B.PathName="$global:WorkDir\TestArchive.zip"
 
             Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\TestArchive.zip -ErrorAction Stop
-            if(-not (Test-Path $global:WorkDir\Archive.zip)){
+            if(-not (Test-Path $global:WorkDir\TestArchive.zip)){
                 throw "Archive introuvable"
             }
             $Z=Get-ZipFile -Path $B #$global:WorkDir\TestArchive.zip
@@ -95,6 +95,7 @@ Describe "Get-ZipFile" {
     It "try to get and save an exe" {
         try{
             $Z=Get-ZipFile -Path "$PsIonicLivraison\PsIonicSetup.exe" -ea Stop
+             Get-Item $MyInvocation.MyCommand.Path|Add-ZipEntry $Z
             $Z.Close()
             $result = $false
         }catch{
@@ -196,11 +197,11 @@ Describe "Get-ZipFile" {
     It "Get archives files" {
         try{
             Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\TestArchive.zip -ErrorAction Stop
-            if(-not (Test-Path $global:WorkDir\Archive.zip)){
+            if(-not (Test-Path $global:WorkDir\TestArchive.zip)){
                 throw "Archive introuvable"
             }
             Get-ChildItem C:\temp\PsIonic | Compress-ZipFile -OutputName $global:WorkDir\TestArchive2.zip -ErrorAction Stop
-            if(-not (Test-Path $global:WorkDir\Archive.zip)){
+            if(-not (Test-Path $global:WorkDir\TestArchive2.zip)){
                 throw "Archive introuvable"
             } 
             $Zips=Get-ZipFile -Path $global:WorkDir\TestArchive.zip,$global:WorkDir\TestArchive2.zip
@@ -214,5 +215,3 @@ Describe "Get-ZipFile" {
         $result | should be ($true)
     }    
 }
-
-
