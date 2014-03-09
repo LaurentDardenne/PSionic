@@ -1,7 +1,7 @@
 ﻿
 # ConvertTo-CliXml command help
 @{
-	command = 'ConvertTo-CliXml'
+	command = 'ConvertTo-Clixml'
 	synopsis = $Datas.ConvertToCliXmlSynopsis
 	description = $Datas.ConvertToCliXmlDescription
 	parameters = @{
@@ -25,7 +25,7 @@
 			code = {
 try {
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
-  ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Name 'PSVersiontable.climxl' -ZipFile $ZipFile
+  ConvertTo-Clixml $PSVersionTable | Add-ZipEntry -Name 'PSVersiontable.clixml' -ZipFile $ZipFile
 } finally {
   $ZipFile.Close()
 }

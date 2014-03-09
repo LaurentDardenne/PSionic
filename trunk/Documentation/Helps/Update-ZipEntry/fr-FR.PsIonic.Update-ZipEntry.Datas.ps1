@@ -66,7 +66,7 @@ Ces commandes mettent à jour, à partir d'un objet sérialisé, une entrée nom
   -la seconde sérialise l'objet contenu dans la variable $PSVersiontable, puis met à jour ou crée l'entrée nommée dans l'archive, 
   -la troisième enregistre l'archive sur le disque et libère les ressources systèmes.
 .
-Par convention, vous pouvez postfixer vos noms d'entrée sérialisé par '.climxl'.
+Par convention, vous pouvez postfixer vos noms d'entrée sérialisé par '.clixml'.
 '@  
     UpdateZipEntryExamplesRemarks5 =@'
 Ces commandes mettent à jour une entrée nommée MyArray dans l'archive C:\Temp\Test.zip. 
