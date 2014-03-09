@@ -6,6 +6,7 @@
 
 #bugs PS v2 ( corrigé dans la v3) :
 #parameters-initialization : https://connect.microsoft.com/PowerShell/feedback/details/578341/parameters-initialization
+#Write-Error : https://connect.microsoft.com/PowerShell/feedback/details/458886/write-error-doesnt-write-anyting
 
 #bug Ionic 1.9.8:
 # NumberOfSegmentsForMostRecentSave : la valeur est fausse 
@@ -18,6 +19,15 @@ if (-not (Test-Path env:PSIONICLOGPATH))
 
 Add-Type -Path "$psScriptRoot\$($PSVersionTable.PSVersion)\PSIonicTools.dll"
  
+ #Propriété statique, indique le process PowerShell courant 
+[log4net.GlobalContext]::Properties.Item("Owner")=$pid
+[log4net.GlobalContext]::Properties.Item("RunspaceId")=$ExecutionContext.host.Runspace.InstanceId
+
+ #Propriété dynamique, Log4net appel la méhtode ToString de l'objet référencé.
+$Script:JobName= new-object System.Management.Automation.PSObject -Property @{Value=$ExecutionContext.host.Name}
+$Script:JobName|Add-Member -Force -MemberType ScriptMethod ToString { $this.Value.toString() }
+[log4net.GlobalContext]::Properties["JobName"]=$Script:JobName
+
 Start-Log4Net "$psScriptRoot\Log4Net.Config.xml"
 
 $Script:Logger=Get-Log4NetLogger 'File'
@@ -519,6 +529,9 @@ function ConvertFrom-CliXml {
           }
       }
     } 
+    catch [System.Xml.XmlException]{
+      Write-Error "Could not contruct xmlreader with this object  '$(TruncateString $xmlstring)' : $_"  
+    }
     Finally {
       $xr.Close()
       $sr.Dispose()
@@ -919,8 +932,8 @@ function AddMethodClose{
       try {
         $Logger.Debug("Close : save $($this.Name)") #<%REMOVE%>
         $this.Save()
-        # PS v2, un bug de Write-Error oblige à propager l'exception afin d'avertir l'appelant 
-        # https://connect.microsoft.com/PowerShell/feedback/details/458886/write-error-doesnt-write-anyting
+        #bug v2 : Write-Error 
+        # oblige à propager l'exception afin d'avertir l'appelant 
       }
       finally {
         #On appelle la méthode Dispose() de l'instance en cours  
@@ -2311,6 +2324,15 @@ Function Test-ZipFile{
     [Switch] $isVerbose= $null
     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
     $Logger.Debug("-Verbose: $isVerbose") #<%REMOVE%>  
+     #Ici les valeurs de ces paramètres seront tjrs les mêmes 
+    $TZFParam=@{} 
+	$TZFParam.Password=$Password     
+    $TZFParam.isValid=$isValid  
+    $TZFParam.Check=$Check
+    $TZFParam.Repair=$Repair
+    $TZFParam.Passthru=$Passthru
+    $TZFParam.Verbose=$isVerbose
+  
    }
     Process{
         Foreach($Archive in $Path){  
@@ -2318,10 +2340,7 @@ Function Test-ZipFile{
             $zipPath = GetArchivePath $Archive
             Foreach($ZipFile in $ZipPath){
                $Logger.Debug("Full path name : $zipFile ") #<%REMOVE%>
-               if ($PsCmdlet.ParameterSetName -eq "File")
-               {TestZipArchive -Archive $zipFile -isValid:$isValid -Check:$Check -Repair:$Repair -Password $Password -Passthru:$Passthru -verbose:$isVerbose}
-               else
-               {TestZipArchive -Archive $zipFile -isValid:$isValid -Check:$Check -Repair:$Repair -Password $Password -verbose:$isVerbose}
+               TestZipArchive -Archive $zipFile @TZFParam
             }
           }
           catch [System.Management.Automation.ItemNotFoundException],
@@ -2686,7 +2705,7 @@ Set-Alias -name rzxo    -value Reset-PsIonicSfxOptions
 Set-Alias -name szxo    -value Set-PsIonicSfxOptions
 Set-Alias -name gzxo    -value Get-PsIonicSfxOptions
 
-Export-ModuleMember -Variable Logger -Alias * -Function Compress-ZipFile,
+Export-ModuleMember -Variable Logger,JobName -Alias * -Function Compress-ZipFile,
                                                         ConvertTo-Sfx,
                                                         Add-ZipEntry,
                                                         Update-ZipEntry,
