@@ -20,17 +20,19 @@
       Copy *.*  "$Destination\Psionic" -rec
   } #Install-Psionic  
   
-  function New-LG4NetConfigurationFile {  
-    # crée le fichier XML 
-    $Lines=[System.IO.File]::ReadAllText("$my\Log4Net.Config.xml.Template")
-    $TempPath=[System.IO.Path]::GetTempPath()
-    $PsIonicLogsLg4n=$TempPath.Replace('\','\\') #Possible Security Exception 
-    $ExecutionContext.InvokeCommand.ExpandString($Lines)|
-     Set-Content "$TempPath\Log4Net.Config.xml" -Encoding UTF8
-  } #New-LG4NetConfigurationFile
-
-
-  New-LG4NetConfigurationFile
+#   function New-LG4NetConfigurationFile {  
+#     # crée le fichier XML 
+#     $Lines=[System.IO.File]::ReadAllText("$my\Log4Net.Config.xml.Template")
+#     $TempPath=[System.IO.Path]::GetTempPath()
+#     $PsIonicLogsLg4n=$TempPath.Replace('\','\\') #Possible Security Exception 
+#     $ExecutionContext.InvokeCommand.ExpandString($Lines)|
+#      Set-Content "$TempPath\Log4Net.Config.xml" -Encoding UTF8
+#   } #New-LG4NetConfigurationFile
+# 
+# 
+#   New-LG4NetConfigurationFile
+ #todo créer la variable %PSIONICLOGPATH%
+ #todo afficher une documentation html pour les consignes d'install    
   Install-Psionic
 } 
 Finally {  
