@@ -66,14 +66,14 @@ try {
 			code = {
 try {
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
-  ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Name 'PSVersiontable.climxl' -ZipFile $ZipFile
+  ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Name 'PSVersiontable.clixml' -ZipFile $ZipFile
 } finally {
   $ZipFile.Close()
 }
 
 try {
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
-  $MaTableDeVersion=Expand-ZipEntry -Zip $ZipFile 'PSVersiontable.climxl'|ConvertFrom-CliXml   
+  $MaTableDeVersion=Expand-ZipEntry -Zip $ZipFile 'PSVersiontable.clixml'|ConvertFrom-CliXml   
 } finally {
   if ($ZipFile -ne $null )
   { $ZipFile.PSDispose() }
