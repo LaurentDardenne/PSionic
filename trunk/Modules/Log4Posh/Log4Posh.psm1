@@ -218,6 +218,32 @@ function Get-Log4NetRootLogger {
  $Repository.Root
 }
 
+Function Set-LogFileName {
+#Change le nom de fichier d'un FileAppender 
+ param (
+     [ValidateNotNullOrEmpty()]
+     [Parameter(Position=0, Mandatory=$true)]
+   [string] $AppenderName,
+    [ValidateNotNullOrEmpty()]
+    [Parameter(Position=1, Mandatory=$true)]    
+   [string] $NewFileName
+)
+   
+ $result=@(
+   [log4net.LogManager]::GetRepository().GetAppenders()|
+     Where {
+      ($_.Name -eq $AppenderName) -and  ($_ -is [log4net.Appender.FileAppender])
+     }
+ )
+ if ($Result.Count -ne 0) 
+ {
+   $Result[0].File = $NewFileName
+   $Result[0].ActivateOptions()
+ }
+else 
+ { Write-Error "L'appender de nom $AppenderName n'existe pas."}  
+}
+
 # ----------- Suppression des objets du Wrapper -------------------------------------------------------------------------
 function OnRemoveLog4Posh {
    #Remove shortcuts
