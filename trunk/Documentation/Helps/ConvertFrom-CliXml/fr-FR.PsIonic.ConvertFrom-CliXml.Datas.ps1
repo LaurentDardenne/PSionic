@@ -10,7 +10,7 @@ Vous pouvez recevoir un objet XML depuis la fonction Expand-ZipEntry.
 	ConvertFromCliXmlOutputsDescription1 = ''
 	ConvertFromCliXmlNotes = ''
 	ConvertFromCliXmlExamplesRemarks1 = @'
-Ces instructions enregistrent dans un premier temps un objet sérialisé dans une entrée nommée 'PSVersiontable.clixml', puis dans un second temps la relit et l'affecte à la variable $MaTableDeVersion. 
+Ces instructions enregistrent dans un premier temps un objet sérialisé dans une entrée nommée 'PSVersiontable_clixml', puis dans un second temps la relit et l'affecte à la variable $MaTableDeVersion. 
 '@
 }
 
