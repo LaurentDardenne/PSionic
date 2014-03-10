@@ -67,7 +67,7 @@ try {
 			code = {
 try {
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
-  ConvertTo-CliXml $PSVersionTable | Update-ZipEntry -Name 'PSVersiontable.clixml' -ZipFile $ZipFile
+  ConvertTo-CliXml $PSVersionTable | Update-ZipEntry -Name 'PSVersiontable_clixml' -ZipFile $ZipFile
 } finally {
   $ZipFile.Close()
 }

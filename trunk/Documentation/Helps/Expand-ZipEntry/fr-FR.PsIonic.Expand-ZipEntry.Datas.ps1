@@ -38,7 +38,7 @@ Pour une meilleure portabilité, l'utilisation de la valeur par défaut ('Defaul
 Ces instructions enregistrent dans un premier temps du texte dans une entrée nommée MyText, puis dans un second temps la relit et l'affecte à la variable $Text. 
 '@
 	ExpandZipEntryExamplesRemarks2 =@'
-Ces instructions enregistrent dans un premier temps un objet sérialisé dans une entrée nommée 'PSVersiontable.clixml', puis dans un second temps la relit et l'affecte à la variable $MaTableDeVersion. 
+Ces instructions enregistrent dans un premier temps un objet sérialisé dans une entrée nommée 'PSVersiontable_clixml', puis dans un second temps la relit et l'affecte à la variable $MaTableDeVersion. 
 '@
 	ExpandZipEntryExamplesRemarks3 =@'
 Ces instructions enregistrent dans un premier temps un tableau d'octets dans une entrée nommée MyArray, puis dans un second temps la relit et l'affecte à la variable $Array. 

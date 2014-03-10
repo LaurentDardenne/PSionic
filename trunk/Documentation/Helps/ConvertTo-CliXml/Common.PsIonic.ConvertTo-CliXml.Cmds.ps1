@@ -25,7 +25,7 @@
 			code = {
 try {
   $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
-  ConvertTo-Clixml $PSVersionTable | Add-ZipEntry -Name 'PSVersiontable.clixml' -ZipFile $ZipFile
+  ConvertTo-Clixml $PSVersionTable | Add-ZipEntry -Name 'PSVersiontable_clixml' -ZipFile $ZipFile
 } finally {
   $ZipFile.Close()
 }

@@ -19,7 +19,7 @@ Projet/File.ps1
 De préciser un nom de répertoire différent de celui d'où débute l'archivage déclenchera une erreur et stoppera l'archivage du path en cours.
 "@
 	AddZipEntryParametersName = @"
-Chaque entrée d'archive est associèe à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme noms d'entrées à la racine de l'archive.
+Chaque entrée d'archive est associée à un nom dans le catalogue. Pour les fichiers ou les répertoires, leurs nom sont automatiquement utilisés comme noms d'entrées à la racine de l'archive.
 .
 Pour les chaînes de caractères ou les tableaux d'octets, vous devez préciser un nom d'entrée. L'usage du paramètre -EntryPathRoot n'influencera pas ce nommage.
 .
