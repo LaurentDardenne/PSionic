@@ -18,9 +18,44 @@ if (-not (Test-Path env:PSIONICLOGPATH))
 }
 
 Add-Type -Path "$psScriptRoot\$($PSVersionTable.PSVersion)\PSIonicTools.dll"
- 
- #Propriété statique, indique le process PowerShell courant 
-[log4net.GlobalContext]::Properties.Item("Owner")=$pid
+
+Function Get-ParentProcess {
+#Permet de retrouver le process parent ayant exécuté 
+#la session Powershell exécutant ce script/module
+ param( $ID )
+ $parentID=$ID         
+ $Result=@(
+   Do {
+     $Process=Get-WmiObject Win32_Process -Filter "ProcessID='$parentID'" -property Name,CommandLine,ParentProcessID
+      #Permet de retrouver la tâche appelante
+      #On peut inclure le nom de la tâche dans la ligne d'appel :
+      # ... -Command "$TaskName='TaskCeraKioskMonitorOFF_V1';..."
+     #$Logger.DebugFormat("Name :{0}`t cmdLine={1}",@($Process.name,$Process.CommandLine))
+     $parentID=$Process.ParentProcessID
+     try {
+      write-warning $parentID
+      get-process -ID $parentID
+      $exit=$true
+      }
+     catch [Microsoft.PowerShell.Commands.ProcessCommandException] {
+      $exit=$false       
+     }
+   } until ($Exit)
+ )
+   
+ $ofs='.'
+ [Array]::Reverse($Result)
+ ,$Result
+} #Get-ParentProcess
+
+ $Hostname=$ExecutionContext.host.Name
+ if ($Hostname -eq 'ServerRemoteHost')
+ {$_pid= (Get-ParentProcess  $PID)[0].Id}
+ else
+ {$_pid= $pid}
+ #Propriété statique, indique le process PowerShell courant
+ #Pour un job local ce n'est pas le process courant mais le parent 
+[log4net.GlobalContext]::Properties.Item("Owner")=$_pid
 [log4net.GlobalContext]::Properties.Item("RunspaceId")=$ExecutionContext.host.Runspace.InstanceId
 
  #Propriété dynamique, Log4net appel la méhtode ToString de l'objet référencé.
