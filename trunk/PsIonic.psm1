@@ -13,7 +13,7 @@
 
 if (-not (Test-Path env:PSIONICLOGPATH)) 
 { 
- Write-Warning "The environment variable %PSIONICLOGPATH% is not declared, the logs are stored in: : $psScriptRoot\Logs" 
+ Write-Warning "The environment variable %PSIONICLOGPATH% is not declared, the logs are stored into the directory : $psScriptRoot\Logs" 
  $env:PSIONICLOGPATH="$psScriptRoot\Logs"
 }
 
@@ -204,7 +204,7 @@ Function ConvertTo-PSZipEntryInfo {
   $Entries=New-Object System.Collections.Arraylist
   
   $Items=@($Info -split "`n`n")
-  $Logger.Debug("Items.count: $($Items.count)") #<%REMOVE%>  
+  $Logger.PSDebug("Items.count: $($Items.count)") #<%REMOVE%>  
   if ($Items.count -eq 2)
   { $Borne=0 } #ZipEntry.Info
   else 
@@ -213,12 +213,12 @@ Function ConvertTo-PSZipEntryInfo {
     Where {$_ -ne [string]::Empty}|
     foreach {
       $Properties=@{}
-      $Logger.Debug("Traite $_") #<%REMOVE%>   
+      $Logger.PSDebug("Traite $_") #<%REMOVE%>   
       foreach ($Line in ($_ -split "`n"))
       {
         if ($Line -match '(?<Name>.*?):\s*(?<Value>.*)')
         {
-          $Logger.Debug("Name=$($Matches.Name) Value=$($Matches.Value)") #<%REMOVE%>
+          $Logger.PSDebug("Name=$($Matches.Name) Value=$($Matches.Value)") #<%REMOVE%>
           $Name=$TextHelper.ToTitleCase($Matches.Name) -Replace ' |\?','' 
           $Properties.$Name=$Matches.Value
         }
@@ -233,7 +233,7 @@ Function ConvertTo-PSZipEntryInfo {
    }#for Items
   if ($Borne -eq 0)
   {
-    $Logger.Debug("Return one item") #<%REMOVE%>  
+    $Logger.PSDebug("Return one item") #<%REMOVE%>  
     if ($Properties.Contains('ZipEntry') )
     {
      $Current
@@ -243,13 +243,13 @@ Function ConvertTo-PSZipEntryInfo {
     {
        #C'est une archive sans entrée
        #On renvoi un tableau vide
-      $Logger.Debug("Return an emtpy array") #<%REMOVE%>
+      $Logger.PSDebug("Return an emtpy array") #<%REMOVE%>
       $Entries.RemoveAt(0)
     }
   }
 
   $T=$Entries.ToArray()
-  $Logger.Debug("Return items :$($T.count) ") #<%REMOVE%>
+  $Logger.PSDebug("Return items :$($T.count) ") #<%REMOVE%>
   New-ArrayReadOnly ([ref]$T) 
 }#ConvertTo-PSZipEntryInfo
 
@@ -263,13 +263,13 @@ function ConvertTo-EntryRootPath{
 #Suppose que $Path existe, car il provient d'un appel en amont à Dir ou Get-Item
  param($Root,$Path)
  
-  $Logger.Debug("[ConvertTo-EntryRootPath]")  #<%REMOVE%>
-  $Logger.Debug("Root=$Root")  #<%REMOVE%>
-  $Logger.Debug("path=$Path")  #<%REMOVE%>
+  $Logger.PSDebug("[ConvertTo-EntryRootPath]")  #<%REMOVE%>
+  $Logger.PSDebug("Root=$Root")  #<%REMOVE%>
+  $Logger.PSDebug("path=$Path")  #<%REMOVE%>
   $Result=$Path.Remove(0, $Root.Length).`
                 Replace('\', [System.IO.Path]::AltDirectorySeparatorChar).`
                 TrimStart([System.IO.Path]::AltDirectorySeparatorChar)
-  $Logger.Debug("ConvertEntryRootPath result= '$Result'") 
+  $Logger.PSDebug("ConvertEntryRootPath result= '$Result'") 
   $Result                 
 }#ConvertTo-EntryRootPath
 
@@ -293,7 +293,7 @@ Try {
   $PsIonicShortCut.GetEnumerator() |
   Foreach {
    Try {
-     $Logger.Debug("Add TypeAccelerators $($_.Key) =$($_.Value)") #<%REMOVE%>
+     #$Logger.PSDebug("Add TypeAccelerators $($_.Key) =$($_.Value)") #<%REMOVE%>
      $AcceleratorsType::Add($_.Key,$_.Value)
    } Catch [System.Management.Automation.MethodInvocationException]{
      Write-Error -Exception $_.Exception 
@@ -365,7 +365,7 @@ Function Reset-PsIonicSfxOptions {
 $IsValueSupported=@{
  Extract={
    Param ([Ionic.Zip.ExtractExistingFileAction] $Value) 
-    $Logger.Debug("Value= $Value . Return $($Value -eq [ZipExtractExistingFileAction]::InvokeExtractProgressEvent)")  #<%REMOVE%>
+    $Logger.PSDebug("Value= $Value . Return $($Value -eq [ZipExtractExistingFileAction]::InvokeExtractProgressEvent)")  #<%REMOVE%>
     $Value -eq [ZipExtractExistingFileAction]::InvokeExtractProgressEvent
  }
 }
@@ -412,12 +412,12 @@ Function ConvertPSDataCollection {
     
     if ($T[0].Exception -isnot [Microsoft.PowerShell.Commands.WriteErrorException])
     { 
-      $Logger.Debug("Construit l'exception ayant arrêté le job")
+      $Logger.PSDebug("Construit l'exception ayant arrêté le job")
       Write-Output (New-Exception $T[0].Exception "ExtractProgress -> $($T|% {$_.Exception}|out-string)") 
     }
     else
     { 
-      $Logger.Debug("Ecrit la dernière erreur déclenchée dans le job") 
+      $Logger.PSDebug("Ecrit la dernière erreur déclenchée dans le job") 
       Write-Error "ExtractProgress -> $($T|% {$_.Exception}|out-string)" 
     } 
   }
@@ -428,7 +428,7 @@ Function RegisterEventExtractProgress {
   $ZipFile,
   [int] $ProgressID
  )
-    $Logger.Debug("RegisterEvent ExtractProgress") #<%REMOVE%> 
+    $Logger.PSDebug("RegisterEvent ExtractProgress") #<%REMOVE%> 
     #Si le contexte est un job :
     #   $ExecutionContext.Host.name -ne "ServerRemoteHost"
     #alors l'information sera périméé une fois celui-ci terminé,
@@ -444,12 +444,12 @@ Function RegisterEventExtractProgress {
   $ProgressAction=@"
     if (`$eventargs.EventType -eq [Ionic.Zip.ZipProgressEventType]::Extracting_AfterExtractEntry)
     {
-#       `$Logger.Debug("EntriesExtracted=`$(`$eventargs.EntriesExtracted)") #<%REMOVE%>
-#       `$Logger.Debug("EntriesTotal=`$(`$eventargs.EntriesTotal)") #<%REMOVE%>
-#       `$Logger.Debug("FileName=`$(`$eventargs.CurrentEntry.FileName)") #<%REMOVE%>
+#       `$Logger.PSDebug("EntriesExtracted=`$(`$eventargs.EntriesExtracted)") #<%REMOVE%>
+#       `$Logger.PSDebug("EntriesTotal=`$(`$eventargs.EntriesTotal)") #<%REMOVE%>
+#       `$Logger.PSDebug("FileName=`$(`$eventargs.CurrentEntry.FileName)") #<%REMOVE%>
       if (`$eventargs.EntriesTotal -eq 0)
       {
-        `$Logger.Debug("-Query est précisée, EntriesTotal n'est pas pas renseigné")
+        `$Logger.PSDebug("-Query est précisée, EntriesTotal n'est pas pas renseigné")
         write-progress -ID $($ProgressID) -activity "$($PsIonicMsgs.ProgressBarExtract)" -Status "`$(`$eventargs.CurrentEntry.FileName)"
       }
       else
@@ -468,7 +468,7 @@ Function UnRegisterEvent{
   param( [System.Management.Automation.PSEventJob] $EventJob )
   
   $EventException=ConvertPSDataCollection $EventJob.Error
-  $Logger.Debug("Unregister $($EventJob.Name) event. Remove-Job")#<%REMOVE%>
+  $Logger.PSDebug("Unregister $($EventJob.Name) event. Remove-Job")#<%REMOVE%>
   Unregister-Event -SourceIdentifier $EventJob.Name -ErrorAction SilentlyContinue
   Remove-Job $EventJob
   
@@ -632,7 +632,7 @@ Function IsValueSupported {
     [switch] $Extract
   )
 
- $Logger.Debug("Call= $($PsCmdlet.ParameterSetName)") #<%REMOVE%>
+ $Logger.PSDebug("Call= $($PsCmdlet.ParameterSetName)") #<%REMOVE%>
  
  if (&$IsValueSupported[$PsCmdlet.ParameterSetName] $Value)
  { 
@@ -695,11 +695,11 @@ Function SetZipFileEncryption {
   )
   
   function ResetPassword {
-       $Logger.Debug("Reset password")  #<%REMOVE%>
+       $Logger.PSDebug("Reset password")  #<%REMOVE%>
        [PSIonicTools.ZipPassword]::Reset($ZipFile) # -> Encryption = None   
   }#ResetPassword                
   
-  $Logger.Debug("Encryption configuration of the archive $($ZipFile.Name)") #<%REMOVE%>
+  $Logger.PSDebug("Encryption configuration of the archive $($ZipFile.Name)") #<%REMOVE%>
    
   if ($Reset)
   {  ResetPassword }  
@@ -710,7 +710,7 @@ Function SetZipFileEncryption {
     
     If ($isPwdValid -and -not $isEncryptionValid)
     {
-       $Logger.Debug("Encryption Weak")  #<%REMOVE%>
+       $Logger.PSDebug("Encryption Weak")  #<%REMOVE%>
        $ZipFile.Encryption = "PkzipWeak"
        $ZipFile.Password = $Password
     }
@@ -724,7 +724,7 @@ Function SetZipFileEncryption {
          $Logger.Fatal($Msg) #<%REMOVE%>
          Throw (New-Object PSIonicTools.PsionicException($Msg)) 
        }
-       $Logger.Debug("Encryption $DataEncryption") #<%REMOVE%>
+       $Logger.PSDebug("Encryption $DataEncryption") #<%REMOVE%>
        $ZipFile.Encryption = $DataEncryption
        $ZipFile.Password = $Password
     }
@@ -747,23 +747,23 @@ Function GetObjectByType {
  begin {  
   function GetObject {  
    param ( $Object ) 
-     $Logger.Debug("GetObject : $Object") #<%REMOVE%> 
+     $Logger.PSDebug("GetObject : $Object") #<%REMOVE%> 
      if ($Object.GetType().IsSubclassOf([System.IO.FileSystemInfo]) -or ($Object -is [Ionic.Zip.ZipEntry]))
      { 
-       $Logger.Debug("Object is FileSystemInfo or Zipentry") #<%REMOVE%>
+       $Logger.PSDebug("Object is FileSystemInfo or Zipentry") #<%REMOVE%>
        #Ici pas de récursion sur les sous-répertoires
        # si dir * -rec|compress -rec, alors on dupliquerait les fichiers
        Return $Object 
      }
      elseif ($Object -isnot [String])
      { 
-       $Logger.Debug("Call ToString()") #<%REMOVE%>
+       $Logger.PSDebug("Call ToString()") #<%REMOVE%>
        $Object=$Object.ToString()  #tente une transformation
      } 
      
      if ([String]::IsNullOrEmpty($Object)) 
      {
-       $Logger.Debug('Object is $null or empty.') #<%REMOVE%>
+       $Logger.PSDebug('Object is $null or empty.') #<%REMOVE%>
        return $null
      }
      
@@ -773,7 +773,7 @@ Function GetObjectByType {
      else
      { $PSPathInfo=New-PsIonicPathInfo -Path $Object }
      
-     $Logger.Debug("Object : $Object") #<%REMOVE%> 
+     $Logger.PSDebug("Object : $Object") #<%REMOVE%> 
 
      if (-not $PSPathInfo.isaValidFileSystemPath()) 
      {
@@ -783,10 +783,10 @@ Function GetObjectByType {
      }
      else
      {
-         $Logger.Debug("Path valide") #<%REMOVE%>
+         $Logger.PSDebug("Path valide") #<%REMOVE%>
          if ($Recurse) ## si on utilise -Recurse avec GCI on duplique les noms d'entrée dans l'archive
          { 
-          $Logger.Debug("Pas de filtre sur les directory") #<%REMOVE%> 
+          $Logger.PSDebug("Pas de filtre sur les directory") #<%REMOVE%> 
           $FiltreDirectory={ $true } 
          }
          else
@@ -794,10 +794,10 @@ Function GetObjectByType {
          
          if ($PSPathInfo.isWildcard)
          {
-          $Logger.Debug("Path isWildcard") #<%REMOVE%>
+          $Logger.PSDebug("Path isWildcard") #<%REMOVE%>
           if ($PSPathInfo.ResolvedPSFiles.Count -gt 0)            
           {
-            $Logger.Debug("Renvoi les fichiers résolus") #<%REMOVE%>
+            $Logger.PSDebug("Renvoi les fichiers résolus") #<%REMOVE%>
             if ($isLiteral)
             {   
               $PSPathInfo.ResolvedPSFiles|Get-Item -LiteralPath {$_}|Where $FiltreDirectory 
@@ -810,10 +810,10 @@ Function GetObjectByType {
          }
          else
          { 
-           $Logger.Debug("Path is not Wildcard") #<%REMOVE%>
+           $Logger.PSDebug("Path is not Wildcard") #<%REMOVE%>
            if ($PSPathInfo.IsDirectoryExist())
            {
-              $Logger.Debug("Renvoi les fichiers du répertoire") #<%REMOVE%>
+              $Logger.PSDebug("Renvoi les fichiers du répertoire") #<%REMOVE%>
               if ($isLiteral) 
               { Get-ChildItem -LiteralPath $PSPathInfo.Win32PathName |Where $FiltreDirectory } 
               else
@@ -821,7 +821,7 @@ Function GetObjectByType {
            }
            elseif ($PSPathInfo.isItemExist)
            { 
-             $Logger.Debug("Renvoi le nom du fichier") #<%REMOVE%>
+             $Logger.PSDebug("Renvoi le nom du fichier") #<%REMOVE%>
              if ($isLiteral)
              {Get-Item -Literal $PSPathInfo.Win32PathName } 
              else 
@@ -839,7 +839,7 @@ Function GetObjectByType {
  }#begin 
   
  Process {
-  $Logger.Debug("GetObjectByType $($Object.GetType().FullName) `t $Object") #<%REMOVE%>   
+  $Logger.PSDebug("GetObjectByType $($Object.GetType().FullName) `t $Object") #<%REMOVE%>   
   if ($Object -ne $null)   
   { 
     $Object|
@@ -853,7 +853,7 @@ function SetZipErrorHandler {
  param ($ZipFile)
    if ($ZipFile.ZipErrorAction -eq [ZipErrorAction]::InvokeErrorEvent)
   {
-    $Logger.Debug("Gestion d'erreur via PSIonicTools.PSZipError")  #<%REMOVE%>
+    $Logger.PSDebug("Gestion d'erreur via PSIonicTools.PSZipError")  #<%REMOVE%>
     $Context=$PSCmdlet.SessionState.PSVariable.Get("ExecutionContext").Value  
     $psZipErrorHandler=New-Object PSIonicTools.PSZipError($Context)
     $psZipErrorHandler.SetZipErrorHandler($ZipFile)
@@ -867,7 +867,7 @@ function AddMethodPSDispose{
 
  param ($ZipInstance)
   
-  $Logger.Debug("Add PSDispose method on $($ZipInstance.Name)")  #<%REMOVE%>
+  $Logger.PSDebug("Add PSDispose method on $($ZipInstance.Name)")  #<%REMOVE%>
   Add-Member -Inputobject $ZipInstance -Force ScriptMethod PSDispose{
      function RemoveAddedEventHandler{
       param($Object,$EventName)
@@ -880,22 +880,22 @@ function AddMethodPSDispose{
         $Deleguate=$EventField.GetValue($this)
         if ($Deleguate -ne $null)
         {
-          $Logger.Debug("`t Dispose '$EventName' delegates") #<%REMOVE%> 
+          $Logger.PSDebug("`t Dispose '$EventName' delegates") #<%REMOVE%> 
            #Récupère la liste des 'méthodes' à appeler par l'event
           $Deleguate.GetInvocationList()|
           Foreach {
-             $Logger.Debug("`t Dispose $_") #<%REMOVE%>
+             $Logger.PSDebug("`t Dispose $_") #<%REMOVE%>
               #On supprime tous les abonnements  
              $Event.RemoveEventHandler($this,$_)
           }
         }
-        else { $Logger.Debug("`t '$EventName' delegates is NULL.") }#<%REMOVE%> }  
+        else { $Logger.PSDebug("`t '$EventName' delegates is NULL.") }#<%REMOVE%> }  
      } #RemoveAddedEventHandler             
      
       if (($this.StatusMessageTextWriter -ne $null) -and  ($this.StatusMessageTextWriter -is [PSIonicTools.PSVerboseTextWriter]))
       {
          #On ne libère que ce que l'on crée
-        $Logger.Debug("`t ZipFile Dispose PSStream") #<%REMOVE%> 
+        $Logger.PSDebug("`t ZipFile Dispose PSStream") #<%REMOVE%> 
         $this.StatusMessageTextWriter.Dispose()
         $this.StatusMessageTextWriter=$null               
       }   
@@ -906,7 +906,7 @@ function AddMethodPSDispose{
       RemoveAddedEventHandler $MyType 'ReadProgress'
 
        #On appelle la méthode Dispose() de l'instance en cours
-      $Logger.Debug("Dispose $($this.Name)") #<%REMOVE%>               
+      $Logger.PSDebug("Dispose $($this.Name)") #<%REMOVE%>               
       $this.Dispose()
   }            
 } #AddMethodPSDispose
@@ -918,17 +918,17 @@ function AddMethodClose{
 
  param ($ZipInstance)
   
-  $Logger.Debug("Add close method on $($ZipInstance.Name)")  #<%REMOVE%>
+  $Logger.PSDebug("Add close method on $($ZipInstance.Name)")  #<%REMOVE%>
   Add-Member -Inputobject $ZipInstance -Force ScriptMethod Close {
       try {
-        $Logger.Debug("Close : save $($this.Name)") #<%REMOVE%>
+        $Logger.PSDebug("Close : save $($this.Name)") #<%REMOVE%>
         $this.Save()
         #bug v2 : Write-Error 
         # oblige à propager l'exception afin d'avertir l'appelant 
       }
       finally {
         #On appelle la méthode Dispose() de l'instance en cours  
-       $Logger.Debug("Close : PSDispose $($this.Name)") #<%REMOVE%>             
+       $Logger.PSDebug("Close : PSDispose $($this.Name)") #<%REMOVE%>             
        $this.PSDispose()
      }
   }            
@@ -945,12 +945,12 @@ function DisposeZip{
 #Code commun de libération d'une instance ZipFile
   if ($ZipFile -ne $null) 
   {       
-     $Logger.Debug("`t DisposeZip $($ZipFile.Name)") #<%REMOVE%> 
+     $Logger.PSDebug("`t DisposeZip $($ZipFile.Name)") #<%REMOVE%> 
      if ( @($ZipFile.psobject.Members.Match('PSDispose','ScriptMethod')).Count -ne 0)
      { $ZipFile.PSDispose() }
      else 
      {
-       $Logger.Debug("`t $($ZipFile.Name) dont contains PSDispose method") #<%REMOVE%> 
+       $Logger.PSDebug("`t $($ZipFile.Name) dont contains PSDispose method") #<%REMOVE%> 
        $ZipFile.Dispose()
     }
     $ZipFile=$null 
@@ -994,17 +994,17 @@ Function Get-ZipFile {
   begin {
     [Switch] $isVerbose= $null
     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
-    $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%> 
+    $Logger.PSDebug("-Verbose: $isverbose") #<%REMOVE%> 
     $isProgressID=$PSBoundParameters.ContainsKey('ProgressID')      
   }
  
   process {  
     Foreach($Current in $Path){
      try {
-        $Logger.Debug("Traite Path $Current") #<%REMOVE%>
+        $Logger.PSDebug("Traite Path $Current") #<%REMOVE%>
         foreach ($FileName in (GetArchivePath $Current)) 
         {
-          $Logger.Debug("Traite Filename $Filename") #<%REMOVE%>
+          $Logger.PSDebug("Traite Filename $Filename") #<%REMOVE%>
           if ((TestZipArchive -Archive $FileName  -Password $Password -Passthru ) -ne $null)
           {   
             if ($PsCmdlet.ParameterSetName -eq "ManualOption")
@@ -1021,7 +1021,7 @@ Function Get-ZipFile {
             elseif ($ReadOptions -eq $null)
             {  $ReadOptions=New-ReadOptions -Verbose:$isVerbose  }              
             
-            $Logger.Debug("Read zipfile $FileName") #<%REMOVE%>
+            $Logger.PSDebug("Read zipfile $FileName") #<%REMOVE%>
             $ZipFile = [Ionic.Zip.ZipFile]::Read($FileName, $ReadOptions)
     
             $ZipFile.UseZip64WhenSaving=[Ionic.Zip.Zip64Option]::AsNecessary
@@ -1042,7 +1042,7 @@ Function Get-ZipFile {
                #Renvoit des objets ayant des propriétés  
                #découplées de l'objet archive initiale.
               try {
-                $Logger.Debug("Create PSZipEntry")  
+                $Logger.PSDebug("Create PSZipEntry")  
                 $ZipFile.Entries|
                  Select $PSZipEntryProperties|
                  Foreach {
@@ -1063,7 +1063,7 @@ Function Get-ZipFile {
               ,$ZipFile -as [PSObject]
             }
          }
-         else { $Logger.Debug("N'est pas une archive $FileName")}  #<%REMOVE%>
+         else { $Logger.PSDebug("N'est pas une archive $FileName")}  #<%REMOVE%>
         }#Foreach $FileName
        }
        catch [System.Management.Automation.ItemNotFoundException],
@@ -1127,7 +1127,7 @@ Function Compress-ZipFile {
 	Begin{
       [Switch] $isVerbose= $null
       [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
-      $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>          
+      $Logger.PSDebug("-Verbose: $isverbose") #<%REMOVE%>          
       
       if (-not $PSBoundParameters.ContainsKey('Comment')) 
       { $Comment=[String]::Empty} #bug v2 : parameters-initialization
@@ -1138,7 +1138,7 @@ Function Compress-ZipFile {
       $PSVW=$null
       if ($isverbose)
       {
-          $Logger.Debug("Configure PSVerboseTextWriter") #<%REMOVE%>
+          $Logger.PSDebug("Configure PSVerboseTextWriter") #<%REMOVE%>
            #On récupère le contexte d'exécution de la session, pas celui du module. 
           $Context=$PSCmdlet.SessionState.PSVariable.Get("ExecutionContext").Value            
           $PSVW=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
@@ -1210,13 +1210,13 @@ Function Compress-ZipFile {
       $isLiteral=$PsCmdlet.ParameterSetName -eq "LiteralPath"
       if ($isLiteral)
       {
-        $Logger.Debug("Compress-ZipFile Literalpath=$LiteralPath")  #<%REMOVE%>
+        $Logger.PSDebug("Compress-ZipFile Literalpath=$LiteralPath")  #<%REMOVE%>
         GetObjectByType $LiteralPath -Recurse:$Recurse -isLiteral|
           Add-ZipEntry @CZFParam 
       }
       else
       {
-        $Logger.Debug("Compress-ZipFile path=$Path")  #<%REMOVE%>
+        $Logger.PSDebug("Compress-ZipFile path=$Path")  #<%REMOVE%>
         GetObjectByType $Path -Recurse:$Recurse|
           Add-ZipEntry @CZFParam
       }
@@ -1232,14 +1232,14 @@ Function Compress-ZipFile {
       try {
         if ($SetLastModifiedProperty -ne $null)
         {
-           $Logger.Debug("Call SetLastModifiedProperty scriptblock")  #<%REMOVE%>
+           $Logger.PSDebug("Call SetLastModifiedProperty scriptblock")  #<%REMOVE%>
             #on s'assure de référencer la variable ZipFile de la fonction
            $SbBounded=$MyInvocation.MyCommand.ScriptBlock.Module.NewBoundScriptBlock($SetLastModifiedProperty)
             #Le scriptblock doit itérer sur chaque entrée de l'archive
            &$SbBounded 
         }
          #Si le catalogue est vide on enregistre une archive de 22 octets
-        $Logger.Debug("Save zip")  #<%REMOVE%>
+        $Logger.PSDebug("Save zip")  #<%REMOVE%>
         $ZipFile.Save()
       } 
       catch [System.IO.IOException] 
@@ -1294,10 +1294,10 @@ Function AddEntry {
       #  public ZipEntry AddEntry(string entryName, string content)  
       # public ZipEntry AddEntry(string entryName, byte[] byteContent)
     $params = @($KeyName, ($InputObject -as [byte[]]) )
-    $Logger.Debug("KeyName=$KeyName") #<%REMOVE%>
-    $Logger.Debug("InputObject=$InputObject") #<%REMOVE%>
-    $Logger.Debug("UpdateEntryMethod='$UpdateEntryMethod'") #<%REMOVE%>
-    $Logger.Debug("AddEntryMethod = '$AddEntryMethod'") #<%REMOVE%>
+    $Logger.PSDebug("KeyName=$KeyName") #<%REMOVE%>
+    $Logger.PSDebug("InputObject=$InputObject") #<%REMOVE%>
+    $Logger.PSDebug("UpdateEntryMethod='$UpdateEntryMethod'") #<%REMOVE%>
+    $Logger.PSDebug("AddEntryMethod = '$AddEntryMethod'") #<%REMOVE%>
     if ($CurrentOverwrite)
     { $ZipEntry=$UpdateEntryMethod.Invoke($ZipFile, $params) }
     else
@@ -1307,17 +1307,17 @@ Function AddEntry {
    }#AddOrUpdateByteArray
    
    Function AddOrUpdateFile {
-    $Logger.Debug("Add type Fileinfo.") #<%REMOVE%>
+    $Logger.PSDebug("Add type Fileinfo.") #<%REMOVE%>
     if ($isEntryPathRoot) 
     {
-      $Logger.Debug("Root=$(split-path $InputObject.FullName -Parent) Path=$EntryPathRoot") #<%REMOVE%>
+      $Logger.PSDebug("Root=$(split-path $InputObject.FullName -Parent) Path=$EntryPathRoot") #<%REMOVE%>
       $EntryRoot=ConvertTo-EntryRootPath -Root $EntryPathRoot -Path (split-path $InputObject.FullName -Parent)
       if ($EntryRoot -eq $null)  {Write-Error $($PsIonicMsgs.UnableToConvertEntryRootPath -F $InputObject.FullName ); return}
     }
     else
     { $EntryRoot=[string]::Empty }
 
-    $Logger.Debug("EntryRoot='$EntryRoot'")  #<%REMOVE%>
+    $Logger.PSDebug("EntryRoot='$EntryRoot'")  #<%REMOVE%>
      # si $EntryPathRoot est vide, l'ajout de fait à la racine
      # IOnic doit connaitre le chemin complet sinon il est considéré comme relatif
     if ($CurrentOverwrite) 
@@ -1329,7 +1329,7 @@ Function AddEntry {
    }#AddOrUpdateFile
    
    Function AddOrUpdateDirectory {
-     $Logger.Debug("Add type Directory ")  #<%REMOVE%>
+     $Logger.PSDebug("Add type Directory ")  #<%REMOVE%>
       
      #Ionic ne fait pas récursivement la maj de la date ... 
      if ($CurrentOverwrite)
@@ -1341,7 +1341,7 @@ Function AddEntry {
    }#AddOrUpdateDirectory
   
    function AddOrUpdateZipEntry {
-     $Logger.Debug("Add type ZipEntry")  #<%REMOVE%>
+     $Logger.PSDebug("Add type ZipEntry")  #<%REMOVE%>
      Write-Error "Under construction" #todo
    }#AddOrUpdateZipEntry
   
@@ -1352,12 +1352,12 @@ Function AddEntry {
    $AddEntryMethod=[Ionic.Zip.ZipFile].GetMethod("AddEntry",$private:ParameterTypesOfAddEntryMethod)
   
    $isEntryPathRoot=$PSBoundParameters.ContainsKey('EntryPathRoot')
-   $Logger.Debug("is EntryPathRoot bound =$isEntryPathRoot") #<%REMOVE%>
+   $Logger.PSDebug("is EntryPathRoot bound =$isEntryPathRoot") #<%REMOVE%>
  }#begin
 
  process {
-    $Logger.Debug("$($InputObject.Gettype().FullName)") 
-    $Logger.Debug("AddEntry InputObject=$(TruncateString $InputObject) `t KeyName=$KeyName")  #<%REMOVE%>
+    $Logger.PSDebug("$($InputObject.Gettype().FullName)") 
+    $Logger.PSDebug("AddEntry InputObject=$(TruncateString $InputObject) `t KeyName=$KeyName")  #<%REMOVE%>
     
     #Le calcul du nom d'entrée doit tjr se faire à partir du même répertoire de base
     #Par exemple on ne peut traiter des fichiers provenant de deux lecteurs.
@@ -1377,12 +1377,12 @@ Function AddEntry {
     { $OldEntryInfo=$Zipfile[$KeyName] }
     
     $isEntryExist=$OldEntryInfo -ne $null
-    $Logger.Debug("isEntryExist=$isEntryExist")#<%REMOVE%>
+    $Logger.PSDebug("isEntryExist=$isEntryExist")#<%REMOVE%>
     $isTypeSupported=$true
     
      #Valide le mode Update pour l'objet courant
     $CurrentOverwrite=$Overwrite -and $isEntryExist
-    if ($CurrentOverwrite)  { $Logger.Debug("Update mode") } else { $Logger.Debug("Add mode") }#<%REMOVE%>
+    if ($CurrentOverwrite)  { $Logger.PSDebug("Update mode") } else { $Logger.PSDebug("Add mode") }#<%REMOVE%>
 
     if ($CurrentOverwrite -and $Comment -eq [string]::Empty)
     { $Comment= $OldEntryInfo.Comment }
@@ -1394,19 +1394,19 @@ Function AddEntry {
       else 
       {$InputObject=$InputObject.Value}
     }
-    $Logger.Debug("AddEntry InputObject=$(TruncateString $InputObject) `t KeyName=$KeyName")  #<%REMOVE%>
+    $Logger.PSDebug("AddEntry InputObject=$(TruncateString $InputObject) `t KeyName=$KeyName")  #<%REMOVE%>
     
     $isCollection=isCollection $InputObject
     if ($isCollection -and ($InputObject -is [byte[]]))
     { 
-      $Logger.Debug("Add Byte[]")  #<%REMOVE%>
+      $Logger.PSDebug("Add Byte[]")  #<%REMOVE%>
       if ([string]::IsNullOrEmpty($KeyName))
       { Write-Error ($PsIonicMsgs.ParameterStringEmpty -F 'KeyName'); Return }
      $ZipEntry=AddOrUpdateByteArray 
     }
     elseif ($isCollection)
     {
-       $Logger.Debug("`tRecurse Add-ZipEntry")  #<%REMOVE%>
+       $Logger.PSDebug("`tRecurse Add-ZipEntry")  #<%REMOVE%>
        
         #$PSBoundParameters n'est pas utilisé par la suite.
         #$PSBoundParameters est reconstruit lors de la réception du prochain objet
@@ -1419,7 +1419,7 @@ Function AddEntry {
     }
     elseif ($InputObject -is [System.String])
     { 
-       $Logger.Debug("Add type String")  #<%REMOVE%>
+       $Logger.PSDebug("Add type String")  #<%REMOVE%>
        if ([string]::IsNullOrEmpty($KeyName))
        { Write-Error ($PsIonicMsgs.ParameterStringEmpty -F 'KeyName'); Return }
        $ZipEntry=AddOrUpdateString
@@ -1430,7 +1430,7 @@ Function AddEntry {
     else
     {
       $Msg=$PsIonicMsgs.TypeNotSupported -F $MyInvocation.MyCommand.Name,$InputObject.GetType().FullName
-      $Logger.Debug($Msg)  #<%REMOVE%>
+      $Logger.PSDebug($Msg)  #<%REMOVE%>
       Write-Warning $Msg
       $isTypeSupported=$false   
     }
@@ -1438,19 +1438,19 @@ Function AddEntry {
     {
       if ($CurrentOverwrite)
       {
-        $Logger.Debug("set LastModified NOW")  #<%REMOVE%>
+        $Logger.PSDebug("set LastModified NOW")  #<%REMOVE%>
         $ZipEntry.LastModified=[datetime]::Now
-        $Logger.Debug("set CreationTime Old Value")  #<%REMOVE%>
+        $Logger.PSDebug("set CreationTime Old Value")  #<%REMOVE%>
         $ZipEntry.CreationTime=$OldEntryInfo.CreationTime
       }
       elseif ($InputObject -isnot [System.IO.FileSystemInfo])
       {
-        $Logger.Debug("set CreationTime NOW")  #<%REMOVE%>
+        $Logger.PSDebug("set CreationTime NOW")  #<%REMOVE%>
         $ZipEntry.CreationTime=[datetime]::Now
       }
       else
       {
-        $Logger.Debug("set file time")  #<%REMOVE%>
+        $Logger.PSDebug("set file time")  #<%REMOVE%>
         $ZipEntry.SetEntryTimes($InputObject.CreationTime, $InputObject.LastWriteTime,$InputObject.LastAccessTime)
       } 
       if ($Passthru) {$ZipEntry}
@@ -1499,11 +1499,11 @@ Function Add-ZipEntry {
 
    process {
      try { 
-      $Logger.Debug("Add-ZipEntry InputObject= $InputObject")  #<%REMOVE%>
+      $Logger.PSDebug("Add-ZipEntry InputObject= $InputObject")  #<%REMOVE%>
       $isCollection=isCollection $InputObject
       if ($isCollection -and ($InputObject -is [System.Collections.IDictionary]))
       {
-        $Logger.Debug("Add entries from a hashtable.")  #<%REMOVE%>
+        $Logger.PSDebug("Add entries from a hashtable.")  #<%REMOVE%>
         $InputObject.GetEnumerator()|
           AddEntry @AZEParam 
       }
@@ -1563,11 +1563,11 @@ Function Update-ZipEntry {
 
    process {
     try {            
-      $Logger.Debug("Update-ZipEntry InputObject= $InputObject")  #<%REMOVE%>
+      $Logger.PSDebug("Update-ZipEntry InputObject= $InputObject")  #<%REMOVE%>
       $isCollection=isCollection $InputObject
       if ($isCollection -and ($InputObject -is [System.Collections.IDictionary]))
       {
-        $Logger.Debug("Update entries from a hashtable.")  #<%REMOVE%>
+        $Logger.PSDebug("Update entries from a hashtable.")  #<%REMOVE%>
         $InputObject.GetEnumerator()|
           AddEntry @AZEParam 
       }
@@ -1625,7 +1625,7 @@ Function Remove-ZipEntry {
     { throw  (New-Object PSIonicTools.PsionicException(( $PsIonicMsgs.ThisParameterRequiresThisParameter -f 'From', 'Query'))) }
      #Verbose du Zipfile, pas de la fonction
     $isVerbose=$ZipFile.StatusMessageTextWriter -ne $null
-    $Logger.Debug("isVerbose=$isVerbose") #<%REMOVE%> 
+    $Logger.PSDebug("isVerbose=$isVerbose") #<%REMOVE%> 
    }
 
    process {
@@ -1633,18 +1633,18 @@ Function Remove-ZipEntry {
      if ($PsCmdlet.ParameterSetName -eq 'Name')
      {            
 #<DEFINE %DEBUG%>
-       $Logger.Debug("InputObject= $InputObject") 
-       $Logger.Debug("InputObject type = $($InputObject.GetType())")
+       $Logger.PSDebug("InputObject= $InputObject") 
+       $Logger.PSDebug("InputObject type = $($InputObject.GetType())")
        if ($PSBoundParameters.ContainsKey('Name')) 
-        { $Logger.Debug("Name=$Name") } 
+        { $Logger.PSDebug("Name=$Name") } 
 #<UNDEF %DEBUG%>   
         $isCollection=isCollection $InputObject
         if ($isCollection) 
         {
-          $Logger.Debug("InputObject is a collection")  #<%REMOVE%>
+          $Logger.PSDebug("InputObject is a collection")  #<%REMOVE%>
           if ($InputObject -is [System.Collections.IDictionary])
           {
-            $Logger.Debug("Remove entries from a hashtable.")  #<%REMOVE%>
+            $Logger.PSDebug("Remove entries from a hashtable.")  #<%REMOVE%>
             $InputObject.GetEnumerator()|
               Foreach {
                $ZipFile.RemoveEntry($_.Key) 
@@ -1652,12 +1652,12 @@ Function Remove-ZipEntry {
           }
           elseif ($InputObject -is [ZipEntry[]])  
           { 
-            $Logger.Debug("Remove [ZipEntry[]]")  #<%REMOVE%>
+            $Logger.PSDebug("Remove [ZipEntry[]]")  #<%REMOVE%>
             $ZipFile.RemoveEntries( ($InputObject -as [System.Collections.Generic.ICollection[ZipEntry]])) 
           }
           elseif ( ($InputObject -is [Object[]]) -or $InputObject -is [String[]])
           { 
-            $Logger.Debug("Remove [object[]] or [string[]]")  #<%REMOVE%>
+            $Logger.PSDebug("Remove [object[]] or [string[]]")  #<%REMOVE%>
              #Array covariance 
             $ZipFile.RemoveEntries( ($InputObject -as [System.Collections.Generic.ICollection[string]]))
           }  
@@ -1668,35 +1668,35 @@ Function Remove-ZipEntry {
         }
         elseif ($PSBoundParameters.ContainsKey('Name')) 
         {
-          $Logger.Debug("Remove entry by Name")  #<%REMOVE%>
+          $Logger.PSDebug("Remove entry by Name")  #<%REMOVE%>
           $ZipFile.RemoveEntry($Name) > $null
         }
         elseif ($InputObject -is [ZipEntry]) 
         {
-          $Logger.Debug("Remove entry by [ZipEntry]")  #<%REMOVE%>
+          $Logger.PSDebug("Remove entry by [ZipEntry]")  #<%REMOVE%>
           $ZipFile.RemoveEntry($InputObject) > $null
         }
         else  
         {
-          $Logger.Debug("Remove entry by [string]")  #<%REMOVE%>
+          $Logger.PSDebug("Remove entry by [string]")  #<%REMOVE%>
           $ZipFile.RemoveEntry($InputObject -as [string]) > $null
         }
       }      
       else 
       { 
-        $Logger.Debug("Remove selected entries('$Query', '$From')")  #<%REMOVE%>
+        $Logger.PSDebug("Remove selected entries('$Query', '$From')")  #<%REMOVE%>
          #On parcourt la sélection afin d'afficher le verbose
          #ce que ne fait pas la méthode RemoveSelectedEntries
         if ( $isFrom) 
         { $Selection = $ZipFile.SelectEntries($Query, $From) }
         else
         { $Selection = $ZipFile.SelectEntries($Query) }
-        $Logger.Debug("Entries to remove : $($Selection.count)")  #<%REMOVE%>
+        $Logger.PSDebug("Entries to remove : $($Selection.count)")  #<%REMOVE%>
         foreach ($Ze in $Selection)
         {
           try {
             $ZipFile.RemoveEntry($Ze)
-            $Logger.Debug("Removing '$($Ze.FileName)'")  #<%REMOVE%>
+            $Logger.PSDebug("Removing '$($Ze.FileName)'")  #<%REMOVE%>
             if ($isVerbose) 
             { $ZipFile.StatusMessageTextWriter.WriteLine("removing '{0}'...", $Ze.FileName)}
           } catch [ArgumentNullException] {
@@ -1733,8 +1733,8 @@ Function GetArchivePath {
     [switch] $asLiteral
   )
 
-    $Logger.Debug("GetArchivePath : récupération de l'objet ") #<%REMOVE%> 
-    $Logger.Debug("Object type = $($Object.GetType())") #<%REMOVE%>
+    $Logger.PSDebug("GetArchivePath : récupération de l'objet ") #<%REMOVE%> 
+    $Logger.PSDebug("Object type = $($Object.GetType())") #<%REMOVE%>
 
 	if ($Object -is [System.IO.FileInfo])  
 	{ return $Object.FullName  }
@@ -1744,13 +1744,13 @@ Function GetArchivePath {
 	{ $ArchivePath = $Object  }
 	else
 	{   
-       $Logger.Debug("Transformation to string") #<%REMOVE%>    
+       $Logger.PSDebug("Transformation to string") #<%REMOVE%>    
        $ArchivePath = $Object.ToString() 
     }
     if ([string]::IsNullOrEmpty($ArchivePath) )
     {  throw (New-Object PsionicTools.PsionicInvalidValueException($Object,$PsIonicMsgs.IsNullOrEmptyArchivePath)) }
 
-    $Logger.Debug("The file name is '$ArchivePath'") #<%REMOVE%>
+    $Logger.PSDebug("The file name is '$ArchivePath'") #<%REMOVE%>
     
     if ($asLiteral)
     { $Result=New-PsIonicPathInfo -LiteralPath $ArchivePath -ea Stop }
@@ -1758,7 +1758,7 @@ Function GetArchivePath {
     { $Result=New-PsIonicPathInfo -Path $ArchivePath -ea Stop }
     
     $TargetFile=$Result.GetFilename()
-    $Logger.Debug("TargetFile=$TargetFile") #<%REMOVE%>
+    $Logger.PSDebug("TargetFile=$TargetFile") #<%REMOVE%>
     
     if (-not $Result.isaValidFileSystemPath()) 
     {
@@ -1788,7 +1788,7 @@ Function GetArchivePath {
          }               
        }|
        Foreach{ 
-         $Logger.Debug("return $_") #<%REMOVE%> 
+         $Logger.PSDebug("return $_") #<%REMOVE%> 
          Write-Output $_ 
        }#foreach
     }finally {
@@ -1835,7 +1835,7 @@ Function Expand-ZipEntry {
    {         
      try {
         $Stream = New-Object System.IO.MemoryStream
-        $Logger.Debug("ReadEntry $EntryName in $($ZipFile.Name)") #<%REMOVE%>
+        $Logger.PSDebug("ReadEntry $EntryName in $($ZipFile.Name)") #<%REMOVE%>
         $Entry=$ZipFile[$EntryName]
         if ($Entry -ne $null)
         { $Entry.Extract($Stream) }
@@ -1870,7 +1870,7 @@ Function Expand-ZipEntry {
         else
         {
           $Reader = New-Object System.IO.StreamReader($Stream)
-          $Logger.Debug("Read data from the MemoryStream") #<%REMOVE%>
+          $Logger.PSDebug("Read data from the MemoryStream") #<%REMOVE%>
           $Result= $Reader.ReadToEnd()
           if ($XML)
           { $Data=$Result -as [XML] }
@@ -1880,12 +1880,12 @@ Function Expand-ZipEntry {
         
         if ($AsHashTable) 
         { 
-          $Logger.Debug("Add Hashtable") #<%REMOVE%>
+          $Logger.PSDebug("Add Hashtable") #<%REMOVE%>
           $HTable.Add($EntryName,$Data) 
         }
         else
         { 
-           $Logger.Debug("Send Datas") #<%REMOVE%>
+           $Logger.PSDebug("Send Datas") #<%REMOVE%>
            if ($Byte)
            { ,$Data}
            else
@@ -1896,13 +1896,13 @@ Function Expand-ZipEntry {
      {
        if ($Reader  -ne $Null)
        { 
-         $Logger.Debug("Dispose Reader") #<%REMOVE%>
+         $Logger.PSDebug("Dispose Reader") #<%REMOVE%>
          $Reader.Dispose()
          $Reader=$null 
        }
        if ($Stream -ne $Null)
        { 
-         $Logger.Debug("Dispose MemoryStream") #<%REMOVE%>     
+         $Logger.PSDebug("Dispose MemoryStream") #<%REMOVE%>     
          $Stream.Dispose()
          $Stream=$null 
        }
@@ -1964,7 +1964,7 @@ Function Expand-ZipFile {
     [Switch] $isVerbose= $null
     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
     $isProgressID=$PSBoundParameters.ContainsKey('ProgressID')   
-    $Logger.Debug("Expand-ZipFile isProgressID=$isProgressID") #<%REMOVE%> 
+    $Logger.PSDebug("Expand-ZipFile isProgressID=$isProgressID") #<%REMOVE%> 
     $isLiteral = $PsCmdlet.ParameterSetName -eq 'LiteralPath'
      
      #To manage delayed script block 
@@ -1973,7 +1973,7 @@ Function Expand-ZipFile {
     Function ZipFileRead {
      param( $FileName )
       try{
-        $Logger.Debug("Read the file $FileName") #<%REMOVE%> 
+        $Logger.PSDebug("Read the file $FileName") #<%REMOVE%> 
         #$isEvent= $isProgressID -and ($ProgressPreference -ne 'SilentlyContinue')
         if ($isProgressID)
         { 
@@ -2000,7 +2000,7 @@ Function Expand-ZipFile {
     function TestPassthru { 
       if ($Passthru)
       {
-        $Logger.Debug("Send ZipFile instance") #<%REMOVE%>
+        $Logger.PSDebug("Send ZipFile instance") #<%REMOVE%>
         Set-Variable -Name isDispose -Value $false -Scope 1
         return ,$ZipFile
       }
@@ -2011,24 +2011,24 @@ Function Expand-ZipFile {
         $isDispose=$true 
         if ($Passthru -and $isQuery)
         { 
-          $Logger.Debug("Preserve the query by Add-Member") #<%REMOVE%>
+          $Logger.PSDebug("Preserve the query by Add-Member") #<%REMOVE%>
           Add-Member -Input ($ZipFile -as [PSobject]) -MemberType NoteProperty -name Query -Value $Query 
         }
 
         if(-not [String]::IsNullOrEmpty($Password))
         {  
-            $Logger.Debug("Set Password") #<%REMOVE%> 
+            $Logger.PSDebug("Set Password") #<%REMOVE%> 
             $ZipFile.password = $Password  
         }
         
         if (-not [String]::IsNullOrEmpty($Query)) 
         {  
-            $Logger.Debug("Extraction using a query : $Query") #<%REMOVE%> 
+            $Logger.PSDebug("Extraction using a query : $Query") #<%REMOVE%> 
             if( [String]::IsNullOrEmpty($From))
             {
-                $Logger.Debug("From = null") #<%REMOVE%>
-                $Logger.Debug("OutputPath=$OutputPath") #<%REMOVE%>
-                $Logger.Debug("ExtractAction=$ExtractAction") #<%REMOVE%>
+                $Logger.PSDebug("From = null") #<%REMOVE%>
+                $Logger.PSDebug("OutputPath=$OutputPath") #<%REMOVE%>
+                $Logger.PSDebug("ExtractAction=$ExtractAction") #<%REMOVE%>
                 
                  #bug null to string, use reflection
                 [type[]] $private:ParameterTypesOfExtractSelectedEntriesMethod=[string],[string],[string],[Ionic.Zip.ExtractExistingFileAction]
@@ -2044,7 +2044,7 @@ Function Expand-ZipFile {
             }
         }
         else{ 
-            $Logger.Debug("Extraction without query.") #<%REMOVE%>
+            $Logger.PSDebug("Extraction without query.") #<%REMOVE%>
             $ZipFile.ExtractAll($OutputPath,$ExtractAction)
             TestPassthru
         }#else isnotnul $Query
@@ -2108,7 +2108,7 @@ Function Expand-ZipFile {
             #On le crée si possible
             if ($PSPathInfo.IsCandidateForCreation())
             {              
-              $Logger.Debug("Create -OutputPath directory: $OutputPath") #<%REMOVE%>
+              $Logger.PSDebug("Create -OutputPath directory: $OutputPath") #<%REMOVE%>
               Md $OutputPath > $Null
             }
         }
@@ -2117,11 +2117,11 @@ Function Expand-ZipFile {
       }
               
       Foreach($FileName in $ZipPath){
-        $Logger.Debug("Full path name : $FileName") #<%REMOVE%>
+        $Logger.PSDebug("Full path name : $FileName") #<%REMOVE%>
         $zipFile= ZipFileRead $FileName
         if ($ZipFile.Count -eq 0)
         {
-          $Logger.Debug("No entries in the archive") #<%REMOVE%> 
+          $Logger.PSDebug("No entries in the archive") #<%REMOVE%> 
           if ($Passthru)
           { return ,$ZipFile }
           else 
@@ -2133,7 +2133,7 @@ Function Expand-ZipFile {
          #Extract ProgressBar
         try {
           $isEvent=$isProgressID -and ($ProgressPreference -ne 'SilentlyContinue')
-          $Logger.Debug("zipfile is null: $($zipfile.psbase -eq $null)") #<%REMOVE%>
+          $Logger.PSDebug("zipfile is null: $($zipfile.psbase -eq $null)") #<%REMOVE%>
           if ($isEvent) 
           { $RegEvent=RegisterEventExtractProgress $zipFile $ProgressID }
           
@@ -2188,7 +2188,7 @@ Function TestZipArchive {
 
     # Isvalid=$true vérifie le contenu, mais Check=$true ne vérifie que le catalogue
     # On peut donc renvoyer true si on précise seulement -Check sur une archive invalide
-    $Logger.Debug("Est-ce une archive ?") #<%REMOVE%>
+    $Logger.PSDebug("Est-ce une archive ?") #<%REMOVE%>
     try{
         $isZipFile = [ZipFile]::isZipFile($Archive, $isValid)
     }
@@ -2198,24 +2198,24 @@ Function TestZipArchive {
     }
 #<DEFINE %DEBUG%>
     if ($isValid)
-    {$Logger.Debug("Is that the archive is valid ? $isZipFile") } #<%REMOVE%>
+    {$Logger.PSDebug("Is that the archive is valid ? $isZipFile") } #<%REMOVE%>
 #<UNDEF %DEBUG%>   
 
     
     if($isZipFile -and ($Check -or $Repair)){
       try{
         if($Check -and -not $Repair){
-            $Logger.Debug("Checks a zip file to see if its directory is consistent.")  #<%REMOVE%>
+            $Logger.PSDebug("Checks a zip file to see if its directory is consistent.")  #<%REMOVE%>
             $checkZip = [ZipFile]::CheckZip($Archive)
         }
         else{
-            $Logger.Debug("Checks a zip file to see if its directory is consistent, and optionally fixes the directory if necessary.")  #<%REMOVE%>
+            $Logger.PSDebug("Checks a zip file to see if its directory is consistent, and optionally fixes the directory if necessary.")  #<%REMOVE%>
             [Switch] $isVerbose= $null
             [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
-            $Logger.Debug("-Verbose: $isVerbose") #<%REMOVE%>   
+            $Logger.PSDebug("-Verbose: $isVerbose") #<%REMOVE%>   
             if ($isVerbose)
             {
-                $Logger.Debug("Configure PSVerboseTextWriter")  #<%REMOVE%>
+                $Logger.PSDebug("Configure PSVerboseTextWriter")  #<%REMOVE%>
                  #On récupère le contexte d'exécution de la session, pas celui du module. 
                 $Context=$PSCmdlet.SessionState.PSVariable.Get("ExecutionContext").Value            
                 $PSVW=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
@@ -2229,7 +2229,7 @@ Function TestZipArchive {
     }
 
     if($isZipFile -and -not [string]::IsNullOrEmpty($Password)){
-        $Logger.Debug("Contrôle du mot de passe sur l'archive")  #<%REMOVE%>
+        $Logger.PSDebug("Contrôle du mot de passe sur l'archive")  #<%REMOVE%>
         try{
             $goodPassword = [ZipFile]::CheckZipPassword($Archive, $Password)
         }
@@ -2243,7 +2243,7 @@ Function TestZipArchive {
     if($Passthru)
     {
         if($GlobalCheck){
-            $Logger.Debug("Send the name of the archive into the pipeline : $Archive")  #  %REMOVE%
+            $Logger.PSDebug("Send the name of the archive into the pipeline : $Archive")  #  %REMOVE%
             Write-Output $Archive
         } 
         else{             
@@ -2283,13 +2283,13 @@ Function TestZipArchive {
         }
     }
     else{ 
-     $Logger.Debug("Send the result of the tests into the pipeline : $GlobalCheck ")  #  %REMOVE%
+     $Logger.PSDebug("Send the result of the tests into the pipeline : $GlobalCheck ")  #  %REMOVE%
      write-output $GlobalCheck 
     }
  } finally {
     if ($PSVW -ne $null) 
     { 
-       $Logger.Debug("`t Dispose PSStream")  #<%REMOVE%> 
+       $Logger.PSDebug("`t Dispose PSStream")  #<%REMOVE%> 
        $PSVW.Dispose()
        $PSVW=$null
     }  
@@ -2314,7 +2314,7 @@ Function Test-ZipFile{
    begin {
     [Switch] $isVerbose= $null
     [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
-    $Logger.Debug("-Verbose: $isVerbose") #<%REMOVE%>  
+    $Logger.PSDebug("-Verbose: $isVerbose") #<%REMOVE%>  
      #Ici les valeurs de ces paramètres seront tjrs les mêmes 
     $TZFParam=@{} 
 	$TZFParam.Password=$Password     
@@ -2330,7 +2330,7 @@ Function Test-ZipFile{
           try {  
             $zipPath = GetArchivePath $Archive
             Foreach($ZipFile in $ZipPath){
-               $Logger.Debug("Full path name : $zipFile ") #<%REMOVE%>
+               $Logger.PSDebug("Full path name : $zipFile ") #<%REMOVE%>
                TestZipArchive -Archive $zipFile @TZFParam
             }
           }
@@ -2338,9 +2338,9 @@ Function Test-ZipFile{
                 [System.Management.Automation.DriveNotFoundException],
                 [PsionicTools.PsionicInvalidValueException]
           {
-              $Logger.Debug("isValid=$isValid") #<%REMOVE%>
-              $Logger.Debug("$($_.Exception -is [PsionicTools.PsionicInvalidValueException])") #<%REMOVE%>
-              $Logger.Debug("$($_.Exception.GetType().FullName)") #<%REMOVE%>
+              $Logger.PSDebug("isValid=$isValid") #<%REMOVE%>
+              $Logger.PSDebug("$($_.Exception -is [PsionicTools.PsionicInvalidValueException])") #<%REMOVE%>
+              $Logger.PSDebug("$($_.Exception.GetType().FullName)") #<%REMOVE%>
               if (-not $isValid)
               { Write-Error -Exception $_.Exception }
               $Logger.Error($_.Exception.Message)  #<%REMOVE%>
@@ -2388,7 +2388,7 @@ Function ConvertTo-Sfx {
  }
  
  process {  
-    $Logger.Debug("Path=$Path") #<%REMOVE%>
+    $Logger.PSDebug("Path=$Path") #<%REMOVE%>
 
      #Validation du chemin qui doit référencer le FileSystem
     if ($isLiteral)
@@ -2397,7 +2397,7 @@ Function ConvertTo-Sfx {
     { $PSPathInfo=New-PsIonicPathInfo -Path $path }
    
     $Path=$PSPathInfo.GetFileName()
-    $Logger.Debug("PathInfo=$Path") #<%REMOVE%>
+    $Logger.PSDebug("PathInfo=$Path") #<%REMOVE%>
     if (-not $PSPathInfo.isaValidFileSystemPath()) 
     {
        $Msg=$PsIonicMsgs.PathIsNotAFile -F ($Path + "`r`n$($PSPathInfo.LastError)")
@@ -2411,7 +2411,7 @@ Function ConvertTo-Sfx {
     $code=@"
 &'$psScriptRoot\ConvertZipToSfx.exe' $Parameters 2>&1
 "@    
-    $Logger.Debug("Invoke code : $Code") #<%REMOVE%>
+    $Logger.PSDebug("Invoke code : $Code") #<%REMOVE%>
     $sb=$ExecutionContext.InvokeCommand.NewScriptBlock($code) 
     try {
       $ErrorActionPreference="Stop"
@@ -2530,7 +2530,7 @@ param(
          [Parameter(Mandatory=$True,position=1)]
         [string] $activity
 )
- $Logger.Debug("New New-ProgressBarInformations") #<%REMOVE%>
+ $Logger.PSDebug("New New-ProgressBarInformations") #<%REMOVE%>
  $O=New-Object PSObject -Property $PSBoundParameters
  $O.PsObject.TypeNames.Insert(0,"ProgressBarInformations")
  $O
@@ -2549,8 +2549,8 @@ function New-ReadOptions {
   ) 
    [Switch] $isVerbose= $null
    [void]$PSBoundParameters.TryGetValue('Verbose',[REF]$isVerbose)
-   $Logger.Debug("New-ReadOptions") #<%REMOVE%> 
-   $Logger.Debug("-Verbose: $isverbose") #<%REMOVE%>   
+   $Logger.PSDebug("New-ReadOptions") #<%REMOVE%> 
+   $Logger.PSDebug("-Verbose: $isverbose") #<%REMOVE%>   
        
    $isProgressBar=$PSBoundParameters.ContainsKey('ProgressBarInformations')
    
@@ -2559,7 +2559,7 @@ function New-ReadOptions {
    #  ZipFile.PSDispose supprimera bien les ressources allouées ici
    if ($isVerbose)
    {
-      $Logger.Debug("Configure PSVerboseTextWriter") #<%REMOVE%>
+      $Logger.PSDebug("Configure PSVerboseTextWriter") #<%REMOVE%>
       $Context=$PSCmdlet.SessionState.PSVariable.Get("ExecutionContext").Value            
       $ReadOptions.StatusMessageWriter=New-Object PSIonicTools.PSVerboseTextWriter($Context) 
    }    
@@ -2568,7 +2568,7 @@ function New-ReadOptions {
 
    if ($isProgressBar)
    { 
-    $Logger.Debug("Gestion du ReadProgress via PSIonicTools.PSZipReadProgress")  #<%REMOVE%>
+    $Logger.PSDebug("Gestion du ReadProgress via PSIonicTools.PSZipReadProgress")  #<%REMOVE%>
     $Context=$PSCmdlet.SessionState.PSVariable.Get("ExecutionContext").Value  
     $PSZipReadProgress=New-Object PSIonicTools.PSZipReadProgress($Context,
                                                                  $ProgressBarInformations.activityId,
@@ -2656,7 +2656,7 @@ Function OnRemovePsIonicZip {
   $PsIonicShortCut.GetEnumerator()|
    Foreach {
      Try {
-       $Logger.Debug("Remove TypeAccelerators $($_.Key)") #<%REMOVE%> 
+       $Logger.PSDebug("Remove TypeAccelerators $($_.Key)") #<%REMOVE%> 
        [void]$AcceleratorsType::Remove($_.Key)
      } Catch {
        write-Error -Exception $_.Exception 
