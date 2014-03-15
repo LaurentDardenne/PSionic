@@ -25,7 +25,7 @@ For better portability, the default value ('DefaultEncoding') is recommended.
 Encryption algorythm used for compression. Need to specify a password with the '-Password' parameter.
 .
 Compatibility note:
-For the '-Encryption' parameter, the values 'PkzipWeak' and 'None' specified in the PKWARE zip specifications are condered as "standard".
+For the '-Encryption' parameter, the values 'PkzipWeak' and 'None' specified in the PKWARE zip specifications are considered as 'standard'.
 A zip archive built with this options will be compatible with lot of zip tools and libraries, including windows explorer.
 .
 The 'WinZipAes128' and 'WinZipAes256' are not part of specifications. So it involves the use of a specific Winzip provider extension.
@@ -55,14 +55,16 @@ Can be a file object or a string.
 Sends archive file down the pipeline as input to other commands. Be aware that resources won't be freed with Close() method so it is your responsibility.
 The archive object is not locked so be carefull of usage scenarios of this object.
 "@
-	CompressZipFileParametersPassword = 'Password used for encryption. Encryption method needs to be specified with the '-Encryption' parameter.'
+	CompressZipFileParametersPassword = @"
+Password used for encryption. Encryption method needs to be specified with the '-Encryption' parameter.
+"@
 	CompressZipFileParametersPath = @"
 File names list to compress. Can be a file object or a string. In this last case, generic characters can be used (* , ? , [A-D] ou [1CZ]).
 "@
-	CompressZipFileParametersRecurse = 'Compress the items in the specified locations and all child items of the locations specified with the '-Path' or '-LiteralPath' parameters.'
-	CompressZipFileParametersSetLastModifiedProperty = @"
+	CompressZipFileParametersRecurse = 'Compress the items in the specified locations and all child items of the locations specified with the ''-Path'' or ''-LiteralPath'' parameters.'
+	CompressZipFileParametersSetLastModifiedProperty = @'
 Before saving the archive, allows to modify the 'LastModified' property of each archive entries. The $Entry variable must be used in the scriptblock.
-"@
+'@
 	CompressZipFileParametersSortEntries = @"
 Entries are sorted before saving them. This can slow down the compression process, according to the number of files to compress.
 "@ 
