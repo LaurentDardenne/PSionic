@@ -151,16 +151,16 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
   
   $Excludes='New-PsIonicPathInfo','ConvertTo-EntryRootPath'
  
-  Write-Warning "!!! Reste la doc de la culture en-US "
-  #$Cultures |
-  "fr-Fr" | 
+  #"fr-Fr" |
+  $Cultures |
     Foreach {
       $Module.ExportedFunctions.GetEnumerator()|
       Where {$Excludes -notContains $_.Key} |
        ConvertTo-XmlHelp $Module.Name -Source $PsIonicHelp -Target $TempLocation  -Culture $_
     }
    
-  "fr-Fr" | 
+  #"fr-Fr" |
+  $Cultures |
     Foreach {
       $Module.ExportedFunctions.GetEnumerator()|
        Where {$Excludes -notContains $_.Key} |
