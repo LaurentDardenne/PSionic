@@ -3,7 +3,7 @@ $Datas = @{
 	ConvertToPSZipEntryInfoSynopsis = 'Convert Info property of a ZipFile or ZipEntry object.'
 	ConvertToPSZipEntryInfoDescription = 'Convert Info property of a ZipFile object to a custom objects list or a ZipEntry/PSZipEntry object to a custom object.'
 	ConvertToPSZipEntryInfoSets__AllParameterSets = ''
-	ConvertToPSZipEntryInfoParametersInfo = 'Contents of a Ionic object's Info property.'
+	ConvertToPSZipEntryInfoParametersInfo = 'Contents of a Ionic object''s Info property.'
 	ConvertToPSZipEntryInfoInputsDescription1 = ''
 	ConvertToPSZipEntryInfoOutputsDescription1 = ''
 	ConvertToPSZipEntryInfoNotes = @"
@@ -16,10 +16,10 @@ This example gets an entry list from an archive. Those are Powershell custom obj
 The Info property (which is string type by default), is converted to a PSObject. Then this PSObject is reassigned to the contents of the Info property.
 The string type initial information is no longer available.
 "@
-	ConvertToPSZipEntryInfoExamplesRemarks2 = @"
+	ConvertToPSZipEntryInfoExamplesRemarks2 = @'
 This example gets an archive then its Info property is converted to an indexed list of PSZipEntryInfo objects.
 Then it adds a new entry to the archive and it builds a new PSZipEntryInfo list, this time from the initial information which is reachable through $Zip.psbase.Info.
-"@
+'@
 }
 
 

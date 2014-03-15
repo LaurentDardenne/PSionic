@@ -6,7 +6,7 @@ $Datas = @{
 You can specify a command line to run once the uncompression process has finished.
 "@
 	ConvertToSfxSets__AllParameterSets = ''
-	ConvertToSfxParametersComment = 'Archive's comment.'
+	ConvertToSfxParametersComment = 'Archive''s comment.'
 	ConvertToSfxParametersPath = '.Zip file name to convert.'
 	ConvertToSfxParametersLiteralPath = @"
 .Zip file name to convert. Generic characters won't be interpreted.
@@ -18,8 +18,7 @@ Return the generated file in object form and not just his name.
 Archive object is not locked so be attentive to your usage scenarios of this object.
 "@
 	ConvertToSfxInputsDescription1 = @"
-You can send any object in the pipeline, 
-Vous pouvez émettre n'importe quel objet dans le pipeline, but his transformation to a string type must be a file name.
+You can send any object in the pipeline, but his transformation to a string type must be a file name.
 "@
 	ConvertToSfxOutputsDescriptionSystemIOFileInfo = @"
 None or System.IO.FileInfo

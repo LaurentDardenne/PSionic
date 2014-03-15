@@ -1,6 +1,6 @@
 ﻿# ConvertTo-CliXml command data
 $Datas = @{
-	ConvertToCliXmlSynopsis = ''
+	ConvertToCliXmlSynopsis = 'todo'
 	ConvertToCliXmlDescription = ''
 	ConvertToCliXmlSets__AllParameterSets = ''
 	ConvertToCliXmlParametersInputObject = ''

@@ -1,7 +1,7 @@
 ﻿# Add-ZipEntry command data
 $Datas = @{
 	AddZipEntrySynopsis = 'Add an entry into an existing zip archive.'
-	AddZipEntryDescription = 'Add an entry into an existing .zip archive's catalog or a self extracting .exe archive. This entry can be a file or a directory name, a string or an array of bytes.'
+	AddZipEntryDescription = 'Add an entry into an existing .zip archive''s catalog or a self extracting .exe archive. This entry can be a file or a directory name, a string or an array of bytes.'
 	AddZipEntrySets__AllParameterSets = ''
     AddZipEntryParametersComment = 'Comment associated with the entry. For entries such as strings or arrays, the comment will ba their name by default : [String] or [Byte[]].' 
 	AddZipEntryParametersEntryPathRoot = @"
@@ -35,7 +35,7 @@ Contents associated to an entry. Allowed types are :
 
 All other types of object will be processed to string from ToString() method.   
 "@
-    AddZipEntryParametersPassthru = 'Once entry is added to the archive's catalog, it is sent to the pipeline.'
+    AddZipEntryParametersPassthru = 'Once entry is added to the archive''s catalog, it is sent to the pipeline.'
 	AddZipEntryParametersZipFile = 'Target archive in which specified entry is added. This parameter waits for a ZipFile object and not a file name.'
 	AddZipEntryInputsDescription1 = @"
 System.Byte[], System.String, System.IO.DirectoryInfo, System.IO.FileInfo, Ionic.Zip.ZipEntry.
