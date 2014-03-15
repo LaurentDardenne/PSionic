@@ -52,7 +52,7 @@
   
   <appender name="Debugger" type="log4net.Appender.OutputDebugStringAppender">
     <layout type="log4net.Layout.PatternLayout">
-      <conversionPattern value="%-5level %d{yyyy-MM-dd hh:mm:ss} - %message%newline"/>
+      <conversionPattern value="[PID:%property{Owner}] [%property{JobName}] %-5level %d{yyyy-MM-dd hh:mm:ss} - %message%newline"/>
     </layout>
   </appender>
 </log4net>
