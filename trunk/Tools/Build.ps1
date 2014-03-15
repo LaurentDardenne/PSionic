@@ -10,11 +10,15 @@
 Set-Location $PsIonicTools
 
 try {
- Import-Module Psake -EA stop -force
- Import-Module "$PsIonicTrunk\Modules\Log4Posh\Log4Posh.psd1"
+ 'Psake',"$PsIonicTrunk\Modules\Log4Posh\Log4Posh.psd1"|
+ Foreach {
+   $name=$_
+   Import-Module $Name -EA stop -force
+ }
 } catch {
- Throw "Module Psake is unavailable."
-}
+ Throw "Module $name is unavailable."
+}  
+
 try {
     #Release utilise en interne Show-BalloonTip
     #Une fois ses tâches terminée, la fonction Show-BalloonTip
