@@ -17,14 +17,7 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
    Write-Verbose "Import module in $PsIonicLivraison\PsIonic"
 
    Import-Module .\PsIonic.psd1 -Force
-   if ($Configuration -eq "Debug") 
-   { 
-     Write-host "Mode $Configuration : disable log4net"
-      #Utile si log4net est déjà configuré sinon on obtient 
-      #un warning sans gravité sur le logger 
-     Set-Log4NETDebugLevel -Off 
-   }
-   
+
    $ZipFileName="$PsIonicLivraison\PsIonicSetup.zip"
    
    $Files="$PsIonicLivraison\*"

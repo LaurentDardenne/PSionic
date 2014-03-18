@@ -31,7 +31,6 @@
 # 
 # 
 #   New-LG4NetConfigurationFile
- #todo créer la variable %PSIONICLOGPATH%
  #todo afficher une documentation html pour les consignes d'install    
   Install-Psionic
 } 
