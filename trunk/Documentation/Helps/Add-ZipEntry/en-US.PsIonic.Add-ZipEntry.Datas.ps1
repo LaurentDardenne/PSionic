@@ -3,7 +3,7 @@ $Datas = @{
 	AddZipEntrySynopsis = 'Add an entry into an existing zip archive.'
 	AddZipEntryDescription = 'Add an entry into an existing .zip archive''s catalog or a self extracting .exe archive. This entry can be a file or a directory name, a string or an array of bytes.'
 	AddZipEntrySets__AllParameterSets = ''
-    AddZipEntryParametersComment = 'Comment associated with the entry. For entries such as strings or arrays, the comment will ba their name by default : [String] or [Byte[]].' 
+    AddZipEntryParametersComment = 'Comment associated with the entry. For entries such as strings or arrays, the comment will be their name by default : [String] or [Byte[]].' 
 	AddZipEntryParametersEntryPathRoot = @"
 The new entry will be added in the specified path. By default, it is added to the root of the tree contained in the archive. 
 The value of this parameter must reference an existing directory path.
@@ -11,7 +11,7 @@ The value of this parameter must reference an existing directory path.
 You need to specify this parameter in order to avoid entry name clashes when compressing a recursive tree.
 This one allows to build the name of the entry relatively to the specified directory.
 
-For example, specifying 'C:\Temp\Backup', the treating building name will remove 'C:\Temp\Backup' for each received file during recurisive compression of 'C:\Temp\Backup'.
+For example, specifying 'C:\Temp\Backup', the treating building name will remove 'C:\Temp\Backup' for each received file during recursive compression of 'C:\Temp\Backup'.
 So, for files 'C:\Temp\Backup\File1.ps1' and 'C:\Temp\Backup\Projet\File1.ps1', created entries in the catalog will be respectively :
 File1.ps1
 Projet/File.ps1   
@@ -21,7 +21,7 @@ By specifying a directory name different from the begining of the archive will t
 	AddZipEntryParametersName = @"
 Each entry is associated with a name in the catalog. For files or directories, their names are automatically used for entries names, in the root of the archive.
 .
-For strings or array of bytes, you must specify an entry name. The use os the -EntryPathRoot parameter will not influence this naming.
+For strings or array of bytes, you must specify an entry name. The use of the -EntryPathRoot parameter will not influence this naming.
 .
 During the call of the Expand-ZipFile function, the string or arrays entries will be extracted like for files.
 "@	
