@@ -4,7 +4,7 @@ Ce module facilite l'automatisation de la création d'archive et l'extraction
 des fichiers d'une archive.
 
 Il permet également de manipuler les entrées du catalogue d'une archive, 
-et propose des opérations telles que l'ajout, la mise à jour ou la suppression d'entrées.
+en proposant des opérations telles que l'ajout, la mise à jour ou la suppression d'entrées.
 
 La construction d'archive auto extractible est possible, celle-ci peut exécuter 
 du code une fois tous les fichiers décompressés. 
