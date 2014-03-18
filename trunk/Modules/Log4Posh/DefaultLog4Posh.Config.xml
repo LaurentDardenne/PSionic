@@ -1,5 +1,26 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <log4net>
+ 
+ <!-- 
+ Fichier de configuration du module Log4Posh. 
+ Chaque Module utilsant Log4Posh. à son propre fichier de configuration
+ 
+ DebugLogger pour les traces de debug techniques internes au module et
+ InfoLogger pour les traces de debug fonctionnelles du traitement externes utilisant le module.
+ 
+ Par défaut les appenders FileExternal et FileInternal utilise le même fichier.
+ 
+ L'appender nommé Debugger est un dispositif unique pour une session 
+ Windows d'une machine.
+ Chaque session Powershell verra l'appender nommé Console comme un dispositif unique.  
+ 
+ On charge le module Log4Posh dans chaque session/job Powershell.
+ Chaque module utilise ce fichier de configuration dans un repository dédié, dont le nom est le nom du module.
+ Par défaut, le script principal utilisera le repository 'log4net-default-repository'.
+ Une session aura donc: 
+   - un module log4posh chargé et donc une DLL chargée,
+   - un ou plusieurs  module log4posh chargé et donc une DLL chargée,
+ --> 
  <logger name="DebugLogger">
     <level value="Debug" />
     <appender-ref ref="Console" />      <!-- Appender partagé -->
@@ -13,6 +34,14 @@
     <appender-ref ref="FileExternal"/>
     <appender-ref ref="Debugger"/>
   </logger>
+ <!--
+   <logger name="InfoLogger">
+    <level value="Info" />
+    <appender-ref ref="Console2" />      Appender unique
+    <appender-ref ref="FileExternal"/>   Appender unique
+    <appender-ref ref="Debugger2"/>      Appender unique
+  </logger>
+ --> 
     
   <!-- Global Context properties : Owner, RunspaceId, LogJobName -->
   
@@ -45,7 +74,7 @@
   </appender>
 
   <appender name="FileInternal" type="log4net.Appender.RollingFileAppender">
-    <file type="log4net.Util.PatternString" value="%env{TEMP}\\PsIonic.log"/>
+    <file type="log4net.Util.PatternString" value="%env{TEMP}\\DefaultLog4Posh-%property{Owner}-%property{LogJobName}-%date{ddMMyyyyHHmmss}.log"/>
     <param name="AppendToFile" value="true"/>
     <rollingStyle value="Size"/>
     <maxSizeRollBackups value="5"/>
@@ -58,7 +87,10 @@
   </appender>
   
   <appender name="FileExternal" type="log4net.Appender.RollingFileAppender">
-    <file type="log4net.Util.PatternString" value="%env{TEMP}\\PsIonic.log"/>
+    <!-- Exemple de nom par défaut :  
+     C:\Users\User\AppData\Local\Temp\DefaultLog4Posh-2224-ConsoleHost-17032014093932
+    -->
+    <file type="log4net.Util.PatternString" value="%env{TEMP}\\DefaultLog4Posh-%property{Owner}-%property{LogJobName}-%date{ddMMyyyyHHmmss}.log"/>
     <param name="AppendToFile" value="true"/>
     <rollingStyle value="Size"/>
     <maxSizeRollBackups value="5"/>
