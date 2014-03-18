@@ -16,17 +16,19 @@ Archive encoding type. Possible values are :
 .
 For better portability, the default value ('DefaultEncoding') is recommended.
 "@
-	GetZipFileParametersEncryption = ''
+	GetZipFileParametersEncryption = @"
+Encryption algorythm used for compression. Need to specify a password with the '-Password' parameter.
+"@
 	GetZipFileParametersList = ''
 	GetZipFileParametersProgressID = ''
 	GetZipFileParametersPath = @"
-File names list to compress. Can be a file object or a string. In this last case, generic characters can be used (* , ? , [A-D] ou [1CZ]).
+File name to retrieve. Can be a file object or a string. In this last case, generic characters can be used (* , ? , [A-D] ou [1CZ]).
 "@
 	GetZipFileParametersOptions = ''
 	GetZipFileParametersPassword = @"
 Password used for encryption. Encryption method needs to be specified with the '-Encryption' parameter.
 "@
-	GetZipFileParametersReadOptions = ''
+	GetZipFileParametersReadOptions = 'Options applied when reading archive (.zip). Created options from the New-ReadOptions function.'
 	GetZipFileParametersSortEntries = @"
 Entries are sorted before saving them. This can slow down the compression process, according to the number of files to compress.
 "@ 

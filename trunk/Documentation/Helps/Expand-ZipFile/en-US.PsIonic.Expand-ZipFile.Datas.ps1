@@ -21,12 +21,14 @@ For better portability, the default value ('DefaultEncoding') is recommended.
 	ExpandZipFileParametersFlatten = ''
 	ExpandZipFileParametersFrom = ''
 	ExpandZipFileParametersLiteralPath = @"
-File names list to compress. Generic characters won't be interpreted.
+File names list to expand. Generic characters won't be interpreted.
 Can be a file object or a string.
 "@
 	ExpandZipFileParametersOutputPath = ''
 	ExpandZipFileParametersPassthru = ''
-	ExpandZipFileParametersPassword = ''
+	ExpandZipFileParametersPassword = @"
+Password used for encryption. Encryption method needs to be specified with the '-Encryption' parameter.
+"@
 	ExpandZipFileParametersPath =@"
 File names list to expand. Can be a file object or a string. In this last case, generic characters can be used (* , ? , [A-D] ou [1CZ]).
 "@

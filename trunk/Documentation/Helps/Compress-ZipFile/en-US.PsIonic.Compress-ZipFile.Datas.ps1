@@ -39,7 +39,7 @@ In order to avoid entry name collisions during a recursive tree compression you 
 This one allows to build the name of the input, relatively to the specified directory.
 
 For example, by specifying 'C:\Temp\Backup', during the recursive compression of 'C:\Temp\Backup', treatment construction of the entry name will cut off 'C:\Temp\Backup' for each received file name.
-So, for 'C:\Temp\Backup\File1.ps1' and 'C:\Temp\Backup\Projet\File1.ps1' files, the entries created in the catalog will be respecively:
+So, for 'C:\Temp\Backup\File1.ps1' and 'C:\Temp\Backup\Projet\File1.ps1' files, the entries created in the catalog will be respectively:
 File1.ps1
 Projet/File.ps1   
 .
