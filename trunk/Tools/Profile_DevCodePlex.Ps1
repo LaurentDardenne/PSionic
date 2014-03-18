@@ -37,9 +37,6 @@ $PsIonic.NewVariables() #Crée des variables constante d'après les clés de la 
  #PSDrive sur le répertoire du projet 
 $null=New-PsDrive -Scope Global -Name $PsIonic.ProjectName -PSProvider FileSystem -Root $PsIonicTrunk 
 
- #Crée une variable d'environnement utilisée dans 
- #le fichier de configuration Log4Net.Config.xml de dev
-$env:PsionicLogPath= $PsIonicLogs
  
 rv SM,Paths,ProjectName,SvnPathRepository
 Set-Location ..
