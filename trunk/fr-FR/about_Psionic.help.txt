@@ -1,9 +1,19 @@
-﻿PSionic un module Powershell de gestion d'archives ZIP à l'aide la dll 'IOnic.Zip.dll' issue du projet DotNetZip (http://dotnetzip.codeplex.com)
-Ce module facilite l'automatisation de la création d'archive et l'extraction des fichiers d'une archive.
+﻿PSionic un module Powershell de gestion d'archives ZIP basé sur la dll 'IOnic.Zip.dll' 
+issue du projet DotNetZip (http://dotnetzip.codeplex.com)
+Ce module facilite l'automatisation de la création d'archive et l'extraction 
+des fichiers d'une archive.
 
-Il permet également de manipuler les entrées du catalogue d'une archive, on proposant des opérations telles que l'ajout, la mise à jour ou la suppression d'entrées.
-La construction d'archive auto extractible est possible, celle-ci peut exécuter du code une fois tous les fichiers décompressés. Les exécutables construit le sont en tant que Console ou en tant que GUI (Winform).
+Il permet également de manipuler les entrées du catalogue d'une archive, 
+et propose des opérations telles que l'ajout, la mise à jour ou la suppression d'entrées.
 
-Les entrées d'un archive proviennent d'objet fichier, d'objet répertoire, de tableau d'octets ou encore de chaîne de caractères. Une archive peut servir de conteneur d'objets Powershell sérialisés.  
+La construction d'archive auto extractible est possible, celle-ci peut exécuter 
+du code une fois tous les fichiers décompressés. 
+
+Les exécutables construit le sont en tant que Console ou en tant que GUI (Winform).
+
+Les entrées d'un archive proviennent d'objet fichier, d'objet répertoire, 
+de tableau d'octets ou encore de chaîne de caractères. 
+
+Une archive peut servir de conteneur d'objets Powershell sérialisés.  
 
  
