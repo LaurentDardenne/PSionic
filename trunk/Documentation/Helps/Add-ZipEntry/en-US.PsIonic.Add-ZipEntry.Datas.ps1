@@ -1,7 +1,7 @@
 ﻿# Add-ZipEntry command data
 $Datas = @{
-	AddZipEntrySynopsis = 'Add an entry into an existing zip archive.'
-	AddZipEntryDescription = 'Add an entry into an existing .zip archive''s catalog or a self extracting .exe archive. This entry can be a file or a directory name, a string or an array of bytes.'
+	AddZipEntrySynopsis = 'Adds an entry into an existing zip archive.'
+	AddZipEntryDescription = 'Adds an entry into an existing .zip archive''s catalog or a self extracting .exe archive. This entry can be a file or a directory name, a string or an array of bytes.'
 	AddZipEntrySets__AllParameterSets = ''
     AddZipEntryParametersComment = 'Comment associated with the entry. For entries such as strings or arrays, the comment will be their name by default : [String] or [Byte[]].' 
 	AddZipEntryParametersEntryPathRoot = @"
