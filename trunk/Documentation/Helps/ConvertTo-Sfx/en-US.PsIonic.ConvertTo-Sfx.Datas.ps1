@@ -1,6 +1,6 @@
 ﻿# ConvertTo-Sfx command data
 $Datas = @{
-	ConvertToSfxSynopsis = 'Convert a .Zip archive to a self-extracting archive.'
+	ConvertToSfxSynopsis = 'Converts a .Zip archive to a self-extracting archive.'
 	ConvertToSfxDescription = @"
 .Zip archive conversion to a self-extracting archive includes uncompress treatment in the resulting file. 
 You can specify a command line to run once the uncompression process has finished.
@@ -14,7 +14,7 @@ You can specify a command line to run once the uncompression process has finishe
 	ConvertToSfxParametersSaveOptions = 'Generation options created through the New-ZipSfxOptions function.'
     ConvertToSfxParametersReadOptions = 'Options applied when reading archive (.zip) that is converted to a self-extracting archive (.exe). Created options from the New-ReadOptions function.'
 	ConvertToSfxParametersPassthru = @"
-Return the generated file in object form and not just his name. 
+Returns the generated file in object form and not just his name. 
 Archive object is not locked so be attentive to your usage scenarios of this object.
 "@
 	ConvertToSfxInputsDescription1 = @"
@@ -26,7 +26,7 @@ None or System.IO.FileInfo
 When using the PassThru parameter, ConvertTo-Sfx sends the self-extracting archive's file object. Ottherwise this function doesn't make output.
 "@ 
 	ConvertToSfxNotes = @"
-The dotnet 2.0 framework is needed on the computer that uncompresses the self-exctracting archive.
+The dotnet framework 2.0 is needed on the computer that uncompresses the self-exctracting archive.
 The folder specified by the 'ExtractDirectory' parameter (cf. New-ZipSfxOptions) can contains system variables references.
 For example %UserProfile%. Those will be replaced while running the self-extracting archive.
 
