@@ -1,7 +1,7 @@
 ﻿# ConvertTo-PSZipEntryInfo command data
 $Datas = @{
-	ConvertToPSZipEntryInfoSynopsis = 'Convert Info property of a ZipFile or ZipEntry object.'
-	ConvertToPSZipEntryInfoDescription = 'Convert Info property of a ZipFile object to a custom objects list or a ZipEntry/PSZipEntry object to a custom object.'
+	ConvertToPSZipEntryInfoSynopsis = 'Converts Info property of a ZipFile or ZipEntry object.'
+	ConvertToPSZipEntryInfoDescription = 'Converts Info property of a ZipFile object to a custom objects list or a ZipEntry/PSZipEntry object to a custom object.'
 	ConvertToPSZipEntryInfoSets__AllParameterSets = ''
 	ConvertToPSZipEntryInfoParametersInfo = 'Contents of a Ionic object''s Info property.'
 	ConvertToPSZipEntryInfoInputsDescription1 = ''
