@@ -1,12 +1,15 @@
 ﻿# Expand-ZipEntry command data
 $Datas = @{
-	ExpandZipEntrySynopsis = 'todo'
-	ExpandZipEntryDescription = ''
+	ExpandZipEntrySynopsis = 'Extracts entries from a compressed archive to Zip format.'
+	ExpandZipEntryDescription = @"
+Extracts entries from a compressed archive to a Zip format. Extracted data are either serialized data, either an array of bytes, or a string and it allows to build an object.
+To extract files from an archive use Expand-ZipFile Cmdlet.
+"@
 	ExpandZipEntrySetsByteArray = ''
 	ExpandZipEntrySetsString = ''
 	ExpandZipEntrySetsXML = ''
-	ExpandZipEntryParametersAsHashTable = ''
-	ExpandZipEntryParametersByte = ''
+	ExpandZipEntryParametersAsHashTable = 'Returns readen entries into an object of type hashtable. Name entries are extracted as a key name.'
+	ExpandZipEntryParametersByte = 'Entry is returned as an array of bytes.'
 	ExpandZipEntryParametersEncoding = @"
 Archive encoding type. Possible values are :
 -ASCII	          : ASCII characters encoding scheme (7 bits).
@@ -19,20 +22,27 @@ Archive encoding type. Possible values are :
 .
 For better portability, the default value ('DefaultEncoding') is recommended.
 "@
-	ExpandZipEntryParametersExtractAction = ''
+	ExpandZipEntryParametersExtractAction = 'Specific steps to be taken when data is already present in the destination folder.'
 	ExpandZipEntryParametersName ='Names of entries to extract.'
-	ExpandZipEntryParametersPassword = @"
-Password used for encryption. Encryption method needs to be specified with the '-Encryption' parameter.
-"@
-	ExpandZipEntryParametersStrict = ''
-	ExpandZipEntryParametersXML = ''
-	ExpandZipEntryParametersZipFile = 'Target archive in which specified entry is extracted. This parameter waits for a ZipFile object and not a file name.'
+	ExpandZipEntryParametersPassword = 'Password used to uncompress encrypted archive.'
+	ExpandZipEntryParametersStrict = 'Errors trigger exceptions in place of displaying them.'
+	ExpandZipEntryParametersXML = 'String object is returned in XML format.'
+	ExpandZipEntryParametersZipFile = 'An object containing a Zip archive.'
 	ExpandZipEntryInputsDescription1 = ''
+	ExpandZipEntryOutputsDescriptionIonicZipZipEntry = ''
 	ExpandZipEntryOutputsDescriptionSystemXmlXmlDocument = ''
 	ExpandZipEntryOutputsDescriptionSystemString = ''
 	ExpandZipEntryOutputsDescriptionSystemByte = ''
-	ExpandZipEntryNotes = ''
-	ExpandZipEntryExamplesRemarks1 = ''
+	ExpandZipEntryNotes = 'This function is linked to the Add-ZipEntry function.'
+	ExpandZipEntryExamplesRemarks1 = @'
+At first time, those instructions save text to an entry named MyText, then links it and assigns it to the $MyVersionArray variable.
+'@
+	ExpandZipEntryExamplesRemarks2 =@'
+At first time, those instructions save serialized object to an entry named 'PSVersiontable_clixml', then links and assigns it to the $MyVersionArray variable. 
+'@
+	ExpandZipEntryExamplesRemarks3 =@'
+At first time, those instructions save an array of bytes to an entry named MyArray, then links it and assigns it to the $Array variable.
+'@
 }
 
 
