@@ -28,7 +28,7 @@ Si vous précisez également le paramètre -Passthru, une propriété personnali
 "@
 	ExpandZipFileParametersFrom = @"
 Précise le répertoire de l'archive à partir duquel seront extraites les entrées. 
-Un nom de répertoire dans une archive à la syntaxe suivante : 'NomRépertoire/' ou 'NomRépertoire/NomDeSousRépertoire/'.
+Un nom de répertoire dans une archive a la syntaxe suivante : 'NomRépertoire/' ou 'NomRépertoire/NomDeSousRépertoire/'.
 
 L'usage de ce paramètre nécessite de préciser le paramètre -Query, sinon une exception sera déclenchée.
 "@
