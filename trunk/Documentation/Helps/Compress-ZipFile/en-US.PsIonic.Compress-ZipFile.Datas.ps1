@@ -1,7 +1,7 @@
 ﻿# Compress-ZipFile command data
 $Datas = @{
-	CompressZipFileSynopsis = 'Compress files list into a .ZIP file archive.'
-	CompressZipFileDescription = 'The Compress-ZipFile Cmdlet compress files and/or folders into a .ZIP file archive.'
+	CompressZipFileSynopsis = 'Compresses files list into a .ZIP file archive.'
+	CompressZipFileDescription = 'The Compress-ZipFile Cmdlet compresses files and/or folders into a .ZIP file archive.'
 	CompressZipFileSetsLiteralPath = ''
 	CompressZipFileSetsPath = ''
 	CompressZipFileParametersCodePageIdentifier = @"
