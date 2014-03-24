@@ -20,8 +20,6 @@ $VerbosePreference='Continue'
 #log4Net config
 # on copie la config de dev nécessaire au build. 
    Copy "$PsIonicTrunk\Log4Net.Config.xml" "$PsIonicLivraison\PsIonic"
-      #crée le template pour le setup
-   Copy "$PsIonicTools\Log4Net.Config.xml" "$PsIonicLivraison\PsIonic\Log4Net.Config.xml.Template"
    
    Copy "$PsIonicBin\${Configuration}\Ionic.Zip.dll" "$PsIonicLivraison\PsIonic"
 # PSIonicTools.dll est compilé d'aprés la version PS courante

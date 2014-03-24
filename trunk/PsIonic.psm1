@@ -11,9 +11,6 @@
 #bug Ionic 1.9.8:
 # NumberOfSegmentsForMostRecentSave : la valeur est fausse 
 
-#todo tester le nom du module ps1xml une fois Infologger redirigé 
-#todo Error et Fatal dans $InfoLogger
-
 Add-Type -Path "$psScriptRoot\$($PSVersionTable.PSVersion)\PSIonicTools.dll"
 
    #Récupère le code d'une fonction publique du module Log4Posh (Prérequis)
@@ -635,7 +632,7 @@ Function IsValueSupported {
  if (&$IsValueSupported[$PsCmdlet.ParameterSetName] $Value)
  { 
    $Msg=$PsIonicMsgs.ValueNotSupported -F $value
-   $DebugLogger.Fatal($Msg)  #<%REMOVE%>
+   $DebugLogger.PSFatal($Msg)  #<%REMOVE%>
    Throw (New-Object PSIonicTools.PsionicException($Msg)) 
  } 
  
@@ -719,7 +716,7 @@ Function SetZipFileEncryption {
        if (-not $isPwdValid)
        { 
          $Msg=$PsIonicMsgs.InvalidPasswordForDataEncryptionValue -F $Password,$DataEncryption
-         $DebugLogger.Fatal($Msg) #<%REMOVE%>
+         $DebugLogger.PSFatal($Msg) #<%REMOVE%>
          Throw (New-Object PSIonicTools.PsionicException($Msg)) 
        }
        $DebugLogger.PSDebug("Encryption $DataEncryption") #<%REMOVE%>
@@ -1243,7 +1240,7 @@ Function Compress-ZipFile {
       } 
       catch [System.IO.IOException] 
       {
-        $DebugLogger.Fatal("Save zip",$_.Exception) #<%REMOVE%>
+        $DebugLogger.PSFatal("Save zip",$_.Exception) #<%REMOVE%>
         DisposeZip
         Throw (New-Object PSIonicTools.PsionicException($_,$_.Exception))
       }
@@ -1991,7 +1988,7 @@ Function Expand-ZipFile {
       catch {
         DisposeZip
         $Msg=$PsIonicMsgs.ZipArchiveReadError -F $FileName.ToString(), $_.Exception.Message
-        $DebugLogger.Fatal($Msg,$_.Exception) #<%REMOVE%>
+        $DebugLogger.PSFatal($Msg,$_.Exception) #<%REMOVE%>
         throw (New-Object PSIonicTools.PsionicException($Msg,$_.Exception))
       }
     }#ZipFileRead
@@ -2062,7 +2059,7 @@ Function Expand-ZipFile {
          $ex=New-Object PSIonicTools.PsionicException($Msg,$_.Exception)
          if (($_.Exception.GetType().IsSubClassOf([Ionic.Zip.ZipException])) -and ($ZipFile.ExtractExistingFile -ne "Throw") ) 
          {
-           $DebugLogger.Fatal($Msg,$_.Exception) #<%REMOVE%>
+           $DebugLogger.PSFatal($Msg,$_.Exception) #<%REMOVE%>
            throw $ex
          }
          else 

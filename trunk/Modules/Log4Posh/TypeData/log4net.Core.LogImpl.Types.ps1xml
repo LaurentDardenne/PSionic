@@ -21,7 +21,7 @@
               switch ($args.Count) {
              		 1 { $this.Psbase.Debug("[$Name] $($args[0])") }
                  2 { $this.Psbase.Debug("[$Name] $($args[0])",$args[1]) }
-  	             default { throw "The method Debug do not containt override with $($args.Count) parameters." }
+  	             default { throw "The method Debug do not contains override with $($args.Count) parameters." }
               }
              }
          </Script> 
@@ -40,7 +40,7 @@
               switch ($args.Count) {
              		 1 { $this.Psbase.Info("[$Name] $($args[0])") }
                  2 { $this.Psbase.Info("[$Name] $($args[0])",$args[1]) }
-  	             default { throw "The method Info do not containt override with $($args.Count) parameters." }
+  	             default { throw "The method Info do not contains override with $($args.Count) parameters." }
               }
              }
          </Script> 
@@ -60,11 +60,30 @@
              		 1 { $this.Psbase.Error("[$Name] $($args[0])") }
                  2 { $this.Psbase.Error("[$Name] $($args[0])",$args[1]) }
                  3 { $this.Psbase.Error("[$Name] $($args[0])",$args[1],$args[2]) }
-  	             default { throw "The method Error do not containt override with $($args.Count) parameters." }
+  	             default { throw "The method Error do not contains override with $($args.Count) parameters." }
               }
              }
          </Script> 
        </ScriptMethod> 
+       <ScriptMethod> 
+         <Name>PSFatal</Name> 
+         <Script>
+            if ($this.IsFatalEnabled)
+            {  
+              if (Test-Path Variable:lg4n_ModuleName)
+              { $Name=$lg4n_ModuleName }
+              elseif (Test-Path Variable:lg4n_ScriptName)
+              { $Name=$lg4n_ScriptName }
+              else
+              { $Name="Console" }
+              switch ($args.Count) {
+             		 1 { $this.Psbase.Fatal("[$Name] $($args[0])") }
+                 2 { $this.Psbase.Fatal("[$Name] $($args[0])",$args[1]) }
+  	             default { throw "The method Fatal do not contains override with $($args.Count) parameters." }
+              }
+             }
+         </Script> 
+       </ScriptMethod>        
      </Members>        
   </Type>
 </Types> 
