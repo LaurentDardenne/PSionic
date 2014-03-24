@@ -1,5 +1,6 @@
 #Log4Posh.psm1
- 
+# !!! ATTENTION !!! les noms de repository sont sensibles à la casse
+
 Import-LocalizedData -BindingVariable Log4PoshMsgs -Filename Log4PoshLocalizedData.psd1 -EA Stop
 
 # ------------ Initialisation et Finalisation  ----------------------------------------------------------------------------
@@ -107,7 +108,6 @@ Function Stop-Log4Net {
      [Parameter(Position=0, Mandatory=$false)]
    [string] $RepositoryName=$(Get-DefaultRepositoryName)
  )
- 
  Write-Debug "Close the repository '$RepositoryName'"
  if (-not (Test-Repository $RepositoryName))
  {throw ($Log4PoshMsgs.RepositoryDoNotExist -F $RepositoryName) } 
@@ -134,7 +134,6 @@ Function ConvertTo-Log4NetCoreLevel {
      [Parameter(Position=1,Mandatory=$true)]
    [string] $Level   
  )
- 
  if (-not (Test-Repository $RepositoryName))
  { throw ($Log4PoshMsgs.RepositoryDoNotExist -F $RepositoryName) } 
   
@@ -146,8 +145,9 @@ Function Set-Log4NetRepositoryThreshold {
 #Bascule le niveau de log d'un repository
  [CmdletBinding(DefaultParameterSetName="Level")] 
  param (
-     [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
-   [log4net.Core.LogImpl] $Logger,
+      [ValidateNotNullOrEmpty()]
+      [Parameter(Position=0,Mandatory=$True,ValueFromPipeline = $true)] 
+    [String] $RepositoryName, 
     
      [Parameter(Position=1, ParameterSetName="Level")]
    [string] $Level='Info',
@@ -160,19 +160,19 @@ Function Set-Log4NetRepositoryThreshold {
  ) 
 
  process { 
-   If ($Logger -ne $null)
-   { 
+   Get-Repository $RepositoryName| 
+   Where {$_ -ne $Null}|
+   Foreach  {
+      $Repository=$_ 
       If ($Off) 
-       { $Logger.logger.Repository.Threshold=[logLevel]::Off }
+       { $Repository.Threshold=[logLevel]::Off }
       elseif ($DebugLevel)
-       { $Logger.logger.Repository.Threshold=[logLevel]::Debug } 
+       { $Repository.Threshold=[logLevel]::Debug } 
       else
-       { $Logger.logger.Repository.Threshold= $Logger.logger.Repository.LevelMap[$Level] }
-      Write-Verbose "The Threshold property of the repository'$($Logger.logger.Repository.Name)' was modified : '$($Logger.logger.Repository.Threshold)'."
+       { $Repository.Threshold= $Repository.LevelMap[$Level] }
+      Write-Verbose "The Threshold property of the repository '$($Repository.Name)' was modified : '$($Repository.Threshold)'."
    }
-   else
-   { Write-Error ($Log4PoshMsgs.LoggerDoNotExist -F $Logger.Name) }
- }
+ }#process
 }#Set-Log4NetRepositoryThreshold
 
 Function Set-Log4NetLoggerLevel {
@@ -209,14 +209,14 @@ Function Set-Log4NetLoggerLevel {
 }#Set-Log4NetLoggerLevel
 
 Function Set-Log4NetAppenderThreshold {
-#Bascule le niveau de log des appenders d'un logger
+#Bascule le niveau de log d'un appender d'un logger
  [CmdletBinding(DefaultParameterSetName="Level")] 
  param (
      [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
    [log4net.Core.LogImpl] $Logger,
 
      [Parameter(Position=1,Mandatory=$true)]
-   [string] $AppenderName,
+   [string[]] $AppenderName,
     
      [Parameter(Position=2,ParameterSetName="Level")]
    [string] $Level='Info',
@@ -232,7 +232,7 @@ Function Set-Log4NetAppenderThreshold {
    If ($Logger -ne $null)
    { 
       $logger.Logger.Appenders|
-       Where {$_.Name -eq $AppenderName}|
+       Where { $AppenderName -Contains $_.Name }|
        Foreach {
         If ($Off) 
          { $_.Threshold=[logLevel]::Off }
@@ -240,7 +240,7 @@ Function Set-Log4NetAppenderThreshold {
          { $_.Threshold=[logLevel]::Debug } 
         else
          { $_.Threshold=$Logger.logger.Repository.LevelMap[$Level] }
-        Write-Verbose "The Threshold property of the appender '$($AppenderName)' was modified : '$($_.Threshold)'."
+        Write-Verbose "The Threshold property of the appender '$($_.Name)' was modified : '$($_.Threshold)'."
        }
    }
    else
@@ -248,11 +248,10 @@ Function Set-Log4NetAppenderThreshold {
  }
 }#Set-Log4NetAppenderThreshold
 
-
 Function Stop-ConsoleAppender { 
 #Bascule le niveau de log d'un logger  
  param (
-     [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
+     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
    [log4net.Core.LogImpl] $Logger
  )
 
@@ -306,24 +305,24 @@ $AcceleratorsType = [PSObject].Assembly.GetType("System.Management.Automation.Ty
  }
 
 function Get-Log4NetLogger {
-#Renvoi le logger $Name du repository $RepositoryName          
+#Renvoi un ou des loggers du repository $RepositoryName          
   Param (   
       [ValidateNotNullOrEmpty()]
       [Parameter(Position=0,Mandatory=$True,ValueFromPipeline = $true)] 
-    [String] $RepositoryName,
+    [log4net.Repository.ILoggerRepository] $Repository=$([Log4net.LogManager]::GetRepository()),
     
       [ValidateNotNullOrEmpty()]
       [Parameter(Position=1,Mandatory=$True)]
-    [String] $Name
+    [String[]] $Name
   )
   
  #Renvoi un logger de nom $Name ou le crée s'il n'existe pas. 
  # le nom "Root" est valide et renvoi le root existant
  process {
-   if (-not (Test-Repository $RepositoryName))
-   { throw ($Log4PoshMsgs.RepositoryDoNotExist -F $RepositoryName) }          
-   
-   [LogManager]::GetLogger($RepositoryName,$Name)
+   foreach ($Current in $Name)
+   {
+     [LogManager]::GetLogger($Repository.Name,$Current)
+   }
  }
 } #Get-Log4NetLogger
 
@@ -337,12 +336,19 @@ function Get-Log4NetFileAppender{
 
     [ValidateNotNullOrEmpty()]
     [Parameter(Position=1,Mandatory=$false)]  
-  [string] $AppenderName="FileExternal"
+  [string] $AppenderName="FileExternal",
+  
+  [switch] $All
  )
 
  process { 
    $Repository.GetAppenders()|
-     Where {($_.Name -eq $AppenderName) -and  ($_.GetType().IsSubclassOf([Log4net.Appender.FileAppender]))}|
+     Where {
+      if ($All)
+      {$_.GetType().IsSubclassOf([Log4net.Appender.FileAppender])}
+      else 
+      {($_.Name -eq $AppenderName) -and  ($_.GetType().IsSubclassOf([Log4net.Appender.FileAppender]))}
+     }|
      Foreach { Write-Verbose "Find the appender '$($_.Name)' into the repository '$($Repository.Name)'."; $_}|
      Add-Member NoteProperty RepositoryName $Repository.Name -Passthru
  }#process
@@ -370,6 +376,20 @@ Function Set-Log4NetAppenderFileName {
 function Get-DefaultRepositoryName {
  "log4net-default-repository"
 }#Get-DefaultRepositoryName
+
+function Get-Repository {
+ param (
+     [ValidateNotNullOrEmpty()]
+     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
+   [string] $RepositoryName
+ )
+ process {
+   if (-not (Test-Repository $RepositoryName) )
+   { Write-Error ($Log4PoshMsgs.RepositoryDoNotExist -F $RepositoryName) }
+   else
+   { [LogManager]::GetRepository($RepositoryName) }
+ }
+}#Get-Repository
 
 function Test-Repository {
 #Indique si le repository existe ou pas. 
@@ -403,7 +423,25 @@ function Get-DefaultAppenderFileName {
    [string] $ModuleName
   )
          
- $Module=Get-Module ModuleName
+ $Module=Get-Module $ModuleName
+ if ($Module -eq $null) 
+ { Write-Error ($Log4PoshMsgs.ModuleDoNotExist -F $ModuleName) }
+ else
+ { 
+   $Fi=New-object System.IO.FileInfo $Module.Path
+   "{0}\Logs\{1}.log" -F $Fi.Directory,$Fi.BaseName
+ }
+}#Get-DefaultAppenderFileName
+
+function Get-AppenderFileName {
+#renvoi le chemin par défaut du fichier de log d'un module
+  Param (
+     [ValidateNotNullOrEmpty()]
+     [Parameter(Position=0, Mandatory=$true)]
+   [string] $ModuleName
+  )
+         
+ $Module=Get-Module $ModuleName
  if ($Module -eq $null) 
  { Write-Error ($Log4PoshMsgs.ModuleDoNotExist -F $ModuleName) }
  else
@@ -457,13 +495,12 @@ function Initialize-Log4NetScript {
      [Parameter(Position=2, Mandatory=$false)]  
    [string] $FileInternalPath,
    
-      [ValidateSet('All','Debug','Info')]
+      [ValidateSet('All','Debug','Info','None')]
      [Parameter(Mandatory=$false)]  
-   [string] $Console='All',
+   [string] $Console='None',
    
      [Parameter(Mandatory=$false)]  
    [string] $Scope=1
-   
   )
 
   $Repository=Get-DefaultRepositoryName
@@ -479,11 +516,16 @@ function Initialize-Log4NetScript {
   Set-Variable -Name InfoLogger -Value ([LogManager]::GetLogger('InfoLogger')) -Scope $Scope
   
   If (($Console -eq 'All') -or ($Console -eq 'Info')) 
-  { Start-ConsoleAppender $InfoLogger } 
+  { Start-ConsoleAppender $InfoLogger }
   
   If (($Console -eq 'All') -or ($Console -eq 'Debug')) 
   { Start-ConsoleAppender $DebugLogger }
-
+  
+  If ($Console -eq 'None') 
+  { 
+    $InfoLogger,$DebugLogger |
+     Stop-ConsoleAppender  
+  }  
 }#Initialize-Log4NetScript
 
 function Switch-AppenderFileName{
@@ -529,24 +571,26 @@ $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { OnRemoveLog4Posh }
 $MyInvocation.MyCommand.ScriptBlock.Module.AccessMode="ReadOnly"
 
 $F=@(
+ 'ConvertTo-Log4NetCoreLevel',
+ 'Get-DefaultAppenderFileName',
+ 'Get-DefaultRepositoryName',
+ 'Get-Log4NetShorcuts',
+ 'Get-Log4NetLogger',
+ 'Get-Log4NetFileAppender',
  'Get-ParentProcess',
+ 'Get-Repository',
+ 'Initialize-Log4NetModule',
+ 'Initialize-Log4NetScript',
  'Start-Log4Net',
  'Stop-Log4Net',
+ 'Set-Log4NetAppenderFileName',
  'Set-Log4NetRepositoryThreshold',
  'Set-Log4NetLoggerLevel',
  'Set-Log4NetAppenderThreshold',
  'Stop-ConsoleAppender',
  'Start-ConsoleAppender',
- 'Get-Log4NetShorcuts',
- 'Get-Log4NetLogger',
- 'Get-Log4NetFileAppender',
- 'Set-Log4NetAppenderFileName',
- 'Get-DefaultRepositoryName',
- 'Test-Repository',
- 'Initialize-Log4NetModule',
- 'Initialize-Log4NetScript',
  'Switch-AppenderFileName',
- 'ConvertTo-Log4NetCoreLevel'
+ 'Test-Repository'
 )
 
 Set-Alias -name saca  -value Start-ConsoleAppender

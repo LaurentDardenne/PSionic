@@ -2,7 +2,7 @@
 # Manifeste de module pour le module "Log4Posh"
 #
 # Généré le : 10/02/2010
-# Ajout  : 11/03/2014 Méthode PSDebug
+# Ajout  : 27/03/2014 Méthode PSDebug, refonte autour de repository
 #
 @{
   Author="Laurent Dardenne"
