@@ -2,7 +2,7 @@
 $Datas = @{
 	GetZipFileSynopsis = 'Obtient et paramètre un objet archive à partir d''un fichier Zip.'
 	GetZipFileDescription = @"
-Obtient un objet archive à partir d'un fichier Zip. L'objet archive ne contient que le catalogue, une liste d'objets de type ZipEntry, pour récupérer le contenu d'une entrée du catalogue vous devez l'extraire sur un lecteur du système de fichier.
+Obtient un objet archive à partir d'un fichier Zip. L'objet archive ne contient que le catalogue, une liste d'objets de type ZipEntry, pour récupérer le contenu d'une entrée du catalogue. Vous devez l'extraire sur un lecteur du système de fichier.
 Cette fonction paramètre également les propriétés les plus usuelles de l'objet archive.
 L'objet archive renvoyé est verrouillé tant que vous n'appelez pas sa méthode Close(). Par contre, l'usage du paramètre -List ne verrouille pas l'archive.
 "@
@@ -29,7 +29,7 @@ L'archive n'est pas verrouillée.
 	GetZipFileParametersProgressID =@"
 L'usage de ce paramètre crée un gestionnaire d'événements pour les opérations de lecture.
 Lors de l'ouverture d'une archive zip de grande taille, vous pouvez choisir d'afficher une barre de progression standardisée.
-Cette ID permet de distinguer la barre de progression interne des autres. Utilisez ce paramètre lorsque vous créez plus d'une barre de progression.
+Cet ID permet de distinguer la barre de progression interne des autres. Utilisez ce paramètre lorsque vous créez plus d'une barre de progression.
 "@
 	GetZipFileParametersPath = 'Nom du ou des fichiers ZIP à lire. Vous pouvez préciser des noms de fichier comportant des jokers.'
 	GetZipFileParametersOptions = 'Options utilisées lors de la création d''une archive auto extractible (cf. New-ZipSfxOptions).'
@@ -42,8 +42,8 @@ Cette ID permet de distinguer la barre de progression interne des autres. Utilis
 	GetZipFileInputsDescription1 = 'String'
 	GetZipFileOutputsDescriptionIonicZipZipFile = 'Ionic.Zip.ZipFile'
 	GetZipFileNotes = @"
-Cette fonction renvoyant seulement un objet archive Zip à partir de son nom complet, la plupart des paramètres servent à configurer les propriétés de l'archive si vous souhaitez la modifier.
-Par exemple, le paramètre 'Encryption' n’influe pas sur la lecture du Zip, seul le paramètre Password est nécessaire, car ce sont les entrées de l'archive Zip qui portent l’information de cryptage, et pas l'objet de type [ZipFile].
+Cette fonction renvoyant seulement un objet archive Zip à partir de son nom complet. La plupart des paramètres servent à configurer les propriétés de l'archive si vous souhaitez la modifier.
+Par exemple, le paramètre 'Encryption' n’influe pas sur la lecture du Zip. Seul le paramètre 'Password' est nécessaire, car ce sont les entrées de l'archive Zip qui portent l’information de cryptage, et pas l'objet de type [ZipFile].
 Une archive Zip peut donc en théorie contenir plusieurs entrées dont chacune a un mode de compression différente des autres.
 ATTENTION, pour chaque objet renvoyé vous devrez appeler la méthode Close() afin de libérer correctement les ressources de l'archive.
 "@
