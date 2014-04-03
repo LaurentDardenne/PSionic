@@ -70,7 +70,7 @@ Function Remove-Conditionnal {
 .       
      Ces lignes seront tranformées en : 
        Write-Host 'Code avant'
-       Write-Host "Insertion du contenues du fichier 'C:\Temp\Test.ps1'"
+       Write-Host "Insertion du contenus du fichier 'C:\Temp\Test.ps1'"
        Write-Host 'Code aprés'       
 
 .PARAMETER InputObject
@@ -133,7 +133,15 @@ Function Remove-Conditionnal {
 .       
     Il est possible de combiner ce paramètre avec le paramètre -Clean.
 .
-    Par défaut la lecture des fichiers à inclure utilise l'encodage ASCII.    
+    Par défaut la lecture des fichiers à inclure utilise l'encodage ASCII.  
+.
+    L'usage d'un PSDrive dédié évitera de coder en dur des noms de chemin.
+    Par exemple cette création de drive  :  
+     $null=New-PsDrive -Scope Global -Name 'MyProject' -PSProvider FileSystem -Root 'C:\project\MyProject\Trunk'
+    autorisera la déclaration suivante :
+     #<INCLUDE %'MyProject:\Tools\New-PSPathInfo.ps1'%>    
+    au lieu de 
+     #<INCLUDE %'C:\project\MyProject\Trunk\Tools\New-PSPathInfo.ps1'%>                          
 
 .PARAMETER Remove
     Supprime les lignes de code source contenant la directive <%REMOVE%>. 
