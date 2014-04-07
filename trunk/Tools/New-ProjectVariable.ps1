@@ -6,7 +6,7 @@ function New-ProjectVariable {
 
 .DESCRIPTION
     Cette fonction crée une variable, de type hashtable, contenant des informations 
-    relatives à un projet, parmis ces informations certaines sont spécifiques à un 
+    relatives à un projet, parmi ces informations certaines sont spécifiques à un 
     poste de travail, par exemple le nom du répertoire de travail local de Subversion. 
 .
     Le nom de cette ou ces variables seront identiques dans les divers scripts d'un projet, tout 
@@ -135,7 +135,7 @@ function New-ProjectVariable {
       }
 "@)
 
-  # La méthode NewVariable crée, à partir de la hastable d'un projet, 
+  # La méthode NewVariable crée, à partir de la hashtable d'un projet, 
   # une variable constante par clé et ce dans le scope indiqué.
   # Le nom de la variable est préfixée par le nom du projet 
   # on évite les collisions de noms et facilite la saisie lors de la substitution de chaîne 
