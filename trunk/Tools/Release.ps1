@@ -22,6 +22,8 @@ $VerbosePreference='Continue'
    Copy "$PsIonicTrunk\Log4Net.Config.xml" "$PsIonicLivraison\PsIonic"
    
    Copy "$PsIonicBin\${Configuration}\Ionic.Zip.dll" "$PsIonicLivraison\PsIonic"
+   #todo ps V4
+   # Copy "$PsIonicLivraison\Log4Posh\3.0\Log4PoshTools.dll" "$PsIonicLivraison\Log4Posh\4.0\Log4PoshTools.dll"
 # PSIonicTools.dll est compilé d'aprés la version PS courante
    
    Copy "$PsIonicBin\Debug\Ionic.Zip.pdb" "$PsIonicLivraison\PsIonic"
@@ -134,6 +136,7 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
 
 Task BuildXmlHelp {
 Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
+  Import-Module "$PsIonicLivraison\Log4Posh\Log4Posh.psd1" -global
   $Module=Import-Module "$PsIonicLivraison\PsIonic\PsIonic.psd1" -PassThru
  
   [string] $TempLocation ="$([System.IO.Path]::GetTempPath())PsIonic"
