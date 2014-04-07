@@ -10,7 +10,7 @@
 Set-Location $PsIonicTools
 
 try {
- 'Psake',"$PsIonicTrunk\Modules\Log4Posh\Log4Posh.psd1"|
+ 'Psake'|
  Foreach {
    $name=$_
    Import-Module $Name -EA stop -force

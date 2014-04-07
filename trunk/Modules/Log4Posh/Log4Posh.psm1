@@ -6,7 +6,7 @@ Import-LocalizedData -BindingVariable Log4PoshMsgs -Filename Log4PoshLocalizedDa
 # ------------ Initialisation et Finalisation  ----------------------------------------------------------------------------
 
  #On permet un chargement pour la V3 ( fx 4.0)
-Add-Type -Path "$psScriptRoot\$($PSVersionTable.PSVersion)\log4net.dll" 
+Add-Type -Path "$psScriptRoot\$($PSVersionTable.PSVersion)\log4net.dll","$psScriptRoot\$($PSVersionTable.PSVersion)\Log4PoshTools.dll"
 
 Function Get-ParentProcess {
 #Permet de retrouver le process parent ayant exécuté 
@@ -123,6 +123,20 @@ Function Stop-Log4Net {
  [LogManager]::ResetConfiguration($RepositoryName) 
 }#Stop-Log4Net
 
+Function Register-PSObjectRenderer {
+ #Enregistre le type [PSLog4NET.PSObjectRenderer] implémentant l'interface IObjectRenderer. 
+ #Le type [PSLog4NET.PSObjectRenderer] appel en interne la méthode tostring() du prsobject,
+ #celle peut être rédéfinie via ETS:
+ # $MyObject |Add-Member -Force -MemberType ScriptMethod ToString { rver|Out-String } 
+ param (
+     [ValidateNotNullOrEmpty()]
+     [Parameter(Position=0, Mandatory=$false)]
+   [string] $RepositoryName=$(Get-DefaultRepositoryName)
+ )
+ $Repository=[LogManager]::GetRepository($RepositoryName)        
+ $Repository.RendererMap.Put([PSLog4NET.PSObjectRenderer],(new-object PSLog4NET.PSObjectRenderer) )
+} #Register-PSObjectRenderer
+
 Function ConvertTo-Log4NetCoreLevel {
 #Converti un nom de niveau en un objet [Log4Net.Core.Level]
 #Chaque repository peut déclarer de nouveaux niveaux
@@ -160,7 +174,7 @@ Function Set-Log4NetRepositoryThreshold {
  ) 
 
  process { 
-   Get-Repository $RepositoryName| 
+   Get-Log4NetRepository $RepositoryName| 
    Where {$_ -ne $Null}|
    Foreach  {
       $Repository=$_ 
@@ -281,11 +295,11 @@ Function Start-ConsoleAppender {
  )
 
  # ------------- Type Accelerators -----------------------------------------------------------------
-function Get-Log4NetShorcuts {
+function Get-Log4NetShortcuts {
   #Affiche les raccourcis dédiés à Log4net
  $AcceleratorsType::Get.GetEnumerator()|
   Where {$_.Value.FullName -match "^log4net\.(.*)"}
-}#Get-Log4NetShorcuts
+}#Get-Log4NetShortcuts
  
 $AcceleratorsType = [PSObject].Assembly.GetType("System.Management.Automation.TypeAccelerators")   
  # Ajoute les raccourcis de type    
@@ -377,7 +391,7 @@ function Get-DefaultRepositoryName {
  "log4net-default-repository"
 }#Get-DefaultRepositoryName
 
-function Get-Repository {
+function Get-Log4NetRepository {
  param (
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
@@ -389,7 +403,7 @@ function Get-Repository {
    else
    { [LogManager]::GetRepository($RepositoryName) }
  }
-}#Get-Repository
+}#Get-Log4NetRepository
 
 function Test-Repository {
 #Indique si le repository existe ou pas. 
@@ -433,23 +447,37 @@ function Get-DefaultAppenderFileName {
  }
 }#Get-DefaultAppenderFileName
 
-function Get-AppenderFileName {
-#renvoi le chemin par défaut du fichier de log d'un module
+function Get-Log4NetAppenderFileName {
+#Renvoi le chemin courant du fichier de log internal (Debug) ou external (fonctionel) d'un module
+
+  [CmdletBinding(DefaultParameterSetName="External")]
   Param (
      [ValidateNotNullOrEmpty()]
-     [Parameter(Position=0, Mandatory=$true)]
-   [string] $ModuleName
+     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
+   [string] $ModuleName,
+  
+    [Parameter(ParameterSetName="External")]
+   [switch] $External,
+   
+    [Parameter(ParameterSetName="Internal")]
+   [switch] $Internal
   )
-         
- $Module=Get-Module $ModuleName
- if ($Module -eq $null) 
- { Write-Error ($Log4PoshMsgs.ModuleDoNotExist -F $ModuleName) }
- else
- { 
-   $Fi=New-object System.IO.FileInfo $Module.Path
-   "{0}\Logs\{1}.log" -F $Fi.Directory,$Fi.BaseName
+
+ process {  
+    #todo pour toutes les fonctions revoir si le repo est configuré       
+   $Repository=Get-Log4NetRepository $ModuleName #todo
+   if ($Repository -ne $null) 
+   { 
+     $AppenderName="File$($PsCmdlet.ParameterSetName)"
+     $Repository.GetAppenders()|
+      Where { $_.Name -eq $AppenderName  }|
+      Foreach { 
+       Write-Verbose "Find the appender '$($_.Name)' into the repository '$($Repository.Name)'."
+       $_.File
+      }
+   }  
  }
-}#Get-DefaultAppenderFileName
+}#Get-Log4NetAppenderFileName
          
 function Initialize-Log4NetModule {
 #Initialise, pour un module, un repository Log4Net et ses loggers
@@ -471,6 +499,8 @@ function Initialize-Log4NetModule {
   else
   { $Repository=[LogManager]::CreateRepository($ModuleName) }
   
+  Register-PSObjectRenderer $Repository.Name
+  
   Start-Log4Net $Repository $Path 
   
    #Créé les variables Logger dans la portée de l'appelant
@@ -480,8 +510,8 @@ function Initialize-Log4NetModule {
   Set-Variable -Name DefaultLogFile -Value "$psScriptRoot\Logs\$ModuleName.log" -Scope Script
   
    #Initialise le nom de fichier des FileAppenders dédiés au module
-  Switch-AppenderFileName -Name $ModuleName FileInternal $script:DefaultLogFile
-  Switch-AppenderFileName -Name $ModuleName FileExternal $script:DefaultLogFile
+  Switch-AppenderFileName -RepositoryName $ModuleName FileInternal $script:DefaultLogFile
+  Switch-AppenderFileName -RepositoryName $ModuleName FileExternal $script:DefaultLogFile
 }#Initialize-Log4NetModule
 
 function Initialize-Log4NetScript {
@@ -500,10 +530,13 @@ function Initialize-Log4NetScript {
    [string] $Console='None',
    
      [Parameter(Mandatory=$false)]  
-   [string] $Scope=1
+   [string] $Scope=2
   )
 
   $Repository=Get-DefaultRepositoryName
+  
+  Register-PSObjectRenderer $Repository
+  
   Start-Log4Net -DefaultConfiguration
   
   if ($PSBoundParameters.ContainsKey('FileExternalPath'))
@@ -531,10 +564,11 @@ function Initialize-Log4NetScript {
 function Switch-AppenderFileName{
 #Modifie le nom du fichier associé au FileAppender 
 #nommés $AppenderName d'un repository $Name
+[CmdletBinding(DefaultParameterSetName="NewName")]
  param(
       [ValidateNotNullOrEmpty()]
       [Parameter(Mandatory=$true,ValueFromPipeline = $true)]
-   [String] $Name, #Nom du repository, par convention est identique au nom du module. 
+   [String] $RepositoryName, #Nom du repository, par convention est identique au nom du module. 
   
      [ValidateNotNullOrEmpty()]
      [Parameter(Position=1, Mandatory=$false)]  
@@ -542,12 +576,18 @@ function Switch-AppenderFileName{
    [string] $AppenderName="FileExternal",
   
      [ValidateNotNullOrEmpty()]
-     [Parameter(Position=2, Mandatory=$true)]    
-   [string] $NewFileName
+     [Parameter(Position=2, Mandatory=$true,ParameterSetName="NewName")]    
+   [string] $NewFileName,
+    
+    [Parameter(ParameterSetName="Default")]
+   [switch] $Default
  )
 
  process { 
-   [LogManager]::GetRepository($Name)|
+   if ($PsCmdlet.ParameterSetName -eq "Default")
+   { $NewFileName=Get-DefaultAppenderFileName $RepositoryName } 
+   
+   [LogManager]::GetRepository($RepositoryName)|
      Get-Log4NetFileAppender -AppenderName $AppenderName|
      Set-Log4NetAppenderFileName -NewFileName $NewFileName
  }#process
@@ -572,15 +612,17 @@ $MyInvocation.MyCommand.ScriptBlock.Module.AccessMode="ReadOnly"
 
 $F=@(
  'ConvertTo-Log4NetCoreLevel',
+ 'Get-Log4NetAppenderFileName',
  'Get-DefaultAppenderFileName',
  'Get-DefaultRepositoryName',
- 'Get-Log4NetShorcuts',
+ 'Get-Log4NetShortcuts',
  'Get-Log4NetLogger',
  'Get-Log4NetFileAppender',
  'Get-ParentProcess',
- 'Get-Repository',
+ 'Get-Log4NetRepository',
  'Initialize-Log4NetModule',
  'Initialize-Log4NetScript',
+ 'Register-PSObjectRenderer',
  'Start-Log4Net',
  'Stop-Log4Net',
  'Set-Log4NetAppenderFileName',
@@ -593,8 +635,10 @@ $F=@(
  'Test-Repository'
 )
 
+
 Set-Alias -name saca  -value Start-ConsoleAppender
 Set-Alias -name spca  -value Stop-ConsoleAppender
 Set-Alias -name swtafn  -value Switch-AppenderFileName
+Set-Alias -name Add-PSObjectRenderer -value Add-Log4NetPSObjectRenderer
 
 Export-ModuleMember -Variable LogDefaultColors,LogJobName  -Alias * -Function $F

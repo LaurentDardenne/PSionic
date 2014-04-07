@@ -9,11 +9,12 @@ Properties {
    $ProjectName=$PsIonic.ProjectName
 }
 include "$PsIonicTools\Show-BalloonTip.ps1"
+include "$PsIonicTrunk\Modules\Log4Posh\Bin\Compile.ps1" 
 
 if (-not $currentContext.tasks.default)
 {Task default -Depends CompilePsionicTools}
- 
-Task CompilePsionicTools -Depends TestPSSyntax {
+
+Task CompilePsionicTools -Depends TestPSSyntax,CompileLog4PoshTools {
 #Compile la dll psionic
 Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info  
   $Files=@(
