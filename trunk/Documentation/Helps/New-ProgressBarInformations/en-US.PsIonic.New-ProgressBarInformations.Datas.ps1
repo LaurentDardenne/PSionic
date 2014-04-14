@@ -1,6 +1,6 @@
 ﻿# New-ProgressBarInformations command data
 $Datas = @{
-	NewProgressBarInformationsSynopsis = 'Create a statement object of a standard Psionic progress bar.'
+	NewProgressBarInformationsSynopsis = 'Creates a statement object of a standard Psionic progress bar.'
 	NewProgressBarInformationsDescription = "This object is used by the 'New-ReadOptions' function."
 	NewProgressBarInformationsSets__AllParameterSets = ''
 	NewProgressBarInformationsParametersactivity = @"
