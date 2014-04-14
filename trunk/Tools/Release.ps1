@@ -152,17 +152,17 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
   
   $Excludes='New-PsIonicPathInfo','ConvertTo-EntryRootPath'
  
-  #"fr-Fr" |
   $Cultures |
     Foreach {
+      Write-Host "Culture '$_' -> ConvertTo-XmlHelp"
       $Module.ExportedFunctions.GetEnumerator()|
       Where {$Excludes -notContains $_.Key} |
        ConvertTo-XmlHelp $Module.Name -Source $PsIonicHelp -Target $TempLocation  -Culture $_
     }
    
-  #"fr-Fr" |
   $Cultures |
     Foreach {
+      Write-Host "Culture '$_' -> Join-XmlHelp"
       $Module.ExportedFunctions.GetEnumerator()|
        Where {$Excludes -notContains $_.Key} |
        Join-XmlHelp $Module.Name -Source $TempLocation "$PsIonicLivraison\PsIonic" -Culture $_
