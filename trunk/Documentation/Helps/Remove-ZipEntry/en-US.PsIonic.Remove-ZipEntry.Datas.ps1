@@ -32,9 +32,9 @@ Warning, there is no consistency check on the contents of the query, for example
 	RemoveZipEntryInputsDescription1 = ''
 	RemoveZipEntryOutputsDescriptionSystemManagementAutomationPSObject = ''
 	RemoveZipEntryNotes = ''
-	RemoveZipEntryExamplesRemarks1 = 'These statements remove, if it exists, the entry 'Test.ps1' from the root of ''Test.zip'' file.'
-	RemoveZipEntryExamplesRemarks2 = 'These statements remove, if it exists, the entry 'Test.ps1' from the root of ''Test.zip'' file.'
-	RemoveZipEntryExamplesRemarks3 = 'These statements remove, if it exists, the entries 'Test.ps1' and ''Setup.ps1'', contained in the array of string $Tab, from the root of ''Test.zip'' file.'
+	RemoveZipEntryExamplesRemarks1 = 'These statements remove, if it exists, the entry ''Test.ps1'' from the root of ''Test.zip'' file.'
+	RemoveZipEntryExamplesRemarks2 = 'These statements remove, if it exists, the entry ''Test.ps1'' from the root of ''Test.zip'' file.'
+	RemoveZipEntryExamplesRemarks3 = 'These statements remove, if it exists, the entries ''Test.ps1'' and ''Setup.ps1'', contained in the array of string $Tab, from the root of ''Test.zip'' file.'
 	RemoveZipEntryExamplesRemarks4 = @"
 Those instructions delete from the root of the 'Test.zip' file and if it exists :
 - The 'Test.ps1' entry,

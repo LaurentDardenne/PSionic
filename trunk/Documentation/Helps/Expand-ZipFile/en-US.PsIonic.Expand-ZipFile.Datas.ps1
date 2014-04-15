@@ -6,7 +6,7 @@ Extracts files and/or folders from a compressed archive in Zip format or a self-
 "@
 	ExpandZipFileSetsLiteralPath = ''
 	ExpandZipFileSetsPath = ''
-	ExpandZipFileParametersCreate = ''
+	ExpandZipFileParametersCreate = "Creates the destination directory if it doesn't exist."
 	ExpandZipFileParametersEncoding = @"
 Archive encoding type. Possible values are :
 -ASCII	          : ASCII characters encoding scheme (7 bits).
