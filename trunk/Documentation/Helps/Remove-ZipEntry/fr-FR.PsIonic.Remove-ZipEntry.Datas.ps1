@@ -6,7 +6,7 @@ $Datas = @{
 	RemoveZipEntrySetsQuery = ''
 	RemoveZipEntryParametersFrom = @"
 Précise le répertoire de l'archive dans lequel seront supprimé les entrées. 
-Un nom de répertoire dans une archive à la syntaxe suivante : 'NomRépertoire/' ou 'NomRépertoire/NomDeSousRépertoire/'.
+Un nom de répertoire dans une archive a la syntaxe suivante : 'NomRépertoire/' ou 'NomRépertoire/NomDeSousRépertoire/'.
 
 L'usage de ce paramètre nécessite de préciser le paramètre -Query, sinon une exception sera déclenchée.
 "@
@@ -14,10 +14,10 @@ L'usage de ce paramètre nécessite de préciser le paramètre -Query, sinon une
 	RemoveZipEntryParametersInputObject = @"
 Contenu associé à une entrée d'archive. Les types attendus sont : 
    - Un ou des objets de type fichiers ou de type répertoires,
-   - une chaîne de caractères référençant une entrée, si celle-ci référence un nom de répertoire, elle doit se terminer par le caractère '/',
+   - une chaîne de caractères référençant une entrée. Si celle-ci référence un nom de répertoire, elle doit se terminer par le caractère '/',
    - un objet de type ZipEntry,
    - un tableau d'objet de type ZipEntry,
-   - un tableau de String ou d'Object, dans ce dernier cas son contenu sera transformé en String.
+   - un tableau de String ou d'Object. Dans ce dernier cas son contenu sera transformé en String.
 Tous les autres type de tableaux, autres que ceux indiqué ci-dessus, déclencheront une erreur.
 Pour tous les autres types d'objet, ils seront convertis en chaîne de caractères.   
 "@
@@ -33,8 +33,8 @@ Attention, il n’y a pas de contrôle de cohérence sur le contenu de la query,
 	RemoveZipEntryInputsDescription1 = ''
 	RemoveZipEntryOutputsDescriptionSystemManagementAutomationPSObject = ''
 	RemoveZipEntryNotes = ''
-	RemoveZipEntryExamplesRemarks1 = 'Ces instructions suppriment, si elle existe, l''entrée ''Test.ps1'' à la racine du fichier Test.zip'
-    RemoveZipEntryExamplesRemarks2 = 'Ces instructions suppriment, si elle existe, l''entrée ''Test.ps1'' à la racine du fichier Test.zip'
+	RemoveZipEntryExamplesRemarks1 = 'Ces instructions suppriment, si elle existe, l''entrée ''Test.ps1'' à la racine du fichier Test.zip.'
+    RemoveZipEntryExamplesRemarks2 = 'Ces instructions suppriment, si elle existe, l''entrée ''Test.ps1'' à la racine du fichier Test.zip.'
     RemoveZipEntryExamplesRemarks3 = 'Ces instructions suppriment, si elles existent, les entrées ''Test.ps1'' et ''Setup.ps1'', contenues dans le tableau de chaîne de caractères $Tab, à la racine du fichier Test.zip'
     RemoveZipEntryExamplesRemarks4 = @"
  Ces instructions suppriment à la racine du fichier Test.zip et si elles existent :
