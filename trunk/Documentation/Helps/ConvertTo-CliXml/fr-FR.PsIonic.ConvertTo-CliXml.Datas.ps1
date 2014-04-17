@@ -8,7 +8,7 @@ Vous pouvez émettre le résultat de cette fonction vers les fonctions Add-ZipEn
 	ConvertToCliXmlParametersInputObject = 'Spécifie l''objet à convertir.'
 	ConvertToCliXmlInputsDescription1 = ''
 	ConvertToCliXmlOutputsDescription1 = ''
-	ConvertToCliXmlNotes = 'L''enregistrement de la représentation XML est compatible avec le cmdlet Export-ClimXL.'
+	ConvertToCliXmlNotes = 'L''enregistrement de la représentation XML est compatible avec le cmdlet Export-CliXml.'
 	ConvertToCliXmlExamplesRemarks1 = @'
 Ces commandes ajoutent, à partir d'un objet sérialisé, une entrée nommée dans l'archive C:\Temp\Test.zip. 
   -La première instruction crée un objet archive à partir d'un nom de fichier, 
