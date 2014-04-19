@@ -10,13 +10,13 @@ The value of this parameter must reference an existing directory path.
 .
 You need to specify this parameter in order to avoid entry name clashes when compressing a recursive tree.
 This one allows to build the name of the entry relatively to the specified directory.
-
-For example, specifying 'C:\Temp\Backup', the treating building name will remove 'C:\Temp\Backup' for each received file during recursive compression of 'C:\Temp\Backup'.
+.
+For example, specifying 'C:\Temp\Backup', the treating building name will remove 'C:\Temp\Backup' for each file received during recursive compression of 'C:\Temp\Backup'.
 So, for files 'C:\Temp\Backup\File1.ps1' and 'C:\Temp\Backup\Projet\File1.ps1', created entries in the catalog will be respectively :
 File1.ps1
 Projet/File.ps1   
 .
-By specifying a directory name different from the begining of the archive will trigger an error and will stop current archiving path.
+By specifying a directory name different from the begining of the archive, it will throw an error and will stop current archiving path.
 "@
 	AddZipEntryParametersName = @"
 Each entry is associated with a name in the catalog. For files or directories, their names are automatically used for entries names, in the root of the archive.
@@ -27,13 +27,13 @@ During the call of the Expand-ZipFile function, the string or arrays entries wil
 "@	
     AddZipEntryParametersInputObject = @"
 Contents associated to an entry. Allowed types are :
-   - one or many files or directories objects,
+   - one or several files or directories objects,
    - one or multiple file or directory names,
    - a string,
    - or an array of bytes.
 .
 
-All other types of object will be processed to string from ToString() method.   
+All other types of object will be processed to string with ToString() method.   
 "@
     AddZipEntryParametersPassthru = 'Once entry is added to the archive''s catalog, it is sent to the pipeline.'
 	AddZipEntryParametersZipFile = 'Target archive in which specified entry is added. This parameter waits for a ZipFile object and not a file name.'
