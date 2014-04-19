@@ -22,7 +22,7 @@ Archive encoding type. Possible values are :
 For better portability, the default value ('DefaultEncoding') is recommended.
 "@
 	CompressZipFileParametersEncryption = @"
-Encryption algorythm used for compression. Need to specify a password with the '-Password' parameter.
+Encryption algorythm used for compression. If you use this parameter, you need to specify a password with the '-Password' parameter.
 .
 Compatibility note:
 For the '-Encryption' parameter, the values 'PkzipWeak' and 'None' specified in the PKWARE zip specifications are considered as 'standard'.
@@ -53,7 +53,7 @@ Can be a file object or a string.
 	CompressZipFileParametersOutputName = 'Archive file name to build. The drive name must be part of an existing FileSystem provider.'
 	CompressZipFileParametersPassthru = @"
 Sends archive file down the pipeline as input to other commands. Be aware that resources won't be freed with Close() method so it is your responsibility.
-The archive object is not locked so be carefull of usage scenarios of this object.
+The archive object is not unlocked so be carefull of usage scenarios of this object.
 "@
 	CompressZipFileParametersPassword = @"
 Password used for encryption. Encryption method needs to be specified with the '-Encryption' parameter.
@@ -61,9 +61,9 @@ Password used for encryption. Encryption method needs to be specified with the '
 	CompressZipFileParametersPath = @"
 File names list to compress. Can be a file object or a string. In this last case, generic characters can be used (* , ? , [A-D] ou [1CZ]).
 "@
-	CompressZipFileParametersRecurse = 'Compress the items in the specified locations and all child items of the locations specified with the ''-Path'' or ''-LiteralPath'' parameters.'
+	CompressZipFileParametersRecurse = 'Compresses the items in the specified locations and all child items of the locations specified with the ''-Path'' or ''-LiteralPath'' parameters.'
 	CompressZipFileParametersSetLastModifiedProperty = @'
-Before saving the archive, allows to modify the 'LastModified' property of each archive entries. The $Entry variable must be used in the scriptblock.
+Before saving the archive, allows to modify the ''LastModified'' property of each archive entries. The $Entry variable must be used in the scriptblock.
 '@
 	CompressZipFileParametersSortEntries = @"
 Entries are sorted before saving them. This can slow down the compression process, according to the number of files to compress.
@@ -71,7 +71,7 @@ Entries are sorted before saving them. This can slow down the compression proces
 	CompressZipFileParametersSplit = @"
 Specify that the Zip file should be saved as a split archive. The value of this parameter determines the size of each segment.
 '64Kb' syntax can be used. The maximum number of segments is 99.
-In the case of more than 99 segments are needed, an exception will occure. Created files on the disk won't be deleted.
+If more than 99 segments are needed, an exception will occur. Created files on the disk won't be deleted.
 "@
 	CompressZipFileParametersTempLocation  = @"
 Temporary directory name used during the build of the archive.
@@ -97,20 +97,20 @@ Avoid the use of the 'Retry' value because it could indefinitely try to solve a 
 	CompressZipFileNotes = @"
 Depending on the content, your archive is compressed in 64 bits. In order to define if the archive use Zip64 extensions, see the 'OutputUsedZip64' property of the archive.
 Free disk space is not checked during the build of the archive.
-If the catalog is empty and no exception has occured, the .Zip file still exist.
+If the catalog is empty and no exception has occured, the .Zip file still exists.
 "@ 
 	CompressZipFileExamplesRemarks1 = @"
 This example adds all files with '.TXT' extension and from current directory in 'C:\Temp\Test.zip' archive.
 "@
 	CompressZipFileExamplesRemarks2 = @"
 This example builds a list of file names and save it to a text file.
-Then thi text file is read line by line and each file name is added to the 'C:\Temp\Test.zip' archive.
+Then this text file is read line by line and each file name is added to the 'C:\Temp\Test.zip' archive.
 "@
 	CompressZipFileExamplesRemarks3 = @"
-This examples builds an array of file names. Some of them include wild cards.
+This examples build an array of file names. Some of them include wild cards.
 Each file name is resolved, then its result is added to the 'C:\Temp\Test.zip' archive.
-The use of '-verbose' parameter display compression progress in the console.
-All files are added to the root of the archive. The first entry name clash will trigger an exception because of the default value of '-ZipErrorAction' which is 'Throw'.
+The use of '-verbose' parameter displays compression progress in the console.
+All files are added to the root of the archive. The first entry name clash will throw an exception because of the default value of '-ZipErrorAction' which is 'Throw'.
 "@
 	CompressZipFileExamplesRemarks4 = @"
 This examples builds an array of file names. Some of them include wild cards.
@@ -123,7 +123,7 @@ The '-SetLastModifiedProperty' parameter gets a scriptblock as a value. This one
 Selected date will be the entry date with the oldest 'LastModified' property.
 "@  
 	CompressZipFileExamplesRemarks6 = @"
-This example recursively archive all files and directories from 'C:\Temp'.
+This example recursively archives all files and directories from 'C:\Temp'.
 By using 'C:\Temp\*' as a value for '-Path' parameter, it is ensured that there is no entry name clash in the catalog since it is not explicitly traverses the tree, but only the entries in the current directory.
 It gets internally the path names returned by the call of 'Resolve-Path' cmdlet. Be aware that hidden files and directories are not archived.
 The archive contains multiple entries in the root catalog.
