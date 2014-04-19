@@ -9,7 +9,7 @@ $Datas = @{
 	ConvertToPSZipEntryInfoNotes = @"
 The Info property conversion into several objects takes some time.
 Avoid to convert this property several times into a loop.
-Be aware that an instance can evolve by adding or removing entry. In this case, you need to update this field (ZipEntry/PSZipEntry) or build a new list (ZipFile).
+Be aware that an instance can evolve by adding or removing an entry. In this case, you need to update this field (ZipEntry/PSZipEntry) or build a new list (ZipFile).
 "@
 	ConvertToPSZipEntryInfoExamplesRemarks1 = @"
 This example gets an entry list from an archive. Those are Powershell custom objects.
