@@ -1,12 +1,12 @@
 ﻿# Expand-ZipFile command data
 $Datas = @{
-	ExpandZipFileSynopsis = 'Extracts files and/or folders from a compressed archive in Zip format.'
+	ExpandZipFileSynopsis = 'Extracts files and/or folders from an archive compressed in Zip format.'
 	ExpandZipFileDescription = @"
-Extracts files and/or folders from a compressed archive in Zip format or a self-extracting archive ('.EXE').
+Extracts files and/or folders from an archive compressed in Zip format or a self-extracting archive ('.EXE').
 "@
 	ExpandZipFileSetsLiteralPath = ''
 	ExpandZipFileSetsPath = ''
-	ExpandZipFileParametersCreate = "Creates the destination directory if it doesn't exist."
+	ExpandZipFileParametersCreate = "Creates the destination directory if it does not exist."
 	ExpandZipFileParametersEncoding = @"
 Archive encoding type. Possible values are :
 -ASCII	          : ASCII characters encoding scheme (7 bits).
@@ -25,11 +25,11 @@ For better portability, the default value ('DefaultEncoding') is recommended.
 Specifies the archive directory from which entries will be extracted.
 The syntax of an archive directory name is : 'DirectoryName/' or 'DirectoryName/SubDirectoryName/'.
 
-The use of this parameter needs to specify a -Query parameter, otherwise an exception will be triggered.
+The use of this parameter needs to specify a '-Query' parameter, otherwise an exception will be triggered.
 "@
 	ExpandZipFileParametersLiteralPath = @"
 Zip file object of type String or system.IO.FileInfo.
-In case of a String type, it must not contains wild card caracters. Delayed script block on -OutPutPath parameter
+In case of a String type, it must not contains wild card caracters. Delayed script block on '-OutPutPath' parameter
 will only trigger once. In contrast, the late binding will be triggered for each object received.
 "@
 	ExpandZipFileParametersOutputPath = @"
@@ -50,15 +50,15 @@ File names list to expand. Can be a file object or a string. In this last case, 
 When opening a zip archive of a big size, you can choose to display a progress bar.
 The use of this parameter makes a progress bar for read operations that will be replaced during write operations.
 The progress bar for read operations only displays the number of read entries.
-If -Query parameter is specified, then progress barr for extraction will only display the extracted files, otherwise it will display the name and the progress percentage.
+If '-Query' parameter is specified, then progress bar for extraction will only display the extracted files. Otherwise it will display the name and the percentage of the progress.
 
 Note : Obviously the duration of the presence of the progress bar on the screen depends on the number of entries in the archive.
 "@
 	ExpandZipFileParametersQuery = @"
 Specifies a search for data to be extracted from the zip archive.
-For more information on writing and query syntax, see the about_Query_Selection_Criteria Help file or the documentation from the Ionic dll (.chm help file).
+For more information on writing and query syntax, see the 'about_Query_Selection_Criteria' Help file or the documentation from the Ionic dll (.chm help file).
 Warning, there is no consistency check on the contents of the query, for example 'size <100 byte AND Size> 1000 byte' will not cause an error, but no file will be selected.
-If you also specify the -Passthru parameter, a custom property named 'Query' will be added to the returned object.
+If you also specify the '-Passthru' parameter, a custom property named 'Query' will be added to the returned object.
 "@
 	ExpandZipFileInputsDescription1 = '[String] or [FileInfo] objects type'
 	ExpandZipFileOutputsDescription1 = ''
@@ -67,14 +67,17 @@ A Zip archive should contains several entries each of which has a compression mo
 However, this function needs a same passeword for all archive entries. Otherwise an exception will occured during the first encrypted file decompression.
 "@
 	ExpandZipFileExamplesRemarks1 = 'Extracts data contained in a Zip archive to a folder path destination.'
-    ExpandZipFileExamplesRemarks2 = 'Extracts data contained in a Zip archive to a folder path destination. The use of -Create parameter forces the creation of a target folder if it does not exist.'
+    ExpandZipFileExamplesRemarks2 = @"
+Extracts data contained in a Zip archive to a folder path destination. 
+The use of '-Create' parameter forces the creation of a target folder if it does not exist.
+"@
     ExpandZipFileExamplesRemarks3 = @"
 Extracts data contained in a Zip archive to a folder path destination.
 During extraction the first collision entries name will trigger an exception because of the default 'Throw' value of the -ErrorAction parameter.
 "@
     ExpandZipFileExamplesRemarks4 = @"
 Extracts data contained in a Zip archive to a folder path destination.
-During extraction the use of the 'OverwriteSilently' value for the -ErrorAction parameter will trigger simple errors in case of possibles files name collisions. 
+During extraction the use of the 'OverwriteSilently' value for the '-ErrorAction' parameter will trigger simple errors in case of possibles files name collisions. 
 "@
     ExpandZipFileExamplesRemarks5 = @"
 Extracts data contained in a Zip archive to a folder path destination.
@@ -90,20 +93,19 @@ A progress bar displays extraction's informations.
 "@
     ExpandZipFileExamplesRemarks8 = @"
 The first line of instruction extracts all archives in the new folder 'C:\Temp\TestZip'.
-Here delayed script block is triggered only one time, because the Expand-ZipFile function receive only one object.
+Here delayed script block is triggered only one time, because the 'Expand-ZipFile' function receives only one object.
 Furthermore the object issued being a string and not a file, the BaseName property of the current object does not exist.
 The strings representing the files are processed internally, well after the onset of late delayed script block.
 .
-The second line instruction extracts each archive to a new folder C:\Temp\TestZip.
-Here delayed script block is trigerred many times because the Expand-ZipFile function receives several objects, all of file types.
+The second line instruction extracts each archive to a new folder 'C:\Temp\TestZip'.
+Here delayed script block is trigerred many times because the 'Expand-ZipFile' function receives several objects, all of file types.
 So this instructions will make folder paths 'C:\Temp\TestZip\Archive1','C:\Temp\TestZip\Archive2', 'C:\Temp\TestZip\ArchiveN'...  
 "@
     ExpandZipFileExamplesRemarks9 = @"
 This example extracts all '.dll' files from the 'Bin/V2/' directory of the archive, to the 'C:\Temp\ExtractArchive' folder.
-The -Flatten parameter says to extract files to the specified root directory. The already existing directory tree is not created again.
-The -Verbose parameter displays all read entries, then extracted ones.
-The -passthru parameter retrieves the instance of the archive, 
-Le paramètre -passthru récupère l'instance de l'archive, which allows to continue working on the archive.
+The '-Flatten' parameter says to extract files to the specified root directory. The already existing directory tree is not created again.
+The '-Verbose' parameter displays all read entries, then extracted ones.
+The '-passthru' parameter retrieves the instance of the archive, which allows to continue working on the archive.
 Once processing is finished, we explicitly frees the instance of the archive object, which will unlock the file.
 "@
 }
