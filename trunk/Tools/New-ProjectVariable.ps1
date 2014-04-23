@@ -1,5 +1,4 @@
-﻿#todo http://www.lazywinadmin.com/2014/01/powershell-tip-adding-help-in-param.html
-function New-ProjectVariable {
+﻿function New-ProjectVariable {
 <#
 .SYNOPSIS
     Créer une variable, de type hashtable, contenant des informations spécifiques à un projet.
