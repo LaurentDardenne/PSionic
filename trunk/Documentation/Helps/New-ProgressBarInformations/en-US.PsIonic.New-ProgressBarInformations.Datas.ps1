@@ -5,11 +5,11 @@ $Datas = @{
 	NewProgressBarInformationsSets__AllParameterSets = ''
 	NewProgressBarInformationsParametersactivity = @"
 Shows the first text line in the progress bar title.
-This text describe activity whose progress is reported.
+This text describes activity whose progress is reported.
 "@
 	NewProgressBarInformationsParametersactivityId = @"
 Indicates an identifier distinguishing each progress bar.
-Use this parameter when you create several progress bars into an only one command.
+Use this parameter when you create several progress bars into only one command.
 If progress bars have no different identity, there will be superposed instead of being shown one below the other.
 "@
 	NewProgressBarInformationsInputsDescription1 = ''
@@ -17,7 +17,7 @@ If progress bars have no different identity, there will be superposed instead of
 	NewProgressBarInformationsNotes = ''
 	NewProgressBarInformationsExamplesRemarks1 = @"
 This example creates a progress bar used in settings of an archive read options.
-In this context the name of the read files are not accessible, so the progress bar will display only the number of read entries.
+In this context the names of the files that are read are not accessible, so the progress bar will display only the number of read entries.
 "@
 	NewProgressBarInformationsExamplesRemarks2 = @"
 This example reads all Zip archives from C:\Temp folder, then extracts them.
