@@ -1,7 +1,7 @@
 ﻿# Format-ZipFile command data
 $Datas = @{
-	FormatZipFileSynopsis = 'Formats contained properties of an archive object.'
-	FormatZipFileDescription = 'Formats contained properties of a Zip archive. Read Notes section for details about default displayed properties.'
+	FormatZipFileSynopsis = 'Formats content of the properties of an archive object.'
+	FormatZipFileDescription = 'Formats content of the properties of a Zip archive. Read Notes section for details about default displayed properties.'
 	FormatZipFileSets__AllParameterSets = ''
 	FormatZipFileParametersProperties = 'Array of property names to display when internal calling to Format-List.'
 	FormatZipFileParametersZip = 'Archive object to format. You need to force the inclusion of the object by prefixing the variable with a comma.'
