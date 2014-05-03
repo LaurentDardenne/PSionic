@@ -10,7 +10,7 @@ $Datas = @{
 	NewZipSfxOptionsParametersDescription = 'Discloses the use of the self-extracting archive.'
 	NewZipSfxOptionsParametersExeOnUnpack = 'Specifies the program and its parameters, to run after all the files in the archive are unzipped.'
 	NewZipSfxOptionsParametersExtractDirectory = @"
-Specifies the default directory decompression. It may contain references to system variable, for example %UserProfile%.
+Specifies the default directory decompression. It may contains references to system variable, for example %UserProfile%.
 These are substituted during the execution of the self-extracting archive.
 "@
 	NewZipSfxOptionsParametersFileVersion = 'Version number of the self-extracting file.'
