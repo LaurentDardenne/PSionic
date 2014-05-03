@@ -1,11 +1,11 @@
 ﻿# Remove-ZipEntry command data
 $Datas = @{
 	RemoveZipEntrySynopsis = 'Deletes one or more entries from an archive.'
-	RemoveZipEntryDescription = 'Deletes one or more entries from a .Zip archive or from a self-extracting archive .exe.'
+	RemoveZipEntryDescription = "Deletes one or more entries from a '.Zip' archive or from a self-extracting archive .exe."
 	RemoveZipEntrySetsName = ''
 	RemoveZipEntrySetsQuery = ''
 	RemoveZipEntryParametersFrom = @"
-Specify the archive folder in which entries will be deleted.
+Specifies the archive folder in which entries will be deleted.
 A folder name in an archive has the following syntax : 'FolderName/' or 'FolderName/SubFolderName/'.
 
 The use of this parameter needs to specify the '-Query' parameter, otherwise an exception will be thrown.
@@ -32,20 +32,20 @@ Warning, there is no consistency check on the contents of the query, for example
 	RemoveZipEntryInputsDescription1 = ''
 	RemoveZipEntryOutputsDescriptionSystemManagementAutomationPSObject = ''
 	RemoveZipEntryNotes = ''
-	RemoveZipEntryExamplesRemarks1 = 'These statements remove, if it exists, the entry ''Test.ps1'' from the root of ''Test.zip'' file.'
-	RemoveZipEntryExamplesRemarks2 = 'These statements remove, if it exists, the entry ''Test.ps1'' from the root of ''Test.zip'' file.'
+	RemoveZipEntryExamplesRemarks1 = "These statements remove, if it exists, the entry 'Test.ps1' from the root of 'Test.zip' file."
+	RemoveZipEntryExamplesRemarks2 = "These statements remove, if it exists, the entry 'Test.ps1' from the root of 'Test.zip' file."
 	RemoveZipEntryExamplesRemarks3 = 'These statements remove, if it exists, the entries ''Test.ps1'' and ''Setup.ps1'', contained in the array of string $Tab, from the root of ''Test.zip'' file.'
 	RemoveZipEntryExamplesRemarks4 = @"
 Those instructions delete from the root of the 'Test.zip' file and if it exists :
 - The 'Test.ps1' entry,
 - All entries finishing with '.XML' and
-- All entries names contained in the 'C:\Temp\ListeFileName.txt' file.
+- All names of the entries contained in the 'C:\Temp\ListeFileName.txt' file.
 "@
 	RemoveZipEntryExamplesRemarks5 = @"
-Those instructions, using a query, delete all entries ending with '.TXT' from the root of the Test.zip file.
+Those instructions, using a query, delete all entries ending with '.TXT' from the root of the 'Test.zip' file.
 "@
 	RemoveZipEntryExamplesRemarks6 = @"
-Those instructions, using a query, delete all entries ending with '.TXT', in the 'Doc/' directory of the Test.zip file.
+Those instructions, using a query, delete all entries ending with '.TXT', in the 'Doc/' directory of the 'Test.zip' file.
 "@
 }
 
