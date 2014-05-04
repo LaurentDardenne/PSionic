@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Rules>
+  <Rule Name="AliasUseFound" />
+  <Rule Name="EmptyCatchBockFound" />
+  <Rule Name="PositionalArgumentFound" />
+  <Rule Name="AdvancedFunctionNameNotVerbNoun" />
+  <Rule Name="InvokeExpressionUseFound" />
+</Rules>
