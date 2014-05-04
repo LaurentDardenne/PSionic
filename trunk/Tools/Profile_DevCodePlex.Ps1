@@ -37,6 +37,7 @@ $PsIonic.NewVariables() #Crée des variables constante d'après les clés de la 
  #PSDrive sur le répertoire du projet 
 $null=New-PsDrive -Scope Global -Name $PsIonic.ProjectName -PSProvider FileSystem -Root $PsIonicTrunk 
 
+Write-Host "Projet $ProjectName-$PsVersion configuré." -Fore Green
  
 rv SM,Paths,ProjectName,SvnPathRepository
 Set-Location ..
