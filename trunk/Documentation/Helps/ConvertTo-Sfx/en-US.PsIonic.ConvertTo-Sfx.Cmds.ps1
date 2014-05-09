@@ -17,11 +17,15 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'System.String, System.IO.FileInfo'
 			description = $Datas.ConvertToSfxInputsDescription1
 		}
 	)
 	outputs = @(
+		@{
+			type = 'None'
+			description = $Datas.ConvertToSfxOutputsDescriptionNone
+		}
 		@{
 			type = 'System.IO.FileInfo'
 			description = $Datas.ConvertToSfxOutputsDescriptionSystemIOFileInfo

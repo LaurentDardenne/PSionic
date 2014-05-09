@@ -8,13 +8,13 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'System.String'
 			description = $Datas.ConvertToPSZipEntryInfoInputsDescription1
 		}
 	)
 	outputs = @(
 		@{
-			type = ''
+			type = 'PSCustomObject'
 			description = $Datas.ConvertToPSZipEntryInfoOutputsDescription1
 		}
 	)

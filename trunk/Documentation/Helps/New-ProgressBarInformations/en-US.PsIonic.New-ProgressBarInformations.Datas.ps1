@@ -13,7 +13,7 @@ Use this parameter when you create several progress bars into only one command.
 If progress bars have no different identity, there will be superposed instead of being shown one below the other.
 "@
 	NewProgressBarInformationsInputsDescription1 = ''
-	NewProgressBarInformationsOutputsDescription1 = ''
+	NewProgressBarInformationsOutputsDescription1 = 'Its typename is ProgressBarInformations.'
 	NewProgressBarInformationsNotes = ''
 	NewProgressBarInformationsExamplesRemarks1 = @"
 This example creates a progress bar used in settings of an archive read options.

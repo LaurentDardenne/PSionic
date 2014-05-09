@@ -17,12 +17,9 @@ You can specify a command line to be run once the uncompression process has fini
 Returns the generated file in object form and not just his name. 
 Archive object is not locked so be attentive to your usage scenarios of this object.
 "@
-	ConvertToSfxInputsDescription1 = @"
-You can send any object in the pipeline, but his transformation to a string type must be a file name.
-"@
-	ConvertToSfxOutputsDescriptionSystemIOFileInfo = @"
-None or System.IO.FileInfo
- 
+	ConvertToSfxInputsDescription1 = 'You can send any object in the pipeline, but his transformation to a string type must be a file name.'
+    ConvertToSfxOutputsDescriptionNone="By default this function doesn't make output."	
+    ConvertToSfxOutputsDescriptionSystemIOFileInfo = @"
 When using the PassThru parameter, ConvertTo-Sfx sends the self-extracting archive's file object. Otherwise this function doesn't make output.
 "@ 
 	ConvertToSfxNotes = @"

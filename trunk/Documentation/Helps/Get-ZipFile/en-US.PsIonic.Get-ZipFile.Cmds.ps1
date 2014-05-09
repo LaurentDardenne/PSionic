@@ -23,7 +23,7 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'System.String'
 			description = $Datas.GetZipFileInputsDescription1
 		}
 	)

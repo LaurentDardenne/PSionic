@@ -5,13 +5,13 @@
 	description = $Datas.GetPsIonicSfxOptionsDescription
 	inputs = @(
 		@{
-			type = ''
+			type = 'None'
 			description = $Datas.GetPsIonicSfxOptionsInputsDescription1
 		}
 	)
 	outputs = @(
 		@{
-			type = ''
+			type = 'Ionic.Zip.SelfExtractorSaveOptions'
 			description = $Datas.GetPsIonicSfxOptionsOutputsDescription1
 		}
 	)

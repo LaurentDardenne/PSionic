@@ -8,13 +8,13 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'Ionic.Zip.SelfExtractorSaveOptions'
 			description = $Datas.SetPsIonicSfxOptionsInputsDescription1
 		}
 	)
 	outputs = @(
 		@{
-			type = ''
+			type = 'None'
 			description = $Datas.SetPsIonicSfxOptionsOutputsDescription1
 		}
 	)

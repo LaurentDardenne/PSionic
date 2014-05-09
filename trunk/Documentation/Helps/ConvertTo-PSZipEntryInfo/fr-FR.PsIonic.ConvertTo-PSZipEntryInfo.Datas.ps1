@@ -5,7 +5,7 @@ $Datas = @{
 	ConvertToPSZipEntryInfoSets__AllParameterSets = ''
 	ConvertToPSZipEntryInfoParametersInfo = 'Contenu d''une propriété Info d''un objet Ionic.'
 	ConvertToPSZipEntryInfoInputsDescription1 = ''
-	ConvertToPSZipEntryInfoOutputsDescription1 = ''
+	ConvertToPSZipEntryInfoOutputsDescription1 = 'Son typename est PSZipEntryInfo.'
 	ConvertToPSZipEntryInfoNotes = @"
 La transformation de la propriété Info de type texte en plusieurs objets prend un certain temps.
 Eviter de transformer plusieurs fois cette propriété au sein d'une boucle.

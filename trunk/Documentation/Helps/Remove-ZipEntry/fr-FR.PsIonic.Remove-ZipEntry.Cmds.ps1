@@ -22,8 +22,8 @@
 	)
 	outputs = @(
 		@{
-			type = 'System.Management.Automation.PSObject'
-			description = $Datas.RemoveZipEntryOutputsDescriptionSystemManagementAutomationPSObject
+			type = ''
+			description = $Datas.RemoveZipEntryOutputsDescription1
 		}
 	)
 	notes = $Datas.RemoveZipEntryNotes

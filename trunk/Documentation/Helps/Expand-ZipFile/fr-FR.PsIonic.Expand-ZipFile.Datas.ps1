@@ -60,8 +60,9 @@ Emet le fichier d'archive dans le pipeline. Attention, dans ce cas la libératio
 L'objet archive renvoyé n'étant pas verrouillé, soyez également attentif à vos scénarios d'usage de cet objet.    
 "@
     ExpandZipFileParametersCreate = 'Crée le répertoire de destination si celui-ci n''existe pas.'	
-	ExpandZipFileInputsDescription1 = 'En entrée des objets de type [String] ou des [Fileinfo]'
+	ExpandZipFileInputsDescription1 = ''
 	ExpandZipFileOutputsDescription1 = ''
+    ExpandZipFileOutputsDescriptionIonicZipZipFile = "Si le paramètre Passthru est spécifié, renvoi l'archive Zip."
 	ExpandZipFileNotes = @"
 Une archive Zip peut en théorie contenir plusieurs entrées dont chacune a un mode de compression et/ou de cryptage différent des autres. 
 Par contre, cette fonction suppose que le mot de passe est commun à toutes les entrées de l'archive, sinon une exception sera déclenchée lors du traitement du premier fichier possédant un mot de passe différent.

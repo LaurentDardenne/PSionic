@@ -60,8 +60,9 @@ For more information on writing and query syntax, see the 'about_Query_Selection
 Warning, there is no consistency check on the contents of the query, for example 'size <100 byte AND Size> 1000 byte' will not cause an error, but no file will be selected.
 If you also specify the '-Passthru' parameter, a custom property named 'Query' will be added to the returned object.
 "@
-	ExpandZipFileInputsDescription1 = '[String] or [FileInfo] objects type'
-	ExpandZipFileOutputsDescription1 = ''
+	ExpandZipFileInputsDescription1 = ''
+	ExpandZipFileOutputsDescription1 = '' 
+    ExpandZipFileOutputsDescriptionIonicZipZipFile = 'If the Passthru parameter is specified, the output is the archive Zip object.'
 	ExpandZipFileNotes = @"
 A Zip archive should contains several entries each of which has a compression mode and / or other different encryption.
 However, this function needs a same passeword for all archive entries. Otherwise an exception will occured during the first encrypted file decompression.

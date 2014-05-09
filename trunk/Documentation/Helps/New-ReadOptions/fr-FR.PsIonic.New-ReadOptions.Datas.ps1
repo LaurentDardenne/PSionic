@@ -21,7 +21,7 @@ Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'affich
 L'objet passé en paramètre est construit à l'aide de fonction New-ProgressBarInformations.
 "@
 	NewReadOptionsInputsDescription1 = ''
-	NewReadOptionsOutputsDescriptionIonicZipReadOptions = 'Ionic.Zip.ReadOptions'
+	NewReadOptionsOutputsDescriptionIonicZipReadOptions = ''
 	NewReadOptionsNotes = @"
 Concernant l'usage de l'encodage, consultez l'aide de la dll Ionic.
  

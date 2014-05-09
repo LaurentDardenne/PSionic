@@ -39,8 +39,8 @@ Cet ID permet de distinguer la barre de progression interne des autres. Utilisez
 	GetZipFileParametersUnixTimeFormat = 'Le format de date des fichiers sera celui d''Unix.'
 	GetZipFileParametersWindowsTimeFormat = 'Le format de date des fichiers sera celui de Windows.'
 	GetZipFileParametersZipErrorAction = 'Précise le mode de gestion des erreurs.'
-	GetZipFileInputsDescription1 = 'String'
-	GetZipFileOutputsDescriptionIonicZipZipFile = 'Ionic.Zip.ZipFile'
+	GetZipFileInputsDescription1 = ''
+	GetZipFileOutputsDescriptionIonicZipZipFile = ''
 	GetZipFileNotes = @"
 Cette fonction renvoyant seulement un objet archive Zip à partir de son nom complet. La plupart des paramètres servent à configurer les propriétés de l'archive si vous souhaitez la modifier.
 Par exemple, le paramètre 'Encryption' n’influe pas sur la lecture du Zip. Seul le paramètre 'Password' est nécessaire, car ce sont les entrées de l'archive Zip qui portent l’information de cryptage, et pas l'objet de type [ZipFile].

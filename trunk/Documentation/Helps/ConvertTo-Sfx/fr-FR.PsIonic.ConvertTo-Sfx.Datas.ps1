@@ -20,9 +20,8 @@ L'objet archive renvoyé n'étant pas verrouillé, soyez attentif à vos scénar
 	ConvertToSfxInputsDescription1 = @"
 Vous pouvez émettre n'importe quel objet dans le pipeline, sous réserve que sa tranformation en un type String soit un nom de fichier.
 "@
-	ConvertToSfxOutputsDescriptionSystemIOFileInfo = @"
-Aucun ou System.IO.FileInfo
- 
+	ConvertToSfxOutputsDescriptionNone="Par défaut ne renvoi pas d'objet"
+    ConvertToSfxOutputsDescriptionSystemIOFileInfo = @"
 Lorsque vous utilisez le paramètre PassThru, ConvertTo-Sfx renvoi l'objet fichier de l'archive auto extractible. Sinon cette fonction ne génére aucune sortie.
 "@ 
 	ConvertToSfxNotes = @"

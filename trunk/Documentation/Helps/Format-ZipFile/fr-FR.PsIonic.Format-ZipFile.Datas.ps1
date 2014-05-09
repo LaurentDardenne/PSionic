@@ -5,8 +5,8 @@ $Datas = @{
 	FormatZipFileSets__AllParameterSets = ''
 	FormatZipFileParametersProperties = 'Tableau de nom de propriété à afficher lors de l''appel interne à Format-List'
 	FormatZipFileParametersZip = 'Objet archive sur lequel appliquer le formatage. Vous devez forcer la prise en compte de l''objet en préfixant la variable par une virgule.'
-	FormatZipFileInputsDescription1 = 'Ionic.Zip.ZipFile'
-	FormatZipFileOutputsDescription1 = 'Microsoft.PowerShell.Commands.Internal.Format'
+	FormatZipFileInputsDescription1 = ''
+	FormatZipFileOutputsDescription1 = ''
 	FormatZipFileNotes = @"
 Liste des propriétés affichées par défaut :
   CaseSensitiveRetrieval
@@ -45,7 +45,7 @@ Liste des propriétés affichées par défaut :
 .
 La présence de cette fonction est due à un bug dans le système d'extension de type et de formatage qui ne peut à ce jour gérer une classe possédant un indexeur.
 "@
-    FormatZipFileExamplesRemarks1 = 'Cet exemple récupère un objet archive à partir d''un nom de fichier, puis formate son contenu avant de libérer les ressources systèmes.'
+    FormatZipFileExamplesRemarks1 = "Cet exemple récupère un objet archive à partir d'un nom de fichier, puis formate son contenu avant de libérer les ressources systèmes."
 }  
 
 

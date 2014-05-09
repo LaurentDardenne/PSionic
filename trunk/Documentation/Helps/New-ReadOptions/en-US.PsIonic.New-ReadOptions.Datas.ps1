@@ -21,7 +21,7 @@ When opening large zip archive, you can choose to display a progress bar.
 The object value of the parameter is builded by the use of the 'New-ProgressBarInformations' function.
 "@
 	NewReadOptionsInputsDescription1 = ''
-	NewReadOptionsOutputsDescriptionIonicZipReadOptions = 'Ionic.Zip.ReadOptions'
+	NewReadOptionsOutputsDescriptionIonicZipReadOptions = ''
 	NewReadOptionsNotes = @"
 Regarding the use of encoding, see the Ionic dll help documentation.
 
