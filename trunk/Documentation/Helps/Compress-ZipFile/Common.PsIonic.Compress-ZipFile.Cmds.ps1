@@ -30,7 +30,7 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'System.String,System.IO.FileInfo'
 			description = $Datas.CompressZipFileInputsDescription1
 		}
 	)

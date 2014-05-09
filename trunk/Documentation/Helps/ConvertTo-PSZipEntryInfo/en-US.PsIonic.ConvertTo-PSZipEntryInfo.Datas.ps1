@@ -5,7 +5,7 @@ $Datas = @{
 	ConvertToPSZipEntryInfoSets__AllParameterSets = ''
 	ConvertToPSZipEntryInfoParametersInfo = 'Contents of a Ionic object''s Info property.'
 	ConvertToPSZipEntryInfoInputsDescription1 = ''
-	ConvertToPSZipEntryInfoOutputsDescription1 = ''
+	ConvertToPSZipEntryInfoOutputsDescription1 = 'Its typename is PSZipEntryInfo.'
 	ConvertToPSZipEntryInfoNotes = @"
 The Info property conversion into several objects takes some time.
 Avoid to convert this property several times into a loop.

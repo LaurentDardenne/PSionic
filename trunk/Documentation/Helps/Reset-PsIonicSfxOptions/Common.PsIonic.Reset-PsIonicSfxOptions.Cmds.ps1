@@ -5,13 +5,13 @@
 	description = $Datas.ResetPsIonicSfxOptionsDescription
 	inputs = @(
 		@{
-			type = ''
+			type = 'None'
 			description = $Datas.ResetPsIonicSfxOptionsInputsDescription1
 		}
 	)
 	outputs = @(
 		@{
-			type = ''
+			type = 'None'
 			description = $Datas.ResetPsIonicSfxOptionsOutputsDescription1
 		}
 	)

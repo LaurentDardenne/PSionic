@@ -36,7 +36,7 @@ Archive file name to test. Can be a file object or a string. In this last case, 
 	TestZipFileParametersRepair = 'Attempts to repair if archive is corrupt.'
 	TestZipFileInputsDescription1 = 'String or System.IO.FileInfo or Object (transformed into a String type). Directory type objects are not treated.'
 	TestZipFileOutputsDescriptionSystemBoolean = ''
-	TestZipFileOutputsDescriptionSystemString = ''
+	TestZipFileOutputsDescriptionSystemString = "If the Passthru parameter is specified, the output is the name of the tested file."
 	TestZipFileNotes = ''
 	TestZipFileExamplesRemarks1 = "The first line creates a Zip archive. The second tests if the file is a 'PkZip' archive format. The result of the execution is '$true'."
 	TestZipFileExamplesRemarks2 = @"

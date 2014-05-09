@@ -21,8 +21,8 @@ Celles-ci seront substituées lors de l'exécution de l’archive auto extractib
 	NewZipSfxOptionsParametersRemove = 'Supprime en fin de traitement tous les fichiers extraits de l''archive.'
 	NewZipSfxOptionsParametersVersionOfProduct = 'Numéro de version du produit contenu dans l''archive.'
 	NewZipSfxOptionsParametersWindowTitle = 'Titre de la Winform.'
-	NewZipSfxOptionsInputsDescription1 = 'Aucune'
-	NewZipSfxOptionsOutputsDescriptionIonicZipSelfExtractorSaveOptions = 'Ionic.Zip.SelfExtractorSaveOptions'
+	NewZipSfxOptionsInputsDescription1 = ''
+	NewZipSfxOptionsOutputsDescriptionIonicZipSelfExtractorSaveOptions = ''
 	NewZipSfxOptionsNotes = @"
 Pour tous les paramètres de type string renseignés, les caractères espaces sont supprimés en début ou en fin de chaîne.
 

@@ -21,8 +21,8 @@ These are substituted during the execution of the self-extracting archive.
 	NewZipSfxOptionsParametersRemove = 'Delete all files extracted from the archive at the end of the process.'
 	NewZipSfxOptionsParametersVersionOfProduct = 'Version number of the product contained in the archive.'
 	NewZipSfxOptionsParametersWindowTitle = 'Winform title.'
-	NewZipSfxOptionsInputsDescription1 = 'No description'
-	NewZipSfxOptionsOutputsDescriptionIonicZipSelfExtractorSaveOptions = 'Ionic.Zip.SelfExtractorSaveOptions'
+	NewZipSfxOptionsInputsDescription1 = ''
+	NewZipSfxOptionsOutputsDescriptionIonicZipSelfExtractorSaveOptions = ''
 	NewZipSfxOptionsNotes = @"
 For all filled parameters of string type, spaces characters are deleted at the beginning or end of the string.
 

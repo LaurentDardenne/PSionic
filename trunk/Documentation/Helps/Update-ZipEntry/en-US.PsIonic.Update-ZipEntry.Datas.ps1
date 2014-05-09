@@ -33,8 +33,8 @@ For strings or array of bytes, you must specify an entry name. The use of the '-
 "@
 	UpdateZipEntryParametersPassthru = 'Once the entry is updated in the archive catalog, it is issued in the pipeline.'
 	UpdateZipEntryParametersZipFile = 'Target archive in which specified entry is updated. This parameter waits for a ZipFile object and not a file name.'
-	UpdateZipEntryInputsDescription1 = ''
-	UpdateZipEntryOutputsDescriptionIonicZipZipEntry = ''
+	UpdateZipEntryInputsDescription1 = 'You can pipe any object that has a ToString method.'
+	UpdateZipEntryOutputsDescriptionIonicZipZipEntry = "The output is the updated entries."
 	UpdateZipEntryNotes = @"
 If an entry already exists, it is updated. The LastModified property is populated with the current date and time.
 Updating a directory entry type only adds new elements, but does not delete entries that are no longer on the FileSystem. This is not a synchronization.

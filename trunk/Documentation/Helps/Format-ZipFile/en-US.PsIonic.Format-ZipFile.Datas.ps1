@@ -5,8 +5,8 @@ $Datas = @{
 	FormatZipFileSets__AllParameterSets = ''
 	FormatZipFileParametersProperties = 'Array of property names to display when internal calling to Format-List.'
 	FormatZipFileParametersZip = 'Archive object to format. You need to force the inclusion of the object by prefixing the variable with a comma.'
-	FormatZipFileInputsDescription1 = 'Ionic.Zip.ZipFile'
-	FormatZipFileOutputsDescription1 = 'Microsoft.PowerShell.Commands.Internal.Format'
+	FormatZipFileInputsDescription1 = ''
+	FormatZipFileOutputsDescription1 = ''
 	FormatZipFileNotes = @"
 List of default properties to display :
   CaseSensitiveRetrieval

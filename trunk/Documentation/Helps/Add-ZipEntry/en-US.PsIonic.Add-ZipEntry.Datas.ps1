@@ -37,11 +37,8 @@ All other types of object will be processed to string with ToString() method.
 "@
     AddZipEntryParametersPassthru = 'Once entry is added to the archive''s catalog, it is sent to the pipeline.'
 	AddZipEntryParametersZipFile = 'Target archive in which specified entry is added. This parameter waits for a ZipFile object and not a file name.'
-	AddZipEntryInputsDescription1 = @"
-System.Byte[], System.String, System.IO.DirectoryInfo, System.IO.FileInfo, Ionic.Zip.ZipEntry.
-You can send any object of the above types in the pipeline.
-"@
-	AddZipEntryOutputsDescriptionIonicZipZipEntry = ''
+	AddZipEntryInputsDescription1 = 'You can send any object of the above types in the pipeline.'
+	AddZipEntryOutputsDescriptionIonicZipZipEntry = "The output is the added entries."
 	AddZipEntryNotes = @"
 By default, the add of an existing entry will trigger an exception.
 This function works with the Expand-ZipEntry function.

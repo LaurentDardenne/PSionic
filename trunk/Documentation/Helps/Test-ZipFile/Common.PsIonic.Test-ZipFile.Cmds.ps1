@@ -17,7 +17,7 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'System.String, System.IO.FileInfo'
 			description = $Datas.TestZipFileInputsDescription1
 		}
 	)

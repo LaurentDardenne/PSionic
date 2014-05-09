@@ -14,7 +14,7 @@ Cette vérification est plus stricte que celle effectuée avec le paramètre -is
 Elle peut donc renvoyer $false bien que le fichier soit considéré comme une archive valide.
 Si vous devez tester une archive avec un mot de passe utilisez ce paramètre avec ou sans le paramètre -Password. 
 '@
-	TestZipFileParametersPath = 'Nom du fichier de l''archive à tester.'
+	TestZipFileParametersPath = "Nom du fichier de l'archive à tester."
 	TestZipFileParametersisValid = @'
 Indique si l'archive semble valide. Cette fonction peut donc renvoyer $true alors que le contenu de l'archive est erronée. 
 Si un fichier n'est pas une archive et que le paramètre -isValid est précisé, alors les erreurs simples ne sont pas générées.
@@ -32,9 +32,9 @@ Si vous devez tester une archive avec un mot de passe n'utilisez pas le paramèt
 Utilisez uniquement le paramètre -Password et/ou le paramètre -Check. Si le password est faux le résultat renvoyé sera faux.  
 '@
 	TestZipFileParametersRepair = 'Tente une réparation si l''archive est corrompue.'
-	TestZipFileInputsDescription1 = 'String ou System.IO.FileInfo ou Object (transformé en un type String). Les objets de type répertoire ne sont pas traités.'
+	TestZipFileInputsDescription1 = 'Les objets de type répertoire ne sont pas traités.'
 	TestZipFileOutputsDescriptionSystemBoolean = ''
-	TestZipFileOutputsDescriptionSystemString = ''
+	TestZipFileOutputsDescriptionSystemString = "Si le paramètre Passthru est spécifié, la sortie est le nom du fichier testé."
 	TestZipFileNotes = ''
 	TestZipFileExamplesRemarks1 = 'La première ligne crée une archive au format Zip, la seconde teste si le fichier est bien une archive au format PkZip. Le résultat de l''exécution vaut $true.'
     TestZipFileExamplesRemarks2 = @'

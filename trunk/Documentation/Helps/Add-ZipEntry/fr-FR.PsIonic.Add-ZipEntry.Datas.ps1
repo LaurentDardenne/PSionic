@@ -37,11 +37,8 @@ Tous les autres types d'objet seront transformés en chaîne de caractères via 
 "@
     AddZipEntryParametersPassthru = 'Une fois l''entrée ajoutée au catalogue de l''archive, elle est émise dans le pipeline.'
 	AddZipEntryParametersZipFile = 'Archive cible dans laquelle on ajoute l''entrée précisée. Ce paramètre attend un objet de type ZipFile et pas un nom de fichier.'
-	AddZipEntryInputsDescription1 = @"
-System.Byte[], System.String, System.IO.DirectoryInfo, System.IO.FileInfo, Ionic.Zip.ZipEntry.
-Vous pouvez émettre n'importe quel objet des types précédents dans le pipeline.
-"@
-	AddZipEntryOutputsDescriptionIonicZipZipEntry = ''
+	AddZipEntryInputsDescription1 = "Vous pouvez émettre n'importe quel objet des types précédents dans le pipeline."
+	AddZipEntryOutputsDescriptionIonicZipZipEntry = "Le ou les objets retournés sont les entrées ajoutées à l'archive."
 	AddZipEntryNotes = @"
 Par défaut l'ajout d'une entrée existante déclenchera une exception.
 Cette fonction est couplée à la fonction nommée Expand-ZipEntry.

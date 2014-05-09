@@ -21,7 +21,7 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'String[]'
 			description = $Datas.ExpandZipEntryInputsDescription1
 		}
 	)

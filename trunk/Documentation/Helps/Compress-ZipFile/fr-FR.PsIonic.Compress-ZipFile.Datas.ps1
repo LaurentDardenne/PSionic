@@ -89,8 +89,8 @@ La valeur 'Throw' arrêtera le traitement dès la première erreur rencontrée.
 .
 Evitez d'utiliser la valeur 'Retry', car celle-ci pourrait tenter indéfiniment de résoudre une erreur persistante.
 "@
-	CompressZipFileInputsDescription1 = 'System.String,System.IO.FileInfo'
-	CompressZipFileOutputsDescriptionIonicZipZipFile = 'Ionic.Zip.ZipFile'
+	CompressZipFileInputsDescription1 = 'Attend un nom de fichier ou un objet fichier.'
+	CompressZipFileOutputsDescriptionIonicZipZipFile = 'Renvoie un objet contenant une archive Zip'
 	CompressZipFileNotes = @"
 Selon le contenu, votre archive peut être compressée en 64 bits, pour déterminer si l'archive utilise les extensions Zip64 consultez la propriété 'OutputUsedZip64' de l'archive.
 Aucun contrôle n'est effectué sur l'espace disponible lors de la création de l'archive.

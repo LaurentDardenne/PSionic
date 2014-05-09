@@ -43,8 +43,8 @@ File name(s) to read. Can be a file names with generic characters (* , ? , [A-D]
 	GetZipFileParametersUnixTimeFormat = 'Unix time format for date file format will be used.'
 	GetZipFileParametersWindowsTimeFormat = 'Windows time format for date file format will be used.'
 	GetZipFileParametersZipErrorAction = 'Specifies the error mode handling.'
-	GetZipFileInputsDescription1 = 'String'
-	GetZipFileOutputsDescriptionIonicZipZipFile = 'Ionic.Zip.ZipFile'
+	GetZipFileInputsDescription1 = ''
+	GetZipFileOutputsDescriptionIonicZipZipFile = ''
 	GetZipFileNotes = @"
 This function returns only one Zip archive object from his fullname. Most of the parameters are used to configure the archive properties if you want to modify it.
 For example, the 'Encryption' parameter does not affect reading the Zip. Only the 'Password' parameter is needed, because this is entries that are encrypted, and not the object of type [Zipfile].

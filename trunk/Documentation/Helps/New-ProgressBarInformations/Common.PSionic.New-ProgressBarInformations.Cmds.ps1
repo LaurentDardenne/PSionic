@@ -9,13 +9,13 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'None'
 			description = $Datas.NewProgressBarInformationsInputsDescription1
 		}
 	)
 	outputs = @(
 		@{
-			type = ''
+			type = 'PSCustomObject' 
 			description = $Datas.NewProgressBarInformationsOutputsDescription1
 		}
 	)

@@ -13,7 +13,7 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'System.String, System.IO.DirectoryInfo, System.IO.FileInfo, System.Byte[], System.Collections.IDictionary, Ionic.Zip.ZipEntry'
 			description = $Datas.UpdateZipEntryInputsDescription1
 		}
 	)

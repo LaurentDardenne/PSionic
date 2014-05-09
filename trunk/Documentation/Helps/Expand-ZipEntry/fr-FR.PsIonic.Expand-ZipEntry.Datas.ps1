@@ -29,10 +29,9 @@ Pour une meilleure portabilité, l'utilisation de la valeur par défaut ('Defaul
 	ExpandZipEntryParametersXML = "L'objet de type string est renvoyé dans le format XML."
 	ExpandZipEntryParametersZipFile =  'Objet contenant une archive Zip.'
 	ExpandZipEntryInputsDescription1 = ''
-	ExpandZipEntryOutputsDescriptionIonicZipZipEntry = ''
-	ExpandZipEntryOutputsDescriptionSystemXmlXmlDocument = ''
-	ExpandZipEntryOutputsDescriptionSystemString = ''
-	ExpandZipEntryOutputsDescriptionSystemByte = '' 
+ 	ExpandZipEntryOutputsDescriptionSystemXmlXmlDocument = "Si le paramètre XML est spécifié, la sortie est un document XML."
+	ExpandZipEntryOutputsDescriptionSystemString = 'Par défaut renvoi les entrées sous forme de chaîne de caractères.'
+	ExpandZipEntryOutputsDescriptionSystemByte = "Si le paramètre Byte est spécifié, la sortie est une collection d'octets." 
 	ExpandZipEntryNotes = 'Cette fonction est couplée à la fonction nommée Add-ZipEntry'
 	ExpandZipEntryExamplesRemarks1 =@'
 Ces instructions enregistrent dans un premier temps du texte dans une entrée nommée MyText, puis dans un second temps la relit et l'affecte à la variable $Text. 

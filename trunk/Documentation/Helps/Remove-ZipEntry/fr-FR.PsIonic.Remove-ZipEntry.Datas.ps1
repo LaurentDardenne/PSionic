@@ -31,7 +31,7 @@ Attention, il n’y a pas de contrôle de cohérence sur le contenu de la query,
 "@
 	RemoveZipEntryParametersZipFile = 'Archive cible dans laquelle on supprime la ou les entrées précisées. Ce paramètre attend un objet de type ZipFile et pas un nom de fichier.'
 	RemoveZipEntryInputsDescription1 = ''
-	RemoveZipEntryOutputsDescriptionSystemManagementAutomationPSObject = ''
+	RemoveZipEntryOutputsDescription1 = ''
 	RemoveZipEntryNotes = ''
 	RemoveZipEntryExamplesRemarks1 = 'Ces instructions suppriment, si elle existe, l''entrée ''Test.ps1'' à la racine du fichier Test.zip.'
     RemoveZipEntryExamplesRemarks2 = 'Ces instructions suppriment, si elle existe, l''entrée ''Test.ps1'' à la racine du fichier Test.zip.'

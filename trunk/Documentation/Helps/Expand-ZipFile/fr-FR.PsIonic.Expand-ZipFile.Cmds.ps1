@@ -23,14 +23,18 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'System.String,System.IO.FileInfo'
 			description = $Datas.ExpandZipFileInputsDescription1
 		}
 	)
 	outputs = @(
 		@{
-			type = ''
+			type = 'Aucun'
 			description = $Datas.ExpandZipFileOutputsDescription1
+		}
+		@{
+			type = 'Ionic.Zip.ZipFile'
+			description = $Datas.ExpandZipFileOutputsDescriptionIonicZipZipFile
 		}
 	)
 	notes = $Datas.ExpandZipFileNotes

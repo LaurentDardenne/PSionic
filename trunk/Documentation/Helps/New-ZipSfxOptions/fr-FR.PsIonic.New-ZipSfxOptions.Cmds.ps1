@@ -25,7 +25,7 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'Aucun'
 			description = $Datas.NewZipSfxOptionsInputsDescription1
 		}
 	)

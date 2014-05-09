@@ -9,13 +9,13 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'Ionic.Zip.ZipFile'
 			description = $Datas.FormatZipFileInputsDescription1
 		}
 	)
 	outputs = @(
 		@{
-			type = ''
+			type = 'Microsoft.PowerShell.Commands.Internal.Format'
 			description = $Datas.FormatZipFileOutputsDescription1
 		}
 	)

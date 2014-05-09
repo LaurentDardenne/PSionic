@@ -92,8 +92,8 @@ In this last case, a simple error will still be generated.
 .
 Avoid the use of the 'Retry' value because it could indefinitely try to solve a persistent error.
 "@
-	CompressZipFileInputsDescription1 = 'System.String,System.IO.FileInfo'
-	CompressZipFileOutputsDescriptionIonicZipZipFile = 'Ionic.Zip.ZipFile'
+	CompressZipFileInputsDescription1 = 'A file name or a file object.'
+	CompressZipFileOutputsDescriptionIonicZipZipFile = 'Return a zip archive.'
 	CompressZipFileNotes = @"
 Depending on the content, your archive is compressed in 64 bits. In order to define if the archive use Zip64 extensions, see the 'OutputUsedZip64' property of the archive.
 Free disk space is not checked during the build of the archive.

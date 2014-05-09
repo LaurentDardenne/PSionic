@@ -29,10 +29,9 @@ For better portability, the default value ('DefaultEncoding') is recommended.
 	ExpandZipEntryParametersXML = 'String object is returned in XML format.'
 	ExpandZipEntryParametersZipFile = 'An object containing a Zip archive.'
 	ExpandZipEntryInputsDescription1 = ''
-	ExpandZipEntryOutputsDescriptionIonicZipZipEntry = ''
-	ExpandZipEntryOutputsDescriptionSystemXmlXmlDocument = ''
-	ExpandZipEntryOutputsDescriptionSystemString = ''
-	ExpandZipEntryOutputsDescriptionSystemByte = ''
+	ExpandZipEntryOutputsDescriptionSystemXmlXmlDocument = "If the XML parameter is specified, the output is a XML document."
+	ExpandZipEntryOutputsDescriptionSystemString = 'By default the output is a string.'
+	ExpandZipEntryOutputsDescriptionSystemByte = "If the Byte parameter is specified, the output is a collection of bytes." 	
 	ExpandZipEntryNotes = 'This function is linked to the Add-ZipEntry function.'
 	ExpandZipEntryExamplesRemarks1 = @'
 At first time, those instructions save text to an entry named MyText, then links it and assigns it to the ''$MyVersionArray'' variable.

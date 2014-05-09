@@ -9,7 +9,7 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'None'
 			description = $Datas.NewReadOptionsInputsDescription1
 		}
 	)

@@ -30,7 +30,7 @@ Warning, there is no consistency check on the contents of the query, for example
 "@
 	RemoveZipEntryParametersZipFile = 'Target archive in which specified entry is removed. This parameter waits for a ZipFile object and not a file name.'
 	RemoveZipEntryInputsDescription1 = ''
-	RemoveZipEntryOutputsDescriptionSystemManagementAutomationPSObject = ''
+	RemoveZipEntryOutputsDescription1 = ''
 	RemoveZipEntryNotes = ''
 	RemoveZipEntryExamplesRemarks1 = "These statements remove, if it exists, the entry 'Test.ps1' from the root of 'Test.zip' file."
 	RemoveZipEntryExamplesRemarks2 = "These statements remove, if it exists, the entry 'Test.ps1' from the root of 'Test.zip' file."
