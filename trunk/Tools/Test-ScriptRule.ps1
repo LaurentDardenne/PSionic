@@ -17,6 +17,7 @@ Function Test-ScriptRule{
   new-object CheckInPolicy.PositionalArgumentsFound >$null
   new-object CheckInPolicy.FunctionNameUseStandardVerbName >$null
   new-object CheckInPolicy.InvokeExpressionFound >$null
+  #buggé ? -> new-object CheckInPolicy.CheckVariableAssignment # >$null 
   
   $pbCount=$PSAnalyzer.getProblemCount
   if ($pbCount -gt 0)
@@ -32,7 +33,9 @@ Add-Type -Path 'C:\Program Files (x86)\Microsoft Corporation\Microsoft Script Br
 
 $filePath="$PsIonicLivraison\PsIonic\PsIonic.psm1"
 [xml]$Datas=Gc "$PsIonicTools\ScriptAnalyzerRules.xml"
-$Rules=$Datas.rules.rule|select -ExpandProperty Name
+[string[]]$Rules=$Datas.rules.rule.Name
 
-Test-ScriptRule -FilePath $FilePath -Rules $Rules|
+get-date
+$res=Test-ScriptRule -FilePath $FilePath -Rules $Rules|
  Select-Object ID, Line, Name, Script,Statement 
+get-date
