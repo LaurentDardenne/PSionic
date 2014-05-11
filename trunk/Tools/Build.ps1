@@ -20,13 +20,14 @@ try {
 }  
 
 try {
+    $Error.Clear()
     #Release utilise en interne Show-BalloonTip
     #Une fois ses tâches terminée, la fonction Show-BalloonTip
     #n'est plus disponible, on la recharge donc dans la portée courante. 
    . "$PsIonicTools\Show-BalloonTip.ps1"
    Invoke-Psake .\Release.ps1 -parameters @{"Config"="$($PsCmdlet.ParameterSetName)"} -nologo
   
-   if ($PSVersion -eq "3.0")
+   if ($PSVersion -ge "3.0")
    {
      Invoke-Expression @"
   Powershell -version 2.0 -noprofile -Command {."`$env:PsIonicProfile\Profile_DevCodePlex.Ps1";IPMO Psake; Set-Location $PsIonicTools; Invoke-Psake .\Common.ps1 -parameters @{"Config"="$($PsCmdlet.ParameterSetName)"} -nologo}
