@@ -90,18 +90,22 @@ namespace PSIonicTools
         private EngineIntrinsics ExecutionContext;
         
         private int Count=0;
-	      private int activityId;
-	      private string activity;
+	    private int activityId;
+	    private string activity;
 
         public PSZipReadProgress(EngineIntrinsics Context,
                               	 int ActivityId,
                               	 string Activity)
         {
             activityId=ActivityId;
-	          activity=Activity;
+	        activity=Activity;
+            
             if (Context.Host.Name == "ServerRemoteHost")
             {
                //todo WorkFlow & DSC ?
+               //ExecutionContext.Host.UI : null indicates that the host does not support user interaction.
+               //todo http://stackoverflow.com/questions/3996958/write-error-write-in-powershell-used-in-c-works-but-write-debug-doesnt-wo
+                
               throw new InvalidOperationException(String.Format("This class need a ConsoleHost context. Job or remoting context is not permitted.",Context.Host.Name)); 
             }
             //L'instance peut accéder à la session Powershell
