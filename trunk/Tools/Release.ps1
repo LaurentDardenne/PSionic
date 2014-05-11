@@ -24,7 +24,6 @@ $VerbosePreference='Continue'
    Copy "$PsIonicBin\${Configuration}\Ionic.Zip.dll" "$PsIonicLivraison\PsIonic"
 #    if ($PSVersion -eq "3.0")
 #    { Copy "$PsIonicLivraison\Log4Posh\3.0\Log4PoshTools.dll" "$PsIonicLivraison\Log4Posh\4.0\Log4PoshTools.dll" }
-C:\Temp\PsIonic\Log4Posh\3.0
 # PSIonicTools.dll est compilé d'aprés la version PS courante
    
    Copy "$PsIonicBin\Debug\Ionic.Zip.pdb" "$PsIonicLivraison\PsIonic"
