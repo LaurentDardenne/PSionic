@@ -1,8 +1,8 @@
 ﻿ #Charge le module prérequis
-ipmo log4posh
+$m=ipmo log4posh -pass
 
 #Charge les modules de démos utilisant log4posh
-cd G:\PS\psionic\Modules\Demos
+Set-Location  "$($M.Modulebase)\Demos"
 $env:PSModulePath +=";$pwd"
 ipmo Module1,Module2,Module3
 
@@ -154,13 +154,13 @@ $InfoLogger.PSInfo("Appender FileExternal redirigé")
 #1233853 INFO  - [Console] Appender FileExternal redirigé
 
 Type 'C:\temp\MyLog.txt'
-#[PID:3880] [ConsoleHost] INFO  2014-04-07 05:16:48 - [Console] Appender FileExternal redirigé
+#[PID:5932] [ConsoleHost] INFO  2014-04-07 05:16:48 - [Console] Appender FileExternal redirigé
 
 $lg4n_ScriptName="DemoScript"
 $InfoLogger.PSInfo("Modification du nom du producteur de log")
 Type 'C:\temp\MyLog.txt'
-#[PID:3880] [ConsoleHost] INFO  2014-04-07 05:16:48 - [Console] Appender FileExternal redirigé
-#[PID:3880] [ConsoleHost] INFO  2014-04-07 05:20:14 - [DemoScript] Modification du nom du producteur de log
+#[PID:5932] [ConsoleHost] INFO  2014-04-07 05:16:48 - [Console] Appender FileExternal redirigé
+#[PID:5932] [ConsoleHost] INFO  2014-04-07 05:20:14 - [DemoScript] Modification du nom du producteur de log
 
 #Modification de l'emplacement du fichier de log
 #du module 'module3'
