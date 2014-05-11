@@ -22,8 +22,9 @@ $VerbosePreference='Continue'
    Copy "$PsIonicTrunk\Log4Net.Config.xml" "$PsIonicLivraison\PsIonic"
    
    Copy "$PsIonicBin\${Configuration}\Ionic.Zip.dll" "$PsIonicLivraison\PsIonic"
-   #todo ps V4
-   # Copy "$PsIonicLivraison\Log4Posh\3.0\Log4PoshTools.dll" "$PsIonicLivraison\Log4Posh\4.0\Log4PoshTools.dll"
+#    if ($PSVersion -eq "3.0")
+#    { Copy "$PsIonicLivraison\Log4Posh\3.0\Log4PoshTools.dll" "$PsIonicLivraison\Log4Posh\4.0\Log4PoshTools.dll" }
+C:\Temp\PsIonic\Log4Posh\3.0
 # PSIonicTools.dll est compilé d'aprés la version PS courante
    
    Copy "$PsIonicBin\Debug\Ionic.Zip.pdb" "$PsIonicLivraison\PsIonic"
@@ -181,6 +182,7 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
    "$PsIonicLivraison\PsIonic",
    "$PsIonicLivraison\PsIonic\2.0", 
    "$PsIonicLivraison\PsIonic\3.0",
+   "$PsIonicLivraison\PsIonic\4.0",
    "$PsIonicLivraison\PsIonic\en-US", 
    "$PsIonicLivraison\PsIonic\fr-FR", 
    "$PsIonicLivraison\PsIonic\FormatData",
