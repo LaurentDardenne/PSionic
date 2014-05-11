@@ -25,11 +25,11 @@ Show-BalloonTip –Text $TaskName –Title 'Build Log4Posh' –Icon Info
   $cp.IncludeDebugInformation = $Configuration -eq "Debug"
   $cp.GenerateInMemory=$false
    #http://msdn.microsoft.com/en-us/library/6s2x2bzy.aspx
-  $cp.CompilerOptions="/define:V$($PSVersion -as [int])"
+  $cp.CompilerOptions="/define:V$($PSVersion.ToString() -as [int])"
    #Pointe sur la version adéquate de System.Management.Automation.dll
   $cp.ReferencedAssemblies.Add([PSObject].Assembly.Location) >$null
   $cp.ReferencedAssemblies.Add("$PsIonicTrunk\Modules\Log4Posh\$PSVersion\log4net.dll") >$null
-  if ( ($PSVersion -as [int]) -gt 2)
+  if ( $PSVersion -gt "2.0")
   { $cp.ReferencedAssemblies.Add('System.core.dll') >$null }
     
   $cp.OutputAssembly="$PsIonicLivraison\Log4Posh\$PSVersion\Log4PoshTools.dll"
