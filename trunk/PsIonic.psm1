@@ -192,8 +192,7 @@ function Format-ZipFile {
 }
 
 Function ConvertTo-PSZipEntryInfo {
-#Transforme chaque entrée d'un champ Info de type string en type PSObject
-#Les propriétés de chaque objet sont en lecture seule 
+# .ExternalHelp PsIonic-Help.xml  
  param([string]$Info)
  
   $TextHelper=(Get-Culture).TextInfo
@@ -401,7 +400,7 @@ Function ConvertPSDataCollection {
     $PSEventJobError|Export-Clixml 'C:\Temp\PSEventJobError.xml'  #<%REMOVE%> 
      #Transforme la collection spécialisée en un array
     $T=@($PSEventJobError|% {$_})
-     #A la différence de la collection $Error, on doit inverse le contenu 
+     #A la différence de la collection $Error, on doit inverser le contenu 
     [System.Array]::Reverse($T)
     $ofs="`r`n"
     
@@ -1592,7 +1591,6 @@ Function Update-ZipEntry {
 Function Remove-ZipEntry {
 # .ExternalHelp PsIonic-Help.xml         
   [CmdletBinding(DefaultParameterSetName="Name")] 
-  [OutputType([PSObject])] 
   param (
       [ValidateNotNullOrEmpty()]
       [Parameter(Mandatory=$true,ValueFromPipeline = $true,ParameterSetName="Name")]
@@ -1665,17 +1663,17 @@ Function Remove-ZipEntry {
         elseif ($PSBoundParameters.ContainsKey('Name')) 
         {
           $DebugLogger.PSDebug("Remove entry by Name")  #<%REMOVE%>
-          $ZipFile.RemoveEntry($Name) > $null
+          $ZipFile.RemoveEntry($Name)
         }
         elseif ($InputObject -is [ZipEntry]) 
         {
           $DebugLogger.PSDebug("Remove entry by [ZipEntry]")  #<%REMOVE%>
-          $ZipFile.RemoveEntry($InputObject) > $null
+          $ZipFile.RemoveEntry($InputObject)
         }
         else  
         {
           $DebugLogger.PSDebug("Remove entry by [string]")  #<%REMOVE%>
-          $ZipFile.RemoveEntry($InputObject -as [string]) > $null
+          $ZipFile.RemoveEntry($InputObject -as [string])
         }
       }      
       else 
@@ -1801,7 +1799,7 @@ Function Expand-ZipEntry {
     [OutputType([Byte[]],ParameterSetName='ByteArray')]
 	param(
 		[ValidateNotNull()] 
-        [parameter(Mandatory=$True,ValueFromPipeline=$True)]
+        [parameter(Mandatory=$True)]
       [Ionic.Zip.ZipFile] $ZipFile,   
            
       	[Parameter(Position=1,Mandatory=$True,ValueFromPipeline=$True)]
