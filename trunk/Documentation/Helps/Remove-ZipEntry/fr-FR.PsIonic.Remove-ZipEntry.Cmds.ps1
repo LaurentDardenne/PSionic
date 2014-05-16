@@ -16,13 +16,13 @@
 	}
 	inputs = @(
 		@{
-			type = ''
+			type = 'System.String, System.IO.DirectoryInfo, System.IO.FileInfo, System.Byte[], System.Collections.IDictionary, Ionic.Zip.ZipEntry'
 			description = $Datas.RemoveZipEntryInputsDescription1
 		}
 	)
 	outputs = @(
 		@{
-			type = ''
+			type = 'Aucun'
 			description = $Datas.RemoveZipEntryOutputsDescription1
 		}
 	)
