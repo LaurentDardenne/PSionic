@@ -1,6 +1,10 @@
 ﻿http://psionic.codeplex.com/
 
 
+Version 0.6
+------------------------------------------------------------------------------------------
+May 12, 2014. Beta Stable. Help Fr and Us offline & online
+
 Version 0.5
 ------------------------------------------------------------------------------------------
 Mar 24, 2014. Beta Stable. Help fr offline & online
