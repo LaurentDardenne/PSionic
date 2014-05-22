@@ -6,7 +6,6 @@
  TypeNotSupported={0}: The type '{1}' is not supported.
  CommentMaxValue=The value of 'Comment' parameter must not exceeds 32767 characters.
 
- InvalidPassword=The desired encryption ('{0}') needs a password is provided.
  isBadPasswordWarning=Bad password for the archive {0}
  ZipArchiveBadPassword=An invalid password was given to extract archive {0}.
  InvalidPasswordForDataEncryptionValue=The value provided for Password parameter ('{0}') is invalid for the given value of DataEncryption '{1}'.
