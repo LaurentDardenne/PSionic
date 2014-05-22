@@ -6,7 +6,6 @@
  TypeNotSupported={0}: le type '{1}' n'est pas supporté.
  CommentMaxValue=Le contenu du paramètre 'Comment' ne doit pas excéder 32767 caractères.   
  
- InvalidPassword=Le type de cryptage demandé ('{0}'), nécessite que le paramètre password soit renseigné.
  isBadPasswordWarning=Mot de passe invalide pour l'archive {0}
  ZipArchiveBadPassword=Mot de passe incorrect pour l'extraction de l'archive {0}
  InvalidPasswordForDataEncryptionValue=La valeur du paramètre Password ('{0}') est invalide pour la valeur de DataEncryption '{1}'.
