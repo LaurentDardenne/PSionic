@@ -6,10 +6,11 @@ Function Test-ScriptRule{
   [string] $FilePath,
   [string[]] $Rules #nom -> dll/NS.Name : CheckInPolicy.IsAliasUsed
  )
-
+ 
    #Initialize or RAZ the Problem collection
    #Create private AST from a script
   $PSAnalyzer = new-object CheckInPolicy.PSAnalyzer($FilePath)
+  $PSAnalyzer.GetAvailableCmdletsAndAlias();   
    
    #Ces classes renseignent les propriétés de $PSAnalyzer
   new-object CheckInPolicy.IsAliasUsed >$null
@@ -17,7 +18,6 @@ Function Test-ScriptRule{
   new-object CheckInPolicy.PositionalArgumentsFound >$null
   new-object CheckInPolicy.FunctionNameUseStandardVerbName >$null
   new-object CheckInPolicy.InvokeExpressionFound >$null
-  #buggé ? -> new-object CheckInPolicy.CheckVariableAssignment # >$null 
   
   $pbCount=$PSAnalyzer.getProblemCount
   if ($pbCount -gt 0)
@@ -29,7 +29,10 @@ Function Test-ScriptRule{
   }
 }#Test-ScriptRule
 
-Add-Type -Path 'C:\Program Files (x86)\Microsoft Corporation\Microsoft Script Browser\CheckInPolicy.dll'
+$Asm=Add-Type -Path 'C:\Program Files (x86)\Microsoft Corporation\Microsoft Script Browser\CheckInPolicy.dll' -pass
+$Require="1.2.1"
+if ($Asm[0].assembly.GetName().Version -le $Require)
+{throw "Microsoft Script Browser\CheckInPolicy.dll : version $Require requise." }
 
 $filePath="$PsIonicLivraison\PsIonic\PsIonic.psm1"
 [xml]$Datas=Gc "$PsIonicTools\ScriptAnalyzerRules.xml"
