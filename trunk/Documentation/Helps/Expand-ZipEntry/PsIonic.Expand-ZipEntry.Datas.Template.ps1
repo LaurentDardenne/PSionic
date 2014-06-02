@@ -1,10 +1,7 @@
-# Expand-ZipEntry command data
+﻿# Expand-ZipEntry command data
 $Datas = @{
 	ExpandZipEntrySynopsis = ''
 	ExpandZipEntryDescription = ''
-	ExpandZipEntrySetsByteArray = ''
-	ExpandZipEntrySetsString = ''
-	ExpandZipEntrySetsXML = ''
 	ExpandZipEntryParametersAsHashTable = ''
 	ExpandZipEntryParametersByte = ''
 	ExpandZipEntryParametersEncoding = ''

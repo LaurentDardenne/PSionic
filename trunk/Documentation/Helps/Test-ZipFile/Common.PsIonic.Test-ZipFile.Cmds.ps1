@@ -3,10 +3,7 @@
 	command = 'Test-ZipFile'
 	synopsis = $Datas.TestZipFileSynopsis
 	description = $Datas.TestZipFileDescription
-	sets = @{
-		Default = $Datas.TestZipFileSetsDefault
-		File = $Datas.TestZipFileSetsFile
-	}
+	sets = @{}
 	parameters = @{
 		Check = $Datas.TestZipFileParametersCheck
 		Path = $Datas.TestZipFileParametersPath

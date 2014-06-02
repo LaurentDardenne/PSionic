@@ -5,9 +5,6 @@ $Datas = @{
 Extrait des entrées d'une archive compressée au format Zip. Les données extraites sont soit des données sérialisées, soit un tableau d'octets, soit une chaîne de caractère et ils permettent de reconstruire un objet.
 Pour extraire des fichiers d'une archive utilisez Expand-ZipFile.
 "@
-	ExpandZipEntrySetsByteArray = ''
-	ExpandZipEntrySetsString = ''
-	ExpandZipEntrySetsXML = ''
     ExpandZipEntryParametersAsHashTable= 'Renvoi les entrées lues dans un objet de type hashtable. Les noms des entrées à extraire seront utilisées en tant que nom de clé.'
     ExpandZipEntryParametersByte = "L'entrée est renvoyée en tant que tableau d'octets."	
     ExpandZipEntryParametersEncoding = @"

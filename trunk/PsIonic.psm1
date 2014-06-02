@@ -1790,13 +1790,12 @@ Function GetArchivePath {
     }    
 } #GetArchivePath
 
-
 Function Expand-ZipEntry { 
 # .ExternalHelp PsIonic-Help.xml         
-    [CmdletBinding(DefaultParameterSetName="String")] 
-    [OutputType([System.Xml.XmlDocument],ParametersetName='XML')] 
-    [OutputType([System.String],ParametersetName='String')]
-    [OutputType([Byte[]],ParameterSetName='ByteArray')]
+    [CmdletBinding()] 
+    [OutputType([System.Xml.XmlDocument])] 
+    [OutputType([System.String])]
+    [OutputType([Byte[]])]
 	param(
 		[ValidateNotNull()] 
         [parameter(Mandatory=$True)]
@@ -1813,10 +1812,8 @@ Function Expand-ZipEntry {
       [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
       [Switch] $AsHashTable,
 
-        [parameter(ParameterSetName="ByteArray")]
       [Switch] $Byte,
 
-        [parameter(ParameterSetName="XML")]
       [Switch] $XML,
 
       [Switch] $Strict
@@ -1888,7 +1885,7 @@ Function Expand-ZipEntry {
      }
      finally 
      {
-       if ($Reader  -ne $Null)
+       if ($Reader -ne $Null)
        { 
          $DebugLogger.PSDebug("Dispose Reader") #<%REMOVE%>
          $Reader.Dispose()
@@ -2292,9 +2289,9 @@ Function TestZipArchive {
 
 Function Test-ZipFile{
 # .ExternalHelp PsIonic-Help.xml              
-  [CmdletBinding(DefaultParameterSetName="Default")]
-  [OutputType([boolean],ParameterSetName='Default')]
-  [OutputType([System.String],ParameterSetName='File')]
+  [CmdletBinding()]
+  [OutputType([System.Boolean])]
+  [OutputType([System.String])]
  	param(
 		[parameter(Position=0,Mandatory=$True,ValueFromPipeline=$True)]
 	  $Path, 
@@ -2302,7 +2299,6 @@ Function Test-ZipFile{
       [switch] $isValid,  
       [switch] $Check,
       [switch] $Repair,  
-        [Parameter(Mandatory=$false, ParameterSetName="File")]
       [switch] $Passthru
     )
    begin {
@@ -2340,7 +2336,7 @@ Function Test-ZipFile{
               $DebugLogger.PSError($_.Exception.Message)  #<%REMOVE%>
                # On émet dans le pipe que les noms des fichiers existant (-passthru) ou les noms des archives valides (-isValid -passthru) 
                # Tous les fichiers inexistant et toutes les archives existantes invalides ne sont donc pas émises.
-              if (($PsCmdlet.ParameterSetName -ne "File") -or ($Passthru -eq $false))
+              if ($Passthru -eq $false)
               { Write-Output $false }           
           }#catch
         }#Foreach

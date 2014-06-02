@@ -32,7 +32,7 @@ Function Test-ScriptRule{
 $Asm=Add-Type -Path 'C:\Program Files (x86)\Microsoft Corporation\Microsoft Script Browser\CheckInPolicy.dll' -pass
 $Require="1.2.1"
 if ($Asm[0].assembly.GetName().Version -le $Require)
-{throw "Microsoft Script Browser\CheckInPolicy.dll : version $Require requise." }
+{throw "Microsoft Script Browser\CheckInPolicy.dll : version '$Require' requise." }
 
 $filePath="$PsIonicLivraison\PsIonic\PsIonic.psm1"
 [xml]$Datas=Gc "$PsIonicTools\ScriptAnalyzerRules.xml"
