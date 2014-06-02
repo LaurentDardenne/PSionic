@@ -1,13 +1,9 @@
-# Expand-ZipEntry command help
+﻿# Expand-ZipEntry command help
 @{
 	command = 'Expand-ZipEntry'
 	synopsis = $Datas.ExpandZipEntrySynopsis
 	description = $Datas.ExpandZipEntryDescription
-	sets = @{
-		ByteArray = $Datas.ExpandZipEntrySetsByteArray
-		String = $Datas.ExpandZipEntrySetsString
-		XML = $Datas.ExpandZipEntrySetsXML
-	}
+	sets = @{}
 	parameters = @{
 		AsHashTable = $Datas.ExpandZipEntryParametersAsHashTable
 		Byte = $Datas.ExpandZipEntryParametersByte

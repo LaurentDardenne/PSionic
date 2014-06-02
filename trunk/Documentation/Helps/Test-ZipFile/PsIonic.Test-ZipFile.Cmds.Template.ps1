@@ -1,12 +1,9 @@
-# Test-ZipFile command help
+﻿# Test-ZipFile command help
 @{
 	command = 'Test-ZipFile'
 	synopsis = $Datas.TestZipFileSynopsis
 	description = $Datas.TestZipFileDescription
-	sets = @{
-		Default = $Datas.TestZipFileSetsDefault
-		File = $Datas.TestZipFileSetsFile
-	}
+	sets = @{}
 	parameters = @{
 		Check = $Datas.TestZipFileParametersCheck
 		isValid = $Datas.TestZipFileParametersisValid

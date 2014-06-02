@@ -6,8 +6,6 @@ Tests if a file is in PkZip format.
 During this test, it is also possible to check if the archive is valid and in this case, to attempt to fix it. 
 By default, simple errors are thrown.
 '@
-	TestZipFileSetsDefault = ''
-	TestZipFileSetsFile = ''
 	TestZipFileParametersCheck = @"
 Verify if the archive catalog is correct.
 This verification is stricter than that made ​​with the '-isValid' parameter.

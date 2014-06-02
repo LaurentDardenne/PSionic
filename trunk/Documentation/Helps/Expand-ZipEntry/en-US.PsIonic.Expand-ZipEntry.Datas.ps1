@@ -5,9 +5,6 @@ $Datas = @{
 Extracts entries from a compressed archive to a Zip format. Extracted data are either serialized data, either an array of bytes, or a string and it allows to build an object.
 To extract files from an archive use 'Expand-ZipFile' Cmdlet.
 "@
-	ExpandZipEntrySetsByteArray = ''
-	ExpandZipEntrySetsString = ''
-	ExpandZipEntrySetsXML = ''
 	ExpandZipEntryParametersAsHashTable = 'Returns readen entries into an object of type hashtable. Name entries are extracted as a key name.'
 	ExpandZipEntryParametersByte = 'Entry is returned as an array of bytes.'
 	ExpandZipEntryParametersEncoding = @"
