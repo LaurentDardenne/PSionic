@@ -6,7 +6,7 @@ Include "$PsIonicTools\Common.ps1"
  #charge cette fonction dans la portée de PSake
 include "$PsIonicTools\Show-BalloonTip.ps1"
 
-Task default -Depends Delivery,CompilePsIonicTools,BuildXmlHelp,TestBomFinal,Finalize
+Task default -Depends Delivery,CompilePsIonicTools,ValideParameterSet,BuildXmlHelp,TestBomFinal,Finalize
 
 Task Delivery -Depends Clean,RemoveConditionnal,FindTodo {
 #Recopie les fichiers dans le répertoire de livraison  
@@ -235,6 +235,24 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
   }
 } #TestBOMFinal
 
+Task ValideParameterSet  { #todo
+  Show-BalloonTip –Text $TaskName –Title 'Parameter sets' –Icon Info   
+
+  ."$PsIonicTools\Test-ParameterSet.ps1"
+  Import-Module "$PsIonicLivraison\Log4Posh\Log4Posh.psd1" -global
+  $Module=Import-Module "$PsIonicLivraison\PsIonic\PsIonic.psd1" -PassThru
+  $WrongParameterSet= @(
+    $Module.ExportedFunctions.GetEnumerator()|Select -expand Key|
+      Test-ParameterSet | 
+        foreach {
+         $Current=$_
+         $Current.GetEnumerator()|
+         Where  {-not $_.Value.isValid}|
+         foreach  { Write-Warning "[$($Current.CommandName)]: Le jeux $($_.Key) est invalide.";$_}
+        }
+  )
+  if ($WrongParameterSet.Count -gt 0) {throw "Corrigez les jeux de paramétres"}
+}#ValideParameterSet
 
 Task FindTodo {
 Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info    
