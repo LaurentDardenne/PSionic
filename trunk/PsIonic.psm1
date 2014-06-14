@@ -2534,7 +2534,7 @@ function New-ReadOptions {
         [Parameter(Position=0, Mandatory=$false)]
       [System.Text.Encoding] $Encoding=[Ionic.Zip.ZipFile]::DefaultEncoding,
        [Parameter(Position=1, Mandatory=$false)]
-       [ValidateScript({@($_.PsObject.TypeNames[0] -eq "ProgressBarInformations").Count -gt 0})]
+       [ValidateScript({$_.PsObject.TypeNames[0] -eq "ProgressBarInformations"})]
       $ProgressBarInformations
   ) 
    [Switch] $isVerbose= $null

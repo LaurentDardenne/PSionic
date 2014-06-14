@@ -448,7 +448,7 @@ function Add-FileSystemValidationMember {
  param(
     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline=$true)]
     [ValidateNotNullOrEmpty()]
-    [ValidateScript({@($_.PsObject.TypeNames[0] -eq "PSPathInfo").Count -gt 0})]
+    [ValidateScript({$_.PsObject.TypeNames[0] -eq "PSPathInfo"})]
   $PSPathInfo
  )
  
