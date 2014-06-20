@@ -494,6 +494,7 @@ function Add-FileSystemValidationMember {
           # AUCUN test d'accès en écriture n'est effectué. 
           #Par exemple les chemin pointant sur un CDROM sont considérés comme valide, 
           #ceux n'ayant pas la permision d'écriture également.
+          #Mais dans ce cas isItemExist sera égal à $false
          $result= $this.IsaValidNameForTheFileSystem() -and ($this.isItemExist -eq $false)  
          
          If (-not $result) { Write-Debug "Path invalide pour une création de répertoire ou de fichier : $($this.Win32PathName)"} #<%REMOVE%> 
