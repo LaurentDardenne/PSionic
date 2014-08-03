@@ -37,7 +37,7 @@ Function Test-DefaultParameterSetName{
      [Switch] $A
     )
   }
-    Test-DefaultParameterSetName F0
+    Test-DefaultParameterSetName F1
 .
   Le test de la fonction F1 renvoi $true.
 
@@ -49,7 +49,7 @@ Function Test-DefaultParameterSetName{
      [Switch] $A
     )
   }  
-  Test-DefaultParameterSetName F0
+  Test-DefaultParameterSetName F2
 .
   Le test de la fonction F2 renvoi $true.
 
@@ -62,7 +62,7 @@ Function Test-DefaultParameterSetName{
      [Switch] $A
     )
   }  
-  Test-DefaultParameterSetName F0
+  Test-DefaultParameterSetName F3
 .
   Le test de la fonction F3 renvoi $true.
 
@@ -75,7 +75,7 @@ Function Test-DefaultParameterSetName{
      [Switch] $A
     )
   }  
-  Test-DefaultParameterSetName F0
+  Test-DefaultParameterSetName F4
 .
   Le test de la fonction F4 renvoi $false.
 
@@ -88,10 +88,10 @@ Function Test-DefaultParameterSetName{
      [Switch] $A
     )
   } 
-  Test-DefaultParameterSetName F0
+  Test-DefaultParameterSetName F5
 .
-  Le test de la fonction F0 renvoi $true.
-#>  
+  Le test de la fonction F5 renvoi $true.
+#>
  param (
    #Nom de la commande à tester
   [parameter(Mandatory=$True,ValueFromPipeline=$True)]
@@ -176,7 +176,7 @@ process {
   
   $T=@()
 
-  Write-Debug "DPS est-il renseigné ? $($DPS -eq [string]::Empty)"
+  Write-Debug "DPS est-il renseigné ? $($DPS -ne [string]::Empty)"
   Write-Debug "Nom de jeux de paramètre : $SetCount"
   
   if ($DPS -ne [string]::Empty)
