@@ -208,10 +208,10 @@ process {
                                     $Positions `
                                     $ParametersStartsWithNumber `
                                     $HasParameterUnique `
-                                    $isDuplicate`
+                                    $isDuplicate `
                                     $isSequential `
                                     $isPositionValid `
-                                    $isContainsInvalidParameter`
+                                    $isContainsInvalidParameter `
                                     $isParameterSetNameDuplicate
 
      New-ParameterSetValidation  $Cmd.ModuleName `
