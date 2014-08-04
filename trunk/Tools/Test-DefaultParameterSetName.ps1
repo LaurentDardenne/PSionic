@@ -159,7 +159,7 @@ begin {
       ParameterSetNames=$ParameterSetNames
      }
   }# New-DefaultParameterSetNameReport
-}#end
+}#begin
 
 process {
   $Cmd=Get-Command $Command
