@@ -111,7 +111,7 @@ begin {
       isParameterSetNameDuplicate=$isParameterSetNameDuplicate
      }
   }# New-ParameterSetReport
-}#end
+}#begin
 
 process {
   $Cmd=Get-Command $Command
