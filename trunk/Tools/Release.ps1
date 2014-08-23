@@ -256,13 +256,14 @@ Task ValideParameterSet {
            $_
          }
         
-         Test-ParameterSet -Command $_.Key |
-         Where-Object {-not $_.isValid} |
-         Foreach-Object { 
-           Write-Warning "[$($_.CommandName)]: Le jeu $($_.ParameterSetName) est invalide."
-           $_
-         }
-      }
+         Get-Command $_.Key |
+          Test-ParameterSet |
+          Where-Object {-not $_.isValid} |
+          Foreach-Object { 
+            Write-Warning "[$($_.CommandName)]: Le jeu $($_.ParameterSetName) est invalide."
+            $_
+          }
+       }
     )
     if ($WrongParameterSet.Count -gt 0) 
     {
