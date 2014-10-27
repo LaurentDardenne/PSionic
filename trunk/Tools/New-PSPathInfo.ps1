@@ -508,7 +508,7 @@ function Add-FileSystemValidationMember {
       } -Passthru |
         #Le nom de chemin valide existant et comportant des jokers, renvoie-t-il au moins un fichier/répertoire ?
       Add-Member -Membertype Scriptmethod -Name isFileSystemItemContainsResolvedFiles {
-         $result=$this.isaValidFileSystemPath -and $this.isItemExist -and $this.isWildcard -and $this.ResolvedPSFiles.Count -gt 0
+         $result=$this.isaValidFileSystemPath() -and $this.isItemExist -and $this.isWildcard -and $this.ResolvedPSFiles.Count -gt 0
          if (-not $result) { Write-Debug "La résolution du chemin valide ne renvoi pas de fichiers/répertoire : $($this.GetFileName())" } #<%REMOVE%>
          $result          
       } -Passthru   
