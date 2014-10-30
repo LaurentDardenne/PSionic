@@ -125,7 +125,7 @@ Function Stop-Log4Net {
 
 Function Register-PSObjectRenderer {
  #Enregistre le type [PSLog4NET.PSObjectRenderer] implémentant l'interface IObjectRenderer. 
- #Le type [PSLog4NET.PSObjectRenderer] appel en interne la méthode tostring() du prsobject,
+ #Le type [PSLog4NET.PSObjectRenderer] appel en interne la méthode tostring() du psobject,
  #celle peut être rédéfinie via ETS:
  # $MyObject |Add-Member -Force -MemberType ScriptMethod ToString { rver|Out-String } 
  param (
@@ -499,9 +499,9 @@ function Initialize-Log4NetModule {
   else
   { $Repository=[LogManager]::CreateRepository($ModuleName) }
   
+  Start-Log4Net $Repository $Path
+ 
   Register-PSObjectRenderer $Repository.Name
-  
-  Start-Log4Net $Repository $Path 
   
    #Créé les variables Logger dans la portée de l'appelant
    #les noms des loggers sont normés
@@ -535,15 +535,15 @@ function Initialize-Log4NetScript {
 
   $Repository=Get-DefaultRepositoryName
   
-  Register-PSObjectRenderer $Repository
-  
   Start-Log4Net -DefaultConfiguration
+
+  Register-PSObjectRenderer $Repository  
   
   if ($PSBoundParameters.ContainsKey('FileExternalPath'))
-  { Switch-AppenderFileName -Name $Repository FileExternal $FileExternalPath }
+  { Switch-AppenderFileName -RepositoryName $Repository FileExternal $FileExternalPath }
   
   if ($PSBoundParameters.ContainsKey('FileInternalPath'))
-  { Switch-AppenderFileName -Name $Repository FileInternal $FileInternalPath }
+  { Switch-AppenderFileName -RepositoryName $Repository FileInternal $FileInternalPath }
   
   Set-Variable -Name DebugLogger -Value ([LogManager]::GetLogger('DebugLogger')) -Scope $Scope
   Set-Variable -Name InfoLogger -Value ([LogManager]::GetLogger('InfoLogger')) -Scope $Scope
