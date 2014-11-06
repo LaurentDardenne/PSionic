@@ -17,6 +17,7 @@ $VerbosePreference='Continue'
 
 #Modules requis
    Copy "$PsIonicTrunk\Modules\Log4Posh" "$PsIonicLivraison" -Recurse
+   Remove-Item "$PsIonicLivraison\Log4Posh\Bin" -Force -Recurse 
  
 #log4Net config
 # on copie la config de dev nécessaire au build. 
