@@ -364,7 +364,7 @@ function Get-Log4NetFileAppender{
       {($_.Name -eq $AppenderName) -and  ($_.GetType().IsSubclassOf([Log4net.Appender.FileAppender]))}
      }|
      Foreach { Write-Verbose "Find the appender '$($_.Name)' into the repository '$($Repository.Name)'."; $_}|
-     Add-Member NoteProperty RepositoryName $Repository.Name -Passthru
+     Add-Member NoteProperty -Name RepositoryName -Value $Repository.Name -Force -Passthru
  }#process
 }#Get-Log4NetFileAppender
 
