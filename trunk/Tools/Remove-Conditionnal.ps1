@@ -202,7 +202,7 @@ Function Remove-Conditionnal {
       Les directives suivantes n'ont pas de mot clé de fin : DEBUG:1
       
       throw : Parsing annulé.
-      La directive #<UNDEF %DEBUG%> n'est pas associé à une directive DEFINE ('DEBUG:1')
+      La directive #<UNDEF %DEBUG%> n'est pas associée à une directive DEFINE ('DEBUG:1')
     
     Le message d'erreur contient le nom de la directive suivi du numéro de 
     ligne du code source où elle est déclarée.
@@ -613,7 +613,7 @@ param (
                             }
                             
                             if ($isDirectiveOrphan)
-                            { Throw "Parsing annulé.`r`n$Container`r`nLa directive #<UNDEF %${FoundDirective}%> n'est pas associé à une directive DEFINE ('${FoundDirective}:$LineNumber')"}
+                            { Throw "Parsing annulé.`r`n$Container`r`nLa directive #<UNDEF %${FoundDirective}%> n'est pas associée à une directive DEFINE ('${FoundDirective}:$LineNumber')"}
                             
                             if ($Directives.Count -eq 0)
                             {
