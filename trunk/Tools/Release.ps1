@@ -92,7 +92,7 @@ Show-BalloonTip –Text $TaskName –Title 'Build Psionic' –Icon Info
          #On traite une directive et supprime les lignes demandées. 
          #On inclut les fichiers.       
         Get-Content -Path $_ -ReadCount 0 -Encoding UTF8|
-         Remove-Conditionnal -ConditionnalsKeyWord 'DEBUG' -Include -Remove|
+         Remove-Conditionnal -ConditionnalsKeyWord 'DEBUG' -Include -Remove -Container $Source|
          Remove-Conditionnal -Clean| 
          Set-Content -Path $CurrentFileName -Force -Encoding UTF8        
       }
