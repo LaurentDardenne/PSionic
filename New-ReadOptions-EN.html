@@ -1,0 +1,106 @@
+<div class="wikidoc">
+<h1 style="text-align:center"><strong>New-ReadOptions</strong></h1>
+<h2><strong>Synopsis</strong></h2>
+<p style="margin-left:40px">Creates an object containing differents options that can be used when reading a Zip archive.</p>
+<h2><strong>Syntax</strong></h2>
+<pre style="margin-left:40px">New-ReadOptions [[-Encoding] &lt;Encoding&gt;] [[-ProgressBarInformations] &lt;Object&gt;] [&lt;CommonParameters&gt;]
+
+</pre>
+<h2><strong>Description</strong></h2>
+<p style="margin-left:40px">It is possible to specify different behavior when reading a Zip archive.</p>
+<h2><strong>Parameters</strong></h2>
+<h3><strong>-Encoding</strong> <em style="font-weight:100">&lt;Encoding&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Archive encoding type. Possible values are : -ASCII : ASCII characters encoding scheme (7 bits). -BigEndianUnicode : encoding for the UTF-16 format using the big endian byte order. -Default : encoding for the operating
+ system&amp;;39;s current ANSI code page. -Unicode : encoding for the UTF-16 format using the little endian byte order. -UTF32 : encoding for the UTF-32 format using the little endian byte order. -UTF7 : encoding for the UTF-7. -UTF8 : encoding for the UTF-8.
+ . For better portability, the default value (&amp;;39;DefaultEncoding&amp;;39;) is recommended.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-ProgressBarInformations</strong> <em style="font-weight:100">&lt;Object&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">The use of this parameter creates an event manager for reading operations. When opening large zip archive, you can choose to display a progress bar. The object value of the parameter is builded by the use of the
+ &amp;;39;<a href="https://psionic.codeplex.com/wikipage?title=New-ProgressBarInformations-EN">New-ProgressBarInformations</a>&amp;;39; function.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3>&lt;CommonParameters&gt;</h3>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable. For more information, see<br>
+about_CommonParameters (<a href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</p>
+<h2><strong>Inputs</strong></h2>
+<p style="margin-left:40px"><strong>None</strong></p>
+<h2><strong>Outputs</strong></h2>
+<p style="margin-left:40px"><strong>Ionic.Zip.ReadOptions</strong></p>
+<h2><strong>Notes</strong></h2>
+<p style="margin-left:40px">Regarding the use of encoding, see the Ionic dll help documentation. If the &amp;;39;-Verbose&amp;;39; parameter is specified, then object of options is configured with an instance of the class &amp;;39;PSIonicTools&amp;;39; : &amp;;39;PSVerboseTextWriter&amp;;39;.
+ The Ionic DLL use it in order to display additional messages during operations on a Zip archives. Presence of the &amp;;39;-Verbose&amp;;39; parameter therefore imposes implicit release of this instance through a call to the &amp;;39;Close()&amp;;39; method
+ on the target archive by this object of options.</p>
+<h2><strong>Examples</strong></h2>
+<h3>EXAMPLE 1</h3>
+<pre style="margin-left:40px">PS C:\&gt; $ReadOptions=New-ReadOptions</pre>
+<p style="margin-left:40px">This example creates a read option object with the default values.</p>
+<h3>EXAMPLE 2</h3>
+<pre style="margin-left:40px">PS C:\&gt; $ReadOptions=New-ReadOptions -Verbose</pre>
+<p style="margin-left:40px">This example creates a read option object with a default encoding value and a &amp;;39;PSVerboseTextWriter&amp;;39; for the additional views.</p>
+<h3>EXAMPLE 3</h3>
+<pre style="margin-left:40px">PS C:\&gt; $pbi=New-ProgressBarInformations $ProgressID &quot;Reading in progress  &quot;
+$ReadOptions=New-ReadOptions $Encoding $pbi</pre>
+<p style="margin-left:40px">This example creates a read option object with a default encoding value and a progress bar</p>
+<h3>EXAMPLE 4</h3>
+<pre style="margin-left:40px">PS C:\&gt; $pbi=New-ProgressBarInformations $ProgressID &quot;Reading in progress &quot;
+$ReadOptions=New-ReadOptions $Encoding $pbi  
+$ReadOptions.StatusMessageWriter = [System.Console]::Out</pre>
+<p style="margin-left:40px">This example creates a read option object with a default encoding value and a progress bar. Then we modify directly his &amp;;39;StatusMessageWriter&amp;;39; property in order to display the progression in console and not in the
+ verbose flow.</p>
+<h2><strong>Related links</strong></h2>
+<p style="margin-left:40px">Unknown <a href="https://psionic.codeplex.com/wikipage?title=New-ReadOptions-EN">
+https://psionic.codeplex.com/wikipage?title=New-ReadOptions-EN</a></p>
+<h2><strong>PowerShell Support</strong></h2>
+<ul>
+<li>PowerShell 2.0 </li></ul>
+<h2><strong>Operating System Support</strong></h2>
+<ul>
+<li>Windows 7 </li><li>Windows 8 </li><li>Windows 8.1 </li><li>Windows Server 2008 all editions </li><li>Windows Server 2008 R2 all editions </li><li>Windows Server 2012 all editions </li><li>Windows Server 2012 R2 all editions </li></ul>
+</div><div class="ClearBoth"></div>

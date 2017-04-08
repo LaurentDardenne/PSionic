@@ -1,0 +1,425 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>New-ZipSfxOptions</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Cr&eacute;e un objet configuration utilis&eacute; lors de la construction d'une archive auto extractible.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">New-ZipSfxOptions [[-ExeOnUnpack] &lt;String&gt;] [[-ExtractDirectory] &lt;String&gt;] [[-Description] &lt;String&gt;] [-FileVersion &lt;Version&gt;] [-IconFile &lt;String&gt;] [-NameOfProduct &lt;String&gt;] [-VersionOfProduct &lt;String&gt;]
+ [-Copyright &lt;String&gt;] [-AdditionalCompilerSwitches &lt;String&gt;] [-Quiet] [-Remove] [-CmdLine] [&lt;CommonParameters&gt;]</p>
+<p style="margin-left:40px">New-ZipSfxOptions [[-ExeOnUnpack] &lt;String&gt;] [[-ExtractDirectory] &lt;String&gt;] [[-Description] &lt;String&gt;] [-FileVersion &lt;Version&gt;] [-IconFile &lt;String&gt;] [-NameOfProduct &lt;String&gt;] [-VersionOfProduct &lt;String&gt;]
+ [-Copyright &lt;String&gt;] [-AdditionalCompilerSwitches &lt;String&gt;] [[-WindowTitle] &lt;String&gt;] [-Quiet] [-Remove] [-GUI] [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Cr&eacute;e un objet configuration utilis&eacute; lors de la construction d'une archive auto extractible.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-ExeOnUnpack</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Pr&eacute;cise le programme, et ses param&egrave;tres, &agrave; ex&eacute;cuter une fois que de tous les fichiers contenus dans l'archive ont &eacute;t&eacute; d&eacute;compress&eacute;s.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-ExtractDirectory</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Indique le r&eacute;pertoire de d&eacute;compression par d&eacute;faut. Il peut contenir des r&eacute;f&eacute;rences de variable syst&egrave;me, par exemple %UserProfile%. Celles-ci seront substitu&eacute;es lors
+ de l'ex&eacute;cution de l&rsquo;archive auto extractible.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Description</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">D&eacute;crit l'usage de l'archive auto extractible.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-FileVersion</strong> <em>&lt;Version&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Num&eacute;ro de version du fichier auto extractible.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-IconFile</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Nom d'un fichier contenant un icon &agrave; associer &agrave; la Winform.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-NameOfProduct</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Nom du produit contenu dans l'archive auto extractible.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-VersionOfProduct</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Num&eacute;ro de version du produit contenu dans l'archive.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Copyright</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Notice de copyright ou de copyleft.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-AdditionalCompilerSwitches</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Options suppl&eacute;mentaires utilis&eacute;es lors de la g&eacute;n&eacute;ration de l'ex&eacute;cutable dotNET.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Quiet</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Quitte le programme une fois la d&eacute;compression achev&eacute;e.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Remove</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Supprime en fin de traitement tous les fichiers extraits de l'archive.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-CmdLine</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Pr&eacute;cise que l'archive auto extractible est bas&eacute;e sur un programme console (CLI).</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-WindowTitle</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Titre de la Winform.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-GUI</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Pr&eacute;cise que l'archive auto extractible est bas&eacute;e sur un programme Winform (GUI).</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=113216">
+a&#7;bout_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p style="margin-left:40px"><strong>Ionic.Zip.SelfExtractorSaveOptions</strong></p>
+<p><strong>NOTES</strong></p>
+<p style="margin-left:40px">Pour tous les param&egrave;tres de type string renseign&eacute;s, les caract&egrave;res espaces sont supprim&eacute;s en d&eacute;but ou en fin de cha&icirc;ne. Voici la liste des propri&eacute;t&eacute;s ayant des valeurs par d&eacute;faut
+ :</p>
+<table width="248" style="height:97px">
+<tbody>
+<tr>
+<td>Flavor</td>
+<td>ConsoleApplication</td>
+</tr>
+<tr>
+<td>ExtractExistingFile</td>
+<td>Throw</td>
+</tr>
+<tr>
+<td>Quiet</td>
+<td>False</td>
+</tr>
+<tr>
+<td>RemoveUnpackedFilesAfterExecute</td>
+<td>False</td>
+</tr>
+<tr>
+<td>FileVersion</td>
+<td>1.0.0.0</td>
+</tr>
+</tbody>
+</table>
+<p style="margin-left:40px"><strong>Attention</strong>, la propri&eacute;t&eacute; 'ExtractExistingFile' doit toujours avoir la valeur '<em>Throw</em>'. Ce comportement est g&eacute;r&eacute; &agrave; l'aide des options de l'ex&eacute;cutable g&eacute;n&eacute;r&eacute;.</p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $MyConfiguration=New-ZipSfxOptions -Copyright &quot;This module is free for non-commercial purposes.&quot;</pre>
+<p style="margin-left:40px">Cette instruction cr&eacute;e une configuration SFX avec les valeurs par d&eacute;faut sauf pour le champ Copyright.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 2 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; New-ZipSfxOptions -Copyright &quot;This module is free for non-commercial purposes.&quot;|Set-PsIonicSfxOptions</pre>
+<p style="margin-left:40px">Cette instruction cr&eacute;e une configuration SFX et l'affecte &agrave; la configuration par d&eacute;faut.</p>
+<p><strong>RELATED LINKS</strong></p>
+<p style="margin-left:40px"><a href="http://msdn.microsoft.com/en-us/library/system.codedom.compiler.compilerparameters(v=vs.80).aspx">AdditionalCompilerSwitches</a></p>
+</div><div class="ClearBoth"></div>

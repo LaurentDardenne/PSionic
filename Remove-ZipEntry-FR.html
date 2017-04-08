@@ -1,0 +1,221 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>Remove-ZipEntry</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Supprime une ou des entr&eacute;es d'une archive</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">Remove-ZipEntry -InputObject &lt;Object&gt; [-ZipFile] &lt;ZipFile&gt; [[-Name] &lt;String&gt;] [&lt;CommonParameters&gt;]</p>
+<p style="margin-left:40px">Remove-ZipEntry [-ZipFile] &lt;ZipFile&gt; [-Query &lt;String&gt;] [-From &lt;String&gt;] [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Supprime une ou des entr&eacute;es d'une archive .ZIP ou d'une archive auto extractible .exe.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-InputObject</strong> <em>&lt;Object&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Contenu associ&eacute; &agrave; une entr&eacute;e d'archive. Les types attendus sont :</p>
+<p style="margin-left:40px; text-align:left">- Un ou des objets de type fichiers ou de type r&eacute;pertoires,</p>
+<p style="margin-left:40px; text-align:left">- une cha&icirc;ne de caract&egrave;res r&eacute;f&eacute;ren&ccedil;ant une entr&eacute;e, si celle-ci r&eacute;f&eacute;rence un nom de r&eacute;pertoire, elle doit se terminer par le caract&egrave;re '/',</p>
+<p style="margin-left:40px; text-align:left">- un objet de type ZipEntry,</p>
+<p style="margin-left:40px; text-align:left">- un tableau d'objet de type ZipEntry,</p>
+<p style="margin-left:40px; text-align:left">- un tableau de String ou d'Object, dans ce dernier cas son contenu sera transform&eacute; en String.</p>
+<p style="margin-left:40px; text-align:left">Tous les autres type de tableaux, autres que ceux indiqu&eacute; ci-dessus, d&eacute;clencheront une erreur.</p>
+<p style="margin-left:40px; text-align:left">Pour tous les autres types d'objet, ils seront convertis en cha&icirc;ne de caract&egrave;res.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-ZipFile</strong> <em>&lt;ZipFile&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Archive cible dans laquelle on supprime la ou les entr&eacute;es pr&eacute;cis&eacute;es. Ce param&egrave;tre attend un objet de type ZipFile et pas un nom de fichier.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Name</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Chaque entr&eacute;e d'archive est associ&egrave;e &agrave; un nom dans le catalogue.</p>
+<p style="margin-left:40px; text-align:left">Pour les fichiers ou les r&eacute;pertoires, leurs noms sont automatiquement utilis&eacute;s comme nom d'entr&eacute;e &agrave; la racine de l'archive.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByPropertyName)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Query</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Pr&eacute;cise un crit&egrave;re de recherche pour les donn&eacute;es &agrave; supprimer de l'archive Zip.</p>
+<p style="margin-left:40px; text-align:left">Pour plus d'informations sur l'&eacute;criture et la syntaxe de la requ&ecirc;te, consultez le fichier d'aide about_Query_Selection_Criteria ou la documentation de la dll Ionic (fichier d'aide .chm).</p>
+<p style="margin-left:40px; text-align:left"><strong>Attention</strong>, il n&rsquo;y a pas de contr&ocirc;le de coh&eacute;rence sur le contenu de la query, par exemple celle-ci 'size &lt;100 byte AND Size&gt;1000 byte' ne provoquera pas d'erreur, mais aucun
+ fichier ne sera s&eacute;lectionn&eacute;.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-From</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Pr&eacute;cise le r&eacute;pertoire de l'archive dans lequel seront supprim&eacute; les entr&eacute;es.</p>
+<p style="margin-left:40px; text-align:left">Un nom de r&eacute;pertoire dans une archive &agrave; la syntaxe suivante :</p>
+<p style="margin-left:40px; text-align:left">&nbsp; 'NomR&eacute;pertoire/' ou 'NomR&eacute;pertoire/NomDeSousR&eacute;pertoire/'.</p>
+<p style="margin-left:40px; text-align:left">L'usage de ce param&egrave;tre n&eacute;cessite de pr&eacute;ciser le param&egrave;tre -Query, sinon une exception sera d&eacute;clench&eacute;e.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=113216">
+a&#7;bout_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p style="margin-left:40px"><strong>System.Management.Automation.PSObject</strong></p>
+<p><strong>NOTES</strong></p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+Get-Item C:\Temp\Test.ps1|Remove-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Ces instructions suppriment, si elle existe, l'entr&eacute;e 'Test.ps1' &agrave; la racine du fichier Test.zip</p>
+<p style="margin-left:40px">-------------- EXAMPLE 2 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+'Test.ps1'|Remove-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Ces instructions suppriment, si elle existe, l'entr&eacute;e 'Test.ps1' &agrave; la racine du fichier Test.zip</p>
+<p style="margin-left:40px">-------------- EXAMPLE 3 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+$Tab=@('Test.ps1','Setu1.ps1')
+,$Tab|Remove-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Ces instructions suppriment, si elles existent, les entr&eacute;es 'Test.ps1' et 'Setup.ps1', contenues dans le tableau de cha&icirc;ne de caract&egrave;res $Tab, &agrave; la racine du fichier Test.zip</p>
+<p style="margin-left:40px">-------------- EXAMPLE 4 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+$Tab=@('Test1.ps1';Get-ChildItem *.XML;Get-Content C:\Temp\ListeFileName.txt)
+,$Tab|Remove-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Ces instructions suppriment &agrave; la racine du fichier Test.zip et si elles existent : - l'entr&eacute;e 'Test.ps1', - toutes les entr&eacute;es se terminant par '.XML' et - tous les noms d'entr&eacute;e contenus dans le fichier
+ 'C:\Temp\ListeFileName.txt'.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 5 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try
+{          
+$ZipFile=Get-ZipFile -path C:\Temp\archive.zip -ZipErrorAction Skip -Verbose 
+Remove-ZipEntry -ZipFile $ZipFile -Query 'name = *.txt'
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Ces instructions, &agrave; l'aide d'une requ&ecirc;te, suppriment toutes les entr&eacute;es se terminant par '.TXT' &agrave; la racine du fichier Test.zip'</p>
+<p style="margin-left:40px">-------------- EXAMPLE 6 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try
+{          
+$ZipFile=Get-ZipFile -path C:\Temp\archive.zip -ZipErrorAction Skip -Verbose 
+Remove-ZipEntry -ZipFile $ZipFile -Query 'name = *.txt' -From 'Doc/' 
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Ces instructions, &agrave; l'aide d'une requ&ecirc;te, suppriment toutes les entr&eacute;es se terminant par '.TXT' dans le r&eacute;pertoire 'Doc/' du fichier Test.zip'</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>

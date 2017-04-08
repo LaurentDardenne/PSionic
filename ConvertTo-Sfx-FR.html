@@ -1,0 +1,207 @@
+<div class="wikidoc">
+<p>&nbsp;</p>
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>ConvertTo-Sfx</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Convertit une archive .ZIP en une archive auto extractible.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">ConvertTo-Sfx -Path &lt;PSObject&gt; [[-SaveOptions] &lt;SelfExtractorSaveOptions&gt;] [[-ReadOptions] &lt;ReadOptions&gt;] [[-Comment] &lt;String&gt;] [-Passthru] [&lt;CommonParameters&gt;]</p>
+<p style="margin-left:40px">ConvertTo-Sfx -LiteralPath &lt;PSObject&gt; [[-SaveOptions] &lt;SelfExtractorSaveOptions&gt;] [[-ReadOptions] &lt;ReadOptions&gt;] [[-Comment] &lt;String&gt;] [-Passthru] [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">La conversion d'une archive .ZIP en une archive auto extractible int&egrave;gre dans le fichier g&eacute;n&eacute;r&eacute; le traitement de d&eacute;compression.</p>
+<p style="margin-left:40px">Vous pouvez &eacute;galement pr&eacute;ciser une ligne de commande &agrave; ex&eacute;cuter une fois la d&eacute;compression de tous les fichiers termin&eacute;e.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-Path</strong> <em>&lt;PSObject&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Nom du fichier .zip &agrave; convertir.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-SaveOptions</strong> <em>&lt;SelfExtractorSaveOptions&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Options de g&eacute;n&eacute;ration cr&eacute;&eacute;es via la fonction
+<a href="https://psionic.codeplex.com/wikipage?title=New-ZipSfxOptions-FR">New-ZipSfxOptions</a>.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-ReadOptions</strong> <em>&lt;ReadOptions&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Options appliqu&eacute;es lors de la lecture de l'archive (.zip) &agrave; partir de laquelle on g&eacute;n&egrave;re une archive auto extractible (.exe). Options cr&eacute;&eacute;es via la fonction
+<a href="https://psionic.codeplex.com/wikipage?title=New-ReadOptions-FR">New-ReadOptions</a>.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Comment</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Commentaire associ&eacute; &agrave; l'archive.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Passthru</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Renvoi le fichier g&eacute;n&eacute;r&eacute; sous forme d'objet et pas seulement son nom. L'objet archive renvoy&eacute; n'&eacute;tant pas verrouill&eacute;, soyez attentif &agrave; vos sc&eacute;narios d'usage
+ de cet objet.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-LiteralPath</strong> <em>&lt;PSObject&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Nom du fichier .zip &agrave; convertir. Celui-ci est trait&eacute; tel quel, c'est-&agrave;-dire que les caract&egrave;res g&eacute;n&eacute;riques ne sont pas interpr&eacute;t&eacute;s.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see a<a href="http://go.microsoft.com/fwlink/?LinkID=113216 ">&#7;bout_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p style="margin-left:40px"><strong>System.IO.FileInfo</strong></p>
+<p><strong>NOTES</strong></p>
+<p style="margin-left:40px">La pr&eacute;sence du framework dotnet 2.0 est n&eacute;cessaire sur le poste ex&eacute;cutant la d&eacute;compression de l&rsquo;archive auto extractible.</p>
+<p style="margin-left:40px">Le r&eacute;pertoire pr&eacute;cis&eacute; par le param&egrave;tre 'ExtractDirectory' (cf.
+<a href="https://psionic.codeplex.com/wikipage?title=New-ZipSfxOptions-FR">New-ZipSfxOptions</a>) peut contenir des r&eacute;f&eacute;rences de variable syst&egrave;me. Par exemple
+<em>%UserProfile</em>%. Celles-ci seront substitu&eacute;es lors de l'ex&eacute;cution de l&rsquo;archive auto extractible.</p>
+<p style="margin-left:40px"><strong>Attention, il n'est pas possible d'enregistrer une archive splitt&eacute;e dans une archive auto extractible.</strong></p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $ZipFileName=&quot;C:\Temp\MySetup.zip&quot; 
+$ReadOptions = New-Object Ionic.Zip.ReadOptions -Property @{ 
+                StatusMessageWriter = [System.Console]::Out
+              } 
+$Save=@{
+    ExeOnUnpack=&quot;Powershell -noprofile -File .\MySetup.ps1&quot;;  
+    Description=&quot;Setup for the my module&quot;; 
+    NameOfProduct=&quot;MyProjectName&quot;;
+    VersionOfProduct=&quot;1.0.0&quot;;
+    Copyright='This module is free for non-commercial purposes.'
+}
+$SaveOptions=New-ZipSfxOptions @Save
+ConvertTo-Sfx $ZipFileName -Save $SaveOptions -Read $ReadOptions</pre>
+<p style="margin-left:40px">Ces instructions cr&eacute;ent, &agrave; l'aide de la fonction
+<a href="https://psionic.codeplex.com/wikipage?title=New-ZipSfxOptions-FR">New-ZipSfxOptions</a>, le param&eacute;trage qui sera utilis&eacute; lors de la construction de l'archive auto extractible. Enfin, on convertit un fichier d'archive .Zip en un fichier
+ d'archive auto extractible .Exe.</p>
+<p style="margin-left:40px">La variable <em>$ReadOptions</em> param&egrave;tre l'affichage de la progression du traitement sur la console.</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>

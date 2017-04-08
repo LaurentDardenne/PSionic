@@ -1,0 +1,260 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>Update-ZipEntry</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Met &agrave; jour une archive .ZIP ou une archive auto extractible .EXE.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">Update-ZipEntry -InputObject &lt;Object&gt; [-ZipFile] &lt;ZipFile&gt; [[-Name] &lt;String&gt;] [-Comment &lt;String&gt;] [-EntryPathRoot &lt;String&gt;] [-Passthru] [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Met &agrave; jour une archive .ZIP, ou une archive auto extractible .EXE, en modifiant ses entr&eacute;es ou en lui en ajoutant de nouvelles.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-InputObject</strong> <em>&lt;Object&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Contenu associ&eacute; &agrave; une entr&eacute;e d'archive. Les types attendus sont :</p>
+<p style="margin-left:40px; text-align:left">- Un ou des objets fichiers ou r&eacute;pertoires,</p>
+<p style="margin-left:40px; text-align:left">- un nom ou des noms de fichier ou de r&eacute;pertoire,</p>
+<p style="margin-left:40px; text-align:left">- une cha&icirc;ne de caract&egrave;res,</p>
+<p style="margin-left:40px; text-align:left">- ou un tableau d'octets.</p>
+<p style="margin-left:40px; text-align:left">Tous les autres types d'objet seront transform&eacute;s en cha&icirc;ne de caract&egrave;res via la m&eacute;thode
+<em>ToString()</em>.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-ZipFile</strong> <em>&lt;ZipFile&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Archive cible dans laquelle on met &agrave; jour l'entr&eacute;e pr&eacute;cis&eacute;e.</p>
+<p style="margin-left:40px; text-align:left">Ce param&egrave;tre attend un objet de type ZipFile et pas un nom de fichier.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Name</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Chaque entr&eacute;e d'archive est associ&eacute;e &agrave; un nom dans le catalogue.</p>
+<p style="margin-left:40px; text-align:left">Pour les fichiers ou les r&eacute;pertoires, leurs noms sont automatiquement utilis&eacute;s comme nom d'entr&eacute;e &agrave; la racine de l'archive.</p>
+<p style="margin-left:40px; text-align:left">Pour les cha&icirc;nes de caract&egrave;res ou les tableaux d'octets, vous devez pr&eacute;ciser un nom d'entr&eacute;e. L'usage du param&egrave;tre
+<em>-EntryPathRoot</em> n'influencera pas ce nommage.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByPropertyName)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Comment</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Commentaire associ&eacute; &agrave; l'entr&eacute;e.</p>
+<p style="margin-left:40px; text-align:left">Pour les entr&eacute;es de type string ou tableau, par d&eacute;faut leur champ contiendra le nom de leur type : [String] ou [Byte[]].</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-EntryPathRoot</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">La nouvelle entr&eacute;e sera ajout&eacute;e dans un r&eacute;pertoire sp&eacute;cifique. Par d&eacute;faut elle est ajout&eacute;e &agrave; la racine de l'arborescence contenue dans l'archive.</p>
+<p style="margin-left:40px; text-align:left">La valeur de ce param&egrave;tre doit r&eacute;f&eacute;rencer un r&eacute;pertoire existant. Pour &eacute;viter les collisions de nom d'entr&eacute;e lors de la compression r&eacute;cursive d'une arborescence vous
+ devrez utiliser ce param&egrave;tre.</p>
+<p style="margin-left:40px; text-align:left">Celui-ci permet de construire le nom de l'entr&eacute;e relativement au nom de r&eacute;pertoire sp&eacute;cifi&eacute;. Par exemple en pr&eacute;cisant 'C:\Temp\Backup', lors de la compression r&eacute;cursive de
+ 'C:\Temp\Backup' le traitement de construction du nom d'entr&eacute;e retranchera 'C:\Temp\Backup' &agrave; chaque nom de fichier re&ccedil;us.</p>
+<p style="margin-left:40px; text-align:left">Donc, pour les fichiers 'C:\Temp\Backup\File1.ps1' et 'C:\Temp\Backup\Projet\File1.ps1' les entr&eacute;es cr&eacute;&eacute;es dans le catalogue seront respectivement: File1.ps1 Projet/File.ps1.</p>
+<p style="margin-left:40px; text-align:left">De pr&eacute;ciser un nom de r&eacute;pertoire diff&eacute;rent de celui d'o&ugrave; d&eacute;bute l'archivage d&eacute;clenchera une erreur et stoppera l'archivage du path en cours.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Passthru</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Une fois l'entr&eacute;e mise &agrave; jour dans le catalogue de l'archive, elle est &eacute;mise dans le pipeline.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=113216">
+a&#7;bout_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p style="margin-left:40px"><strong>Ionic.Zip.ZipEntry</strong></p>
+<p><strong>NOTES</strong></p>
+<p style="margin-left:40px">Si une entr&eacute;e existe d&eacute;j&agrave;, elle est mise &agrave; jour. La propri&eacute;t&eacute; LastModified est renseign&eacute;e avec la date et l'heure courante. La mise &agrave; jour d'une entr&eacute;e de type directory
+ ne fait qu'ajouter les nouveaux &eacute;l&eacute;ments, mais ne supprime pas les entr&eacute;es qui ne sont plus sur le FileSystem. Ce n'est pas une synchronisation. Par d&eacute;faut l'ajout d'une entr&eacute;e existante d&eacute;clenchera une exception.</p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+$File=Get-Item C:\Temp\Test.ps1 
+Update-ZipEntry -InputObject $File -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Ces commandes mettent &agrave; jour une entr&eacute;e dans l'archive C:\Temp\Test.zip :</p>
+<p style="margin-left:40px; padding-left:30px">-La premi&egrave;re instruction cr&eacute;e un objet archive &agrave; partir d'un nom de fichier,</p>
+<p style="margin-left:40px; padding-left:30px">-la seconde cr&eacute;e un objet fichier &agrave; partir d'un nom de fichier,</p>
+<p style="margin-left:40px; padding-left:30px">-la troisi&egrave;me met &agrave; jour le fichier dans l'archive,</p>
+<p style="margin-left:40px; padding-left:30px">-la quatri&egrave;me enregistre l'archive sur le disque et lib&egrave;re les ressources syst&egrave;mes.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 2 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+Get-ChildItem *.txt|Update-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Ces commandes mettent &agrave; jour des entr&eacute;es dans l'archive C:\Temp\Test.zip :</p>
+<p style="margin-left:40px; padding-left:30px">-La premi&egrave;re instruction cr&eacute;e un objet archive &agrave; partir d'un nom de fichier,</p>
+<p style="margin-left:40px; padding-left:30px">-la seconde, depuis le r&eacute;pertoire courant, met &agrave; jour toutes les entr&eacute;es de l'archive correspondant aux noms de fichier *.txt,</p>
+<p style="margin-left:40px; padding-left:30px">-la troisi&egrave;me enregistre l'archive sur le disque et lib&egrave;re les ressources syst&egrave;mes.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 3 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+[string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
+Update-ZipEntry -InputObject $Text -Name MyText -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Ces commandes mettent &agrave; jour, &agrave; partir d'une cha&icirc;ne de caract&egrave;res, une entr&eacute;e nomm&eacute;e dans l'archive C:\Temp\Test.zip:</p>
+<p style="margin-left:40px; padding-left:30px">-La premi&egrave;re instruction cr&eacute;e un objet archive &agrave; partir d'un nom de fichier,</p>
+<p style="margin-left:40px; padding-left:30px">-la seconde lit un fichier texte et r&eacute;cup&egrave;re le r&eacute;sultat dans une cha&icirc;ne de caract&egrave;res,</p>
+<p style="margin-left:40px; padding-left:30px">-la troisi&egrave;me met &agrave; jour ou cr&eacute;e une entr&eacute;e dont le contenu est renseign&eacute; &agrave; partir d'une cha&icirc;ne de caract&egrave;res,</p>
+<p style="margin-left:40px; padding-left:30px">-la quatri&egrave;me enregistre l'archive sur le disque et lib&egrave;re les ressources syst&egrave;mes.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 4 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
+ConvertTo-CliXml $PSVersionTable | Update-ZipEntry -Name 'PSVersiontable_clixml' -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Ces commandes mettent &agrave; jour, &agrave; partir d'un objet s&eacute;rialis&eacute;, une entr&eacute;e nomm&eacute;e dans l'archive C:\Temp\Test.zip :</p>
+<p style="margin-left:40px; padding-left:30px">-La premi&egrave;re instruction cr&eacute;e un objet archive &agrave; partir d'un nom de fichier,</p>
+<p style="margin-left:40px; padding-left:30px">-la seconde s&eacute;rialise l'objet contenu dans la variable
+<em>$PSVersiontable</em>, puis met &agrave; jour ou cr&eacute;e l'entr&eacute;e nomm&eacute;e dans l'archive,</p>
+<p style="margin-left:40px; padding-left:30px">-la troisi&egrave;me enregistre l'archive sur le disque et lib&egrave;re les ressources syst&egrave;mes.</p>
+<p style="margin-left:40px; padding-left:30px">Par convention, vous pouvez postfixer vos noms d'entr&eacute;e s&eacute;rialis&eacute; par '_clixml'.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 5 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+[byte[]] $Array=@(1..20)
+Update-ZipEntry -InputObject $Array -Name MyArray -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Ces commandes mettent &agrave; jour une entr&eacute;e nomm&eacute;e MyArray dans l'archive C:\Temp\Test.zip :</p>
+<p style="margin-left:40px; padding-left:30px">-La premi&egrave;re instruction cr&eacute;e un objet archive &agrave; partir d'un nom de fichier,</p>
+<p style="margin-left:40px; padding-left:30px">-la seconde ajoute l'objet contenu dans la variable $Array, puis met &agrave; jour ou cr&eacute;e l'entr&eacute;e nomm&eacute;e MyArray,</p>
+<p style="margin-left:40px; padding-left:30px">-la troisi&egrave;me enregistre l'archive sur le disque et lib&egrave;re les ressources syst&egrave;mes.</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>

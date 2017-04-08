@@ -1,0 +1,326 @@
+<div class="wikidoc">
+<h1 style="text-align:center"><strong>Expand-ZipEntry</strong></h1>
+<h2><strong>Synopsis</strong></h2>
+<p style="margin-left:40px">Extracts entries from a compressed archive to Zip format.</p>
+<h2><strong>Syntax</strong></h2>
+<pre style="margin-left:40px">Expand-ZipEntry -ZipFile &lt;ZipFile&gt; [-Name] &lt;String[]&gt; [-ExtractAction &lt;ExtractExistingFileAction&gt;] [-Password &lt;String&gt;] [-Encoding &lt;Encoding&gt;] [-AsHashTable] [-Strict] [&lt;CommonParameters&gt;]
+
+Expand-ZipEntry -ZipFile &lt;ZipFile&gt; [-Name] &lt;String[]&gt; [-ExtractAction &lt;ExtractExistingFileAction&gt;] [-Password &lt;String&gt;] [-Encoding &lt;Encoding&gt;] [-AsHashTable] [-Byte] [-Strict] [&lt;CommonParameters&gt;]
+
+Expand-ZipEntry -ZipFile &lt;ZipFile&gt; [-Name] &lt;String[]&gt; [-ExtractAction &lt;ExtractExistingFileAction&gt;] [-Password &lt;String&gt;] [-Encoding &lt;Encoding&gt;] [-AsHashTable] [-XML] [-Strict] [&lt;CommonParameters&gt;]
+
+</pre>
+<h2><strong>Description</strong></h2>
+<p style="margin-left:40px">Extracts entries from a compressed archive to a Zip format. Extracted data are either serialized data, either an array of bytes, or a string and it allows to build an object. To extract files from an archive use &#39;Expand-ZipFile&#39;
+ Cmdlet.</p>
+<h2><strong>Parameters</strong></h2>
+<h3><strong>-ZipFile</strong> <em style="font-weight:100">&lt;ZipFile&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">An object containing a Zip archive.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Name</strong> <em style="font-weight:100">&lt;String[]&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Names of entries to extract.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-ExtractAction</strong> <em style="font-weight:100">&lt;ExtractExistingFileAction&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Specific steps to be taken when data is already present in the destination folder.Values : Throw, OverwriteSilently, DoNotOverwrite, InvokeExtractProgressEvent</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Password</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Password used to uncompress encrypted archive.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Encoding</strong> <em style="font-weight:100">&lt;Encoding&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Archive encoding type. Possible values are : -ASCII : ASCII characters encoding scheme (7 bits). -BigEndianUnicode : encoding for the UTF-16 format using the big endian byte order. -Default : encoding for the operating
+ system&#39;s current ANSI code page. -Unicode : encoding for the UTF-16 format using the little endian byte order. -UTF32 : encoding for the UTF-32 format using the little endian byte order. -UTF7 : encoding for the UTF-7. -UTF8 : encoding for the UTF-8. .
+ For better portability, the default value (&#39;DefaultEncoding&#39;) is recommended.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-AsHashTable</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Returns readen entries into an object of type hashtable. Name entries are extracted as a key name.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Strict</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Errors trigger exceptions in place of displaying them.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Byte</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Entry is returned as an array of bytes.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-XML</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">String object is returned in XML format.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3>&lt;CommonParameters&gt;</h3>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable. For more information, see<br>
+about_CommonParameters (<a href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</p>
+<h2><strong>Inputs</strong></h2>
+<p style="margin-left:40px"><strong>String[]</strong></p>
+<h2><strong>Outputs</strong></h2>
+<p style="margin-left:40px"><strong>System.Xml.XmlDocument</strong></p>
+<h2><strong>Notes</strong></h2>
+<p style="margin-left:40px">This function is linked to the Add-ZipEntry function.</p>
+<h2><strong>Examples</strong></h2>
+<h3>EXAMPLE 1</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+[string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
+Add-ZipEntry -Object $Text -Name MyText -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}
+Remove-Variable Text
+try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+[string]$Text =Expand-ZipEntry -Zip $ZipFile MyText   
+} finally {
+if ($ZipFile -ne $null )
+{ $ZipFile.PSDispose() }
+}</pre>
+<p style="margin-left:40px">At first time, those instructions save text to an entry named MyText, then links it and assigns it to the &#39;&#39;$MyVersionArray&#39;&#39; variable.</p>
+<h3>EXAMPLE 2</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
+ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Name &apos;PSVersiontable_clixml&apos; -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}
+
+try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+$MaTableDeVersion=Expand-ZipEntry -Zip $ZipFile &apos;PSVersiontable_clixml&apos;|ConvertFrom-CliXml   
+} finally {
+if ($ZipFile -ne $null )
+{ $ZipFile.PSDispose() }
+}
+$MaTableDeVersion</pre>
+<p style="margin-left:40px">At first time, those instructions save serialized object to an entry named &#39;&#39;PSVersiontable_clixml&#39;&#39;, then links and assigns it to the $MyVersionArray variable.</p>
+<h3>EXAMPLE 3</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+[byte[]] $Array=@(1..20)
+Add-ZipEntry -Object $Array -Name MyArray -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}
+Remove-Variable Array
+try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+$Array=Expand-ZipEntry -Zip $ZipFile MyArray -Byte   
+} finally {
+if ($ZipFile -ne $null )
+{ $ZipFile.PSDispose() }
+}</pre>
+<p style="margin-left:40px">At first time, those instructions save an array of bytes to an entry named &#39;&#39;MyArray&#39;&#39;, then links it and assigns it to the &#39;&#39;$Array&#39;&#39; variable.</p>
+<h2><strong>Related links</strong></h2>
+<p style="margin-left:40px">Unknown <a href="https://psionic.codeplex.com/wikipage?title=Expand-ZipEntry-EN">
+https://psionic.codeplex.com/wikipage?title=Expand-ZipEntry-EN</a><br>
+</p>
+<h2><strong>PowerShell Support</strong></h2>
+<ul>
+<li>PowerShell 2.0 </li></ul>
+<h2><strong>Operating System Support</strong></h2>
+<ul>
+<li>Windows 7 </li><li>Windows 8 </li><li>Windows 8.1 </li><li>Windows Server 2008 all editions </li><li>Windows Server 2008 R2 all editions </li><li>Windows Server 2012 all editions </li><li>Windows Server 2012 R2 all editions </li></ul>
+</div><div class="ClearBoth"></div>

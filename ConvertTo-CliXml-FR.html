@@ -1,0 +1,62 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>ConvertTo-Clixml</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Cr&eacute;e une repr&eacute;sentation XML d'un ou de plusieurs objets et l'&eacute;met dans le pipeline.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">ConvertTo-Clixml [-InputObject] &lt;PSObject[]&gt; [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Vous pouvez &eacute;mettre le r&eacute;sultat de cette fonction vers les fonctions Add-ZipEntry et Update-ZipEntry.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-InputObject</strong> <em>&lt;PSObject[]&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Sp&eacute;cifie l'objet &agrave; convertir.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=113216">
+a&#7;bout_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p><strong>NOTES</strong></p>
+<p style="margin-left:40px">L'enregistrement de la repr&eacute;sentation XML est compatible avec le cmdlet Export-CliXML.</p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {
+  $ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
+  ConvertTo-Clixml $PSVersionTable | Add-ZipEntry -Name 'PSVersiontable_clixml' -ZipFile $ZipFile
+} finally {
+  $ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Ces commandes ajoutent, &agrave; partir d'un objet s&eacute;rialis&eacute;, une entr&eacute;e nomm&eacute;e dans l'archive C:\Temp\Test.zip :</p>
+<p style="margin-left:40px">-La premi&egrave;re instruction cr&eacute;e un objet archive &agrave; partir d'un nom de fichier,</p>
+<p style="margin-left:40px">-la seconde s&eacute;rialise l'objet contenu dans la variable $PSVersiontable et l'ajoute en tant qu'entr&eacute;e nomm&eacute;e dans l'archive,</p>
+<p style="margin-left:40px">-la troisi&egrave;me enregistre l'archive sur le disque et lib&egrave;re les ressources syst&egrave;mes.</p>
+<p><strong>RELATED LINKS</strong></p>
+<p style="margin-left:40px"><a href="https://psionic.codeplex.com/wikipage?title=Add-ZipEntry-FR&referringTitle=PsIonicModule-FR">Add-ZipEntry</a><br>
+<a href="https://psionic.codeplex.com/wikipage?title=Update-ZipEntry-FR&referringTitle=PsIonicModule-FR">Update-ZipEntry</a></p>
+</div><div class="ClearBoth"></div>

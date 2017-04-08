@@ -1,0 +1,109 @@
+<div class="wikidoc">
+<h1 style="text-align:center"><strong>New-ProgressBarInformations</strong></h1>
+<h2><strong>Synopsis</strong></h2>
+<p style="margin-left:40px">Creates a statement object of a standard Psionic progress bar.</p>
+<h2><strong>Syntax</strong></h2>
+<pre style="margin-left:40px">New-ProgressBarInformations [-activityId] &lt;Int32&gt; [-activity] &lt;String&gt; [&lt;CommonParameters&gt;]
+
+</pre>
+<h2><strong>Description</strong></h2>
+<p style="margin-left:40px">This object is used by the 'New-ReadOptions' function.</p>
+<h2><strong>Parameters</strong></h2>
+<h3><strong>-activityId</strong> <em style="font-weight:100">&lt;Int32&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Indicates an identifier distinguishing each progress bar. Use this parameter when you create several progress bars into only one command. If progress bars have no different identity, there will be superposed instead
+ of being shown one below the other.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-activity</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Shows the first text line in the progress bar title. This text describes activity whose progress is reported.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3>&lt;CommonParameters&gt;</h3>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable. For more information, see<br>
+about_CommonParameters (<a href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</p>
+<h2><strong>Inputs</strong></h2>
+<p style="margin-left:40px"><strong>None</strong></p>
+<h2><strong>Outputs</strong></h2>
+<p style="margin-left:40px"><strong>PSCustomObject</strong></p>
+<h2><strong>Notes</strong></h2>
+<h2><strong>Examples</strong></h2>
+<h3>EXAMPLE 1</h3>
+<pre style="margin-left:40px">PS C:\&gt; $pbi=New-ProgressBarInformations 1 &quot;Read in progress &quot;
+$ReadOptions=New-ReadOptions $Encoding $pbi  
+$FileName='C:\Temp\Backup.zip'
+try {
+$ZipFile = [Ionic.Zip.ZipFile]::Read($FileName,$ReadOptions)
+} finally {
+ $ZipFile.Dispose()
+}</pre>
+<p style="margin-left:40px">This example creates a progress bar used in settings of an archive read options. In this context the names of the files that are read are not accessible, so the progress bar will display only the number of read entries.</p>
+<h3>EXAMPLE 2</h3>
+<pre style="margin-left:40px">PS C:\&gt; $Files=Dir 'C:\temp\*.zip'
+$Count=$Files.Count
+$I=0
+$Files| 
+Foreach -begin {  $id=1 } -process { 
+  [int]$PCpercent =(($I / $Count ) * 100)
+  $I&#43;&#43;
+  
+  Write-Progress -id $id -Activity &quot;Archive : &quot; -Status &quot;$_&quot; -PercentComplete $PCpercent
+  Expand-ZipFile -Path $_ -OutputPath 'C:\Temp\TestZip' -Create -ExtractAction OverwriteSilently -ProgressID 2
+}#foreach</pre>
+<p style="margin-left:40px">This example reads all Zip archives from C:\Temp folder, then extracts them. We directly use the '-ProgressID' parameter of the 'Expand-ZipFile' function which configures internally a progress bar. In this case when reading the catalog,
+ the value of the 'Activity' parameter can not be modified, because it is hard-coded.</p>
+<h2><strong>Related links</strong></h2>
+<p style="margin-left:40px">Unknown <a href="https://psionic.codeplex.com/wikipage?title=New-ProgressBarInformations-EN">
+https://psionic.codeplex.com/wikipage?title=New-ProgressBarInformations-EN</a></p>
+<h2><strong>PowerShell Support</strong></h2>
+<ul>
+<li>PowerShell 2.0 </li></ul>
+<h2><strong>Operating System Support</strong></h2>
+<ul>
+<li>Windows 7 </li><li>Windows 8 </li><li>Windows 8.1 </li><li>Windows Server 2008 all editions </li><li>Windows Server 2008 R2 all editions </li><li>Windows Server 2012 all editions </li><li>Windows Server 2012 R2 all editions </li></ul>
+</div><div class="ClearBoth"></div>

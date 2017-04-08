@@ -1,0 +1,207 @@
+<div class="wikidoc">
+<h1 style="text-align:center"><strong>Test-ZipFile</strong></h1>
+<h2><strong>Synopsis</strong></h2>
+<p style="margin-left:40px">Tests if a file is in PkZip format.</p>
+<h2><strong>Syntax</strong></h2>
+<pre style="margin-left:40px">Test-ZipFile [-Path] &lt;Object&gt; [-Password &lt;String&gt;] [-isValid] [-Check] [-Repair] [&lt;CommonParameters&gt;]
+
+Test-ZipFile [-Path] &lt;Object&gt; [-Password &lt;String&gt;] [-isValid] [-Check] [-Repair] [-Passthru] [&lt;CommonParameters&gt;]
+
+</pre>
+<h2><strong>Description</strong></h2>
+<p style="margin-left:40px">Tests if a file is in PkZip format. During this test, it is also possible to check if the archive is valid and in this case, to attempt to fix it. By default, simple errors are thrown.</p>
+<h2><strong>Parameters</strong></h2>
+<h3><strong>-Path</strong> <em style="font-weight:100">&lt;Object&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Archive file name to test. Can be a file object or a string. In this last case, generic characters can be used (* , ? , [A-D] ou [1CZ]).</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Password</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Password, necessary if the archive is protected by a password. If you need to test an archive with a password, do not use the &amp;;39;-IsValid&amp;;39; parameter, because in this case the result returned is always
+ false. Use only the &amp;;39;-Password&amp;;39; parameter and/or the &amp;;39;-Check&amp;;39; parameter. If the password is wrong the result returned is false.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-isValid</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Indicates whether the archive appears to be valid. This function can therefore returns True when the contents of the archive is wrong. If a file is not an archive and the &amp;;39;-isValid&amp;;39; parameter is specified,
+ then the simple errors are not generated. If you need to test an archive with a password, do not use this parameter, but the &amp;;39;-Password&amp;;39; parameter and/or the &amp;;39;-Check&amp;;39; parameter.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Check</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Verify if the archive catalog is correct. This verification is stricter than that made ​​with the &amp;;39;-isValid&amp;;39; parameter. So it can returns False although the file is considered as a valid archive.
+ If you need to test an archive with a password, use this parameter with or without the &amp;;39;&amp;;39;-Password&amp;;39;&amp;;39; parameter.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Repair</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Attempts to repair if archive is corrupt.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Passthru</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Outputs the name of the archive file in the pipeline. If &amp;;39;&amp;;39;-isValid&amp;;39;&amp;;39; parameter is also specified, then the names of files that are considered invalid will not be issued in the pipeline
+ and no single error is triggered. This behavior is similar to a filter where only the names of valid files would be issued in the pipeline. The archive objects returned are not locked, pay attention to your use of these objects scenarios.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3>&lt;CommonParameters&gt;</h3>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable. For more information, see<br>
+about_CommonParameters (<a href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</p>
+<h2><strong>Inputs</strong></h2>
+<p style="margin-left:40px"><strong>System.String, System.IO.FileInfo</strong></p>
+<h2><strong>Outputs</strong></h2>
+<p style="margin-left:40px"><strong>System.Boolean</strong></p>
+<h2><strong>Notes</strong></h2>
+<h2><strong>Examples</strong></h2>
+<h3>EXAMPLE 1</h3>
+<pre style="margin-left:40px">PS C:\&gt; &quot;C:\Temp\*.*&quot;|Compress-ZipFile &quot;C:\Temp\Test.zip&quot;
+Test-Zipfile &quot;C:\Temp\Test.zip&quot;</pre>
+<p style="margin-left:40px">The first line creates a Zip archive. The second tests if the file is a &amp;;39;PkZip&amp;;39; archive format. The result of the execution is &amp;;39;True&amp;;39;.</p>
+<h3>EXAMPLE 2</h3>
+<pre style="margin-left:40px">PS C:\&gt; &quot;C:\Temp\*.*&quot;|Compress-ZipFile &quot;C:\Temp\Test.zip&quot;
+ConvertTo-Sfx  -path &quot;C:\Temp\Test.zip&quot; 
+Test-Zipfile &quot;C:\Temp\Test.exe&quot;</pre>
+<p style="margin-left:40px">The first line creates a zip archive. The second creates a self-extracting archive. The third tests if the file is a &amp;;39;PkZip&amp;;39; archive format. It is found that a self-extracting archive is considered as a valid archive.
+ The returned value is &amp;;39;True&amp;;39;.</p>
+<h3>EXAMPLE 3</h3>
+<pre style="margin-left:40px">PS C:\&gt; Get-Service Winmgmt|Test-ZipFile</pre>
+<p style="margin-left:40px">The result of the execution is &amp;;39;False&amp;;39; because the object received, converted into string, does not reference a ZIP file archive.</p>
+<h2><strong>Related links</strong></h2>
+<p style="margin-left:40px">Unknown <a href="https://psionic.codeplex.com/wikipage?title=Test-ZipFile-EN">
+https://psionic.codeplex.com/wikipage?title=Test-ZipFile-EN</a></p>
+<h2><strong>PowerShell Support</strong></h2>
+<ul>
+<li>PowerShell 2.0 </li></ul>
+<h2><strong>Operating System Support</strong></h2>
+<ul>
+<li>Windows 7 </li><li>Windows 8 </li><li>Windows 8.1 </li><li>Windows Server 2008 all editions </li><li>Windows Server 2008 R2 all editions </li><li>Windows Server 2012 all editions </li><li>Windows Server 2012 R2 all editions </li></ul>
+</div><div class="ClearBoth"></div>

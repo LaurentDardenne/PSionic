@@ -1,0 +1,105 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>New-ReadOptions</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Cr&eacute;e un objet contenant les diff&eacute;rentes options pouvant &ecirc;tre utilis&eacute;es lors de la lecture d'une archive Zip.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">New-ReadOptions [[-Encoding] &lt;Encoding&gt;] [[-ProgressBarInformations] &lt;Object&gt;] [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Il est possible de pr&eacute;ciser diff&eacute;rent comportement lors de la lecture d'une archive Zip</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-Encoding</strong> <em>&lt;Encoding&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Type d'encodage de l'archive. Les valeurs possibles sont :</p>
+<p style="margin-left:40px; text-align:left">-ASCII&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le jeu de caract&egrave;res ASCII (7 bits).</p>
+<p style="margin-left:40px; text-align:left">-BigEndianUnicode : encodage pour le format UTF-16 qui utilise l'ordre d'octet avec primaut&eacute; des octets de poids fort (big-endian).</p>
+<p style="margin-left:40px; text-align:left">-Default&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: encodage pour la page de codes ANSI actuelle du syst&egrave;me d'exploitation. -Unicode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:
+ encodage pour le format UTF-16 avec primaut&eacute; des octets de poids faible (little-endian).</p>
+<p style="margin-left:40px; text-align:left">-UTF32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le format UTF-32 avec primaut&eacute; des octets de poids faible (little-endian). -UTF7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ : encodage pour le format UTF-7.</p>
+<p style="margin-left:40px; text-align:left">-UTF8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le format UTF-8.</p>
+<p style="margin-left:40px; text-align:left">A moins d'&ecirc;tre assur&eacute; que celui s&eacute;lectionn&eacute; corresponde &agrave; celui utilis&eacute; lors de la compression de l'archive, l'utilisation de la valeur par d&eacute;faut ('DefaultEncoding')
+ est recommand&eacute;,</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-ProgressBarInformations</strong> <em>&lt;Object&gt;</em></p>
+<p style="margin-left:40px; text-align:left">L'usage de ce param&egrave;tre cr&eacute;e un gestionnaire d'&eacute;v&eacute;nements pour les op&eacute;rations de lecture. Lors de l'ouverture d'archive zip de grande taille, vous pouvez choisir d'afficher une
+ barre de progression.</p>
+<p style="margin-left:40px; text-align:left">L'objet pass&eacute; en param&egrave;tre est construit &agrave; l'aide de fonction New-ProgressBarInformations.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=113216">
+about_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p style="margin-left:40px"><strong>Ionic.Zip.ReadOptions</strong></p>
+<p><strong>NOTES</strong></p>
+<p style="margin-left:40px">Concernant l'usage de l'encodage, consultez l'aide de la dll Ionic. Si le param&egrave;tre -Verbose est pr&eacute;cis&eacute;, alors cet objet d'options est configur&eacute; avec une instance de la classe<em> PSIonicTools.PSVerboseTextWriter</em>.</p>
+<p style="margin-left:40px">La DLL Ionic l'utilise pour afficher des messages suppl&eacute;mentaires lors d'op&eacute;rations sur une archive zip.</p>
+<p style="margin-left:40px">La pr&eacute;sence du param&egrave;tre -Verbose impose donc la lib&eacute;ration implicite de cette instance via un appel &agrave; la m&eacute;thode Close() sur l'archive cibl&eacute;e par cet objet d'options.</p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $ReadOptions=New-ReadOptions</pre>
+<p style="margin-left:40px">Cet exemple cr&eacute;e un objet option de lecture avec les valeurs par d&eacute;faut.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 2 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $ReadOptions=New-ReadOptions -Verbose</pre>
+<p style="margin-left:40px">Cet exemple cr&eacute;e un objet option de lecture avec une valeur d'encodage par d&eacute;faut et un PSVerboseTextWriter pour des affichages suppl&eacute;mentaires.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 3 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $pbi=New-ProgressBarInformations $ProgressID &quot;Reading in progress  &quot;
+$ReadOptions=New-ReadOptions $Encoding $pbi</pre>
+<p style="margin-left:40px">Cet exemple cr&eacute;e un objet option de lecture avec une valeur d'encodage par d&eacute;faut et une barre de progression.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 4 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $pbi=New-ProgressBarInformations $ProgressID &quot;Reading in progress &quot;
+$ReadOptions=New-ReadOptions $Encoding $pbi  
+$ReadOptions.StatusMessageWriter = [System.Console]::Out</pre>
+<p style="margin-left:40px">Cet exemple cr&eacute;e un objet option de lecture avec une valeur d'encodage par d&eacute;faut et une barre de progression. Puis on modifie directement sa propri&eacute;t&eacute; StatusMessageWriter afin d'afficher le suivi de l'op&eacute;ration
+ sur la console et plus sur le flux verbose.</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>

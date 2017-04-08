@@ -1,0 +1,66 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>ConvertFrom-Clixml</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Cr&eacute;e un objet Powershell &agrave; partir d'une repr&eacute;sentation XML et l'&eacute;met dans le pipeline.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">ConvertFrom-Clixml [-InputObject] &lt;String[]&gt; [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Vous pouvez recevoir un objet XML depuis la fonction Expand-ZipEntry.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-InputObject</strong> <em>&lt;String[]&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Sp&eacute;cifie la repr&eacute;sentation XML de l'objet &agrave; convertir.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=113216">
+a&#7;bout_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p><strong>NOTES</strong></p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
+ConvertTo-Clixml $PSVersionTable | Add-ZipEntry -Name 'PSVersiontable_clixml' -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}
+
+try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+$MaTableDeVersion=Expand-ZipEntry -Zip $ZipFile 'PSVersiontable_clixml'|ConvertFrom-Clixml   
+} finally {
+if ($ZipFile -ne $null )
+{ $ZipFile.PSDispose() }
+}
+$MaTableDeVersion</pre>
+<p style="margin-left:40px">Ces instructions enregistrent dans un premier temps un objet s&eacute;rialis&eacute; dans une entr&eacute;e nomm&eacute;e 'PSVersiontable_clixml', puis dans un second temps la relit et l'affecte &agrave; la variable $MaTableDeVersion.</p>
+<p><strong>RELATED LINKS</strong></p>
+<p style="margin-left:40px"><a href="https://psionic.codeplex.com/wikipage?title=Expand-ZipEntry-FR&referringTitle=PsIonicModule-FR">Expand-ZipEntry</a></p>
+</div><div class="ClearBoth"></div>

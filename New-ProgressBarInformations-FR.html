@@ -1,0 +1,101 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>New-ProgressBarInformations</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Cr&eacute;er un objet de d&eacute;claration d'une barre de progression PSionic standardis&eacute;e.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">New-ProgressBarInformations [-activityId] &lt;Int32&gt; [-activity] &lt;String&gt; [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Cet objet est utilis&eacute; par la fonction New-ReadOptions.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-activityId</strong> <em>&lt;Int32&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Indique un identifiant distinguant chaque barre de progression. Utilisez ce param&egrave;tre lorsque vous cr&eacute;ez plusieurs barres de progression en une seule commande.</p>
+<p style="margin-left:40px; text-align:left">Si les barres de progression n'ont pas d'identifiant diff&eacute;rent, elles seront superpos&eacute;es au lieu d'&ecirc;tre affich&eacute;es l'une en dessous de l'autre.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-activity</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Indique la premi&egrave;re ligne de texte dans le titre de la barre de progression.</p>
+<p style="margin-left:40px; text-align:left">Ce texte d&eacute;crit l'activit&eacute; dont la progression est rapport&eacute;e.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=113216">
+a&#7;bout_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p><strong>NOTES</strong></p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $pbi=New-ProgressBarInformations 1 &quot;Read in progress &quot;
+$ReadOptions=New-ReadOptions $Encoding $pbi  
+$FileName='C:\Temp\Backup.zip'
+try {
+$ZipFile = [Ionic.Zip.ZipFile]::Read($FileName,$ReadOptions)
+} finally {
+ $ZipFile.Dispose()
+}</pre>
+<p style="margin-left:40px">Cet exemple cr&eacute;e une barre de progression utilis&eacute;e dans le param&eacute;trage des options de lecture d'une archive.</p>
+<p style="margin-left:40px">Dans ce contexte le nom des fichiers lus n'&eacute;tant pas accessible, la barre de progression affichera uniquement le nombre d'entr&eacute;es lues.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 2 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $Files=Dir 'C:\temp\*.zip'
+$Count=$Files.Count
+$I=0
+$Files| 
+Foreach -begin {  $id=1 } -process { 
+  [int]$PCpercent =(($I / $Count ) * 100)
+  $I&#43;&#43;
+  
+  Write-Progress -id $id -Activity &quot;Archive : &quot; -Status &quot;$_&quot; -PercentComplete $PCpercent
+  Expand-ZipFile -Path $_ -OutputPath 'C:\Temp\TestZip' -Create -ExtractAction OverwriteSilently -ProgressID 2
+}#foreach</pre>
+<p style="margin-left:40px">Cet exemple lit toutes les archives ZIP du r&eacute;pertoire C:\Temp, puis les extrait. On utilise directement le param&egrave;tre -ProgressID de la fonction Expand-ZipFile qui configure en interne une barre de progression.</p>
+<p style="margin-left:40px">Dans ce cas lors de la lecture du catalogue, la valeur du param&egrave;tre Activity n'est pas modifiable, car elle est fig&eacute;e dans le code.</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>

@@ -1,0 +1,52 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>Set-PsIonicSfxOptions</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Affecte de nouvelles valeurs &agrave; la configuration par d&eacute;faut.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">Set-PsIonicSfxOptions [-Options] &lt;SelfExtractorSaveOptions&gt; [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Affecte de nouvelles valeurs &agrave; la configuration par d&eacute;faut en recopiant les valeurs de la configuration indiqu&eacute;e dans la configuration par d&eacute;faut.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-Options</strong> <em>&lt;SelfExtractorSaveOptions&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Contient les nouvelles valeurs &agrave; affecter &agrave; la configuration par d&eacute;faut.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=113216">
+a&#7;bout_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p><strong>NOTES</strong></p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $MyConfiguration=New-ZipSfxOptions -Copyright &quot;This module is free for non-commercial purposes.&quot; 
+Set-PsIonicSfxOptions $MyConfiguration</pre>
+<p style="margin-left:40px">Ces instructions cr&eacute;ent une configuration SFX avec les valeurs par d&eacute;faut sauf pour le champ Copyright. Puis affecte ces nouvelles valeurs &agrave; la configuration par d&eacute;faut.</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>

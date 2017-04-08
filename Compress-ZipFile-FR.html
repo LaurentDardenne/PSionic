@@ -1,0 +1,651 @@
+<div class="wikidoc">
+<p>&nbsp;</p>
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>Compress-ZipFile</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Compresse une liste de fichiers dans une archive .ZIP.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">Compress-ZipFile -Path &lt;PSObject&gt; [-OutputName] &lt;String&gt; [-Split &lt;Int32&gt;] [-ZipErrorAction &lt;ZipErrorAction&gt;] [-Comment &lt;String&gt;] [-Encryption &lt;EncryptionAlgorithm&gt;] [-Password &lt;String&gt;] [-TempLocation
+ &lt;String&gt;] [-Encoding &lt;Encoding&gt;] [-CodePageIdentifier &lt;String&gt;] [-EntryPathRoot &lt;String&gt;] [-SetLastModifiedProperty &lt;ScriptBlock&gt;] [-Passthru] [-NotTraverseReparsePoints] [-SortEntries] [-UnixTimeFormat] [-WindowsTimeFormat] [-Recurse]
+ [&lt;CommonParameters&gt;]</p>
+<p style="margin-left:40px">Compress-ZipFile -LiteralPath &lt;PSObject&gt; [-OutputName] &lt;String&gt; [-Split &lt;Int32&gt;] [-ZipErrorAction &lt;ZipErrorAction&gt;] [-Comment &lt;String&gt;] [-Encryption &lt;EncryptionAlgorithm&gt;] [-Password &lt;String&gt;]
+ [-TempLocation &lt;String&gt;] [-Encoding &lt;Encoding&gt;] [-CodePageIdentifier &lt;String&gt;] [-EntryPathRoot &lt;String&gt;] [-SetLastModifiedProperty &lt;ScriptBlock&gt;] [-Passthru] [-NotTraverseReparsePoints] [-SortEntries] [-UnixTimeFormat] [-WindowsTimeFormat]
+ [-Recurse] [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Le cmdlet Compress-ZipFile compresse des fichiers et/ou des r&eacute;pertoires dans une archive au format Zip.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-Path</strong> <em>&lt;PSObject&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Liste des noms de fichier &agrave; compresser. Peut &ecirc;tre un objet fichier ou une cha&icirc;ne de caract&egrave;res, dans ce cas celle-ci peut contenir des caract&egrave;res g&eacute;n&eacute;riques (* , ? ,
+ [A-D] ou [1CZ]).</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-OutputName</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Nom du fichier de l'archive &agrave; construire. Le nom du lecteur utilis&eacute; doit pointer sur un lecteur du provider FileSystem.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Split</strong> <em>&lt;Int32&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Scinde le fichier d'archive par segment de la taille sp&eacute;cifi&eacute;e. La syntaxe '64Kb' est possible et le nombre maximum de segment est de 99. Dans le cas o&ugrave; la taille indiqu&eacute;e g&eacute;n&egrave;rerait
+ plus de 99 segments, une exception est d&eacute;clench&eacute;e. Les fichiers cr&eacute;&eacute;s sur le disque lors de cette op&eacute;ration ne sont pas supprim&eacute;s.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-ZipErrorAction</strong> <em>&lt;ZipErrorAction&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Pr&eacute;cise le mode de gestion des erreurs. . La valeur 'Skip' passe outre les erreurs rencontr&eacute;e, une erreur simple sera tout de m&ecirc;me g&eacute;n&eacute;r&eacute;e.</p>
+<p style="margin-left:40px; text-align:left">La valeur 'InvokeErrorEvent' est utilis&eacute;e uniquement lors de l'enregistrement de l'archive, les erreurs d&eacute;clench&eacute;es lors de la construction du catalogue n'appelleront pas le gestionnaire d'erreur
+ associ&eacute; &agrave; cette valeur. Dans ce dernier cas, une erreur simple sera tout de m&ecirc;me g&eacute;n&eacute;r&eacute;e.</p>
+<p style="margin-left:40px; text-align:left">La valeur 'Throw' arr&ecirc;tera le traitement d&egrave;s la premi&egrave;re erreur rencontr&eacute;e.</p>
+<p style="margin-left:40px; text-align:left">&Eacute;vitez d'utiliser la valeur 'Retry', car celle-ci pourrait tenter ind&eacute;finiment de r&eacute;soudre une erreur persistante.</p>
+<p style="margin-left:40px; text-align:left">Values : Throw, Skip, Retry, InvokeErrorEvent</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Comment</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Commentaire associ&eacute; &agrave; l'archive.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Encryption</strong> <em>&lt;EncryptionAlgorithm&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Type de cryptage utilis&eacute; lors de l'op&eacute;ration de compression. N&eacute;cessite de pr&eacute;ciser un mot de passe (cf. le param&egrave;tre Password).</p>
+<p style="margin-left:40px; text-align:left">Note sur la compatibilit&eacute;: Pour le param&egrave;tres -Encryption les valeurs de 'PkzipWeak' et 'None' pr&eacute;cis&eacute;es dans le cahier des charges de zip de PKWARE sont consid&eacute;r&eacute;s comme
+ &quot;standard&quot;. Une archives Zip produite en utilisant ces options sera compatible avec de nombreux outils de zip et biblioth&egrave;ques, y compris l'Explorateur Windows.</p>
+<p style="margin-left:40px; text-align:left">Les valeurs de 'WinZipAes128' et 'WinZipAes256' ne font pas partie des sp&eacute;cifications et implique l'usage d'une extension sp&eacute;cifique au fournisseur de WinZip.</p>
+<p style="margin-left:40px; text-align:left">Si vous voulez produire des archives Zip compatible, n'utilisez pas ces valeurs.</p>
+<p style="margin-left:40px; text-align:left">Values : None, PkzipWeak, WinZipAes128, WinZipAes256, Unsupported</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Password</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Mot de passe utilis&eacute; lors du cryptage. N&eacute;cessite de pr&eacute;ciser un mode de cryptage (cf. le param&egrave;tre Encryption).</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-TempLocation</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Nom du r&eacute;pertoire temporaire utilis&eacute; lors de la construction de l'archive. Par d&eacute;faut la fonction r&eacute;cup&egrave;re le contenu de la variable d'environnement
+<em>%TEMP%</em>. Sinon, le fichier temporaire de l'archive en cours de construction sera enregistr&eacute; dans le r&eacute;pertoire sp&eacute;cifi&eacute; par le param&egrave;tre 'OutputName'.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Encoding</strong> <em>&lt;Encoding&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Type d'encodage de l'archive.</p>
+<p style="margin-left:40px; text-align:left">Les valeurs possibles sont :</p>
+<p style="margin-left:40px; text-align:left">-ASCII&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le jeu de caract&egrave;res ASCII (7 bits).</p>
+<p style="margin-left:40px; text-align:left">-BigEndianUnicode : encodage pour le format UTF-16 qui utilise l'ordre d'octet avec primaut&eacute; des octets de poids fort (big-endian).</p>
+<p style="margin-left:40px; text-align:left">-Default&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: encodage pour la page de codes ANSI actuelle du syst&egrave;me d'exploitation. -Unicode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:
+ encodage pour le format UTF-16 avec primaut&eacute; des octets de poids faible (little-endian).</p>
+<p style="margin-left:40px; text-align:left">-UTF32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le format UTF-32 avec primaut&eacute; des octets de poids faible (little-endian). -UTF7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ : encodage pour le format UTF-7. -UTF8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le format UTF-8.</p>
+<p style="margin-left:40px; text-align:left">Pour une meilleure portabilit&eacute;, l'utilisation de la valeur par d&eacute;faut ('DefaultEncoding') est recommand&eacute;.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-CodePageIdentifier</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Nom de la page de code utilis&eacute;e pour le nom de fichier. L'utilisation de la valeur par d&eacute;faut ('<strong><em>IBM437</em></strong>') est recommand&eacute;e.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-EntryPathRoot</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">La nouvelle entr&eacute;e sera ajout&eacute;e dans un r&eacute;pertoire sp&eacute;cifique. Par d&eacute;faut elle est ajout&eacute;e &agrave; la racine de l'arborescence contenue dans l'archive.</p>
+<p style="margin-left:40px; text-align:left">La valeur de ce param&egrave;tre doit r&eacute;f&eacute;rencer un r&eacute;pertoire existant. . Pour &eacute;viter les collisions de nom d'entr&eacute;e lors de la compression r&eacute;cursive d'une arborescence
+ vous devrez utiliser ce param&egrave;tre.</p>
+<p style="margin-left:40px; text-align:left">Celui-ci permet de construire le nom de l'entr&eacute;e relativement au nom de r&eacute;pertoire sp&eacute;cifi&eacute;.</p>
+<p style="margin-left:40px; text-align:left">Par exemple en pr&eacute;cisant 'C:\Temp\Backup', lors de la compression r&eacute;cursive de 'C:\Temp\Backup' le traitement de construction du nom d'entr&eacute;e retranchera 'C:\Temp\Backup' &agrave; chaque nom
+ de fichier re&ccedil;us.</p>
+<p style="margin-left:40px; text-align:left">Donc, pour les fichiers 'C:\Temp\Backup\File1.ps1' et 'C:\Temp\Backup\Projet\File1.ps1' les entr&eacute;es cr&eacute;&eacute;es dans le catalogue seront respectivement: File1.ps1 Projet/File.ps1 . De pr&eacute;ciser
+ un nom de r&eacute;pertoire diff&eacute;rent de celui d'o&ugrave; d&eacute;bute l'archivage d&eacute;clenchera une erreur et stoppera l'archivage du path en cours.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-SetLastModifiedProperty</strong> <em>&lt;ScriptBlock&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Permet, avant d'enregistrer l'archive, de modifier la propri&eacute;t&eacute; LastModified de chaque entr&eacute;e de l'archive. La variable
+<strong><em>$Entry </em></strong>doit &ecirc;tre utilis&eacute;e dans le corps du scriptblock.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Passthru</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Emet le fichier d'archive dans le pipeline. Attention, dans ce cas la lib&eacute;ration des ressources par l'appel &agrave; la m&eacute;thode<em> Close()</em> est &agrave; votre charge. L'objet archive renvoy&eacute;
+ n'&eacute;tant pas verrouill&eacute;, soyez attentif &agrave; vos sc&eacute;narios d'usage de cet objet.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-NotTraverseReparsePoints</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Indique si les recherches traverseront les points d'analyse NTFS (<em>Reparse Point</em>), tels que les jonctions.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-SortEntries</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Les entr&eacute;es sont tri&eacute;es avant d'&ecirc;tre enregistr&eacute;es. Selon le nombre de fichiers trait&eacute;s, ce traitement peut ralentir l'op&eacute;ration de compression.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-UnixTimeFormat</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Le format de date des fichiers sera celui d'Unix.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-WindowsTimeFormat</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Le format de date des fichiers sera celui de Windows.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Recurse</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Parcourt r&eacute;cursif des arborescences d&eacute;finies par le param&egrave;tre Path ou LiteralPath.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-LiteralPath</strong> <em>&lt;PSObject&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Liste des noms de fichier &agrave; compresser, ceux-ci sont trait&eacute;s tel quel, c'est-&agrave;-dire que les caract&egrave;res g&eacute;n&eacute;riques ne sont pas interpr&eacute;t&eacute;s. Peut &ecirc;tre un
+ objet fichier ou une cha&icirc;ne de caract&egrave;res.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=113216">
+a&#7;bout_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p style="margin-left:40px"><strong>Ionic.Zip.ZipFile</strong></p>
+<p><strong>NOTES</strong></p>
+<p style="margin-left:40px">Selon le contenu, votre archive peut &ecirc;tre compress&eacute;e en 64 bits, pour d&eacute;terminer si l'archive utilise les extensions Zip64 consultez la propri&eacute;t&eacute; 'OutputUsedZip64' de l'archive.</p>
+<p style="margin-left:40px">Aucun contr&ocirc;le n'est effectu&eacute; sur l'espace disponible lors de la cr&eacute;ation de l'archive. Si le catalogue est vide et qu'il n'y a pas eu d'exception, le fichier .Zip est tout de m&ecirc;me cr&eacute;&eacute;.</p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; Get-ChildItem *.txt|Compress-ZipFile C:\Temp\Test.zip</pre>
+<p style="margin-left:40px">Cet exemple ajoute, &agrave; partir du r&eacute;pertoire courant, tous les fichiers dont l'extension est '.TXT' dans l'archive 'C:\Temp\Test.zip'.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 2 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $ZipFileName=&quot;C:\Temp\Test.zip&quot;
+$ListeFileName='C:\Temp\ListeFichiers.txt'
+Dir C:\Temp\*.ps1| Select -expand Fullname| Set-Content -Path $ListeFileName
+Get-Content $ListeFileName| Compress-ZipFile $ZipFileName</pre>
+<p style="margin-left:40px">Cet exemple construit une liste de noms de fichier et l'enregistre dans un fichier texte. Ensuite ce fichier texte est lu ligne par ligne et chaque nom de fichier est ajout&eacute; dans l'archive 'C:\Temp\Test.zip'.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 3 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $ZipFileName=&quot;C:\Temp\Test.zip&quot;
+$FileNames=@(
+'C:\Temp\*.ps1',
+'C:\Temp\Test2.zip',
+'C:\Temp\*.txt'
+)
+$FileNames| Compress-ZipFile $ZipFileName -Verbose</pre>
+<p style="margin-left:40px">Cet exemple construit un tableau de noms de fichier, certains comportant des jokers. Ensuite chaque nom de fichier est r&eacute;solu, puis le r&eacute;sultat de la r&eacute;solution est ajout&eacute; dans l'archive 'C:\Temp\Test.zip'.</p>
+<p style="margin-left:40px">L'usage du param&egrave;tre verbose affiche sur la console la progression du traitement de compression. Tous ces fichiers sont ajout&eacute;s &agrave; la racine de l'archive, la premi&egrave;re collision de nom d'entr&eacute;e d&eacute;clenchera
+ une exception, car le param&egrave;tre -ZipErrorAction a par d&eacute;faut la valeur 'Throw'.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 4 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $ZipFileName=&quot;C:\Temp\Test.zip&quot;
+$FileNames=@(
+'C:\Temp\*.ps1',
+'C:\Temp\*.ps1',
+'C:\Temp\*.txt'
+)
+$FileNames| Compress-ZipFile $ZipFileName -ZipErrorAction Skip</pre>
+<p style="margin-left:40px">Cet exemple construit un tableau de noms de fichier, certains comportant des jokers. Ensuite chaque nom de fichier est r&eacute;solu, puis le r&eacute;sultat de la r&eacute;solution est ajout&eacute; dans l'archive 'C:\Temp\Test.zip'.</p>
+<p style="margin-left:40px">Tous ces fichiers sont ajout&eacute;s &agrave; la racine de l'archive, l'usage de la valeur 'Skip' pour le param&egrave;tre -ZipErrorAction d&eacute;clenchera des erreurs simples lors des possibles collisions de nom d'entr&eacute;e.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 5 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $sbTimestamp={
+  $fixedTimestamp = [Datetime]::Now  
+  #or $fixedTimestamp = &quot;10/01/2014 16:37&quot; -as [Datetime]                   
+  foreach($entry in $ZipFile)
+  { $entry.LastModified = $fixedTimestamp }
+}
+         
+$SbUTnewest={
+  $fixedTimestamp = New-Object System.DateTime(1601,1,1,0,0,0)
+  foreach($entry in $ZipFile)
+  {
+    if ($entry.LastModified -gt $fixedTimestamp)
+    { $fixedTimestamp = $entry.LastModified }
+  }
+  foreach($entry in $zipFile)
+  { $entry.LastModified = $fixedTimestamp }
+}
+$sbUToldest={
+  $fixedTimestamp = &quot;10/01/2014 16:37&quot; -as [Datetime]             
+  foreach($entry in $ZipFile)
+  {
+    if ($entry.LastModified -lt $fixedTimestamp)
+    { $fixedTimestamp = $entry.LastModified }
+  }
+  foreach($entry in $ZipFile)
+  { $entry.LastModified = $fixedTimestamp }
+}
+Get-ChildItem C:\Temp -Exclude *.zip|
+ Where {!$_.psiscontainer}| 
+ Compress-ZipFile -OutputName &quot;C:\Temp\LastModifiedProperty.zip&quot; -SetLastModifiedProperty $sbUToldest</pre>
+<p style="margin-left:40px">Cet exemple archive tous les fichiers du r&eacute;pertoire 'C:\Temp'. Le param&egrave;tre -SetLastModifiedProperty re&ccedil;oit comme valeur un scriptblock, celui-ci est appel&eacute; en interne afin de modifier la propri&eacute;t&eacute;
+ LastModified de chaque entr&eacute;e de l'archive.</p>
+<p style="margin-left:40px">La date s&eacute;lectionn&eacute;e sera la date de l'entr&eacute;e ayant la propri&eacute;t&eacute; LastModified la plus ancienne de toutes.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 6 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; 'C:\Temp\*'|
+Compress-ZipFile -OutputName C:\Temp\Archive.zip -Recurse</pre>
+<p style="margin-left:40px">Cet exemple archive r&eacute;cursivement tous les fichiers et r&eacute;pertoire de 'C:\Temp'. En utilisant 'C:\Temp\*' comme valeur du param&egrave;tre -Path, on est assur&eacute; de ne pas avoir de collision de nom dans le catalogue
+ puisqu'on ne parcourt pas explicitement l'arborescence, mais uniquement les entr&eacute;es contenues dans le r&eacute;pertoire courant.</p>
+<p style="margin-left:40px">En interne on r&eacute;cup&egrave;re les noms de chemin renvoy&eacute;s par l'appel au cmdlet Resolve-Path, attention les fichiers et r&eacute;pertoires cach&eacute;s ne sont pas archiv&eacute;s. L'archive contient plusieurs entr&eacute;es
+ &agrave; la racine du catalogue.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 7 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; 'C:\Temp'|
+Compress-ZipFile -OutputName C:\Temp\Archive.zip</pre>
+<p style="margin-left:40px">Cet exemple archive tous les fichiers du r&eacute;pertoire 'C:\Temp', les sous-r&eacute;pertoires ne sont pas pris en compte. L'archive contient plusieurs entr&eacute;es &agrave; la racine du catalogue.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 8 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; Get-Item 'C:\Temp'|
+Compress-ZipFile -OutputName C:\Temp\Archive.zip</pre>
+<p style="margin-left:40px">Cet exemple archive l'int&eacute;gralit&eacute; du r&eacute;pertoire 'C:\Temp'. L'archive contient une seule entr&eacute;es &agrave; la racine du catalogue, entr&eacute;e nomm&eacute;e 'Temp' de type Directory. Les fichiers et r&eacute;pertoires
+ cach&eacute;s sont archiv&eacute;s.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 9 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; Get-ChildItem C:\Temp\* -Force|
+Where {!$_.psiscontainer}| 
+Compress-ZipFile -OutputName C:\Temp\Archive.zip -Recurse -ZipErrorAction Skip</pre>
+<p style="margin-left:40px">Cet exemple archive tous les fichiers du r&eacute;pertoire 'C:\Temp'. Les fichiers cach&eacute;s sont archiv&eacute;s.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 10 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; Get-ChildItem C:\Temp -inc *.txt -Rec |
+Compress-ZipFile -OutputName C:\Temp\Archive.zip -EntryPathRoot C:\Temp -Recurse -ZipErrorAction Skip</pre>
+<p style="margin-left:40px">Cet exemple archive tous les fichiers '.TXT' du r&eacute;pertoire 'C:\Temp'. L'usage du param&egrave;tre -EntryPathRoot &eacute;vite des collisions de nom dans le catalogue, en reconstruisant dans l'archive l'arborescence rencontr&eacute;e.</p>
+<p style="margin-left:40px">Ici les fichiers et r&eacute;pertoires cach&eacute;s ne sont pas archiv&eacute;s, mais pourraient l'&ecirc;tre en d&eacute;clarant le param&egrave;tre -Force sur la ligne d'appel du cmdlet Get-ChildItem.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 11 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $T=@(&quot;C:\Temp\Logs\*&quot;; (Dir C:\Temp\*.PS1),(Get-Item 'C:\Temp\Setup'))
+$T|Compress-ZipFile -OutputName C:\Temp\Archive.zip -ZipErrorAction Skip -Split 65Kb</pre>
+<p style="margin-left:40px">Cet exemple archive tous les fichiers du r&eacute;pertoire 'C:\Temp\Logs', tous les fichiers '.PS1' du r&eacute;pertoire 'C:\Temp' et le r&eacute;pertoire 'C:\Temp\Setup'. L'usage du param&egrave;tre -Split scinde l'archive en plusieurs
+ fichiers et g&eacute;n&eacute;rera, selon le nombre de fichiers &agrave; archiver, les fichiers Archive.z01, Archive.z0N (o&ugrave; N ira de 2 &agrave; 99) et Archive.zip.</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>

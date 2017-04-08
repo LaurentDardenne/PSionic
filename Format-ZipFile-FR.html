@@ -1,0 +1,118 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>Format-ZipFile</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Formate le contenu des propri&eacute;t&eacute;s d'un objet archive.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">Format-ZipFile -Zip &lt;ZipFile&gt; [[-Properties] &lt;Object&gt;] [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Formate le contenu des propri&eacute;t&eacute;s d'une archive Zip.</p>
+<p style="margin-left:40px">Consultez la rubrique Notes pour le d&eacute;tail des propri&eacute;t&eacute;s affich&eacute;es par d&eacute;faut.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-Zip</strong> <em>&lt;<em>PSObject</em>&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Objet archive sur lequel appliquer le formatage.</p>
+<p style="margin-left:40px; text-align:left"><strong>Vous devez forcer</strong> la prise en compte de l'objet en pr&eacute;fixant la variable par une virgule.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Properties</strong> <em>&lt;Object&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Tableau de nom de propri&eacute;t&eacute; &agrave; afficher lors de l'appel interne &agrave; Format-List</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=113216">
+a&#7;bout_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p><strong>NOTES</strong></p>
+<p style="margin-left:40px">Liste des propri&eacute;t&eacute;s affich&eacute;es par d&eacute;faut :</p>
+<p style="margin-left:40px; padding-left:30px"><em>CaseSensitiveRetrieval</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>UseUnicodeAsNecessary</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>UseZip64WhenSaving</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>RequiresZip64</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>OutputUsedZip64</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>InputUsesZip64</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>ProvisionalAlternateEncoding</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>AlternateEncoding</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>AlternateEncodingUsage</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>StatusMessageTextWriter</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>TempFileFolder</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>Password</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>ExtractExistingFile</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>ZipErrorAction</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>Encryption</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>SetCompression</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>MaxOutputSegmentSize</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>NumberOfSegmentsForMostRecentSave</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>ParallelDeflateThreshold</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>ParallelDeflateMaxBufferPairs</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>Count</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>FullScan</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>SortEntriesBeforeSaving</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>AddDirectoryWillTraverseReparsePoints</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>BufferSize</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>CodecBufferSize</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>FlattenFoldersOnExtract</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>Strategy</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>Nam</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>CompressionLevel</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>CompressionMethod</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>Comment</em></p>
+<p style="margin-left:40px; padding-left:30px"><em>EmitTimesInWindowsFormatWhenSaving</em></p>
+<p style="margin-left:40px">La pr&eacute;sence de cette fonction est due &agrave; un bug dans le syst&egrave;me d'extension de type et de formatage qui ne peut &agrave; ce jour g&eacute;rer une classe poss&eacute;dant un indexeur.</p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+,($ZipFile=Get-Zipfile -Path Test.zip)|Format-ZipFile
+} finally {
+$ZipFile.PSDispose()
+}</pre>
+<p style="margin-left:40px">Cet exemple r&eacute;cup&egrave;re un objet archive &agrave; partir d'un nom de fichier, puis formate son contenu avant de lib&eacute;rer les ressources syst&egrave;mes.</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>

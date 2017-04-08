@@ -1,0 +1,424 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>Get-ZipFile</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Obtient et param&egrave;tre un objet archive &agrave; partir d'un fichier Zip.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">Get-ZipFile [-Path] &lt;String[]&gt; [-Options &lt;SelfExtractorSaveOptions&gt;] [-ZipErrorAction &lt;ZipErrorAction&gt;] [-Encryption &lt;EncryptionAlgorithm&gt;] [-Password &lt;String&gt;] [-Encoding &lt;Encoding&gt;] [-ProgressID
+ &lt;Int32&gt;] [-List] [-SortEntries] [-UnixTimeFormat] [-WindowsTimeFormat] [&lt;CommonParameters&gt;]</p>
+<p style="margin-left:40px">Get-ZipFile [-Path] &lt;String[]&gt; [-ReadOptions &lt;ReadOptions&gt;] [-Options &lt;SelfExtractorSaveOptions&gt;] [-ZipErrorAction &lt;ZipErrorAction&gt;] [-Encryption &lt;EncryptionAlgorithm&gt;] [-Password &lt;String&gt;] [-List]
+ [-SortEntries] [-UnixTimeFormat] [-WindowsTimeFormat] [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Obtient un objet archive &agrave; partir d'un fichier Zip. L'objet archive ne contient que le catalogue, une liste d'objets de type ZipEntry, pour r&eacute;cup&eacute;rer le contenu d'une entr&eacute;e du catalogue vous devez l'extraire
+ sur un lecteur du syst&egrave;me de fichier.</p>
+<p style="margin-left:40px">Cette fonction param&egrave;tre &eacute;galement les propri&eacute;t&eacute;s les plus usuelles de l'objet archive. L'objet archive renvoy&eacute; est verrouill&eacute; tant que vous n'appelez pas sa m&eacute;thode
+<em>Close()</em>. Par contre, l'usage du param&egrave;tre <strong><em>-List</em></strong> ne verrouille pas l'archive.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-Path</strong> <em>&lt;String[]&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Nom du ou des fichiers ZIP &agrave; lire. Vous pouvez pr&eacute;ciser des noms de fichier comportant des jokers.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Options</strong> <em>&lt;SelfExtractorSaveOptions&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Options utilis&eacute;es lors de la cr&eacute;ation d'une archive auto extractible (cf. New-ZipSfxOptions).</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-ZipErrorAction</strong> <em>&lt;ZipErrorAction&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Pr&eacute;cise le mode de gestion des erreurs.</p>
+<p style="margin-left:40px; text-align:left">Values : Throw, Skip, Retry, InvokeErrorEvent</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Encryption</strong> <em>&lt;EncryptionAlgorithm&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Type de cryptage utilis&eacute; lors de l'op&eacute;ration de compression. N&eacute;cessite de pr&eacute;ciser un mot de passe (cf. le param&egrave;tre Password).</p>
+<p style="margin-left:40px; text-align:left">Values : None, PkzipWeak, WinZipAes128, WinZipAes256, Unsupported</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Password</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Pr&eacute;cise le mot de passe n&eacute;cessaire &agrave; la lecture d'une archive encrypt&eacute;e.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Encoding</strong> <em>&lt;Encoding&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Type d'encodage de l'archive. Les valeurs possibles sont :</p>
+<p style="margin-left:40px; text-align:left">-ASCII&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le jeu de caract&egrave;res ASCII (7 bits).</p>
+<p style="margin-left:40px; text-align:left">-BigEndianUnicode : encodage pour le format UTF-16 qui utilise l'ordre d'octet avec primaut&eacute; des octets de poids fort (big-endian).</p>
+<p style="margin-left:40px; text-align:left">-Default&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: encodage pour la page de codes ANSI actuelle du syst&egrave;me d'exploitation. -Unicode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:
+ encodage pour le format UTF-16 avec primaut&eacute; des octets de poids faible (little-endian).</p>
+<p style="margin-left:40px; text-align:left">-UTF32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le format UTF-32 avec primaut&eacute; des octets de poids faible (little-endian). -UTF7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ : encodage pour le format UTF-7.</p>
+<p style="margin-left:40px; text-align:left">-UTF8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le format UTF-8.</p>
+<p style="margin-left:40px; text-align:left">A moins d'&ecirc;tre assur&eacute; que celui s&eacute;lectionn&eacute; corresponde &agrave; celui utilis&eacute; lors de la compression de l'archive, l'utilisation de la valeur par d&eacute;faut ('DefaultEncoding')
+ est recommand&eacute;,</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-ProgressID</strong> <em>&lt;Int32&gt;</em></p>
+<p style="margin-left:40px; text-align:left">L'usage de ce param&egrave;tre cr&eacute;e un gestionnaire d'&eacute;v&eacute;nements pour les op&eacute;rations de lecture. Lors de l'ouverture d'une archive zip de grande taille, vous pouvez choisir d'afficher
+ une barre de progression standardis&eacute;e.</p>
+<p style="margin-left:40px; text-align:left">Cet ID permet de distinguer la barre de progression interne des autres. Utilisez ce param&egrave;tre lorsque vous cr&eacute;ez plus d'une barre de progression.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-List</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Obtient les entr&eacute;es contenues dans le catalogue de l'archive. Les objets renvoy&eacute;s sont des objets personnalis&eacute;s dont le nom de type est PSZipEntry.</p>
+<p style="margin-left:40px; text-align:left">Hormis sa propri&eacute;t&eacute; 'Info', toutes sont en lecture seule. L'archive n'est pas verrouill&eacute;e.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-SortEntries</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Tri les entr&eacute;es avant de les enregistrer dans l'archive.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-UnixTimeFormat</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Le format de date des fichiers sera celui d'Unix.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-WindowsTimeFormat</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Le format de date des fichiers sera celui de Windows.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-ReadOptions</strong> <em>&lt;ReadOptions&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Objet d'option de lecture cr&eacute;&eacute; &agrave; l'aide de la fonction New-ReadOptions.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see<br>
+&#7;bout_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p style="margin-left:40px"><strong>Ionic.Zip.ZipFile</strong></p>
+<p><strong>NOTES</strong></p>
+<p style="margin-left:40px">Cette fonction renvoyant seulement un objet archive Zip &agrave; partir de son nom complet, la plupart des param&egrave;tres servent &agrave; configurer les propri&eacute;t&eacute;s de l'archive si vous souhaitez la modifier.</p>
+<p style="margin-left:40px">Par exemple, le param&egrave;tre 'Encryption' n&rsquo;influe pas sur la lecture du Zip. Seul le param&egrave;tre 'Password' est n&eacute;cessaire, car ce sont les entr&eacute;es de l'archive Zip qui portent l&rsquo;information de
+ cryptage, et pas l'objet de type [ZipFile].</p>
+<p style="margin-left:40px">Une archive Zip peut donc en th&eacute;orie contenir plusieurs entr&eacute;es dont chacune a un mode de compression diff&eacute;rente des autres.</p>
+<p style="margin-left:40px"><strong>Attention</strong>, pour chaque objet renvoy&eacute; vous devrez appeler la m&eacute;thode<em> Close()</em> afin de lib&eacute;rer correctement les ressources de l'archive.</p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {
+$ZipFile=Get-Zipfile -Path Test.zip
+$ZipFile
+} finally {
+ if ($ZipFile -ne $null )
+ { $ZipFile.PSDispose() }
+}</pre>
+<p style="margin-left:40px">Cet exemple lit un fichier zip, affiche son contenu puis lib&egrave;re ses ressources.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 2 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$File=Dir C:\Temp\Test.ps1 
+$ZipFile=Get-Zipfile -Path Test.zip
+Add-ZipEntry -Object $File -ZipFile $ZipFile
+$ZipFile.Save()
+} finally {
+ if ($ZipFile -ne $null )
+ { $ZipFile.PSDispose() }
+}</pre>
+<p style="margin-left:40px">Cet exemple lit un fichier zip, lui ajoute une entr&eacute;e &agrave; partir d'un fichier, puis l'enregistre et enfin lib&egrave;re ses ressources.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 3 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$Zip=Get-Zipfile -Path Test.zip
+ $ofs=&quot;`r`n&quot;
+ [string]$Text=Get-Content C:\Temp\Test.ps1
+Add-ZipEntry -Object $Text -EntryName MyText -ZipFile $ZipFile
+$ZipFile.Save()
+} finally {
+ if ($ZipFile -ne $null )
+ { $ZipFile.PSDispose() }
+}</pre>
+<p style="margin-left:40px">Cet exemple lit un fichier zip, lui ajoute une entr&eacute;e &agrave; partir d'une chaine de caract&egrave;res, puis l'enregistre et enfin lib&egrave;re ses ressources.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 4 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {
+$Zip=Get-Zipfile -Path Test.zip
+Dir *.txt|Add-ZipEntry -ZipFile $Zip
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Cet exemple lit un fichier zip, lui ajoute tous les fichiers .txt d'un r&eacute;pertoire, puis l'enregistre en lib&eacute;rant ses ressources.</p>
+<p style="margin-left:40px">La m&eacute;thode Close() appelle en interne la m&eacute;thode Save() puis PSDispose().</p>
+<p style="margin-left:40px">-------------- EXAMPLE 5 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $PSZipEntries=Get-Zipfile -Path Test.zip -List
+try {
+$Zip=Get-Zipfile -Path Test.zip
+$Entry=$Zip.Entries|Where {$_.FileName -eq 'Test.ps1'}
+$Entry.Extract('C:\Temp')
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">La premi&egrave;re instruction de cet exemple renvoi les entr&eacute;es du catalogue d'une archive sous forme d'objet de type PSZipEntry.</p>
+<p style="margin-left:40px">Les suivantes recherche dans le catalogue d'origine une entr&eacute;e nomm&eacute;e 'Test.ps1' puis la d&eacute;compresse dans le r&eacute;pertoire C:\Temp. La diff&eacute;rence entre les deux approches est que les objets de type
+ PSZipEntry ne dispose pas des m&eacute;thodes sp&eacute;cifiques aux objets de type ZipEntry.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 6 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try
+{          
+$ZipFile=Get-ZipFile -path C:\Temp\archive.zip -ZipErrorAction Skip -Verbose 
+ Remove-ZipEntry -ZipFile $ZipFile -Query 'name = *.txt'
+ Get-ChildItem C:\Temp\*.log|Add-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Cet exemple ouvre une archive, y supprime tous les fichiers .TXT et y ajoute tous les fichiers .LOG du r&eacute;pertoire C:\Temp.</p>
+<p style="margin-left:40px">Notez que chaque modification est enregistr&eacute;e dans le catalogue de l'archive, mais seul l'appel &agrave; la m&eacute;thode Close() enregistrera les modifications dans l'archive.</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>

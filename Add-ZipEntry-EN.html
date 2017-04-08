@@ -1,0 +1,255 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>Add-ZipEntry</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Add an entry into an existing zip archive.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">Add-ZipEntry -InputObject &lt;Object&gt; [-ZipFile] &lt;ZipFile&gt; [[-Name] &lt;String&gt;] [-Comment &lt;String&gt;] [-EntryPathRoot &lt;String&gt;] [-Passthru] [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Add an entry into an existing .zip archive's catalog or a self extracting .exe archive. This entry can be a file or a directory name, a string or an array of bytes.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-InputObject</strong> <em>&lt;Object&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Contents associated to an entry.</p>
+<p style="margin-left:40px; text-align:left">Allowed types are :</p>
+<p style="margin-left:40px; text-align:left">- one or many files or directories objects,</p>
+<p style="margin-left:40px; text-align:left">- one or multiple file or directory names,</p>
+<p style="margin-left:40px; text-align:left">- a string,</p>
+<p style="margin-left:40px; text-align:left">&nbsp;or an array of bytes.</p>
+<p style="margin-left:40px; text-align:left">All other types of object will be processed to string from
+<em>ToString()</em> method.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-ZipFile</strong> <em>&lt;ZipFile&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Target archive in which specified entry is added. This parameter waits for a ZipFile object and not a file name.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Name</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Each entry is associated with a name in the catalog. For files or directories, their names are automatically used for entries names, in the root of the archive.</p>
+<p style="margin-left:40px; text-align:left">For strings or array of bytes, you must specify an entry name.</p>
+<p style="margin-left:40px; text-align:left">The use os the -EntryPathRoot parameter will not influence this naming.</p>
+<p style="margin-left:40px; text-align:left">During the call of the Expand-ZipFile function, the string or arrays entries will be extracted like for files.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByPropertyName)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Comment</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Comment associated with the entry.</p>
+<p style="margin-left:40px; text-align:left">For entries such as strings or arrays, the comment will ba their name by default : [String] or [Byte[]].</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-EntryPathRoot</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">The new entry will be added in the specified path. By default, it is added to the root of the tree contained in the archive. The value of this parameter must reference an existing directory path.</p>
+<p style="margin-left:40px; text-align:left">You need to specify this parameter in order to avoid entry name clashes when compressing a recursive tree. This one allows to build the name of the entry relatively to the specified directory.</p>
+<p style="margin-left:40px; text-align:left">For example, specifying 'C:\Temp\Backup', the treating building name will remove 'C:\Temp\Backup' for each received file during recurisive compression of 'C:\Temp\Backup'.</p>
+<p style="margin-left:40px; text-align:left">So, for files 'C:\Temp\Backup\File1.ps1' and 'C:\Temp\Backup\Projet\File1.ps1', created entries in the catalog will be respectively : File1.ps1 Projet/File.ps1.</p>
+<p style="margin-left:40px; text-align:left">By specifying a directory name different from the begining of the archive will trigger an error and will stop current archiving path.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Passthru</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Once entry is added to the archive's catalog, it is sent to the pipeline.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see &#7;<a href="http://go.microsoft.com/fwlink/?LinkID=113216">about_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p style="padding-left:40px"><strong>System.String, System.IO.DirectoryInfo, System.IO.FileInfo, System.Byte[], System.Collections.IDictionary, Ionic.Zip.ZipEntry</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p style="margin-left:40px"><strong>Ionic.Zip.ZipEntry</strong></p>
+<p><strong>NOTES</strong></p>
+<p style="margin-left:40px">By default, the add of an existing entry will trigger an exception. This function works with the Expand-ZipEntry function.</p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+$File=Get-Item C:\Temp\Test.ps1 
+Add-ZipEntry -InputObject $File -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">This commands add an entry to the C:\Temp\Test.zip archive.</p>
+<p style="margin-left:40px">-The first command makes an archive object from a file name,</p>
+<p style="margin-left:40px">-The second one builds a file object from a file name,</p>
+<p style="margin-left:40px">-The third one adds the file to an archive,</p>
+<p style="margin-left:40px">-The forth saves the archive on the disk and frees system ressources.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 2 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+Get-ChildItem *.txt|Add-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">This commands add entries to the C:\Temp\Test.zip archive.</p>
+<p style="margin-left:40px">-The first instruction builds an archive object from a file name,</p>
+<p style="margin-left:40px">-The second one, from current directory, adds all .txt files to the archive,</p>
+<p style="margin-left:40px">-The third saves the archive to the disk and frees all system ressources.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 3 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+[string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
+Add-ZipEntry -InputObject $Text -Name MyText -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">This commands add a named entry in the C:\Temp\Test.zip archive from a string.</p>
+<p style="margin-left:40px">-The first instruction makes an archive object from a file name,</p>
+<p style="margin-left:40px">-The second reads a text file and get the result into a string,</p>
+<p style="margin-left:40px">-The third one makes an entry whose contents is saved to a string,</p>
+<p style="margin-left:40px">-The forth one saves the archive to the disk and frees the system ressources.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 4 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
+ConvertTo-CliXml $PSVersionTable | Add-ZipEntry -Name 'PSVersiontable_clixml' -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">This commands add a named entry in the C:\Temp\Test.zip archive from a serialized object.</p>
+<p style="margin-left:40px">-The first instruction builds an archive object from a file name,</p>
+<p style="margin-left:40px">-The second serializes the contents of the object into the $PSVersiontable variable and adds it as a named entry to the archive,</p>
+<p style="margin-left:40px">-The third one saves the archive to the disk and frees the system ressources.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 5 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+[byte[]] $Array=@(1..20)
+Add-ZipEntry -InputObject $Array -Name MyArray -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">This commands add an entry named MyArray to the C:\Temp\Test.zip archive.</p>
+<p style="margin-left:40px">-The first instruction makes an archive object from a file name,</p>
+<p style="margin-left:40px">-The second one adds the object contained in the $Array variable and adds it to the archive as an entry named MyArray,</p>
+<p style="margin-left:40px">-The third one saves the archive to the disk and frees system ressources.</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>

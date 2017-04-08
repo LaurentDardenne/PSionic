@@ -1,0 +1,243 @@
+<div class="wikidoc">
+<h1 style="text-align:center"><strong>Update-ZipEntry</strong></h1>
+<h2><strong>Synopsis</strong></h2>
+<p style="margin-left:40px">Updates a '.ZIP' archive or a self-extracting .EXE archive.</p>
+<h2><strong>Syntax</strong></h2>
+<pre style="margin-left:40px">Update-ZipEntry -InputObject &lt;Object&gt; [-ZipFile] &lt;ZipFile&gt; [[-Name] &lt;String&gt;] [-Comment &lt;String&gt;] [-EntryPathRoot &lt;String&gt;] [-Passthru] [&lt;CommonParameters&gt;]
+
+</pre>
+<h2><strong>Description</strong></h2>
+<p style="margin-left:40px">Updates a '.ZIP' archive or a self-extracting .EXE archive by changing its inputs or by adding new ones.</p>
+<h2><strong>Parameters</strong></h2>
+<h3><strong>-InputObject</strong> <em style="font-weight:100">&lt;Object&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Content associated with an input archive. Types expected are: - One or more objects from type files or directories, - One or more file or directory names, - A string, - An array of bytes. For all other object types,
+ there will be converted into string with 'ToString()' method.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-ZipFile</strong> <em style="font-weight:100">&lt;ZipFile&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Target archive in which specified entry is updated. This parameter waits for a ZipFile object and not a file name.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Name</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Each entry is associated with a name in the catalog. For files or directories, their names are automatically used for entries names, in the root of the archive. For strings or array of bytes, you must specify an
+ entry name. The use of the '-EntryPathRoot' parameter will not influence this naming.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByPropertyName)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Comment</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Comment associated with the entry. For entries such as strings or arrays, the comment will be their name by default : [String] or [Byte[]].</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-EntryPathRoot</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">The entry will be updated or added in the specified path. By default, it is updatedd to the root of the tree contained in the archive. The value of this parameter must reference an existing directory path. You need
+ to specify this parameter in order to avoid entry name clashes when compressing a recursive tree. This one allows to build the name of the entry relatively to the specified directory. For example, specifying 'C:\Temp\Backup', the treating building name will
+ remove 'C:\Temp\Backup' for each received file during recursive compression of 'C:\Temp\Backup'. So, for files 'C:\Temp\Backup\File1.ps1' and 'C:\Temp\Backup\Projet\File1.ps1', created entries in the catalog will be respectively : File1.ps1 Projet/File.ps1
+ By specifying a directory name different from the begining of the archive, it will trigger an error and will stop current archiving path.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Passthru</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Once the entry is updated in the archive catalog, it is issued in the pipeline.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3>&lt;CommonParameters&gt;</h3>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable. For more information, see<br>
+about_CommonParameters (<a href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</p>
+<h2><strong>Inputs</strong></h2>
+<p style="margin-left:40px"><strong>System.String, System.IO.DirectoryInfo, System.IO.FileInfo, System.Byte[], System.Collections.IDictionary, Ionic.Zip.ZipEntry</strong></p>
+<h2><strong>Outputs</strong></h2>
+<p style="margin-left:40px"><strong>Ionic.Zip.ZipEntry</strong></p>
+<h2><strong>Notes</strong></h2>
+<p style="margin-left:40px">If an entry already exists, it is updated. The LastModified property is populated with the current date and time. Updating a directory entry type only adds new elements, but does not delete entries that are no longer on the FileSystem.
+ This is not a synchronization. By default the addition of an existing entry will trigger an exception.</p>
+<h2><strong>Examples</strong></h2>
+<h3>EXAMPLE 1</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+$File=Get-Item C:\Temp\Test.ps1 
+Update-ZipEntry -InputObject $File -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">This commands update an entry in the 'C:\Temp\Test.zip' archive: - The first instruction creates an archive object from a file name, - The second, from the current directory, updates archive entries corresponding to '*.txt' file
+ names, - The third updates the file in the archive, - The fourth saves the archive on the disk and frees system ressources.</p>
+<h3>EXAMPLE 2</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+Get-ChildItem *.txt|Update-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">This commands update entries in the archive 'C:\Temp\Test.Zip': - The first instruction creates an archive object from a file name, - The second one updates all entries of the archive corresponding to '*.txt' file names from current
+ directory, - The third updates or creates an entry containing a string, - The fourth saves the archive on the disk and frees system ressources.</p>
+<h3>EXAMPLE 3</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+[string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
+Update-ZipEntry -InputObject $Text -Name MyText -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">This commands update a named entry in the archive 'C:\Temp\Test.Zip' from a string: - The first instruction creates an archive object from a file name, - The second one reads a file text and sets the result into a string, - The third
+ updates or creates an entry containing a string, - The fourth saves the archive on the disk and frees system ressources.</p>
+<h3>EXAMPLE 4</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
+ConvertTo-CliXml $PSVersionTable | Update-ZipEntry -Name 'PSVersiontable_clixml' -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">This commands update a named entry in the archive 'C:\Temp\Test.Zip' from a serialized object: - The first instruction creates an archive object from a file name, - The second one serializes the object contained in the System.Management.Automation.PSVersionHashTable
+ variable, then updates or creates named entry in the archive, - The third saves the archive on the disk and frees system ressources.</p>
+<h3>EXAMPLE 5</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+[byte[]] $Array=@(1..20)
+Update-ZipEntry -InputObject $Array -Name MyArray -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">This commands update an entry named 'MyArray' in the archive 'C:\Temp\Test.Zip': - The first instruction creates an archive object from a file name, - The second one adds the object contained in the '' variable, then updates or creates
+ the entry named 'MyArray', - The third saves the archive on the disk and frees system ressources.</p>
+<h2><strong>Related links</strong></h2>
+<p style="margin-left:40px">Unknown <a href="https://psionic.codeplex.com/wikipage?title=Update-ZipEntry-EN">
+https://psionic.codeplex.com/wikipage?title=Update-ZipEntry-EN</a></p>
+<h2><strong>PowerShell Support</strong></h2>
+<ul>
+<li>PowerShell 2.0 </li></ul>
+<h2><strong>Operating System Support</strong></h2>
+<ul>
+<li>Windows 7 </li><li>Windows 8 </li><li>Windows 8.1 </li><li>Windows Server 2008 all editions </li><li>Windows Server 2008 R2 all editions </li><li>Windows Server 2012 all editions </li><li>Windows Server 2012 R2 all editions </li></ul>
+</div><div class="ClearBoth"></div>

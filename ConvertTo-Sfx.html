@@ -1,0 +1,208 @@
+<div class="wikidoc">
+<h1 style="text-align:center"><strong>ConvertTo-Sfx</strong></h1>
+<h2><strong>Synopsis</strong></h2>
+<p style="margin-left:40px">Converts a .Zip archive to a self-extracting archive.</p>
+<h2><strong>Syntax</strong></h2>
+<pre style="margin-left:40px">ConvertTo-Sfx -Path &lt;PSObject&gt; [[-SaveOptions] &lt;SelfExtractorSaveOptions&gt;] [[-ReadOptions] &lt;ReadOptions&gt;] [[-Comment] &lt;String&gt;] [-Passthru] [&lt;CommonParameters&gt;]
+
+ConvertTo-Sfx -LiteralPath &lt;PSObject&gt; [[-SaveOptions] &lt;SelfExtractorSaveOptions&gt;] [[-ReadOptions] &lt;ReadOptions&gt;] [[-Comment] &lt;String&gt;] [-Passthru] [&lt;CommonParameters&gt;]
+
+</pre>
+<h2><strong>Description</strong></h2>
+<p style="margin-left:40px">.Zip archive conversion to a self-extracting archive includes uncompress treatment in the resulting file. You can specify a command line to be run once the uncompression process has finished.</p>
+<h2><strong>Parameters</strong></h2>
+<h3><strong>-Path</strong> <em style="font-weight:100">&lt;PSObject&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">.Zip file name to convert.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-SaveOptions</strong> <em style="font-weight:100">&lt;SelfExtractorSaveOptions&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Generation options created through the 'New-ZipSfxOptions' function.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-ReadOptions</strong> <em style="font-weight:100">&lt;ReadOptions&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Options applied when reading archive (.zip) that is converted to a self-extracting archive (.exe). Created options from the New-ReadOptions function.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Comment</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Archive's comment.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Passthru</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Returns the generated file in object form and not just his name. Archive object is not locked so be attentive to your usage scenarios of this object.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-LiteralPath</strong> <em style="font-weight:100">&lt;PSObject&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">.Zip file name to convert. Generic characters won't be interpreted.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3>&lt;CommonParameters&gt;</h3>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable. For more information, see<br>
+about_CommonParameters (<a href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</p>
+<h2><strong>Inputs</strong></h2>
+<p style="margin-left:40px"><strong>System.String, System.IO.FileInfo</strong></p>
+<h2><strong>Outputs</strong></h2>
+<p style="margin-left:40px"><strong>None</strong></p>
+<h2><strong>Notes</strong></h2>
+<p style="margin-left:40px">The dotnet framework 2.0 is needed on the computer that uncompresses the self-exctracting archive. The folder specified by the 'ExtractDirectory' parameter (cf. New-ZipSfxOptions) can contains system variables references. For example
+ %UserProfile%. Those will be replaced while running the self-extracting archive. Be carrefull : it is not possible to save a splitted archive into a self-extracting archive.</p>
+<h2><strong>Examples</strong></h2>
+<h3>EXAMPLE 1</h3>
+<pre style="margin-left:40px">PS C:\&gt; $ZipFileName=&quot;C:\Temp\MySetup.zip&quot; 
+$ReadOptions = New-Object Ionic.Zip.ReadOptions -Property @{ 
+                StatusMessageWriter = [System.Console]::Out
+              } 
+$Save=@{
+    ExeOnUnpack=&quot;Powershell -noprofile -File .\MySetup.ps1&quot;;  
+    Description=&quot;Setup for the my module&quot;; 
+    NameOfProduct=&quot;MyProjectName&quot;;
+    VersionOfProduct=&quot;1.0.0&quot;;
+    Copyright='This module is free for non-commercial purposes.'
+}
+$SaveOptions=New-ZipSfxOptions @Save
+ConvertTo-Sfx $ZipFileName -Save $SaveOptions -Read $ReadOptions</pre>
+<p style="margin-left:40px">Using New-ZipSfxOptions function, those instructions build the settings to be used during the construction of the self-extracting archive. Then it converts a .Zip file archive into a self-extracting archive (.exe). The $ReadOptions
+ variable is used to display the progress of the process in the console.</p>
+<h2><strong>Related links</strong></h2>
+<p style="margin-left:40px">Unknown <a href="https://psionic.codeplex.com/wikipage?title=ConvertTo-Sfx-EN">
+https://psionic.codeplex.com/wikipage?title=ConvertTo-Sfx-EN</a></p>
+<h2><strong>PowerShell Support</strong></h2>
+<ul>
+<li>PowerShell 2.0 </li></ul>
+<h2><strong>Operating System Support</strong></h2>
+<ul>
+<li>Windows 7 </li><li>Windows 8 </li><li>Windows 8.1 </li><li>Windows Server 2008 all editions </li><li>Windows Server 2008 R2 all editions </li><li>Windows Server 2012 all editions </li><li>Windows Server 2012 R2 all editions </li></ul>
+</div><div class="ClearBoth"></div>

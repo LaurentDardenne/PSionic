@@ -1,0 +1,415 @@
+<div class="wikidoc">
+<h1 style="text-align:center"><strong>Get-ZipFile</strong></h1>
+<h2><strong>Synopsis</strong></h2>
+<p style="margin-left:40px">Gets and Sets an archive object from a Zip file.</p>
+<h2><strong>Syntax</strong></h2>
+<pre style="margin-left:40px">Get-ZipFile [-Path] &lt;String[]&gt; [-Options &lt;SelfExtractorSaveOptions&gt;] [-ZipErrorAction &lt;ZipErrorAction&gt;] [-Encryption &lt;EncryptionAlgorithm&gt;] [-Password &lt;String&gt;] [-Encoding &lt;Encoding&gt;] [-ProgressID &lt;Int32&gt;] [-List] [-SortEntries] [-UnixTimeFormat] [-WindowsTimeFormat] [&lt;CommonParameters&gt;]
+
+Get-ZipFile [-Path] &lt;String[]&gt; [-ReadOptions &lt;ReadOptions&gt;] [-Options &lt;SelfExtractorSaveOptions&gt;] [-ZipErrorAction &lt;ZipErrorAction&gt;] [-Encryption &lt;EncryptionAlgorithm&gt;] [-Password &lt;String&gt;] [-List] [-SortEntries] [-UnixTimeFormat] [-WindowsTimeFormat] [&lt;CommonParameters&gt;]
+
+</pre>
+<h2><strong>Description</strong></h2>
+<p style="margin-left:40px">Gets an archive object from a Zip file. The archive object contains only the catalog, an objects list of type ZipEntry, in order to get the contents of a catalog entry. You need to expand it on a filesystem drive. Also, this function
+ sets the most common properties of the object archive. The returned object is locked until you don't call the 'Close()' method. On the other side, the use of the '-List' parameter does not lock the archive.</p>
+<h2><strong>Parameters</strong></h2>
+<h3><strong>-Path</strong> <em style="font-weight:100">&lt;String[]&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">File name(s) to read. Can be a file names with generic characters (* , ? , [A-D] ou [1CZ]).</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Options</strong> <em style="font-weight:100">&lt;SelfExtractorSaveOptions&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Options used during the creation of the self-extracting archive (See 'New-ZipSfxOptions' for more details).</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-ZipErrorAction</strong> <em style="font-weight:100">&lt;ZipErrorAction&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Specifies the error mode handling.Values : Throw, Skip, Retry, InvokeErrorEvent</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Encryption</strong> <em style="font-weight:100">&lt;EncryptionAlgorithm&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Encryption algorythm used for compression. Need to specify a password with the '-Password' parameter.Values : None, PkzipWeak, WinZipAes128, WinZipAes256, Unsupported</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Password</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Password used to read the Zip archive.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Encoding</strong> <em style="font-weight:100">&lt;Encoding&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Archive encoding type. Possible values are : -ASCII : ASCII characters encoding scheme (7 bits). -BigEndianUnicode : encoding for the UTF-16 format using the big endian byte order. -Default : encoding for the operating
+ system's current ANSI code page. -Unicode : encoding for the UTF-16 format using the little endian byte order. -UTF32 : encoding for the UTF-32 format using the little endian byte order. -UTF7 : encoding for the UTF-7. -UTF8 : encoding for the UTF-8. . For
+ better portability, the default value ('DefaultEncoding') is recommended.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-ProgressID</strong> <em style="font-weight:100">&lt;Int32&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">This parameter makes an events manager for read operations. When opening a zip archive with a big size, you can choose to display a default progress bar. This ID allows to distinguish the internal progress bar from
+ the others. Use this parameter when you create more than one progress bar.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-List</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Gets the contained entries from the archive catalog. The returned objects are custom objects with the PSZipEntry type name. Aside from its property 'Info', all are read-only. The archive is not locked.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-SortEntries</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Entries are sorted.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-UnixTimeFormat</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Unix time format for date file format will be used.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-WindowsTimeFormat</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Windows time format for date file format will be used.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-ReadOptions</strong> <em style="font-weight:100">&lt;ReadOptions&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Options applied when reading archive (.zip). Created options from the 'New-ReadOptions' function.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3>&lt;CommonParameters&gt;</h3>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable. For more information, see<br>
+about_CommonParameters (<a href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</p>
+<h2><strong>Inputs</strong></h2>
+<p style="margin-left:40px"><strong>System.String</strong></p>
+<h2><strong>Outputs</strong></h2>
+<p style="margin-left:40px"><strong>Ionic.Zip.ZipFile</strong></p>
+<h2><strong>Notes</strong></h2>
+<p style="margin-left:40px">This function returns only one Zip archive object from his fullname. Most of the parameters are used to configure the archive properties if you want to modify it. For example, the 'Encryption' parameter does not affect reading the
+ Zip. Only the 'Password' parameter is needed, because this is entries that are encrypted, and not the object of type [Zipfile]. So a Zip archive can theoretically contains several entries with differents compression mode for each of them. Pay attention that
+ for each returned object you must call the 'Close()' method in order to properly release resources of the archive.</p>
+<h2><strong>Examples</strong></h2>
+<h3>EXAMPLE 1</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {
+$ZipFile=Get-Zipfile -Path Test.zip
+$ZipFile
+} finally {
+ if ($ZipFile -ne $null )
+ { $ZipFile.PSDispose() }
+}</pre>
+<p style="margin-left:40px">This example reads a Zip file, display its contents from a file and then releases resources archive.</p>
+<h3>EXAMPLE 2</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$File=Dir C:\Temp\Test.ps1 
+$ZipFile=Get-Zipfile -Path Test.zip
+Add-ZipEntry -Object $File -ZipFile $ZipFile
+$ZipFile.Save()
+} finally {
+ if ($ZipFile -ne $null )
+ { $ZipFile.PSDispose() }
+}</pre>
+<p style="margin-left:40px">This example reads a Zip file, adds an entry from a file to it, saves it and then releases resources archive.</p>
+<h3>EXAMPLE 3</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$Zip=Get-Zipfile -Path Test.zip
+ $ofs=&quot;`r`n&quot;
+ [string]$Text=Get-Content C:\Temp\Test.ps1
+Add-ZipEntry -Object $Text -EntryName MyText -ZipFile $ZipFile
+$ZipFile.Save()
+} finally {
+ if ($ZipFile -ne $null )
+ { $ZipFile.PSDispose() }
+}</pre>
+<p style="margin-left:40px">This example reads a Zip file, adds an entry from a string, saves it and then releases resources archive.</p>
+<h3>EXAMPLE 4</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {
+$Zip=Get-Zipfile -Path Test.zip
+Dir *.txt|Add-ZipEntry -ZipFile $Zip
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">This example reads a Zip file, adds '.txt' files from a folder to it, saves it and then releases resources archive. The 'Close()' method internally calls the method 'Save()' then 'PSDispose()'.</p>
+<h3>EXAMPLE 5</h3>
+<pre style="margin-left:40px">PS C:\&gt; $PSZipEntries=Get-Zipfile -Path Test.zip -List
+try {
+$Zip=Get-Zipfile -Path Test.zip
+$Entry=$Zip.Entries|Where {$_.FileName -eq 'Test.ps1'}
+$Entry.Extract('C:\Temp')
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">The first instruction returns the catalog entries as objects of type 'PSZipEntry'. The following search in the original catalog for an entry named 'Test.ps1' then decompresses the 'C:\Temp' Folder. The difference between the two
+ approaches is that objects of type PSZipEntry lacks methods specific to objects of type ZipEntry.</p>
+<h3>EXAMPLE 6</h3>
+<pre style="margin-left:40px">PS C:\&gt; try
+{          
+$ZipFile=Get-ZipFile -path C:\Temp\archive.zip -ZipErrorAction Skip -Verbose 
+ Remove-ZipEntry -ZipFile $ZipFile -Query 'name = *.txt'
+ Get-ChildItem C:\Temp\*.log|Add-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">This example opens an archive, deletes all the .TXT files and adds all .LOG files from 'C:\Temp' folder. Note that each change is recorded in the catalog of the archive, but only the call to 'Close ()' method will record the changes
+ in the archive.</p>
+<h2><strong>Related links</strong></h2>
+<p style="margin-left:40px">Unknown <a href="https://psionic.codeplex.com/wikipage?title=Get-ZipFile-EN">
+https://psionic.codeplex.com/wikipage?title=Get-ZipFile-EN</a></p>
+<h2><strong>PowerShell Support</strong></h2>
+<ul>
+<li>PowerShell 2.0 </li></ul>
+<h2><strong>Operating System Support</strong></h2>
+<ul>
+<li>Windows 7 </li><li>Windows 8 </li><li>Windows 8.1 </li><li>Windows Server 2008 all editions </li><li>Windows Server 2008 R2 all editions </li><li>Windows Server 2012 all editions </li><li>Windows Server 2012 R2 all editions </li></ul>
+</div><div class="ClearBoth"></div>

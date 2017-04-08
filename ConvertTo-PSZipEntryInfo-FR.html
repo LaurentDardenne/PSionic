@@ -1,0 +1,70 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>ConvertTo-PSZipEntryInfo</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Converti la propri&eacute;t&eacute; Info d'un objet de type ZipFile ou ZipEntry.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">ConvertTo-PSZipEntryInfo [[-Info] &lt;String&gt;] [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Converti la propri&eacute;t&eacute; Info d'un objet de type ZipFile en une liste d'objets personnalis&eacute;s ou d'un objet de type ZipEntry/PSZipEntry en un objet personnalis&eacute;.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-Info</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Contenu d'une propri&eacute;t&eacute; Info d'un objet Ionic.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable. For more information, see<br>
+&#7;bout_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p><strong>NOTES</strong></p>
+<p style="margin-left:40px">La transformation de la propri&eacute;t&eacute; Info de type texte en plusieurs objets prend un certain temps. Eviter de transformer plusieurs fois cette propri&eacute;t&eacute; au sein d'une boucle.</p>
+<p style="margin-left:40px">Soyez attentif au fait qu'une instance peut &eacute;voluer par l'ajout ou la suppression d'entr&eacute;e, dans ce cas vous devrez mettre &agrave; jour ce champ(ZipEntry/PSZipEntry) ou reconstruire la liste (ZipFile).</p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; $PSEntries=Get-ZipFile -Path .\Test.zip -List 
+$PSEntries[0].Info=ConvertTo-PSZipEntryInfo $PSEntries[0].Info
+$PSEntries[0].Info.Zipentry</pre>
+<p style="margin-left:40px">Cet exemple r&eacute;cup&egrave;re d'une archive la liste des entr&eacute;es, celles-ci sont des objets personnalis&eacute; Powershell. Puis la propri&eacute;t&eacute; Info, qui est par d&eacute;faut de type string, est transform&eacute;e
+ en un PSObject et celui-ci est r&eacute;affect&eacute; au contenu de la propri&eacute;t&eacute; Info.</p>
+<p style="margin-left:40px">L'information initiale de type string n'est plus accessible.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 2 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {
+$Zip=Get-ZipFile -Path .\Test.zip         
+Add-Member -Input $Zip -Force NoteProperty Info (ConvertTo-PSZipEntryInfo $Zip.Info)
+$Zip.Info[0].ZipEntry
+$File=Get-Item C:\Temp\Test.ps1
+Add-ZipEntry -Object $File -ZipFile $Zip
+Add-Member -Input $Zip -Force NoteProperty Info (ConvertTo-PSZipEntryInfo $Zip.psbase.Info)
+} finally {
+if ($Zip -ne $null )
+{ $Zip.PSDispose() } 
+}</pre>
+<p style="margin-left:40px">Cet exemple r&eacute;cup&egrave;re une archive, puis sa propri&eacute;t&eacute; Info est transform&eacute;e en une liste index&eacute; d'objets de type PSZipEntryInfo. Puis on ajoute une nouvelle entr&eacute;e &agrave; l'archive
+ et on reconstruit la liste de PSZipEntryInfo, cette fois &agrave; partir de l'information initiale accessible via<em> $Zip.psbase.Info</em>.</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>

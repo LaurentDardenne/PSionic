@@ -1,0 +1,410 @@
+<div class="wikidoc">
+<h1 style="text-align:center"><strong>Expand-ZipFile</strong></h1>
+<h2><strong>Synopsis</strong></h2>
+<p style="margin-left:40px">Extracts files and/or folders from an archive compressed in Zip format.</p>
+<h2><strong>Syntax</strong></h2>
+<pre style="margin-left:40px">Expand-ZipFile -Path &lt;PSObject&gt; [-OutputPath] &lt;PSObject&gt; [[-Query] &lt;String&gt;] [-From &lt;String&gt;] [-ExtractAction &lt;ExtractExistingFileAction&gt;] [-Password &lt;String&gt;] [-Encoding &lt;Encoding&gt;] [-ProgressID &lt;Int32&gt;] [-Flatten] [-Passthru] [-Create] [&lt;CommonParameters&gt;]
+
+Expand-ZipFile -LiteralPath &lt;PSObject&gt; [-OutputPath] &lt;PSObject&gt; [[-Query] &lt;String&gt;] [-From &lt;String&gt;] [-ExtractAction &lt;ExtractExistingFileAction&gt;] [-Password &lt;String&gt;] [-Encoding &lt;Encoding&gt;] [-ProgressID &lt;Int32&gt;] [-Flatten] [-Passthru] [-Create] [&lt;CommonParameters&gt;]
+
+</pre>
+<h2><strong>Description</strong></h2>
+<p style="margin-left:40px">Extracts files and/or folders from an archive compressed in Zip format or a self-extracting archive ('.EXE').</p>
+<h2><strong>Parameters</strong></h2>
+<h3><strong>-Path</strong> <em style="font-weight:100">&lt;PSObject&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">File names list to expand. Can be a file object or a string. In this last case, generic characters can be used (* , ? , [A-D] ou [1CZ]).</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-OutputPath</strong> <em style="font-weight:100">&lt;PSObject&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Destination folder used for data extraction contained in a Zip archive. This parameter can use a delayed script block.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByPropertyName)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Query</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Specifies a search for data to be extracted from the zip archive. For more information on writing and query syntax, see the 'about_Query_Selection_Criteria' Help file or the documentation from the Ionic dll (.chm
+ help file). Warning, there is no consistency check on the contents of the query, for example 'size &lt;100 byte AND Size&gt; 1000 byte' will not cause an error, but no file will be selected. If you also specify the '-Passthru' parameter, a custom property
+ named 'Query' will be added to the returned object.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-From</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Specifies the archive directory from which entries will be extracted. The syntax of an archive directory name is : 'DirectoryName/' or 'DirectoryName/SubDirectoryName/'. The use of this parameter needs to specify
+ a '-Query' parameter, otherwise an exception will be triggered.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-ExtractAction</strong> <em style="font-weight:100">&lt;ExtractExistingFileAction&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Specifies steps to be taken when data is already present in the destination folder.Values : Throw, OverwriteSilently, DoNotOverwrite, InvokeExtractProgressEvent</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Password</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Password used for encryption. Encryption method needs to be specified with the '-Encryption' parameter.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Encoding</strong> <em style="font-weight:100">&lt;Encoding&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Archive encoding type. Possible values are : -ASCII : ASCII characters encoding scheme (7 bits). -BigEndianUnicode : encoding for the UTF-16 format using the big endian byte order. -Default : encoding for the operating
+ system's current ANSI code page. -Unicode : encoding for the UTF-16 format using the little endian byte order. -UTF32 : encoding for the UTF-32 format using the little endian byte order. -UTF7 : encoding for the UTF-7. -UTF8 : encoding for the UTF-8. . For
+ better portability, the default value ('DefaultEncoding') is recommended.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-ProgressID</strong> <em style="font-weight:100">&lt;Int32&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">When opening a zip archive of a big size, you can choose to display a progress bar. The use of this parameter makes a progress bar for read operations that will be replaced during write operations. The progress bar
+ for read operations only displays the number of read entries. If '-Query' parameter is specified, then progress bar for extraction will only display the extracted files. Otherwise it will display the name and the percentage of the progress. Note : Obviously
+ the duration of the presence of the progress bar on the screen depends on the number of entries in the archive.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Flatten</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Files are extracted with no directory tree.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Passthru</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Sends out the zip archive in the pipeline. Be careful, in this case the release of resources by calling the Close () method is your responsibility. The archive object returned is not locked so pay attention to your
+ usage scenarios of this object.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Create</strong> <em style="font-weight:100">&lt;SwitchParameter&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Creates the destination directory if it does not exist.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-LiteralPath</strong> <em style="font-weight:100">&lt;PSObject&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Zip file object of type String or system.IO.FileInfo. In case of a String type, it must not contains wild card caracters. Delayed script block on '-OutPutPath' parameter will only trigger once. In contrast, the late
+ binding will be triggered for each object received.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3>&lt;CommonParameters&gt;</h3>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable. For more information, see<br>
+about_CommonParameters (<a href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</p>
+<h2><strong>Inputs</strong></h2>
+<p style="margin-left:40px"><strong>System.String,System.IO.FileInfo</strong></p>
+<h2><strong>Outputs</strong></h2>
+<p style="margin-left:40px"><strong>None</strong></p>
+<h2><strong>Notes</strong></h2>
+<p style="margin-left:40px">A Zip archive should contains several entries each of which has a compression mode and / or other different encryption. However, this function needs a same passeword for all archive entries. Otherwise an exception will occured during
+ the first encrypted file decompression.</p>
+<h2><strong>Examples</strong></h2>
+<h3>EXAMPLE 1</h3>
+<pre style="margin-left:40px">PS C:\&gt; Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\</pre>
+<p style="margin-left:40px">Extracts data contained in a Zip archive to a folder path destination.</p>
+<h3>EXAMPLE 2</h3>
+<pre style="margin-left:40px">PS C:\&gt; Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\Archive -Create</pre>
+<p style="margin-left:40px">Extracts data contained in a Zip archive to a folder path destination. The use of '-Create' parameter forces the creation of a target folder if it does not exist.</p>
+<h3>EXAMPLE 3</h3>
+<pre style="margin-left:40px">PS C:\&gt; Get-ChildItem D:\*.zip -recurse | 
+ Expand-ZipFile C:\Temp\</pre>
+<p style="margin-left:40px">Extracts data contained in a Zip archive to a folder path destination. During extraction the first collision entries name will trigger an exception because of the default 'Throw' value of the -ErrorAction parameter.</p>
+<h3>EXAMPLE 4</h3>
+<pre style="margin-left:40px">PS C:\&gt; Get-ChildItem D:\*.zip -recurse | 
+ Expand-ZipFile C:\Temp\ -ExtractAction OverwriteSilently</pre>
+<p style="margin-left:40px">Extracts data contained in a Zip archive to a folder path destination. During extraction the use of the 'OverwriteSilently' value for the '-ErrorAction' parameter will trigger simple errors in case of possibles files name collisions.</p>
+<h3>EXAMPLE 5</h3>
+<pre style="margin-left:40px">PS C:\&gt; Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\ -Query 'name = *.jpg'</pre>
+<p style="margin-left:40px">Extracts data contained in a Zip archive to a folder path destination. Only data corresponding to the query are extracted. Here it is files whith '.jpg' extension.</p>
+<h3>EXAMPLE 6</h3>
+<pre style="margin-left:40px">PS C:\&gt; Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\ -Query 'type = D'</pre>
+<p style="margin-left:40px">Extracts data contained in a Zip archive to a folder path destination. Only data corresponding to the query are extracted. Here it is folders only.</p>
+<h3>EXAMPLE 7</h3>
+<pre style="margin-left:40px">PS C:\&gt; Expand-ZipFile -Path C:\Archive.zip -OutputPath C:\Temp\Test -Create -ProgressID 1</pre>
+<p style="margin-left:40px">Extracts data contained in a Zip archive to a folder path destination. A progress bar displays extraction's informations.</p>
+<h3>EXAMPLE 8</h3>
+<pre style="margin-left:40px">PS C:\&gt; 'C:\Temp\Archive.zip'|
+Expand-ZipFile -OutputPath {&quot;C:\Temp\TestZip\$($_.BaseName)&quot;} -Create
+
+Get-Childitem 'C:\Temp\Archive.zip'|
+Expand-ZipFile -OutputPath {&quot;C:\Temp\TestZip\$($_.BaseName)&quot;} -Create -ExtractAction OverwriteSilently</pre>
+<p style="margin-left:40px">The first line of instruction extracts all archives in the new folder 'C:\Temp\TestZip'. Here delayed script block is triggered only one time, because the 'Expand-ZipFile' function receives only one object. Furthermore the object
+ issued being a string and not a file, the BaseName property of the current object does not exist. The strings representing the files are processed internally, well after the onset of late delayed script block. . The second line instruction extracts each archive
+ to a new folder 'C:\Temp\TestZip'. Here delayed script block is trigerred many times because the 'Expand-ZipFile' function receives several objects, all of file types. So this instructions will make folder paths 'C:\Temp\TestZip\Archive1','C:\Temp\TestZip\Archive2',
+ 'C:\Temp\TestZip\ArchiveN'...</p>
+<h3>EXAMPLE 9</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {
+$Splatting=@{
+ Path='C:\Temp\Archive.zip'
+ OutputPath='C:\Temp\ExtractArchive'
+ Query='*.DLL' 
+ From='Bin/V2/'
+ Create=$True
+ Flatten=$True 
+ Passthru=$True              
+}            
+$ZipFile= Expand-ZipFile @Splatting
+$ZipFile.Query
+} finally {
+ if ($ZipFile -ne $null )
+ { $ZipFile.PSDispose() }
+}</pre>
+<p style="margin-left:40px">This example extracts all '.dll' files from the 'Bin/V2/' directory of the archive, to the 'C:\Temp\ExtractArchive' folder. The '-Flatten' parameter says to extract files to the specified root directory. The already existing directory
+ tree is not created again. The '-Verbose' parameter displays all read entries, then extracted ones. The '-passthru' parameter retrieves the instance of the archive, which allows to continue working on the archive. Once processing is finished, we explicitly
+ frees the instance of the archive object, which will unlock the file.</p>
+<h2><strong>Related links</strong></h2>
+<p style="margin-left:40px">Unknown <a href="https://psionic.codeplex.com/wikipage?title=Expand-ZipFile-EN">
+https://psionic.codeplex.com/wikipage?title=Expand-ZipFile-EN</a></p>
+<h2><strong>PowerShell Support</strong></h2>
+<ul>
+<li>PowerShell 2.0 </li></ul>
+<h2><strong>Operating System Support</strong></h2>
+<ul>
+<li>Windows 7 </li><li>Windows 8 </li><li>Windows 8.1 </li><li>Windows Server 2008 all editions </li><li>Windows Server 2008 R2 all editions </li><li>Windows Server 2012 all editions </li><li>Windows Server 2012 R2 all editions </li></ul>
+</div><div class="ClearBoth"></div>

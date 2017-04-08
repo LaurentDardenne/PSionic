@@ -1,0 +1,221 @@
+<div class="wikidoc">
+<h1 style="text-align:center"><strong>Remove-ZipEntry</strong></h1>
+<h2><strong>Synopsis</strong></h2>
+<p style="margin-left:40px">Deletes one or more entries from an archive.</p>
+<h2><strong>Syntax</strong></h2>
+<pre style="margin-left:40px">Remove-ZipEntry -InputObject &lt;Object&gt; [-ZipFile] &lt;ZipFile&gt; [[-Name] &lt;String&gt;] [&lt;CommonParameters&gt;]
+
+Remove-ZipEntry [-ZipFile] &lt;ZipFile&gt; [-Query &lt;String&gt;] [-From &lt;String&gt;] [&lt;CommonParameters&gt;]
+
+</pre>
+<h2><strong>Description</strong></h2>
+<p style="margin-left:40px">Deletes one or more entries from a &amp;;39;.Zip&amp;;39; archive or from a self-extracting archive .exe.</p>
+<h2><strong>Parameters</strong></h2>
+<h3><strong>-InputObject</strong> <em style="font-weight:100">&lt;Object&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Content associated with an input archive. Types expected are: - One or more objects from type files or directories, - A string referencing an entry. If it references a directory name, it must end with the &amp;;39;/&amp;;39;
+ character, - An object fro mtype ZipEntry, - An array of objects from type ZipEntry, - An array of strings or objects. In this last case his contents will be changed to String. All others arrays types, other than those indicated above, will throw an exception.
+ For all other object types, there will be converted into string.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-ZipFile</strong> <em style="font-weight:100">&lt;ZipFile&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Target archive in which specified entry is removed. This parameter waits for a ZipFile object and not a file name.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Name</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Each entry is associated with a name in the catalog. For files or directories, their names are automatically used for entries names, in the root of the archive.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByPropertyName)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-Query</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Specifies a search for data to be deleted from the Zip archive. For more information on writing and query syntax, see the Help file about_Query_Selection_Criteria or the documentation of Ionic dll (Chm help file).
+ Warning, there is no consistency check on the contents of the query, for example &amp;;39;size &lt;100 byte AND Size&gt; 1000 byte&amp;;39; will not cause an error, but no file will be selected.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3><strong>-From</strong> <em style="font-weight:100">&lt;String&gt;</em></h3>
+<p style="margin-left:40px; text-align:left">Specifies the archive folder in which entries will be deleted. A folder name in an archive has the following syntax : &amp;;39;FolderName/&amp;;39; or &amp;;39;FolderName/SubFolderName/&amp;;39;. The use of this
+ parameter needs to specify the &amp;;39;-Query&amp;;39; parameter, otherwise an exception will be thrown.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h3>&lt;CommonParameters&gt;</h3>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable. For more information, see<br>
+about_CommonParameters (<a href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</p>
+<h2><strong>Inputs</strong></h2>
+<p style="padding-left:40px"><strong>System.String, System.IO.DirectoryInfo, System.IO.FileInfo, System.Byte[], System.Collections.IDictionary, Ionic.Zip.ZipEntry</strong></p>
+<h2><strong>Outputs</strong></h2>
+<p style="margin-left:40px"><strong>None</strong></p>
+<h2><strong>Notes</strong></h2>
+<h2><strong>Examples</strong></h2>
+<h3>EXAMPLE 1</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+Get-Item C:\Temp\Test.ps1|Remove-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">These statements remove, if it exists, the entry &amp;;39;Test.ps1&amp;;39; from the root of &amp;;39;Test.zip&amp;;39; file.</p>
+<h3>EXAMPLE 2</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+'Test.ps1'|Remove-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">These statements remove, if it exists, the entry &amp;;39;Test.ps1&amp;;39; from the root of &amp;;39;Test.zip&amp;;39; file.</p>
+<h3>EXAMPLE 3</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+$Tab=@('Test.ps1','Setu1.ps1')
+,$Tab|Remove-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">These statements remove, if it exists, the entries &amp;;39;Test.ps1&amp;;39; and &amp;;39;Setup.ps1&amp;;39;, contained in the array of string $Tab, from the root of &amp;;39;Test.zip&amp;;39; file.</p>
+<h3>EXAMPLE 4</h3>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+$Tab=@('Test1.ps1';Get-ChildItem *.XML;Get-Content C:\Temp\ListeFileName.txt)
+,$Tab|Remove-ZipEntry -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Those instructions delete from the root of the &amp;;39;Test.zip&amp;;39; file and if it exists : - The &amp;;39;Test.ps1&amp;;39; entry, - All entries finishing with &amp;;39;.XML&amp;;39; and - All names of the entries contained
+ in the &amp;;39;C:\Temp\ListeFileName.txt&amp;;39; file.</p>
+<h3>EXAMPLE 5</h3>
+<pre style="margin-left:40px">PS C:\&gt; try
+{          
+$ZipFile=Get-ZipFile -path C:\Temp\archive.zip -ZipErrorAction Skip -Verbose 
+Remove-ZipEntry -ZipFile $ZipFile -Query 'name = *.txt'
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Those instructions, using a query, delete all entries ending with &amp;;39;.TXT&amp;;39; from the root of the &amp;;39;Test.zip&amp;;39; file.</p>
+<h3>EXAMPLE 6</h3>
+<pre style="margin-left:40px">PS C:\&gt; try
+{          
+$ZipFile=Get-ZipFile -path C:\Temp\archive.zip -ZipErrorAction Skip -Verbose 
+Remove-ZipEntry -ZipFile $ZipFile -Query 'name = *.txt' -From 'Doc/' 
+} finally {
+$ZipFile.Close()
+}</pre>
+<p style="margin-left:40px">Those instructions, using a query, delete all entries ending with &amp;;39;.TXT&amp;;39;, in the &amp;;39;Doc/&amp;;39; directory of the &amp;;39;Test.zip&amp;;39; file.</p>
+<h2><strong>Related links</strong></h2>
+<p style="margin-left:40px">Unknown <a href="https://psionic.codeplex.com/wikipage?title=Remove-ZipEntry-EN">
+https://psionic.codeplex.com/wikipage?title=Remove-ZipEntry-EN</a></p>
+<h2><strong>PowerShell Support</strong></h2>
+<ul>
+<li>PowerShell 2.0 </li></ul>
+<h2><strong>Operating System Support</strong></h2>
+<ul>
+<li>Windows 7 </li><li>Windows 8 </li><li>Windows 8.1 </li><li>Windows Server 2008 all editions </li><li>Windows Server 2008 R2 all editions </li><li>Windows Server 2012 all editions </li><li>Windows Server 2012 R2 all editions </li></ul>
+</div><div class="ClearBoth"></div>

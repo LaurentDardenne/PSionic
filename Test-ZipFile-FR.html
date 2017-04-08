@@ -1,0 +1,207 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>Test-ZipFile</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Teste si un fichier est une archive au format PkZip.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">Test-ZipFile [-Path] &lt;Object&gt; [-Password &lt;String&gt;] [-isValid] [-Check] [-Repair] [&lt;CommonParameters&gt;]</p>
+<p style="margin-left:40px">Test-ZipFile [-Path] &lt;Object&gt; [-Password &lt;String&gt;] [-isValid] [-Check] [-Repair] [-Passthru] [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Teste si un fichier est une archive au format PkZip. Lors de ce test, il est &eacute;galement possible de v&eacute;rifier si l'archive est valide et de tenter dans ce cas de la r&eacute;parer.</p>
+<p style="margin-left:40px">Par d&eacute;faut les erreurs simples sont d&eacute;clench&eacute;es.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-Path</strong> <em>&lt;Object&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Nom du fichier de l'archive &agrave; tester.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Password</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Mot de passe, n&eacute;cessaire si l'archive est prot&eacute;g&eacute;e par un mot de passe. Si vous devez tester une archive avec un mot de passe n'utilisez pas le param&egrave;tre -IsValid, car dans ce cas le r&eacute;sultat
+ renvoy&eacute; sera toujours faux.</p>
+<p style="margin-left:40px; text-align:left">Utilisez uniquement le param&egrave;tre -Password et/ou le param&egrave;tre -Check. Si le password est faux le r&eacute;sultat renvoy&eacute; sera faux.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-isValid</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Indique si l'archive semble valide. Cette fonction peut donc renvoyer $true alors que le contenu de l'archive est erron&eacute;e.</p>
+<p style="margin-left:40px; text-align:left">Si un fichier n'est pas une archive et que le param&egrave;tre -isValid est pr&eacute;cis&eacute;, alors les erreurs simples ne sont pas g&eacute;n&eacute;r&eacute;es.</p>
+<p style="margin-left:40px; text-align:left">Si vous devez tester une archive avec un mot de passe n'utilisez pas ce param&egrave;tre, mais le param&egrave;tre -Password et/ou le param&egrave;tre -Check.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Check</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">V&eacute;rifie si le catalogue de l'archive indiqu&eacute;e est correcte. Cette v&eacute;rification est plus stricte que celle effectu&eacute;e avec le param&egrave;tre -isValid.</p>
+<p style="margin-left:40px; text-align:left">Elle peut donc renvoyer $false bien que le fichier soit consid&eacute;r&eacute; comme une archive valide.</p>
+<p style="margin-left:40px; text-align:left">Si vous devez tester une archive avec un mot de passe utilisez ce param&egrave;tre avec ou sans le param&egrave;tre -Password.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Repair</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Tente une r&eacute;paration si l'archive est corrompue.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Passthru</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Emet le nom du fichier de l'archive dans le pipeline. Si le param&egrave;tre -isValid est &eacute;galement pr&eacute;cis&eacute;, alors les&nbsp;noms des fichiers consid&eacute;r&eacute;s comme invalide ne seront
+ pas &eacute;mis dans le pipeline et aucune erreur simple ne sera d&eacute;clench&eacute;e.</p>
+<p style="margin-left:40px; text-align:left">Ce comportement est similaire &agrave; un filtre, o&ugrave; seul les&nbsp;noms des fichiers valides seraient &eacute;mis dans le pipeline. Les objets archive renvoy&eacute;s n'&eacute;tant pas verrouill&eacute;s,
+ soyez attentif &agrave; vos sc&eacute;narios d'usage de ces objets.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=113216">
+a&#7;bout_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p style="margin-left:40px"><strong>System.Boolean</strong></p>
+<p><strong>NOTES</strong></p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; &quot;C:\Temp\*.*&quot;|Compress-ZipFile &quot;C:\Temp\Test.zip&quot;
+Test-Zipfile &quot;C:\Temp\Test.zip&quot;</pre>
+<p style="margin-left:40px">La premi&egrave;re ligne cr&eacute;e une archive au format Zip,</p>
+<p style="margin-left:40px">la seconde teste si le fichier est bien une archive au format PkZip.</p>
+<p style="margin-left:40px">Le r&eacute;sultat de l'ex&eacute;cution vaut $true.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 2 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; &quot;C:\Temp\*.*&quot;|Compress-ZipFile &quot;C:\Temp\Test.zip&quot;
+ConvertTo-Sfx  -path &quot;C:\Temp\Test.zip&quot; 
+Test-Zipfile &quot;C:\Temp\Test.exe&quot;</pre>
+<p style="margin-left:40px">La premi&egrave;re ligne cr&eacute;e une archive au format Zip,</p>
+<p style="margin-left:40px">la seconde cr&eacute;e une archive auto extractible,</p>
+<p style="margin-left:40px">la troisi&egrave;me teste si le fichier est bien une archive au format PkZip.</p>
+<p style="margin-left:40px">On constate qu'une archive auto extractible est consid&eacute;r&eacute;e comme &eacute;tant une archive valide. Le r&eacute;sultat de l'ex&eacute;cution vaut $true.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 3 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; Get-Service Winmgmt|Test-ZipFile</pre>
+<p style="margin-left:40px">Le r&eacute;sultat de l'ex&eacute;cution vaut $false, car l'objet re&ccedil;u, transform&eacute; en string, ne r&eacute;f&eacute;rence pas un fichier d'archive .ZIP.</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>

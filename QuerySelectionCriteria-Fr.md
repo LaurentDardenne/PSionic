@@ -1,0 +1,84 @@
+Fichier {"about_Query_Selection_Criteria"}
+
+Ce fichier décrit les instructions de recherche d'occurrences d'une requête.
+
+Spécifie les 3 éléments d'un critère de recherche : un **nom**, un **opérateur** et une **valeur**.
+
+Considérons la chaîne _"name! = *.doc"_ :
+:le nom est "name",
+:l'opérateur est "! =", ce qui signifie "Différent",
+:et la valeur est "*. Doc".
+
+Ce critère précise "Tous les fichiers ayant un nom ne se terminant pas par .doc.».
+
+Les noms pris en charge incluent "name" (ou "filename") pour le nom de fichier;
+"atime", "mtime", et "ctime" respectivement pour les propriétés last access time, last modfied time, et created time d'un fichier;
+"attributs" (ou "attrs") pour les attributs de fichier;
+"Size" (ou "length") pour la taille du fichier (décompressé),
+et "type" pour le type d'objet, un fichier ou un répertoire.
+
+Les noms "attributs", "name" et "Type" supportent les opérateurs  = et != .
+Les noms "size", "atime", "mtime", et "ctime" supportent les opérateurs = et !=, >, >=, <, <=.
+Les dates et heures sont exprimées en heure locale.
+
+Spécifiez les valeurs des attributs de fichier comme une chaîne comportant, dans n'importe quel ordre, un ou plusieurs de ces caractères H,R,S,A,I,L,
+correspondant respectivement aux attributs de fichier caché, en lecture seule, système, archives, NotContextIndexed, et reparsepoint (lien symbolique).
+
+Pour spécifier une date, utilisez le format YYYY-MM-DD-HH:mm:ss ou YYYY/MM/DD-HH:mm:ss.
+Si vous omettez la portion HH:mm:ss, l'heure est supposée être 00:00:00 (minuit).
+
+La valeur d'un critère de taille est exprimée en bytes, kilobytes (utilisez k ou kb après le nombre), megabytes (m ou mb) ou gigabytes (g ou gb).
+
+La valeur d'un nom est un motif de correspondance (pattern matching) sur le nom du fichier, pouvant comporter des caractères génériques.
+Les jokers suivent les règles de la console cmd.exe: * défini un ou plusieurs caractères, et ? défini un caractère.
+Si le motif de nom contient slashes ('\'), la recherche se fait sur le path complet du nom de fichier, sinon, elle se fait uniquement 
+sur le nom du fichier.
+
+Cela signifie que le pattern {""**\**.**""} correspond à tous les fichiers des répertoire de premier niveau, alors que le motif "**.**" 
+correspond à tous les fichiers dans tous les répertoires.
+
+
+Pour spécifier un motif de correspondance contenant des espaces, utilisez des guillemets simples autour du motif.
+le motif "* **.**" correspond à tous les fichiers ayant des espaces dans leur nom du fichier. 
+La chaîne complète d'un tel recherche serait "name = '* **.**'".
+
+La valeur d'un critère de type est soit F (un fichier) soit D (un répertoire).
+
+Quelques exemples de  critères de recherche de fichier :
+|| Exemple || Signification||
+|_name != *.xls_      | n'importe quel fichier dont l'extension n'est pas xls. 
+|_name = *.mp3_     | n'importe quel fichier dont l'extension est .mp3. 
+|_*.mp3_              | identique à l'exemple précédent. 
+|_attributes = A_   | tous les fichiers ayant l'attribut Archive. 
+|_attributes != H_    | tous les fichiers n'ayant pas l'attribut Hidden. 
+|_mtime > 2009-01-01_ | tous les fichiers ayant une date de dernière modification postérieure au 1er Janvier 2009. 
+|_size > 2gb_         | tous les fichiers ayant une taille supérieure à 2 gb. 
+|_type = D_           | tous les répertoires.
+
+Vous pouvez combiner les critères avec les opérateurs AND ou OR.
+L'utilisation d'une chaîne de recherche, telle que "name = {"*.Txt"} AND  size > = 100k" renvoi les entrées dont le nom se termine par l'extension .Txt,
+et dont la taille est supérieure ou égale à 100 kilo-octets.   
+
+Pour des combinaisons de critères plus complexes, vous pouvez utiliser des parenthèses afin préciser vos intentions.
+Sans parenthèses, la priorité des critères est déterminée par l'ordre d'apparition.
+Contrairement au langage C#, l'opérateur AND n'a pas la précédence sur l'opérateur OR.
+Ceci est important seulement pour les chaînes contenant plus de 2 critères.
+En d'autres termes, "name = {"**.txt"} AND size > 1000 OR attributes = H" est interprété comme "((name = **.txt AND size > 1000) OR attributes = H)",
+tandis que "attributes = H OR name = **.txt AND size > 1000" est interprété comme "((attributes = H OR name = {"**.txt"}) AND size > 1000)".
+En cas de doute, utiliser des parenthèses.  
+ 
+L'utilisation de propriétés de temps nécessite quelques précautions supplémentaires.
+Si vous voulez récupérer toutes les entrées qui ont été mis à jour le 2009 Février 2014, spécifier une plage de temps comme suit:
+ "mtime >= 2009-02-14 AND mtime < 2009-02-15".
+
+Qui signifie : tous les fichiers mis à jour après le 14 Février à minuit jusqu'au 15 Février à minuit.
+Vous pouvez utiliser la même approche pour spécifier une période de temps - un an, un mois, une semaine, et ainsi de suite.
+
+La syntaxe autorise un cas particulier: si vous spécifiez une chaîne sans espaces, elle est considérée comme un motif de recherche référençant le nom de fichier.
+Une chaîne comme {""**.xls""} est équivalente à "name = **.xls".
+
+Il n'y a aucun contrôle sur la cohérence du motif de recherche.
+Par exemple, il est possible de spécifier des critères indiquant que le fichier doit avoir une taille de moins de 100 octets,
+ainsi qu'une taille supérieure à 1000 octets. Évidemment aucun fichier ne satisfera jamais ces critères, mais il n'y a aucune détection de ces incohérences.
+
+**L'appelant est responsable du contrôle de la validité des critères de recherche.**

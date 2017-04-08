@@ -1,0 +1,321 @@
+<div class="wikidoc">
+<p><strong>Name</strong></p>
+<p style="margin-left:40px"><strong>Expand-ZipEntry</strong></p>
+<p><strong>SYNOPSIS</strong></p>
+<p style="margin-left:40px">Extrait des entr&eacute;es d'une archive compress&eacute;e au format Zip.</p>
+<p><strong>SYNTAX</strong></p>
+<p style="margin-left:40px">Expand-ZipEntry -ZipFile &lt;ZipFile&gt; [-Name] &lt;String[]&gt; [-ExtractAction &lt;ExtractExistingFileAction&gt;] [-Password &lt;String&gt;] [-Encoding &lt;Encoding&gt;] [-AsHashTable] [-Strict] [&lt;CommonParameters&gt;]</p>
+<p style="margin-left:40px">Expand-ZipEntry -ZipFile &lt;ZipFile&gt; [-Name] &lt;String[]&gt; [-ExtractAction &lt;ExtractExistingFileAction&gt;] [-Password &lt;String&gt;] [-Encoding &lt;Encoding&gt;] [-AsHashTable] [-Byte] [-Strict] [&lt;CommonParameters&gt;]</p>
+<p style="margin-left:40px">Expand-ZipEntry -ZipFile &lt;ZipFile&gt; [-Name] &lt;String[]&gt; [-ExtractAction &lt;ExtractExistingFileAction&gt;] [-Password &lt;String&gt;] [-Encoding &lt;Encoding&gt;] [-AsHashTable] [-XML] [-Strict] [&lt;CommonParameters&gt;]</p>
+<p><strong>DESCRIPTION</strong></p>
+<p style="margin-left:40px">Extrait des entr&eacute;es d'une archive compress&eacute;e au format Zip. Les donn&eacute;es extraites sont soit des donn&eacute;es s&eacute;rialis&eacute;es, soit un tableau d'octets, soit une cha&icirc;ne de caract&egrave;re et
+ ils permettent de reconstruire un objet.</p>
+<p style="margin-left:40px">Pour extraire des fichiers d'une archive utilisez Expand-ZipFile.</p>
+<p><strong>PARAMETERS</strong></p>
+<p><strong>-ZipFile</strong> <em>&lt;ZipFile&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Objet contenant une archive Zip.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Name</strong> <em>&lt;String[]&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Nom des entr&eacute;es &agrave; extraire.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>True</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>true (ByValue)</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-ExtractAction</strong> <em>&lt;ExtractExistingFileAction&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Pr&eacute;cise le comportement &agrave; adopter lorsque des donn&eacute;es sont d&eacute;j&agrave; pr&eacute;sentes dans le r&eacute;pertoire de destination.</p>
+<p style="margin-left:40px; text-align:left">Values : Throw, OverwriteSilently, DoNotOverwrite, InvokeExtractProgressEvent</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Password</strong> <em>&lt;String&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Pr&eacute;cise le mot de passe n&eacute;cessaire &agrave; l'extraction des entr&eacute;es contenues dans une archive encrypt&eacute;e.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Encoding</strong> <em>&lt;Encoding&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Type d'encodage de l'archive. Les valeurs possibles sont :</p>
+<p style="margin-left:40px; text-align:left">-ASCII&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le jeu de caract&egrave;res ASCII (7 bits).</p>
+<p style="margin-left:40px; text-align:left">-BigEndianUnicode : encodage pour le format UTF-16 qui utilise l'ordre d'octet avec primaut&eacute; des octets de poids fort (big-endian).</p>
+<p style="margin-left:40px; text-align:left">-Default&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: encodage pour la page de codes ANSI actuelle du syst&egrave;me d'exploitation. -Unicode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:
+ encodage pour le format UTF-16 avec primaut&eacute; des octets de poids faible (little-endian).</p>
+<p style="margin-left:40px; text-align:left">-UTF32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le format UTF-32 avec primaut&eacute; des octets de poids faible (little-endian).</p>
+<p style="margin-left:40px; text-align:left">-UTF7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le format UTF-7. -UTF8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : encodage pour le format UTF-8. . Pour une meilleure
+ portabilit&eacute;, l'utilisation de la valeur par d&eacute;faut ('DefaultEncoding') est recommand&eacute;.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-AsHashTable</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Renvoi les entr&eacute;es lues dans un objet de type hashtable. Les noms des entr&eacute;es &agrave; extraire seront utilis&eacute;es en tant que nom de cl&eacute;.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Strict</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">Les erreurs d&eacute;clenchent une exception au lieu d'&ecirc;tre affich&eacute;es.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-Byte</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">L'entr&eacute;e est renvoy&eacute;e en tant que tableau d'octets.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-XML</strong> <em>&lt;SwitchParameter&gt;</em></p>
+<p style="margin-left:40px; text-align:left">L'objet de type string est renvoy&eacute; dans le format XML.</p>
+<table border="1" style="margin-left:40px">
+<tbody>
+<tr>
+<td>Required?</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Position?</td>
+<td>named</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Accept pipeline input?</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Accept wildcard characters?</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&lt;CommonParameters&gt;</strong></p>
+<p style="margin-left:40px">This cmdlet supports the common parameters: Verbose, Debug,<br>
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,<br>
+OutBuffer, PipelineVariable, and OutVariable.</p>
+<p style="margin-left:40px">For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=113216">
+a&#7;bout_CommonParameters</a>.</p>
+<p><strong>INPUTS</strong></p>
+<p><strong>OUTPUTS</strong></p>
+<p style="margin-left:40px"><strong>System.Xml.XmlDocument</strong></p>
+<p><strong>NOTES</strong></p>
+<p style="margin-left:40px">Cette fonction est coupl&eacute;e &agrave; la fonction nomm&eacute;e Add-ZipEntry</p>
+<p><strong>EXAMPLES</strong></p>
+<p style="margin-left:40px">-------------- EXAMPLE 1 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip
+[string]$Text=Get-Content C:\Temp\Test.ps1|Out-String
+Add-ZipEntry -Object $Text -Name MyText -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}
+Remove-Variable Text
+try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+[string]$Text =Expand-ZipEntry -Zip $ZipFile MyText   
+} finally {
+if ($ZipFile -ne $null )
+{ $ZipFile.PSDispose() }
+}</pre>
+<p style="margin-left:40px">Ces instructions enregistrent dans un premier temps du texte dans une entr&eacute;e nomm&eacute;e MyText, puis dans un second temps la relit et l'affecte &agrave; la variable $Text.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 2 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip         
+ConvertTo-Clixml $PSVersionTable | Add-ZipEntry -Name 'PSVersiontable_clixml' -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}
+
+try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+$MaTableDeVersion=Expand-ZipEntry -Zip $ZipFile 'PSVersiontable_climxl'|ConvertFrom-Clixml   
+} finally {
+if ($ZipFile -ne $null )
+{ $ZipFile.PSDispose() }
+}
+$MaTableDeVersion</pre>
+<p style="margin-left:40px">Ces instructions enregistrent dans un premier temps un objet s&eacute;rialis&eacute; dans une entr&eacute;e nomm&eacute;e 'PSVersiontable_clixml', puis dans un second temps la relit et l'affecte &agrave; la variable $MaTableDeVersion.</p>
+<p style="margin-left:40px">-------------- EXAMPLE 3 --------------</p>
+<pre style="margin-left:40px">PS C:\&gt; try {         
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+[byte[]] $Array=@(1..20)
+Add-ZipEntry -Object $Array -Name MyArray -ZipFile $ZipFile
+} finally {
+$ZipFile.Close()
+}
+Remove-Variable Array
+try {
+$ZipFile=Get-Zipfile -Path C:\Temp\Test.zip 
+$Array=Expand-ZipEntry -Zip $ZipFile MyArray -Byte   
+} finally {
+if ($ZipFile -ne $null )
+{ $ZipFile.PSDispose() }
+}</pre>
+<p style="margin-left:40px">Ces instructions enregistrent dans un premier temps un tableau d'octets dans une entr&eacute;e nomm&eacute;e MyArray, puis dans un second temps la relit et l'affecte &agrave; la variable $Array.</p>
+<p><strong>RELATED LINKS</strong></p>
+</div><div class="ClearBoth"></div>
